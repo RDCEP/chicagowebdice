@@ -1,0 +1,210 @@
+ul.jDrawer
+{
+    display: block;
+    overflow: hidden;
+    position: relative;
+    list-style-image: none;
+    list-style-position: outside;
+    list-style-type: none;
+    font-family: "Lucida Grande", "Segoe UI", Arial, Helvetica, sans-serif;
+}
+
+ul.jDrawer a
+{
+    color: #5A9FC4;
+    text-decoration: none;
+}
+
+ul.jDrawer li.jDrawer-active a
+{
+    color: #005596;
+}
+
+ul.jDrawer a:hover
+{
+    color: #009DE3 !important;
+    text-decoration: underline;
+}
+
+
+ul.jDrawer-top
+{
+    width: 188px;
+}
+
+ul.jDrawer-left
+{
+    height: 188px;
+}
+
+ul.jDrawer li.jDrawer-item
+{
+    display: block;
+    _overflow: hidden;
+    position: absolute;
+    top: 0pt;
+    left: 0pt;
+    z-index: 1;
+}
+
+ul.jDrawer-top li.jDrawer-item
+{
+    width: 100%;
+}
+
+ul.jDrawer-left li.jDrawer-item
+{
+    height: 100%;
+}
+
+ul.jDrawer li.jDrawer-active
+{
+
+}
+
+ul.jDrawer-top .jDrawer-item-border-1
+{
+    background: transparent url(../images/jDrawer-top-item-l.png) no-repeat scroll 0% 100%;
+    _background: transparent url(../images/jDrawer-top-item-l.gif) no-repeat scroll 0% 100%;
+    padding: 0px 0px 0px 10px;
+}
+
+ul.jDrawer-top li.jDrawer-active .jDrawer-item-border-1
+{
+    background: transparent url(../images/jDrawer-top-item-l-active.png) no-repeat scroll 0% 100%;
+    _background: transparent url(../images/jDrawer-top-item-l-active.gif) no-repeat scroll 0% 100%;
+}
+
+ul.jDrawer-top .jDrawer-item-border-2
+{
+    background: transparent url(../images/jDrawer-top-item-r.png) no-repeat scroll 100% 100%;
+    _background: transparent url(../images/jDrawer-top-item-r.gif) no-repeat scroll 100% 100%;
+    padding: 0px 10px 0px 0px;
+}
+
+ul.jDrawer-top li.jDrawer-active .jDrawer-item-border-2
+{
+    background: transparent url(../images/jDrawer-top-item-r-active.png) no-repeat scroll 100% 100%;
+    _background: transparent url(../images/jDrawer-top-item-r-active.gif) no-repeat scroll 100% 100%;
+}
+
+ul.jDrawer-top .jDrawer-item-border-3
+{
+    background: transparent url(../images/jDrawer-top-item-b.png) repeat-x scroll 0% 100%;
+    _background: transparent url(../images/jDrawer-top-item-b.gif) repeat-x scroll 0% 100%;
+    padding: 0px 0px 10px 0px;
+}
+
+ul.jDrawer-top li.jDrawer-active .jDrawer-item-border-3
+{
+    background: transparent url(../images/jDrawer-top-item-b-active.png) repeat-x scroll 0% 100%;
+    _background: transparent url(../images/jDrawer-top-item-b-active.gif) repeat-x scroll 0% 100%;
+}
+
+ul.jDrawer-top .jDrawer-content
+{
+    color: #969696;
+    padding: 10px;
+    background: transparent url(../images/jDrawer-top-item-bg.png) repeat-x scroll 0% 100%;
+    _background: transparent url(../images/jDrawer-top-item-bg.gif) repeat-x scroll 0% 100%;
+}
+
+ul.jDrawer-top li.jDrawer-active .jDrawer-content
+{
+    color: #333;
+    background: transparent url(../images/jDrawer-top-item-bg-active.png) repeat-x scroll 0% 100%;
+    _background: transparent url(../images/jDrawer-top-item-bg-active.gif) repeat-x scroll 0% 100%;
+}
+
+ul.jDrawer-top .jDrawer-content h3
+{
+    font-size: 1.45em;
+    font-weight: bold;
+}
+
+ul.jDrawer-left .jDrawer-item-border-1
+{
+    background: transparent url(../images/jDrawer-left-item-t.png) no-repeat scroll 100% 0%;
+    _background: transparent url(../images/jDrawer-left-item-t.gif) no-repeat scroll 100% 0%;
+    padding: 10px 0px 0px 0px;
+}
+
+ul.jDrawer-left li.jDrawer-active .jDrawer-item-border-1
+{
+    background: transparent url(../images/jDrawer-left-item-t-active.png) no-repeat scroll 100% 0%;
+    _background: transparent url(../images/jDrawer-left-item-t-active.gif) no-repeat scroll 100% 0%;
+}
+
+ul.jDrawer-left .jDrawer-item-border-2
+{
+    background: transparent url(../images/jDrawer-left-item-b.png) no-repeat scroll 100% 100%;
+    _background: transparent url(../images/jDrawer-left-item-b.gif) no-repeat scroll 100% 100%;
+    padding: 0px 0px 10px 0px;
+}
+
+ul.jDrawer-left li.jDrawer-active .jDrawer-item-border-2
+{
+    background: transparent url(../images/jDrawer-left-item-b-active.png) no-repeat scroll 100% 100%;
+    _background: transparent url(../images/jDrawer-left-item-b-active.gif) no-repeat scroll 100% 100%;
+}
+
+ul.jDrawer-left .jDrawer-item-border-3
+{
+    background: transparent url(../images/jDrawer-left-item-r.png) repeat-y scroll 100% 0%;
+    _background: transparent url(../images/jDrawer-left-item-r.gif) repeat-y scroll 100% 0%;
+    padding: 0px 10px 0px 0px;
+}
+
+/* IE7 fix */
+html > body ul.jDrawer-left .jDrawer-item-border-3
+{
+    *overflow: hidden;
+}
+
+ul.jDrawer-left li.jDrawer-active .jDrawer-item-border-3
+{
+    background: transparent url(../images/jDrawer-left-item-r-active.png) repeat-y scroll 100% 0%;
+    _background: transparent url(../images/jDrawer-left-item-r-active.gif) repeat-y scroll 100% 0%;
+}
+
+ul.jDrawer-left .jDrawer-content
+{
+    color: #969696;
+    padding: 10px;
+    background: transparent url(../images/jDrawer-left-item-bg.png) repeat-y scroll 100% 0%;
+    _background: transparent url(../images/jDrawer-left-item-bg.gif) repeat-y scroll 100% 0%;
+}
+
+ul.jDrawer-left li.jDrawer-active .jDrawer-content
+{
+    color: #333;
+    background: transparent url(../images/jDrawer-left-item-bg-active.png) repeat-y scroll 100% 0%;
+    _background: transparent url(../images/jDrawer-left-item-bg-active.gif) repeat-y scroll 100% 0%;
+}
+
+ul.jDrawer-left .jDrawer-content h3
+{
+    font-size: 1.45em;
+    font-weight: bold;
+}
+
+ul.jDrawer-top .jDrawer-handle
+{
+    padding-top: 5px;
+}
+
+ul.jDrawer-left .jDrawer-handle
+{
+    float: left;
+}
+
+ul.jDrawer .jDrawer-divider
+{
+    border-top: 1px solid #E0E0E0;
+    margin: 5px 0px;
+}
+
+ul.jDrawer-top li.jDrawer-active .jDrawer-divider
+{
+    border-top: 1px solid #969696;
+}

@@ -1,0 +1,58 @@
+/* General (Tags, Classes) */
+
+body{
+    color: #333;
+    background-color:#005b75;
+    background-image:url('bg.png');
+    background-repeat:repeat-x;
+    font-size: 70%;
+    font-family: "Lucida Sans Unicode", "Lucida Grande", Verdana, sans-serif;
+}
+
+#container {
+    margin: 0 auto;
+    padding-bottom: 10px;
+    color: #333;
+    background: #FFF;
+    /*width:989px;*/
+    width:1200px;
+    height:700px;
+    -webkit-box-shadow: 10px 10px 5px #888;
+}
+
+#header {
+    background:#FFFFFF url('header_webDICE.png') no-repeat;
+    margin-top: 10px;
+    height: 67px;
+}
+
+/* Tabs */
+
+#inputTabs {
+    width: 350px;
+    padding:10px;
+    position:relative;
+    top:0px;
+    left:0px;
+    float:left;
+    height:615px;
+}
+
+#outputTabs {
+    width: 805px;
+    padding:10px;
+    position:relative;
+    top:0px;
+    left:0px;
+    float:right;
+    bottom:0px;
+    height:615px;
+}
+
+#basic {
+
+}
+
+.cht {
+    float:top;
+}

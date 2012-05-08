@@ -1,0 +1,334 @@
+<html>
+
+  <head>
+    <title>webDICE</title>
+
+    <!-- Stylesheets -->
+    <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" type="text/css" href="style.css"  />
+
+    <!-- Libraries -->
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="files/Highcharts/js/highcharts.js"></script>
+
+    <!-- My Scripts -->
+
+    <!-- Inputs -->
+    <script type="text/javascript" src="simulation.js"></script>
+    <script type="text/javascript" src="advanced.js"></script>
+    <script type="text/javascript" src="optimization.js"></script>
+
+    <!-- Outputs -->
+    <script type="text/javascript" src="basicCharts.js"></script>
+    <script type="text/javascript" src="advancedCharts.js"></script>
+    <script type="text/javascript" src="Data.js"></script>
+    <script type="text/javascript" src="base.js"></script>
+
+    <!-- Exit -->
+    <script type="text/javascript" src="exit.js"></script>
+
+  </head>
+
+  <body>
+    <div id="container">
+      <div id="header">
+	&nbsp;
+      </div>
+      <div id="inputTabs">
+	<ul>
+          <li><a href="#simulation"><span>Simulation</span></a></li>
+          <li><a href="#advanced"><span>Advanced Simulation</span></a></li>
+          <li><a href="#optimization"><span>Optimization</span></a></li>
+	</ul>
+
+	<div id="simulation">
+	  <h2>Parameters</h2>
+	  <div id="accordion1">
+	    
+	    <h3>
+	      <a href="#">
+		Climate Sensitivity: 
+		<input type="text" id="climateSensitivity" style="border:0; font-weight:bold; "/>
+	      </a>
+	    </h3>
+	    <div>
+	      <div id="slider1"></div>
+	    </div>
+	    
+	    <h3>
+	      <a href="#">
+		Environmental Damages 
+		<input type="text" id="damages" style="border:0; font-weight:bold; "/>
+	      </a>
+	    </h3>
+	    <div>
+	      <div id="slider2"></div>
+	    </div>
+	    
+	    <h3>
+	      <a href="#">
+		Population Growth
+		<input type="text" id="popGrowth" style="border:0; font-weight:bold; "/>
+	      </a>
+	  </h3>
+	    <div>
+	      <div id="slider3"></div>
+	    </div>
+	    
+	    <h3>
+	      <a href="#">
+		Technology Growth
+		<input type="text" id="techGrowth" style="border:0; font-weight:bold; "/>
+	      </a>
+	    </h3>
+	    <div>
+	      <div id="slider4"></div>
+	    </div>
+	  </div>
+	  
+	  <hr />
+	  
+	  <h2>Carbon Abatement Strategy</h2>
+	  <div id="accordion2">
+	    <h3>
+	      <a href="#">
+		Percentage of Emissions Controlled by 2050
+		<input type="text" id="abate2050" style="border:0; font-weight:bold; "/>
+	      </a>	    
+	    </h3>
+	    <div>
+	      <div id="slider5"></div>
+	    </div>
+	    
+	    <h3>
+	      <a href="#">
+		Percentage of Emissions Controlled by 2100
+		<input type="text" id="abate2100" style="border:0; font-weight:bold; "/>
+	      </a>
+	    </h3>
+	    <div>
+	      <div id="slider6"></div>
+	    </div>
+	    
+	    <h3>
+	      <a href="#">
+		Percentage of Emissions Controlled by 2150
+		<input type="text" id="abate2150" style="border:0; font-weight:bold; "/>
+	      </a>
+	    </h3>
+	    <div>
+	      <div id="slider7"></div>
+	    </div>
+	    
+	  </div>
+
+	  <hr />
+	  
+	  <input type="submit" value="Submit" onclick="simulationDICE()"/>
+	  <input type="reset" value="Reset" onclick="revert()"/>
+	  <div id="bar"></div>
+	</div>
+	
+	<div id="advanced">
+	  <h2>Model Design</h2>
+	<div id="accordion3">
+	  
+	  <h3>
+	    <a href="#">
+	      Economy
+	    </a>
+	  </h3>
+	  <div>
+	    <p>Choices</p>
+	  </div>
+	  
+	  <h3>
+	    <a href="#">
+	      Climate
+	    </a>
+	  </h3>
+	  <div>
+	    <form>
+	      <div id="radioCarbon">
+		<input type="radio" id="radio1" name="radioCarbon" checked="checked"/><label for="radio1">DICE Oceanic Carbon Model</label>
+		<input type="radio" id="radio2" name="radioCarbon" /><label for="radio2">Glotter Oceanic Carbon Model</label>
+	      </div>
+	    </form>
+	    <label for="climateSensitivity2">Climate Sensitivity</label>
+	    <input type="text" id="climateSensitivity2" style="border:0; font-weight:bold;"/>
+	    <div id="slider11"></div>
+	  </div>
+	  
+	  <h3>
+	    <a href="#">
+	      Damages
+	    </a>
+	  </h3>
+	  <div>
+	    <form>
+	      <div id="radioDamage">
+		<input type="radio" id="radio3" name="radioDamage" checked="checked" /><label for="radio3">DICE Damages to Gross Output</label>
+		<input type="radio" id="radio4" name="radioDamage" /><label for="radio4">Kopp Damages to Capital</label>
+		<input type="radio" id="radio5" name="radioDamage" /><label for="radio5">Damages to Productivity</label>
+	      </div>
+	    </form>
+	  </div>
+	  
+	  <h3>
+	    <a href="#">
+	      Welfare
+	    </a>
+	  </h3>
+	  <div>
+	    <p>
+	      Evaluation
+	    </p>
+	  </div>
+	  
+	</div>
+	
+	<h2>Carbon Abatement Strategy</h2>
+	
+	<div id="accordion4">
+	  <h3>
+	    <a href="#">
+	      Percentage of Emissions Controlled by 2050
+	      <input type="text" id="abate20502" style="border:0; font-weight:bold; "/>
+	    </a>	    
+	  </h3>
+	  <div>
+	    <div id="slider8"></div>
+	  </div>
+	  
+	  <h3>
+	    <a href="#">
+	      Percentage of Emissions Controlled by 2100
+	      <input type="text" id="abate21002" style="border:0; font-weight:bold; "/>
+	    </a>
+	  </h3>
+	  <div>
+	    <div id="slider9"></div>
+	  </div>
+
+	  <h3>
+	    <a href="#">
+	      Percentage of Emissions Controlled by 2150
+	      <input type="text" id="abate21502" style="border:0; font-weight:bold; "/>
+	    </a>
+	  </h3>
+	  <div>
+	    <div id="slider10"></div>
+	  </div>
+	</div>
+
+	<!--h2>Parameter Uncertainty Testing</h2>
+
+	<div id="accordion5">
+	  <h3>
+	    <a href="#">
+	      Independent Variable
+	    </a>
+	  </h3>
+	  <div>
+	    <p>foo</p>
+	  </div>
+	  <h3>
+	    <a href="#">
+	      Sampling Distribution
+	    </a>
+	  </h3>
+	  <div>
+	    <p>bar</p>
+	  </div>
+	</div-->
+
+	<input type="submit" value="Submit"/>
+	<input type="reset" value="Reset"/>
+
+      </div>
+	<div id="optimization">
+
+	<!--h2>Model Design</h2>
+
+	<div id="accordion6">
+
+	  <h3>
+	    <a href="#">
+	      Economy
+	    </a>
+	  </h3>
+	  <div>
+	    <p>Choices</p>
+	  </div>
+
+	  <h3>
+	    <a href="#">
+	      Climate
+	    </a>
+	  </h3>
+	  <div>
+	    <form>
+	      <div id="radioCarbon1">
+		<input type="radio" id="radio6" name="radioCarbon1" checked="checked"/><label for="radio1">DICE Oceanic Carbon Model</label>
+		<input type="radio" id="radio7" name="radioCarbon1" /><label for="radio2">Glotter Oceanic Carbon Model</label>
+	      </div>
+	    </form>
+	    <label for="climateSensitivity2">Climate Sensitivity</label>
+	    <input type="text" id="climateSensitivity2" style="border:0; font-weight:bold;"/>
+	    <div id="slider11"></div>
+	  </div>
+
+	  <h3>
+	    <a href="#">
+	      Damages
+	    </a>
+	  </h3>
+	  <div>
+	    <form>
+	      <div id="radioDamage1">
+		<input type="radio" id="radio8" name="radioDamage1" checked="checked" /><label for="radio3">DICE Damages to Gross Output</label>
+		<input type="radio" id="radio9" name="radioDamage1" /><label for="radio4">Kopp Damages to Capital</label>
+		<input type="radio" id="radio10" name="radioDamage1" /><label for="radio5">Damages to Productivity</label>
+	      </div>
+	    </form>
+	  </div>
+
+	  <h3>
+	    <a href="#">
+	      Welfare
+	    </a>
+	  </h3>
+	  <div>
+	    <p>
+	      Evaluation
+	    </p>
+	  </div>
+
+	</div>
+	<input type="submit" value="Submit"/>
+
+      </div-->
+	</div>
+      </div>
+	
+      <div id="outputTabs">
+	<ul>
+          <li><a href="#basic"><span>Basic Charts</span></a></li>
+          <li><a href="#custom"><span>Custom Charts</span></a></li>
+          <li><a href="#data"><span>Data</span></a></li>
+	</ul>
+	<div id="basic">
+	  <div id="chart1" class="cht" style="width: 400px; height: 400px"></div>
+	  <div id="chart2" class="cht" style="width: 400px; height: 400px"></div>
+	  <div id="chart3" class="cht" style="width: 400px; height: 400px"></div>
+	  <div id="chart4" class="cht" style="width: 400px; height: 400px"></div>
+	</div>
+	<div id="custom">
+	</div>
+	<div id="data">
+	  <button />
+	</div>
+      </div>
+  </body>
+</html>
