@@ -1,3 +1,21 @@
+function getTFP(GDPgrowth)
+{
+    // from 1-year to 10-year (geometric sum okay?)
+    var GDPgrowth1 = (GDPgrowth + 1.0)^(10);
+
+    var c1 = 137.0;
+    var c2 = 170.0;
+
+    var l1 = 6514.0;
+    var l2 = 7130.0;
+
+    var g = 0.3;
+    var TFPgrowth = (GDPgrowth + 1.0) * (c1 / c2)^g * (l1 / l2)^(1.0-g) - 1.0;
+    var TFPgrowth1 = TFPgrowth^(0.1);
+    
+    return TFPgrowth1;
+}
+
 $(document).ready(function() {
 
 	// Accordion
