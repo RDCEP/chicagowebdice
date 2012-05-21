@@ -16,8 +16,8 @@ function [param] = DICE2007ParamExo(param)
     %% Set up the arrays for the exogenous variables
     
     param.miu = zeros(param.tmax, 1); % Emissions control rate (zero for now)
-    %param.miu = [.0047,.1660,.2017,
-
+    param.e2005cap = ones(param.tmax, 1); % Emissions cap as a percentage of year 2005 emissions
+    display(param);
     % Population
     param.gfacpop = zeros(param.tmax, 1); % Growth factor population
     param.l = zeros(param.tmax, 1); % Labor (population)

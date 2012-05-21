@@ -43,13 +43,13 @@ function [param] = parseOptions(options)
   %% Default Options
 
   % Default parameters
-  param = OptimizeParam();
+  %param = OptimizeParam();
   %param = OptimizeParamExo(param);
 				 
   %param = GlotterParam();
-  %param = DICE2007Param();
-  param.paramexo = db.('OptimizeParamExo');
-  %param.paramexo = db.('DICE2007ParamExo');
+  param = DICE2007Param();
+  %param.paramexo = db.('OptimizeParamExo');
+  param.paramexo = db.('DICE2007ParamExo');
 
   % Default variable setup
   param.setup = @DICE2007Setup;
@@ -99,7 +99,6 @@ function [param] = parseOptions(options)
   end
   
   %% Compute Exogenous variables
-  %param = MonteCarloParamExo(param);
   param = param.paramexo(param);
   
   %% Build the specific Step Function

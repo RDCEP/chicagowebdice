@@ -25,9 +25,15 @@ end
 function [vars] = DICE2007Emissions(vars, param, t)
     %display(param.miu(t));
     % A.10
-        vars.emissionsIndustrial(t) = 10 * param.sigma(t) * (1 - param.miu(t)) * param.al(t) * (vars.capital(t)^param.gama) * (param.l(t)^(1-param.gama)); 
-        % A.10 % Scaled for 10-year time step
-                                                                                                                                                       %vars.emissionsIndustrial(t) = param.sigma(t) * (1 - param.miu_2005) * param.al(t) * (vars.capital(t)^param.gama) * (param.l(t)^(1-param.gama)); % A.10
+    vars.emissionsIndustrial(t) = 10 * param.sigma(t) * (1 - param.miu(t)) * param.al(t) * (vars.capital(t)^param.gama) * (param.l(t)^(1-param.gama)); 
+    
+    % Set miu if beyond emissions level cap (vs. baseline = 2005)
+    if vars.emissionsIndustrial(t) > (param.e2005cap(t) * param.e2005)
+        param.miu(t) = 1 - (param.e2005cap(t) * param.e2005) / (10 * param.sigma(t) * param.al(t) * (vars.capital(t)^param.gama) * (param.l(t)^(1-param.gama)));
+        vars.emissionsIndustrial(t) = param.e2005cap(t) * param.e2005;
+    end
+    % A.10 % Scaled for 10-year time step
+    
     % A.12
     vars.emissionsTotal(t) = vars.emissionsIndustrial(t) + param.etree(t);
     if t > 1

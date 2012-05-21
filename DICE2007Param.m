@@ -41,6 +41,7 @@ function [param] = DICE2007Param()
     param.dsig = .003; % Decline rate of decarbonization per decade
     param.dsig2 = .000; % Quadratic term in decarbonization
     param.eland0 = 11.000; % Carbon emissions from land 2005 (GtC per decade)
+    param.e2005 = 84.1910; % Year 2005 Emissions
     
     %% Carbon Cycle    
     param.mat2000 = 808.9; % Concentration in atmosphere 2005 (GtC)
