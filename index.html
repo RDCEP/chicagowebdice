@@ -317,6 +317,7 @@
           <li><a href="#basic"><span>Basic Charts</span></a></li>
           <li><a href="#custom"><span>Custom Charts</span></a></li>
           <li><a href="#data"><span>Data</span></a></li>
+	  <li><a href="#docs"><span>Documentation</span></a></li>
 	</ul>
 	
 	<div id="basic">	
@@ -352,6 +353,54 @@
 	</div>
 	<div id="data">
 	  <button />
+	</div>
+	<div id="docs">
+	  <p>
+	    About WebDICE
+	    WebDICE is an interactive web tool for exploring alternative climate change policies at the global level. WebDICE is a version of the Dynamic Integrated model of Climate and the Economy (DICE), developed by William Nordhaus, Professor of Economics at Yale University. The DICE model is a widely-used, open-source integrated assessment model that has been very influential in the debate over climate policy.</p>
+
+	  <p>Most closely related to the 2007 version of DICE, WebDICE is written in Matlab. For an overview of the model and its findings, see Nordhaus (2008)#. DICE-2007 model equations written in GAMS are available on  website. The complete Matlab code is available here[link].</p>
+
+	  <p>The DICE model is composed of a standard neoclassical model of the economy and a 3-box carbon model used to calculate global temperature change. The economy grows according to a Solow-Swan growth model in which economic output is a function of labor, capital, and productivity. Economic output produces emissions, causing increases in atmospheric carbon concentrations that, in turn, determine the global average temperature. Temperature changes cause climate damages that negatively impact the economy by lowering the level of economic output.</p>
+
+	  <p>Here, we briefly outline the key equations used in DICE, focusing on those with parameters that are available for adjustment in WebDICE. </p>
+
+<p>Economy
+Economic growth in DICE occurs via the Solow-Swan growth model,
+\begin{equation}
+    Y_t= A_tL_t^{1-\alpha}K_t^\alpha
+\end{equation}
+  where $Y$ is output and $L$ is labor, represented in DICE by the total population. $K$ is the capital stock and $\alpha$ is a measure of the elasticity of output with respect to capital, equal to 0.3 in DICE. $A$ is Total Factor Productivity (TFP), sometimes the Solow Residual, or, simply, technology. $A$ represents all output that cannot be explained by population or capital levels. </p>
+
+	  <p>In WebDICE, labor (population) grows exogenously, leveling off at 8.6 billion people around XXXX. </p>
+
+	  <p>Capital is endogenous to the model, depreciating at an annual rate $\delta$ (set to 10\% in DICE) and growing through savings, a share ($s$) of previous period output set exogenously to 22\% in WebDICE [right?]. The equation governing capital levels is,
+\begin{equation}
+    K_{t+1} = K_t(1 - \delta) + sY_t
+	    \end{equation}</p>
+
+	  <p>Users of WebDICE can test alternative assumptions of future economic growth by adjusting the parameter on the [Simulation] page. This parameter controls the growth of productivity over time--$A$ in the output equation--effectively toggling the growth of the economy.</p>
+
+Climate Change
+In the model, economic output creates emissions according to a fixed relationship that declines over time. Emissions contribute to atmospheric and oceanic carbon levels, creating new equilibrium concentrations of atmospheric carbon. This atmospheric carbon leads to atmospheric temperature changes. In WebDICE, users can test assumptions of the sensitivity of global temperatures to atmospheric carbon concentrations by adjusting the Climate Sensitivity Parameter on the Simulation page. 
+
+[insert equations here]
+
+
+Climate Damages
+To account for the negative impacts of climate change, DICE assesses damages from climate change against the economy. Damages, $D$, are expressed as a fraction of total output and given as a non-linear function of temperature change:
+\begin{equation}\label{eq:damage}
+    D = 1 - \frac{1}{1+a_1T + a_2T^{a_3}} \\
+\end{equation}
+In DICE, the parameters are calibrated so that the magnitude of damages at a $2.5\,^{\circ}{\rm C}$ and $4\,^{\circ}{\rm C}$ temperature changes equal 1.7\% and 4.5\% of GDP, respectively (i.e. $a_1 = 0; a_2 =.0028388; a_3=2$). 
+
+Using the notation $Y_{tb}$ and $Y_{td}$ to denote output before and after damages, damages impact the economy as a level change in output:
+\begin{equation}\label{eq:ytd}
+    Y_{td} = (1-D)A_tN_t^{1-\alpha}K_t^\alpha
+\end{equation}
+
+Users of WebDICE can test the sensitivity of output levels to the size of damages by adjusting the Climate Damages parameter on the Simulation p
+	  </p>Nordhaus
 	</div>
       </div>
   </body>
