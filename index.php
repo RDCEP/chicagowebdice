@@ -152,23 +152,6 @@ foreach ($parameters as $parameter) {
 			print "      </ul>\n";
 		}
 		?>
-      <h2>Model Parameters</h2>
-      <ul>
-      <li>Climate Sensitivity <span>3</span> <input type='range' min='1' max='5' step='0.5' value='3'/></li>
-      <li>Environment Damages <span>2</span> <input type='range' min='1' max='3' step='0.5' value='2'/></li>
-      <li>Population Growth <span>0.35</span> <input type='range' min='0.1' max='0.5' step='0.05' value='0.35'/></li>
-      <li>Technology Growth <span>0.1</span> <input type='range' min='0.05' max='0.15' step='0.01' value='0.1'/></li>
-      <h2>Carbon Controls</h2>
-      <ul>
-      <li>Emissions by 2050 <span>0%</span> <input type='range' min='0' max='100' step='5' value='0'/></li>
-      <li>Emissions by 2100 <span>0%</span> <input type='range' min='0' max='100' step='5' value='0'/></li>
-      <li>Emissions by 2150 <span>0%</span> <input type='range' min='0' max='100' step='5' value='0'/></li>
-      </ul>
-      <h2>Model Design</h2>
-      <ul>
-      <li>Oceanic Model <select><option>DICE 2007</option><option>Glotter</option></select></li>
-      <li>Climate Sensitivity <span>0%</span><input type='range' min='0' max='100' step='5' value='0'/></li>
-      </ul>?>
     </div>
     <div id='controls'>
       <input type='reset' value='Reset'/><input type='submit' value='Make New Run'/>
