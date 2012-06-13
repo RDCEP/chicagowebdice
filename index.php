@@ -121,7 +121,6 @@ foreach ($parameters as $parameter) {
 				$machine_name = $parameter['machine_name'];
 				$is_select_control = $parameter['is_select_control'];
 				$is_range_control = $parameter['is_range_control'];
-				$default = $parameter['default'];
 				
 				print "        <li>$name ";
 				
