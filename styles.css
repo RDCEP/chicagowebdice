@@ -1,0 +1,22 @@
+*{margin:0;padding:0;}
+h1{background:url(http://www.rdcep.org/sites/rdcep.sites.globusonline.org/images/RDCEP-header-bg.png);}
+h1{position:absolute;top:0;left:0;right:0;padding:0 1em;font:bold 2em/3em Helvetica,sans-serif;}
+h1{color:white;text-shadow:0 0 5px #444;border-bottom:1px solid #262;margin-top:-1px;}
+#sidebar{position:absolute;top:6em;left:0;width:16em;background-color:#eee;bottom:0;border-right:1px solid #aaa;}
+#parameters{position:absolute;top:0;left:0;right:0;bottom:3em;overflow:auto;}
+#parameters h2{font:bold 0.8em Helvetica,sans-serif;padding:1.5em 1em 0.5em 1em;}
+#parameters li{list-style-type:none;font:0.8em Helvetica,sans-serif;padding:0.5em 1em;position:relative;}
+#parameters input{position:absolute;right:1em;width:5em;}
+#parameters span{position:absolute;right:6em;width:2em;text-align:right;color:#666;}
+#parameters select{position:absolute;right:1em;width:8em;}
+#controls{position:absolute;bottom:0;height:1.5em;left:0;right:0;text-align:right;padding-top:0.4em;border-top:1px solid #ccc;}
+#controls input{margin-right:0.4em;}
+.show-results #controls{bottom:10em;border-bottom:1px solid #999;}
+.show-results #parameters{bottom:13em;}
+#runs{position:absolute;top:6em;left:16em;bottom:0;padding-left:1px;z-index:10;z-index:10;}
+#runs li{list-style-type:none;}
+#runs label{background-color:#eee;width:1.9em;height:4em;border-bottom:1px solid #bbb;border-right:1px solid #bbb;position:relative;display:block;}
+#runs li span{position:absolute;top:1.3em;left:0.5em;width:0.8em;height:0.8em;border:1px solid #000;}
+#runs li input{position:absolute;top:3.5em;left:0.9em;}
+#content{position:absolute;top:6em;left:16em;right:0;bottom:0;overflow:auto;padding-left:3px;}
+#content .graph{width:50%;height:50%;background-color:#fff;border:1px solid #eee;float:left;margin-left:-2px;margin-top:-2px;}
