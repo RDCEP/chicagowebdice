@@ -16,7 +16,7 @@ h1{color:white;text-shadow:0 0 5px #444;border-bottom:1px solid #262;margin-top:
 #runs{position:absolute;top:6em;left:16em;bottom:0;padding-left:1px;z-index:10;z-index:10;}
 #runs li{list-style-type:none;}
 #runs label{background-color:#eee;width:1.9em;height:4em;border-bottom:1px solid #bbb;border-right:1px solid #bbb;position:relative;display:block;}
-#runs li.create label{background-color:#fff;border-left:1px solid #fff;margin-left:-1px;}
+#runs li.create label{background-color:#eee;border-left:1px solid #eee;margin-left:-1px;}
 #runs li span{position:absolute;top:1.3em;left:0.5em;width:0.8em;height:0.8em;border:1px solid #000;}
 #runs li input{position:absolute;top:3.5em;left:0.9em;}
 #content{position:absolute;top:6em;left:16em;right:0;bottom:0;overflow:auto;padding-left:3px;}
