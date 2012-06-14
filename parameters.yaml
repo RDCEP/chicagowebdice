@@ -70,8 +70,8 @@ parameters:
         machine_name: dice
       - name: Glotter
         machine_name: glotter
-  - name: Damages
-    machine_name: damages
+  - name: Damages Model
+    machine_name: damages_model
     section: Model Design
     values:
       - name: DICE Damages to Gross Output
