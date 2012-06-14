@@ -64,10 +64,12 @@ foreach ($parameters as $parameter) {
 			if (!isset($value['machine_name']))
 				trigger_error($option_no_machine_name, E_USER_ERROR);
 			
-			$machine_name = $value['machine_name'];
+			$option_machine_name = $value['machine_name'];
 			
-			if (isset($parameter['indexed_values'][$machine_name]))
+			if (isset($parameter['indexed_values'][$option_machine_name]))
 				trigger_error($duplicate_option, E_USER_ERROR);
+			
+			$parameter['indexed_values'][$option_machine_name] = $value;
 		}
 	} else if ($is_range_control) {
 		if (!is_numeric($parameter['min']) ||
@@ -96,6 +98,58 @@ foreach ($parameters as $parameter) {
 	$sections[$cleaned_section_name]["parameters"][] = $parameter;
 }
 
+if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
+	$values = array();
+	
+	foreach ($all_parameters as $machine_name => $parameter) {
+		if (isset($_POST[$machine_name])) {
+			$value = $_POST[$machine_name];
+		} else if ($parameter['is_range_control']){
+			$value = $parameter['default'];
+		} else {
+			$value = NULL;
+		}
+		
+		if ($parameter['is_range_control']) {
+			if ($value < $parameter['min'])
+				$value = $parameter['min'];
+			
+			if ($value > $parameter['max'])
+				$value = $parameter['max'];
+		
+			/*
+			 * We quantize parameters because it might be useful to
+			 * try and cache requests. Discretized parameter parsing
+			 * is crucial to that effort.
+			 */
+			$value = round(($value - $parameter['min']) / $parameter['step']) * $parameter['step'];
+			
+		} else if ($parameter['is_select_control']) {
+			if (!isset($parameter['indexed_values'][$machine_name])) {
+				$keys = array_keys($parameter['indexed_values']);
+				$value = $keys[0];
+			}
+		}
+		
+		$values[$machine_name] = $value;
+	}
+	
+	$arguments = array( );
+	
+	foreach ($values as $name => $value) {
+		$arguments[] = escapeshellarg($name);
+		$arguments[] = escapeshellarg($value);
+	}
+	
+	$flattened = implode(' ', $arguments);
+	$r = popen("bin/fakeDriver.py $flattened 2>&1", "r");
+	
+	while (($line = fgets($r)) !== FALSE) {
+		echo $line;
+	}
+	
+	pclose($r);
+} else {
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
   "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
@@ -107,7 +161,7 @@ foreach ($parameters as $parameter) {
 <body>
 <h1>RDCEP :: WebDICE</h1>
 <div id='sidebar'>
-  <form>
+  <form id='submission'>
     <div id='parameters'><?php
 		foreach ($sections as $section) {
 			$section_name = htmlentities($section['name']);
@@ -163,6 +217,7 @@ foreach ($parameters as $parameter) {
     <li><label><span style="background-color:#390;border-color:#280;"></span><input type='checkbox'/></label></li>
     <li><label><span style="background-color:#39c;border-color:#28b;"></span><input type='checkbox'/></label></li>
     <li><label><span style="background-color:#aa3;border-color:#993;"></span><input type='checkbox'/></label></li>
+    <li class='create'><label></label></li>
   </ul>
 </div>
 <div id='content'>
@@ -172,4 +227,4 @@ foreach ($parameters as $parameter) {
   <div class='graph'></div>
 </div>
 </body>
-</html>
+</html><?php } ?>
