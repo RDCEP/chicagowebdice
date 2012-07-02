@@ -5,9 +5,10 @@ require_once('lib/spyc.php');
 $configuration = Spyc::YAMLLoad('parameters.yaml');
 
 $parameters = $configuration['parameters'];
+$measurements = $configuration['measurements'];
 
-$missing_parameter = "Missing \"%s\" attribute on parameter configuration element.";
-$too_many_items = "Parameter configuration_element has %i extra element(s).";
+$missing_parameter = "Missing \"%s\" attribute on configuration element.";
+$too_many_items = "Configuration_element has %i extra element(s).";
 $option_no_name = "Parameter option element has no \"name\" option and should.";
 $option_no_machine_name = "Parameter option element has no \"machine_name\" option and should.";
 $non_numeric_configuration = "The \"min,\" \"max,\" and \"step\" options are numeric.";
@@ -98,6 +99,24 @@ foreach ($parameters as $parameter) {
 	$sections[$cleaned_section_name]["parameters"][] = $parameter;
 }
 
+for ($measurements as $measurement) {
+	$required = array("name", "machine_name", "unit");
+	$optional = array();
+	
+	foreach ($required as $name) {
+		if (!isset($parameter[$name]))
+			trigger_error(sprintf($missing_parameter, $name), E_USER_ERROR);
+	}
+	
+	if (isset($measurement['description']))
+		$optional[] = 'description';
+	
+	$size = count($required) + count($optional);
+	
+	if (count($parameter) > $size)
+		trigger_error(sprintf($missing_parameter, count($parameter) - $size), E_USER_ERROR);
+}
+
 if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 	$values = array();
 	
@@ -157,6 +176,14 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
   <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
   <title>RDCEP :: WebDICE</title>
   <link rel="stylesheet" href="styles.css" type="text/css" media="screen" title="Default Stylesheet" charset="utf-8"/>
+  <script type='text/javascript'>
+<?php
+	echo "    Options = Options || { }\n";
+	
+	$json = json_encode($measurements);
+	echo "    Options.measurements = $json;\n";
+	?>
+  </script>
 </head>
 <body>
 <h1>RDCEP :: WebDICE</h1>
