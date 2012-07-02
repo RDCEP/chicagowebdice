@@ -40,7 +40,7 @@ foreach ($parameters as $parameter) {
 	$size = count($required) + count($optional);
 	
 	if (count($parameter) > $size)
-		trigger_error(sprintf($missing_parameter, count($parameter) - $size), E_USER_ERROR);
+		trigger_error(sprintf($too_many_options, count($parameter) - $size), E_USER_ERROR);
 	
 	foreach ($required as $name) {
 		if (!isset($parameter[$name]))
@@ -99,22 +99,22 @@ foreach ($parameters as $parameter) {
 	$sections[$cleaned_section_name]["parameters"][] = $parameter;
 }
 
-for ($measurements as $measurement) {
+foreach ($measurements as $measurement) {
 	$required = array("name", "machine_name", "unit");
 	$optional = array();
 	
 	foreach ($required as $name) {
-		if (!isset($parameter[$name]))
+		if (!isset($measurement[$name]))
 			trigger_error(sprintf($missing_parameter, $name), E_USER_ERROR);
 	}
 	
-	if (isset($measurement['description']))
-		$optional[] = 'description';
+	if (isset($measurement["description"]))
+		$optional[] = "description";
 	
 	$size = count($required) + count($optional);
 	
 	if (count($parameter) > $size)
-		trigger_error(sprintf($missing_parameter, count($parameter) - $size), E_USER_ERROR);
+		trigger_error(sprintf($too_many_options, count($parameter) - $size), E_USER_ERROR);
 }
 
 if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {

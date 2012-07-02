@@ -87,19 +87,19 @@ parameters:
         description: n/a
 
 measurements:
-- name: Carbon Mass in Atmosphere
-  machine_name: massAtmosphere
-  unit: Gigatons of Carbon
-  description: n/a
-- name: Atmospheric Temperature Increase
-  machine_name: tempAtmosphere
-  unit: Degrees Celcius Increase from 1900
-  description: n/a
-- name: Per Capita Consumption
-  machine_name: consumptionpercapita
-  unit: Dollars per Person
-  description: n/a
-- name: Total Emissions
-  machine_name: emissionsTotal
-  unit: Gigatons of Carbon per Ten Years
-  description: n/a
+  - name: Carbon Mass in Atmosphere
+    machine_name: massAtmosphere
+    unit: Gigatons of Carbon
+    description: n/a
+  - name: Atmospheric Temperature Increase
+    machine_name: tempAtmosphere
+    unit: Degrees Celcius Increase from 1900
+    description: n/a
+  - name: Per Capita Consumption
+    machine_name: consumptionpercapita
+    unit: Dollars per Person
+    description: n/a
+  - name: Total Emissions
+    machine_name: emissionsTotal
+    unit: Gigatons of Carbon per Ten Years
+    description: n/a
