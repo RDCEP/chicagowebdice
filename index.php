@@ -8,7 +8,7 @@ $parameters = $configuration['parameters'];
 $measurements = $configuration['measurements'];
 
 $missing_parameter = "Missing \"%s\" attribute on configuration element.";
-$too_many_items = "Configuration_element has %i extra element(s).";
+$too_many_items = "Configuration_element has %d extra element(s).";
 $option_no_name = "Parameter option element has no \"name\" option and should.";
 $option_no_machine_name = "Parameter option element has no \"machine_name\" option and should.";
 $non_numeric_configuration = "The \"min,\" \"max,\" and \"step\" options are numeric.";
@@ -113,8 +113,8 @@ foreach ($measurements as $measurement) {
 	
 	$size = count($required) + count($optional);
 	
-	if (count($parameter) > $size)
-		trigger_error(sprintf($too_many_items, count($parameter) - $size), E_USER_ERROR);
+	if (count($measurement) > $size)
+		trigger_error(sprintf($too_many_items, count($measurement) - $size), E_USER_ERROR);
 }
 
 if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
