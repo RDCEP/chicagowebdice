@@ -6,8 +6,8 @@ h1{color:white;text-shadow:0 0 5px #444;border-bottom:1px solid #262;margin-top:
 #submission{position:absolute;top:0;left:0;right:0;bottom:204px;overflow:auto;}
 #submission h2{font:bold 0.8em Helvetica,sans-serif;padding:1.5em 1em 0.5em 1em;}
 #submission li{list-style-type:none;font:0.8em Helvetica,sans-serif;padding:0.5em 1em;position:relative;}
-#submission #parameters input{position:absolute;right:1em;width:5em;}
-#submission span{position:absolute;right:6em;width:2em;text-align:right;color:#666;}
+#submission #parameters input,#submission #parameters .fd-slider{position:absolute;right:1em;width:5em;top:0.1em;}
+#submission .label{position:absolute;right:6em;width:2em;text-align:right;color:#666;}
 #submission select{position:absolute;right:1em;width:8em;}
 #controls{position:absolute;bottom:0px;height:1.5em;left:0;right:0;text-align:right;}
 #controls{padding-top:0.4em;}

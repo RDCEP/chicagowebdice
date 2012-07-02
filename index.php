@@ -179,6 +179,8 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
   <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
   <title>RDCEP :: WebDICE</title>
   <link rel="stylesheet" href="styles.css" type="text/css" media="screen" title="Default Stylesheet" charset="utf-8"/>
+  <link rel="stylesheet" type="text/css" media="screen, projection" href="http://www.frequency-decoder.com/demo/fd-slider/css/fd-slider.mhtml.min.css" />
+	<script src="javascript/fd-slider.min.js"></script>
   <script type='text/javascript'>
 <?php
 	echo "    Options = window.Options || { }\n";
@@ -241,7 +243,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 					$step = $parameter['step'];
 					$default = $parameter['default'];
 					
-					print "<span>$default</span> <input name='$machine_name' ";
+					print "<span class='label'>$default</span> <input name='$machine_name' ";
 					print "type='range' min='$min' max='$max' step='$step' value='$default'/></label></li>\n";
 				}
 			}
