@@ -206,7 +206,12 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 				$is_select_control = $parameter['is_select_control'];
 				$is_range_control = $parameter['is_range_control'];
 				
-				print "        <li>$name ";
+				if (isset($parameter['description'])) {
+					$description = $parameter['description'];
+					print "        <li><label title='$description'>$name ";
+				} else {
+					print "        <li><label>$name ";
+				}
 				
 				if ($is_select_control) {
 					$values = $parameter['values'];
@@ -234,7 +239,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 					$default = $parameter['default'];
 					
 					print "<span>$default</span> <input name='$machine_name' ";
-					print "type='range' min='$min' max='$max' step='$step' value='$default'/></li>\n";
+					print "type='range' min='$min' max='$max' step='$step' value='$default'/></label></li>\n";
 				}
 			}
 			
