@@ -181,18 +181,21 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
   <link rel="stylesheet" href="styles.css" type="text/css" media="screen" title="Default Stylesheet" charset="utf-8"/>
   <script type='text/javascript'>
 <?php
-	echo "    Options = Options || { }\n";
+	echo "    Options = window.Options || { }\n";
 	
 	$json = json_encode($measurements);
 	echo "    Options.measurements = $json;\n";
 	?>
   </script>
+  <script type='text/javascript' src='https://www.google.com/jsapi'></script>
+  <script type='text/javascript' src='javascript/main.js'></script>
 </head>
 <body>
 <h1>RDCEP :: WebDICE</h1>
 <div id='sidebar'>
   <form id='submission'>
-    <div id='parameters'><?php
+    <div id='parameters'>
+<?php
 		foreach ($sections as $section) {
 			$section_name = htmlentities($section['name']);
 			$parameters = $section['parameters'];
