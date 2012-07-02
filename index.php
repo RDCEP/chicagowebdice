@@ -187,7 +187,13 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 						$option_machine_name = $value['machine_name'];
 						$option_name = $value['name'];
 						
-						print "          <option name='$option_machine_name'>$option_name</option>";
+						if (isset($value['description'])) {
+							$description = htmlentities($value['description']);
+							
+							print "          <option name='$option_machine_name' title='$description'>$option_name</option>";
+						} else {
+							print "          <option name='$option_machine_name'>$option_name</option>";
+						}
 					}
 					
 					print "        </li>\n";
