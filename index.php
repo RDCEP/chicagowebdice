@@ -181,7 +181,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 				if ($is_select_control) {
 					$values = $parameter['values'];
 					
-					print "<select name='$machine_name'>";
+					print "<select name='$machine_name'>\n";
 					
 					foreach ($values as $value) {
 						$option_machine_name = $value['machine_name'];
@@ -190,13 +190,13 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 						if (isset($value['description'])) {
 							$description = htmlentities($value['description']);
 							
-							print "          <option name='$option_machine_name' title='$description'>$option_name</option>";
+							print "          <option name='$option_machine_name' title='$description'>$option_name</option>\n";
 						} else {
-							print "          <option name='$option_machine_name'>$option_name</option>";
+							print "          <option name='$option_machine_name'>$option_name</option>\n";
 						}
 					}
 					
-					print "        </li>\n";
+					print "        </select></li>\n";
 				} else if ($is_range_control) {
 					$min = $parameter['min'];
 					$max = $parameter['max'];
