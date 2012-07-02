@@ -40,7 +40,7 @@ foreach ($parameters as $parameter) {
 	$size = count($required) + count($optional);
 	
 	if (count($parameter) > $size)
-		trigger_error(sprintf($too_many_options, count($parameter) - $size), E_USER_ERROR);
+		trigger_error(sprintf($too_many_items, count($parameter) - $size), E_USER_ERROR);
 	
 	foreach ($required as $name) {
 		if (!isset($parameter[$name]))
@@ -114,7 +114,7 @@ foreach ($measurements as $measurement) {
 	$size = count($required) + count($optional);
 	
 	if (count($parameter) > $size)
-		trigger_error(sprintf($too_many_options, count($parameter) - $size), E_USER_ERROR);
+		trigger_error(sprintf($too_many_items, count($parameter) - $size), E_USER_ERROR);
 }
 
 if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
