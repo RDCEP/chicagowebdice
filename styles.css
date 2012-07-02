@@ -1,5 +1,5 @@
 *{margin:0;padding:0;}
-h1{background:url(http://www.rdcep.org/sites/rdcep.sites.globusonline.org/images/RDCEP-header-bg.png);}
+h1{background:url(images/header.png);}
 h1{position:absolute;top:0;left:0;right:0;padding:0 1em;font:bold 2em/3em Helvetica,sans-serif;}
 h1{color:white;text-shadow:0 0 5px #444;border-bottom:1px solid #262;margin-top:-1px;}
 #sidebar{position:absolute;top:6em;left:0;width:16em;background-color:#eee;bottom:0;border-right:1px solid #aaa;}
