@@ -254,15 +254,14 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
       <input type='reset' value='Reset'/><input type='submit' value='Make New Run'/>
     </div>
   </form>
-</div>
-<div id='runs'>
-  <ul>
-    <li><label><span style="background-color:#a03;border-color:#903;"></span><input type='checkbox'/></label></li>
-    <li><label><span style="background-color:#390;border-color:#280;"></span><input type='checkbox'/></label></li>
-    <li><label><span style="background-color:#39c;border-color:#28b;"></span><input type='checkbox'/></label></li>
-    <li><label><span style="background-color:#aa3;border-color:#993;"></span><input type='checkbox'/></label></li>
-    <li class='create'><label></label></li>
-  </ul>
+  <div id='runs'>
+    <ul>
+      <li><label><span class='slab' style="background-color:#a03;border-color:#903;"></span> Default Parameters <input type='checkbox'/></label></li>
+      <li><label><span class='slab' style="background-color:#390;border-color:#280;"></span> Sensitivity at 80% <input type='checkbox'/></label></li>
+      <li><label><span class='slab' style="background-color:#39c;border-color:#28b;"></span> Sensitivity at 50% <input type='checkbox'/></label></li>
+      <li><label><span class='slab' style="background-color:#aa3;border-color:#993;"></span> Sensitivity at 30% <input type='checkbox'/></label></li>
+    </ul>
+  </div>
 </div>
 <div id='content'>
   
