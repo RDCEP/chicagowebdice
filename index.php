@@ -111,6 +111,9 @@ foreach ($measurements as $measurement) {
 	if (isset($measurement["description"]))
 		$optional[] = "description";
 	
+	if (isset($measurement["format"]))
+		$optional[] = "format";
+	
 	$size = count($required) + count($optional);
 	
 	if (count($measurement) > $size)
@@ -254,10 +257,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
   </ul>
 </div>
 <div id='content'>
-  <div class='graph'></div>
-  <div class='graph'></div>
-  <div class='graph'></div>
-  <div class='graph'></div>
+  
 </div>
 </body>
 </html><?php } ?>

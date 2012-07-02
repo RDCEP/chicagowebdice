@@ -95,10 +95,12 @@ measurements:
     machine_name: tempAtmosphere
     unit: Degrees Celcius Increase from 1900
     description: n/a
+    format: "+#.#\xB0C" # This will cause problems with negative "increases."
   - name: Per Capita Consumption
     machine_name: consumptionpercapita
     unit: Dollars per Person
     description: n/a
+    format: "$#.##"
   - name: Total Emissions
     machine_name: emissionsTotal
     unit: Gigatons of Carbon per Ten Years
