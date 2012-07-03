@@ -14,6 +14,7 @@
 		var runsUL = document.getElementById('runs');
 		var submissionDiv = document.getElementById('submission');
 		var runsBeingDisplayed = [ ];
+		var nextRunNumber = 1;
 		
 		var charts = [ ];
 		var handlersForViewportChanged = [ ];
@@ -147,6 +148,16 @@
 			}
 		}
 		
+		var updateRunsListHeight = function() {
+			var bottomHeight = (runsBeingDisplayed.length + 1) * 51;
+			var outerHeight = bottomHeight;
+			
+			if (outerHeight > 200) outerHeight = 200;
+			
+			$(submissionDiv).animate({ bottom: outerHeight }, "slow");
+			$(runsUL).animate({ height:outerHeight, scrollTop : (bottomHeight - outerHeight) }, "slow");
+		}
+		
 		// Prepare initial contents of dataset.
 		
 		data.addColumn('number', 'Year');
@@ -166,35 +177,49 @@
 		var form = document.getElementById('submission');
 		form.onsubmit = function() {
 			var data = $(form).serialize();
+			var runsListIndex = runsBeingDisplayed.length;
 			
 			var createdLI = document.createElement('li');
 			var createdLABEL = document.createElement('label');
+			var progressIMG = document.createElement('img');
 			var textNode = document.createTextNode("Executing run...");
 			
+			progressIMG.setAttribute('src', 'images/progress.gif');
 			createdLI.appendChild(createdLABEL);
+			createdLI.appendChild(progressIMG);
 			createdLABEL.appendChild(textNode);
 			runsUL.appendChild(createdLI);
 			
-			runsBeingDisplayed.push("Foo");
+			runsBeingDisplayed[runsListIndex] = { visible : true };
 			
-			var bottomHeight = (runsBeingDisplayed.length + 1) * 51;
-			var outerHeight = bottomHeight;
-			
-			if (outerHeight > 200) outerHeight = 200;
-			
-			$(submissionDiv).animate({ bottom: outerHeight }, "slow");
-			$(runsUL).animate({ height:outerHeight, scrollTop : (bottomHeight - outerHeight) }, "slow");
+			updateRunsListHeight();
 			
 			$.ajax({
 				type : 'POST',
 				url : 'index.php',
 				data : data,
 				success : function(data, textStatus, xhr) {
-					textNode.nodeValue = "Run Name Here"
+					textNode.nodeValue = "Run #" + (nextRunNumber++);
+					createdLI.removeChild(progressIMG);
 					addRunFromCSV(data);
+					
+					var visibilityCheckbox = document.createElement('input');
+					visibilityCheckbox.setAttribute('type', 'checkbox');
+					visibilityCheckbox.setAttribute('checked', 'checked');
+					
+					createdLI.appendChild(visibilityCheckbox);
 				},
-				failure : function(data, textStatus, xhr) {
-					textNode.nodeValue = "Run failed";
+				error : function(xhr, textStatus, errorType) {
+					textNode.nodeValue = "Model Run Failed!";
+					createdLI.removeChild(progressIMG);
+					
+					$(createdLABEL).css({backgroundColor:'#fe0'});
+					
+					setTimeout(function() {
+						runsBeingDisplayed.splice(runsListIndex, 1);
+						$(createdLI).remove();
+						updateRunsListHeight();
+					}, 5000);
 				},
 				dataType : 'text',
 				timeout : 10000
