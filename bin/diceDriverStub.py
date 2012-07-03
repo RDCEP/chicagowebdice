@@ -62,7 +62,8 @@ def main():
   
   for (name, value) in data.items():
     factor = random.uniform(0.6, 2.0)
-    print "%s,%s" % (name, ','.join(("%.3f" % (x * factor)) for x in value))
+    exponent = random.uniform(0.4, 4)
+    print "%s,%s" % (name, ','.join(("%.3f" % ((x ** exponent) * factor)) for x in value))
   
   sys.exit(0)
   
