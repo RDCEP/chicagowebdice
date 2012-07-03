@@ -181,6 +181,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
   <link rel="stylesheet" href="styles.css" type="text/css" media="screen" title="Default Stylesheet" charset="utf-8"/>
   <link rel="stylesheet" type="text/css" media="screen, projection" href="http://www.frequency-decoder.com/demo/fd-slider/css/fd-slider.mhtml.min.css" />
 	<script src="javascript/fd-slider.min.js"></script>
+	<script src="javascript/jquery.min.js"></script>
   <script type='text/javascript'>
 <?php
 	echo "    Options = window.Options || { }\n";
@@ -259,9 +260,6 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
   <div id='runs'>
     <ul>
       <li><label><span class='slab' style="background-color:#a03;border-color:#903;"></span> Default Parameters <input type='checkbox'/></label></li>
-      <li><label><span class='slab' style="background-color:#390;border-color:#280;"></span> Sensitivity at 80% <input type='checkbox'/></label></li>
-      <li><label><span class='slab' style="background-color:#39c;border-color:#28b;"></span> Sensitivity at 50% <input type='checkbox'/></label></li>
-      <li><label><span class='slab' style="background-color:#aa3;border-color:#993;"></span> Sensitivity at 30% <input type='checkbox'/></label></li>
     </ul>
   </div>
 </div>

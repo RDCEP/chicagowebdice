@@ -1,4 +1,4 @@
-(function() {
+(function($) {
 	var numberOfStepsInSimulation = 60;
 	var startYear = 2005;
 	var endYear = 2200;
@@ -11,9 +11,11 @@
 	
 	var initializeUI = function() {
 		var contentDiv = document.getElementById('content');
+		var runsUL = document.getElementById('runs');
 		
 		var charts = [ ];
 		var handlersForViewportChanged = [ ];
+		var handlersForDataChanged = [ ];
 		var data = new google.visualization.DataTable();
 		  // Measurement `m' of `M' for run `r' is is located at (r * M + m + 1)
 		
@@ -55,9 +57,10 @@
 				
 				var format = measurement.format;
 				var unit = measurement.unit;
+				var dataArray = fields[measurement.machine_name];
 				
 				for (var j = 0; j < numberOfStepsInSimulation; j++) {
-					var value = fields[measurement.machine_name][j];
+					var value = parseFloat(dataArray[j]);
 					
 					data.setCell(j, getNumberOfMeasurements() * nextRun + i + 1, value);
 				}
@@ -65,29 +68,39 @@
 				formatMeasurement(nextRun, i, measurement.format, unit);
 			}
 			
+			updateAllData();
+			
 			return nextRun;
+		}
+		
+		var addRunFromCSV = function(result) {
+			var fields = new Object;
+			var color = '#900';
+			var lines = result.split('\n');
+			
+			for (var i = 0; i < lines.length; i++) {
+				var line = lines[i].split(",");
+				var name = line[0].trim();
+				
+				if (name.length > 0)
+					fields[name] = line.slice(1);
+			}
+			
+			addRun(color, fields);
 		}
 		
 		var removeRun = function(index) {
 			data.removeColumns(index * getNumberOfMeasurements(), getNumberOfMeasurements());
+			
+			updateAllData();
 		}
 		
-		var buildChart = function(measurement) {
+		var buildChart = function(index, measurement) {
 			var div = document.createElement("div");
-			var view = new google.visualization.DataView(data);
-			var hiddenColumns = [ ];
-			
-			for (var j = 1; j < data.getNumberOfColumns(); j++) {
-				var measurementID = (j - 1) % getNumberOfMeasurements();
-				if (measurementID != i)
-					hiddenColumns.push(j);
-			}
-			
-			view.hideColumns(hiddenColumns);
-			
 			contentDiv.appendChild(div);
-		
+			
 			var chart = new google.visualization.LineChart(div);
+			var view = new google.visualization.DataView(data);
 			
 			var updateViewport = function() {
 				var options = {
@@ -101,8 +114,35 @@
 				chart.draw(view, options);
 			}
 			
-			updateViewport();
+			var updateData = function() {
+				var visibleColumns = [ ];
+				
+				for (var j = 0; j < data.getNumberOfColumns(); j++) {
+					var measurementID = (j - 1) % getNumberOfMeasurements();
+					if ((measurementID == index) || (j == 0))
+						visibleColumns.push(j);
+				}
+				
+				view.setColumns(visibleColumns);
+				
+				updateViewport();
+			}
+			
+			updateData();
 			handlersForViewportChanged.push(updateViewport);
+			handlersForDataChanged.push(updateData);
+		}
+		
+		var updateAllViewports = function() {
+			for (var i = 0; i < handlersForViewportChanged.length; i++) {
+				handlersForViewportChanged[i]();
+			}
+		}
+		
+		var updateAllData = function() {
+			for (var i = 0; i < handlersForDataChanged.length; i++) {
+				handlersForDataChanged[i]();
+			}
 		}
 		
 		// Prepare initial contents of dataset.
@@ -115,19 +155,46 @@
 		
 		formatMeasurement(0, -1, "####"); // hackish much?
 		
-		addRun('#900', sampleData);
+		addRun('#a03', sampleData);
 		
 		for (var i = 0; i < Options.measurements.length; i++) {
-			buildChart(Options.measurements[i]);
+			buildChart(i, Options.measurements[i]);
+		}
+		
+		var form = document.getElementById('submission');
+		form.onsubmit = function() {
+			var data = $(form).serialize();
+			
+			var createdLI = document.createElement('li');
+			var createdLABEL = document.createElement('label');
+			var textNode = document.createTextNode("Executing run...");
+			createdLI.appendChild(createdLABEL);
+			createdLABEL.appendChild(textNode);
+			runsUL.appendChild(createdLI);
+			
+			$.ajax({
+				type : 'POST',
+				url : 'index.php',
+				data : data,
+				success : function(data, textStatus, xhr) {
+					textNode.nodeValue = "Run Name Here"
+					addRunFromCSV(data);
+				},
+				failure : function(data, textStatus, xhr) {
+					textNode.nodeValue = "Run failed";
+				},
+				dataType : 'text',
+				timeout : 10000
+			});
+			
+			return false;
 		}
 		
 		window.onresize = function() {
-			for (var i = 0; i < handlersForViewportChanged.length; i++) {
-				handlersForViewportChanged[i]();
-			}
+			updateAllViewports();
 		}
 	}
 	
 	google.load('visualization', '1.0', {'packages' : ['corechart']});
 	google.setOnLoadCallback(initializeUI);
-})();
+})(jQuery);
