@@ -1,3 +1,5 @@
+%{
+
 function [v,p] = diceDriver(source,target)
     % source is a csv file, with the arguments to simDICE
     % format of source:
@@ -16,6 +18,31 @@ function [v,p] = diceDriver(source,target)
     % Write the results to file
     cell2csv(target, vals, ',');
     
+end
+
+%}
+
+function [v,p] = diceDriver(args)
+    % Reads arguments for simDICE via command line arguments (handled in C++ wrapper)
+
+    cellargs = cellstr(args);
+
+    [v,p] = simDICE(cellargs);
+
+    % Write to stdout
+    fn = fieldnames(v);
+    
+    for i = 1:size(fn)
+      % Print the label
+      fprintf(1, '%s ', fn{i});
+      contents = v.(fn{i});
+      % Print the data
+      for j = 1:size(contents)
+	      fprintf(1, '%f ', contents(j));
+      end
+      fprintf(1, '\n');
+    end
+  
 end
 
 % Reads data from csv file and parses into cell array
