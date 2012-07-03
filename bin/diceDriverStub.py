@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 
 import random
+import time
+import sys
 
 def main():
+  time.sleep(1)
   data = {
     "emissionsTotal": [
       87.972,97.4694,107.3874,117.5434,127.9259,
@@ -60,6 +63,8 @@ def main():
   for (name, value) in data.items():
     factor = random.uniform(0.6, 2.0)
     print "%s,%s" % (name, ','.join(("%.3f" % (x * factor)) for x in value))
+  
+  sys.exit(0)
   
 if __name__ == '__main__':
   main()
