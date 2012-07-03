@@ -12,6 +12,8 @@
 	var initializeUI = function() {
 		var contentDiv = document.getElementById('content');
 		var runsUL = document.getElementById('runs');
+		var submissionDiv = document.getElementById('submission');
+		var runsBeingDisplayed = [ ];
 		
 		var charts = [ ];
 		var handlersForViewportChanged = [ ];
@@ -168,9 +170,20 @@
 			var createdLI = document.createElement('li');
 			var createdLABEL = document.createElement('label');
 			var textNode = document.createTextNode("Executing run...");
+			
 			createdLI.appendChild(createdLABEL);
 			createdLABEL.appendChild(textNode);
 			runsUL.appendChild(createdLI);
+			
+			runsBeingDisplayed.push("Foo");
+			
+			var bottomHeight = (runsBeingDisplayed.length + 1) * 51;
+			var outerHeight = bottomHeight;
+			
+			if (outerHeight > 200) outerHeight = 200;
+			
+			$(submissionDiv).animate({ bottom: outerHeight }, "slow");
+			$(runsUL).animate({ height:outerHeight, scrollTop : (bottomHeight - outerHeight) }, "slow");
 			
 			$.ajax({
 				type : 'POST',
@@ -189,6 +202,16 @@
 			
 			return false;
 		}
+		
+		$('input[type=range]', form).change(function() {
+			var s = Math.ceil(Math.log(parseFloat(this.value)));
+			if (!(s > s) && !(s < s)) s = 1;
+			
+			var offset = Math.pow(10, 3 - s);
+			var value = parseInt(parseFloat(this.value) * offset) / offset;
+			
+			$(this).parents('label').find('span.label').text(value);
+		});
 		
 		window.onresize = function() {
 			updateAllViewports();
