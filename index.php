@@ -171,7 +171,8 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 		echo $line;
 	}
 	
-	pclose($r);
+	if (pclose($r) != 0 || pcntl_wexitstatus($r) != 0)
+		header('HTTP/1.0 500 Internal Server Error');
 } else {
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
   "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
@@ -258,11 +259,9 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
       <input type='reset' value='Reset'/><input type='submit' value='Make New Run'/>
     </div>
   </form>
-  <div id='runs'>
-    <ul>
-      <li><label><span class='slab' style="background-color:#a03;border-color:#903;"></span> Default Parameters <input type='checkbox'/></label></li>
-    </ul>
-  </div>
+  <ul id='runs'>
+    <li><label><span class='slab' style="background-color:#a03;border-color:#903;"></span> Default Parameters <input type='checkbox'/></label></li>
+  </ul>
 </div>
 <div id='content'>
   
