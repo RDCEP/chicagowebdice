@@ -1,10 +1,10 @@
-/*=====================================================
+/*=====================================================================
  * DICEDRIVER.CPP
  * Calls C++ shared library of DICE model
- * Takes csv file, computes model, writes to csv file
- *=====================================================*/
+ * Takes input from command line args, computes model, writes to stdout
+ *====================================================================*/
 
-#include "libdice.h"
+#include "libwebdice.h"
 
 int run_main(int argc, char **argv)
 {
@@ -15,7 +15,7 @@ int run_main(int argc, char **argv)
 		<< std::endl;
       return -1;
     }
-  if (!libdiceInitialize())
+  if (!libwebdiceInitialize())
     {
       std::cerr << "could not initialize library properly"
 		<< std::endl;
@@ -25,19 +25,28 @@ int run_main(int argc, char **argv)
     {
       try
 	{
-	  // Parse arguments
+	  // Parse arguments (will be packaged and passed to MATLAB
 
-	  // first arg is original csv file
-	  mwArray source(argv[1]);
-	  // second arg is target csv file
-	  mwArray target(argv[2]);
+	  // set up string matrix
+	  char* str[20];
+
+	  for (int i = 0; i < argc - 1; i++)
+	    {
+	      str[i] = argv[i+1];
+	    }
+
+	  // cast to const
+	  const char** str2 = (const char**) str;
+
+	  // Create character array
+	  const mwArray arg(argc - 1, str2);
 
 	  // create output array
 	  mwArray out1;
 	  mwArray out2;
-
+	  
 	  // Call diceDriver library function
-	  diceDriver(2,out1,out2,source,target);
+	  diceDriver(2,out1,out2,arg);
 
 	  // Display success
 	  std::cout << "Success." << std::endl;
@@ -53,7 +62,7 @@ int run_main(int argc, char **argv)
 	  return -3;
 	}
       // Call application and library termination routine
-      libdiceTerminate();
+      libwebdiceTerminate();
     }
   mclTerminateApplication();
   return 0;
