@@ -159,12 +159,13 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 	$arguments = array( );
 	
 	foreach ($values as $name => $value) {
+		$arguments[] = "param";
 		$arguments[] = escapeshellarg($name);
 		$arguments[] = escapeshellarg($value);
 	}
 	
 	$flattened = implode(' ', $arguments);
-	$r = popen("bin/fakeDriver.py $flattened 2>&1", "r");
+	$r = popen("bin/diceDriver run DICE2007Run step DICE2007Step $flattened 2>&1", "r");
 	
 	while (($line = fgets($r)) !== FALSE) {
 		echo $line;
