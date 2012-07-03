@@ -165,7 +165,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 	}
 	
 	$flattened = implode(' ', $arguments);
-	$r = popen("bin/diceDriver run DICE2007Run step DICE2007Step $flattened 2>&1", "r");
+	$r = popen("bin/diceDriverStub.py run DICE2007Run step DICE2007Step $flattened 2>&1", "r");
 	
 	while (($line = fgets($r)) !== FALSE) {
 		echo $line;
