@@ -183,14 +183,17 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 	$r = popen("bin/diceDriver run DICE2007Run step DICE2007Step $flattened", "r");
 	
 	$number_of_blank_lines = 0;
+	$output = "";
 	while (($line = fgets($r)) !== FALSE) {
-		if (size(trim($line)) <= 1) $number_of_blank_lines++;
+		if (strlen(trim($line)) <= 1) $number_of_blank_lines++;
 		else if ($number_of_blank_lines > 3)
-			echo $line;
+			$output .= $line . "\n";
 	}
 	
 	if (pclose($r) != 0)
 		header('HTTP/1.0 500 Internal Server Error');
+	else
+		echo $output;
 	
 	putenv("LD_LIBRARY_PATH=$current_load_path");
 } else {
