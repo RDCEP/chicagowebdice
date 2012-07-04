@@ -164,15 +164,35 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 		$arguments[] = escapeshellarg($value);
 	}
 	
-	$flattened = implode(' ', $arguments);
-	$r = popen("bin/diceDriverStub.py run DICE2007Run step DICE2007Step $flattened 2>&1", "r");
+	$current_load_path = getenv("LD_LIBRARY_PATH");
+	$new_load_path = 
+		"/usr/local/MATLAB/MATLAB_Compiler_Runtime/v716/bin/glnx86:".
+		"/usr/local/MATLAB/MATLAB_Compiler_Runtime/v716/runtime/glnx86:".
+		"/usr/local/MATLAB/MATLAB_Compiler_Runtime/v716/sys/os/glnx86:".
+		"/usr/local/MATLAB/MATLAB_Compiler_Runtime/v716/sys/java/jre/glnx86/jre/lib/i386/native_threads:".
+		"/usr/local/MATLAB/MATLAB_Compiler_Runtime/v716/sys/java/jre/glnx86/jre/lib/i386/server:".
+		"/usr/local/MATLAB/MATLAB_Compiler_Runtime/v716/sys/java/jre/glnx86/jre/lib/i386:".
+		"/usr/lib/x86_64-linux-gnu/:".
+		"/var/www/development/lib";
+	if ($current_load_path) $new_load_path = "$current_load_path:$new_load_path";
 	
+	putenv("LD_LIBRARY_PATH=$new_load_path");
+	putenv("XAPPLRESDIR=/usr/local/MATLAB/MATLAB_Compiler_Runtime/v716/X11/app-defaults");
+	
+	$flattened = implode(' ', $arguments);
+	$r = popen("bin/diceDriver run DICE2007Run step DICE2007Step $flattened", "r");
+	
+	$number_of_blank_lines = 0;
 	while (($line = fgets($r)) !== FALSE) {
-		echo $line;
+		if (size(trim($line)) <= 1) $number_of_blank_lines++;
+		else if ($number_of_blank_lines > 3)
+			echo $line;
 	}
 	
-	if (pclose($r) != 0 || pcntl_wexitstatus($r) != 0)
+	if (pclose($r) != 0)
 		header('HTTP/1.0 500 Internal Server Error');
+	
+	putenv("LD_LIBRARY_PATH=$current_load_path");
 } else {
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
   "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
