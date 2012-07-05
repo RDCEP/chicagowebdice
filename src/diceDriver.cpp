@@ -28,7 +28,7 @@ int run_main(int argc, char **argv)
 	  // Parse arguments (will be packaged and passed to MATLAB
 
 	  // set up string matrix
-	  char* str[20];
+	  char** str = malloc(sizeof(char*) * argc);
 
 	  for (int i = 0; i < argc - 1; i++)
 	    {
@@ -48,19 +48,27 @@ int run_main(int argc, char **argv)
 	  // Call diceDriver library function
 	  diceDriver(2,out1,out2,arg);
 
+	  free(str);
+
 	  // Display success
 	  std::cout << "Success." << std::endl;
 	}
       catch (const mwException& e)
 	{
 	  std::cerr << e.what() << std::endl;
+	  free(str);
+
 	  return -2;
 	}
       catch (...)
 	{
 	  std::cerr << "Unexpected error thrown" << std::endl;
+	  free(str);
+
 	  return -3;
 	}
+	  free(str);
+
       // Call application and library termination routine
       libwebdiceTerminate();
     }
