@@ -3,6 +3,7 @@
 	var startYear = 2005;
 	var endYear = 2200;
 	var colorsUsed = 0;
+	var numberOfRunsInProgress = 0;
 	var sampleData = {
 "emissionsTotal":[87.972,97.4694,107.3874,117.5434,127.9259,138.6092,149.7031,161.327,173.5988,186.6307,200.5293,215.3959,231.3355,248.4487,266.8345,286.5923,307.8236,330.6331,355.1294,381.426,409.6416,439.9006,472.3341,507.0793,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
 		"massAtmosphere":[808.9,865.7592,923.846,984.0294,1046.7543,1112.32,1181.0093,1253.1377,1329.0655,1409.1958,1493.969,1583.8566,1679.3575,1781.0031,1889.3525,2004.9914,2128.5333,2260.6209,2401.9292,2553.1677,2715.0831,2888.4629,3074.1371,3272.9821,3485.9224,3169.6534,2932.7024,2751.4072,2609.3204,2495.0039,2400.498,2320.2588,2250.4199,2188.2803,2131.9485,2080.0957,2031.7843,1986.3486,1943.3124,1902.3314,1863.1533,1825.5904,1789.4999,1754.7708,1721.3146,1689.0587,1657.942,1627.9117,1598.9212,1570.9283,1543.8946,1517.7842,1492.5636,1468.201,1444.6664,1421.9307,1399.9665,1378.7473,1358.2475,1338.4426],
@@ -205,7 +206,7 @@
 		}
 		
 		var updateRunsListHeight = function() {
-			var bottomHeight = (runsBeingDisplayed.length + 1) * 51;
+			var bottomHeight = (runsBeingDisplayed.length + numberOfRunsInProgress) * 51;
 			var outerHeight = bottomHeight;
 			
 			if (outerHeight > 200) outerHeight = 200;
@@ -245,6 +246,8 @@
 			createdLABEL.appendChild(textNode);
 			runsUL.appendChild(createdLI);
 			
+			numberOfRunsInProgress++;
+			
 			updateRunsListHeight();
 			
 			$.ajax({
@@ -253,6 +256,8 @@
 				data : data,
 				success : function(data, textStatus, xhr) {
 					var runObject = addRunFromCSV("Run #" + getNumberOfRuns(), generateNextColor(), data);
+					
+					numberOfRunsInProgress--;
 					
 					textNode.nodeValue = runObject.description;
 					createdLABEL.removeChild(progressIMG);
@@ -278,11 +283,12 @@
 				error : function(xhr, textStatus, errorType) {
 					textNode.nodeValue = "Model Run Failed!";
 					createdLABEL.removeChild(progressIMG);
-					runObject.removed = true;
 					
 					$(createdLABEL).css({backgroundColor:'#fe0'});
 					
 					setTimeout(function() {
+						numberOfRunsInProgress--;
+						
 						$(createdLI).remove();
 						updateRunsListHeight();
 					}, 5000);
