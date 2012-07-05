@@ -11,8 +11,7 @@ CPP_FILES=src/libwebdice.cpp
 
 unexport DISPLAY
 
-compile:
-	bin/diceDriver
+compile: bin/diceDriver
 
 lib/libwebdice32.so:
 	mcc -W cpplib:libwebdice32 -b32 $(MCC_OPTS) $(MATLAB_FILES)
