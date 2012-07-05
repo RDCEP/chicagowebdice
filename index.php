@@ -186,7 +186,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 	$output = "";
 	while (($line = fgets($r)) !== FALSE) {
 		if (strlen(trim($line)) <= 1) $number_of_blank_lines++;
-		else if ($number_of_blank_lines > 3)
+		else if ($number_of_blank_lines > 2)
 			$output .= $line;
 	}
 	
@@ -283,7 +283,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
     </div>
   </form>
   <ul id='runs'>
-    <li><label><span class='slab' style="background-color:#a03;border-color:#903;"></span> Default Parameters <input type='checkbox'/></label></li>
+    <li><label><span class='slab' style="background-color:#a03;border-color:#903;"></span> Default Parameters <input type='checkbox' checked='checked' disabled='disabled'/></label></li>
   </ul>
 </div>
 <div id='content'>

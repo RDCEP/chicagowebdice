@@ -16,10 +16,9 @@ h1{color:white;text-shadow:0 0 5px #444;border-bottom:1px solid #262;margin-top:
 #runs{position:absolute;left:0;bottom:0;right:0;z-index:10;z-index:10;overflow:auto;height:51px;}
 #runs label{background-color:#eee;border-top:1px solid #bbb;font:0.8em/30px sans-serif;}
 #runs label{position:relative;display:block;padding:10px 30px;}
-#runs li{list-style-type:none;position:relative;}
+#runs li{list-style-type:none;}
 #runs li img{position:absolute;top:1.5em;right:1em;}
 #runs li .slab{position:absolute;top:1.5em;left:1em;width:0.8em;height:0.8em;border:1px solid #000;}
-#runs li .slab{border-radius:3px;}
 #runs li input{position:absolute;right:15px;top:20px;}
 #content{position:absolute;top:6em;left:16em;right:0;bottom:0;overflow:auto;padding-left:3px;}
 #content div{float:left;}
