@@ -187,7 +187,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 	while (($line = fgets($r)) !== FALSE) {
 		if (strlen(trim($line)) <= 1) $number_of_blank_lines++;
 		else if ($number_of_blank_lines > 3)
-			$output .= $line . "\n";
+			$output .= $line;
 	}
 	
 	if (pclose($r) != 0)

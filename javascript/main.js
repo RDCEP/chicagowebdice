@@ -82,7 +82,7 @@
 			var lines = result.split('\n');
 			
 			for (var i = 0; i < lines.length; i++) {
-				var line = lines[i].split(",");
+				var line = lines[i].split(" ");
 				var name = line[0].trim();
 				
 				if (name.length > 0)
