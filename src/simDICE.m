@@ -94,7 +94,7 @@ function [param] = parseOptions(options)
     
     % Otherwise, the option is for setting an individual parameter
     elseif strcmpi(options{i}, 'param')
-      param.(options{i+1}) = options{i+2};
+      param.(options{i+1}) = str2double(options{i+2});
     end
   end
   
