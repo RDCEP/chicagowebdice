@@ -6,6 +6,7 @@ $configuration = Spyc::YAMLLoad('parameters.yaml');
 
 $parameters = $configuration['parameters'];
 $measurements = $configuration['measurements'];
+$initial_help = $configuration['initial_help'];
 
 $missing_parameter = "Missing \"%s\" attribute on configuration element.";
 $too_many_items = "Configuration_element has %d extra element(s).";
@@ -282,12 +283,17 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
       <input type='reset' value='Reset'/><input type='submit' value='Make New Run'/>
     </div>
   </form>
-  <ul id='runs'>
-    <li><label><span class='slab' style="background-color:#a03;border-color:#903;"></span> Default Parameters <input type='checkbox' checked='checked' disabled='disabled'/></label></li>
-  </ul>
+  <ul id='runs'></ul>
 </div>
-<div id='content'>
-  
+<div id='content' class='yesruns'>
+  <div class='initial'>
+<?php
+		$paragraphs = explode("\n", $initial_help);
+		
+		foreach ($paragraphs as $paragraph) {
+			echo "    <p>$paragraph</p>\n";
+		}
+?>  </div>
 </div>
 </body>
 </html><?php } ?>

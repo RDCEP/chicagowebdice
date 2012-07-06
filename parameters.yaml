@@ -13,6 +13,9 @@ initial_help: >
   
   To begin, click "Make New Run" to the left to create a run with default
   parameters.
+  
+  This message is unhelpful. To edit it, please change the relevant lines
+  in parameters.yaml.
 
 last_modified: 5 July 2012 
 
