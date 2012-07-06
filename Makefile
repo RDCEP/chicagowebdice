@@ -1,10 +1,11 @@
 WEBROOT=/var/www
 MCRINSTALLROOT=/tmp/mcr
+MATLABROOT=/usr/local/MATLAB/MATLAB_Compiler_Runtime/v716
 X86MCRURL=http://www.mathworks.com/supportfiles/MCR_Runtime/R2012a/MCR_R2012a_glnx86_installer.zip
 X86_64MCRURL=http://www.mathworks.com/supportfiles/MCR_Runtime/R2012a/MCR_R2012a_glnxa64_installer.zip
 GIT_URL=git://github.com/RDCEP/chicagowebdice.git
-LD_LIBRARY_PATH=$(WEBROOT)/lib:/usr/local/MATLAB/MATLAB_Compiler_Runtime/v716/runtime/glnx86:/usr/local/MATLAB/MATLAB_Compiler_Runtime/v716/sys/os/glnx86:/usr/local/MATLAB/MATLAB_Compiler_Runtime/v716/sys/java/jre/glnx86/jre/lib/i386/native_threads:/usr/local/MATLAB/MATLAB_Compiler_Runtime/v716/sys/java/jre/glnx86/jre/lib/i386/server:/usr/local/MATLAB/MATLAB_Compiler_Runtime/v716/sys/java/jre/glnx86/jre/lib/i386:$LD_LIBRARY_PATH
-XAPPRLRESDIR=/usr/local/MATLAB/MATLAB_Compiler_Runtime/v716/X11/app-defaults
+LD_LIBRARY_PATH=$(WEBROOT)/lib:$(MATLABROOT)/runtime/glnx86:$(MATLABROOT)/sys/os/glnx86:$(MATLABROOT)/sys/java/jre/glnx86/jre/lib/i386/native_threads:$(MATLABROOT)/sys/java/jre/glnx86/jre/lib/i386/server:$(MATLABROOT)/sys/java/jre/glnx86/jre/lib/i386:$LD_LIBRARY_PATH
+XAPPRLRESDIR=$(MATLABROOT)/X11/app-defaults
 MATLAB_FILES=src/DICE2007Param.m src/DICE2007ParamExo.m src/DICE2007Run.m src/DICE2007Setup.m src/DICE2007Step.m src/OptimizeParam.m src/OptimizeParamExo.m src/OptimizeRun.m src/simDICE.m
 MCC_OPTS=-T link:lib -nodisplay -d lib/ -v
 CPP_FILES=src/libwebdice.cpp
@@ -46,4 +47,4 @@ test:
 	$(WEBROOT)/bin/diceDriver run DICE2007Run step DICE2007Step
 
 clean:
-	rm -rf lib/*.so bin/diceDriver32 bin/diceDriver64 bin/diceDriver32
+	rm -rf lib/*.so bin/diceDriver32 bin/diceDriver64 bin/diceDriver
