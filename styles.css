@@ -25,5 +25,5 @@ h1{color:white;text-shadow:0 0 5px #444;border-bottom:1px solid #262;margin-top:
 #content .initial{position:absolute;background-color:#eee;font:1.2em/1.5em Helvetica,sans-serif;}
 #content .initial{top:3em;left:4em;bottom:4em;right:4em;border-radius:1em;padding:2em;}
 #content .initial p{margin-bottom:1em;}
-#content .hasruns .initial{display:none;}
+#content.hasruns .initial{display:none;}
 #content>div>div>div{display:none !important;}
