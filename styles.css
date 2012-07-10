@@ -2,6 +2,8 @@
 #heading{background:url(images/header.png);}
 #heading{position:absolute;top:0;left:0;right:0;padding:0 1em;font:bold 2em/3em Helvetica,sans-serif;}
 #heading{color:white;text-shadow:0 0 5px #444;border-bottom:1px solid #262;margin-top:-1px;}
+#heading span{background:url(images/RDCEP.png) no-repeat;position:inline-block;}
+#heading span{margin:-15px;padding:15px 15px 15px 90px;}
 #display-help{position:absolute;top:2.3em;right:3em;z-index:10;display:block;}
 #display-help{font:0.9em Helvetica,sans-serif;color:white;padding:0.4em;}
 #display-help{text-decoration:none;}

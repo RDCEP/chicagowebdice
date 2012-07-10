@@ -222,7 +222,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
   <script type='text/javascript' src='javascript/main.js'></script>
 </head>
 <body>
-<h1 id='heading'>RDCEP :: WebDICE</h1>
+<h1 id='heading'> <span>RDCEP</span> :: WebDICE</h1>
 <a id='display-help' href=''>Help</a>
 <div id='sidebar'>
   <form id='submission'>
