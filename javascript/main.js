@@ -167,11 +167,6 @@
 						colors.push(runsBeingDisplayed[j].color);
 				}
 				
-				if (colors.length > 0) 
-					contentDiv.setAttribute('class', 'hasruns');
-				else
-					contentDiv.setAttribute('class', 'hasnoruns');
-				
 				var options = {
 					title : measurement.name,
 					width : contentDiv.offsetWidth / 2.05,
@@ -283,6 +278,25 @@
 			
 			return false;
 		}
+		
+		var displayConditionalHelp = function() {
+			var numberVisible = 0;
+			
+			for (var j = 0; j < getNumberOfRuns(); j++) {
+				if (runsBeingDisplayed[j].visible)
+					numberVisible++;
+			}
+			
+			if (numberVisible > 0)
+				contentDiv.setAttribute('class', 'hasruns');
+			else
+				contentDiv.setAttribute('class', 'hasnoruns');
+			
+			deleteAllButton.disabled = (numberVisible == 0);
+		}
+		
+		handlersForViewportChanged.push(displayConditionalHelp);
+		handlersForDataChanged.push(displayConditionalHelp);
 		
 		var form = document.getElementById('submission');
 		form.onsubmit = function() {

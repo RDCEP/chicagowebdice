@@ -283,7 +283,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 		?>
     </div>
     <div id='controls'>
-      <input type='submit' id='delete-all' value='Delete All Runs'/><input type='submit' value='Make New Run'/>
+      <input type='submit' id='delete-all' value='Delete All Runs' disabled='disabled'/><input type='submit' value='Make New Run'/>
     </div>
   </form>
   <ul id='runs'></ul>
