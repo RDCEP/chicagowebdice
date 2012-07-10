@@ -1,7 +1,11 @@
 *{margin:0;padding:0;}
-h1{background:url(images/header.png);}
-h1{position:absolute;top:0;left:0;right:0;padding:0 1em;font:bold 2em/3em Helvetica,sans-serif;}
-h1{color:white;text-shadow:0 0 5px #444;border-bottom:1px solid #262;margin-top:-1px;}
+#heading{background:url(images/header.png);}
+#heading{position:absolute;top:0;left:0;right:0;padding:0 1em;font:bold 2em/3em Helvetica,sans-serif;}
+#heading{color:white;text-shadow:0 0 5px #444;border-bottom:1px solid #262;margin-top:-1px;}
+#display-help{position:absolute;top:2.3em;right:3em;z-index:10;display:block;}
+#display-help{font:0.9em Helvetica,sans-serif;color:white;padding:0.4em;}
+#display-help{text-decoration:none;}
+#display-help:hover{text-decoration:underline;}
 #sidebar{position:absolute;top:6em;left:0;width:16em;background-color:#eee;bottom:0;border-right:1px solid #aaa;}
 #submission{position:absolute;top:0;left:0;right:0;bottom:0px;}
 #parameters{position:absolute;top:0;left:0;right:0;bottom:1.8em;overflow:auto;border-bottom:1px solid #ddd;}
@@ -26,4 +30,18 @@ h1{color:white;text-shadow:0 0 5px #444;border-bottom:1px solid #262;margin-top:
 #content .initial{top:3em;left:4em;bottom:4em;right:4em;border-radius:1em;padding:2em;}
 #content .initial p{margin-bottom:1em;}
 #content.hasruns .initial{display:none;}
+#content.hasnoruns .graph{display:none;}
 #content>div>div>div{display:none !important;}
+#overlay{opacity:0;}
+#overlay .slug{position:fixed;top:0;left:0;right:0;bottom:0;background-color:#000;}
+#overlay .slug{opacity:0.5;z-index:1000;}
+#overlay .article{padding:1em 3em;width:40em;margin:0 auto;position:absolute;overflow:auto;}
+#overlay .article{top:200px;left:0;right:0;bottom:0;border-left:1px solid #999;border-right:1px solid #999;}
+#overlay .article{background-color:#fff;font:0.9em/1.7em Helvetica,sans-serif;z-index:2000;}
+#overlay .article h1{font:1.5em/2.5em Helvetica,sans-serif;}
+#overlay .article h2{font:bold 1em/2.5em Helvetica,sans-serif;text-transform:uppercase;}
+#overlay .article h3{font:bold 1em/2.5em Helvetica,sans-serif;color:#333;}
+#overlay .article h4{font:bold 0.9em/2.5em Helvetica,sans-serif;color:#333;}
+#overlay .article h5{font:bold 0.8em/2.5em Helvetica,sans-serif;color:#333;}
+#overlay .article p{margin-bottom:1em;}
+#hide-help{position:absolute;top:1em;right:1em;color:#222;font:0.9em Helvetica,sans-serif;}

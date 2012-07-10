@@ -45,6 +45,8 @@
 		var contentDiv = document.getElementById('content');
 		var runsUL = document.getElementById('runs');
 		var submissionDiv = document.getElementById('submission');
+		var overlayDiv = document.getElementById('overlay');
+		var advancedHelpDiv = document.getElementById('advanced-help');
 		var runsBeingDisplayed = [ ];
 		var nextRunNumber = 1;
 		
@@ -100,7 +102,7 @@
 					data.setCell(j, getNumberOfMeasurements() * nextRun + i + 1, value);
 				}
 				
-				formatMeasurement(nextRun, i, measurement.format, unit, color);
+				formatMeasurement(nextRun, i, measurement.format, unit);
 			}
 			
 			var runObject =  { description : description, color : color,
@@ -128,7 +130,7 @@
 		}
 		
 		var removeRun = function(index) {
-			data.removeColumns(index * getNumberOfMeasurements(), getNumberOfMeasurements());
+			data.removeColumns(index * getNumberOfMeasurements() + 1, getNumberOfMeasurements());
 			
 			runsBeingDisplayed.splice(index, 1);
 			
@@ -139,8 +141,19 @@
 			updateAllData();
 		}
 		
+		var removeAllRuns = function() {
+			data.removeColumns(1, getNumberOfRuns() * getNumberOfMeasurements());
+			
+			colorsUsed = 0;
+			
+			runsBeingDisplayed.splice(0, runsBeingDisplayed.length);
+			
+			updateAllData();
+		}
+		
 		var buildChart = function(index, measurement) {
 			var div = document.createElement("div");
+			div.setAttribute('class', 'graph');
 			contentDiv.appendChild(div);
 			
 			var chart = new google.visualization.LineChart(div);
@@ -152,7 +165,7 @@
 				if (getNumberOfRuns() > 0) 
 					contentDiv.setAttribute('class', 'hasruns');
 				else
-					contentDiv.setAttribute('class', '');
+					contentDiv.setAttribute('class', 'hasnoruns');
 				
 				for (var j = 0; j < getNumberOfRuns(); j++) {
 					if (runsBeingDisplayed[j].visible)
@@ -214,6 +227,19 @@
 			$(runsUL).animate({ height:outerHeight, scrollTop : (bottomHeight - outerHeight) }, "slow");
 		}
 		
+		var setVisibilityOfOverlay = function(visible) {
+			if (visible) {
+				var overlayVisibility = 1.0;
+				var advancedHelpOffset = 0;
+			} else {
+				var overlayVisibility = 0.0;
+				var advancedHelpOffset = 200;
+			}
+			
+			$(overlayDiv).animate({ opacity : overlayVisibility });
+			$(advancedHelpDiv).animate({ top : advancedHelpOffset });
+		}
+		
 		// Prepare initial contents of dataset.
 		
 		data.addColumn('number', 'Year');
@@ -226,6 +252,32 @@
 		
 		for (var i = 0; i < Options.measurements.length; i++) {
 			buildChart(i, Options.measurements[i]);
+		}
+		
+		var helpButton = document.getElementById('display-help');
+		helpButton.onclick = function() {
+			setVisibilityOfOverlay(true);
+			
+			return false;
+		}
+		
+		var hideHelpButton = document.getElementById('hide-help');
+		hideHelpButton.onclick = function() {
+			setVisibilityOfOverlay(false);
+			
+			return false;
+		}
+		
+		var deleteAllButton = document.getElementById('delete-all');
+		deleteAllButton.onclick = function() {
+			for (var i = 0; i < runsBeingDisplayed.length; i++)
+				runsUL.removeChild(runsUL.firstChild);
+			
+			removeAllRuns();
+			
+			updateRunsListHeight();
+			
+			return false;
 		}
 		
 		var form = document.getElementById('submission');
@@ -252,7 +304,7 @@
 				url : 'index.php',
 				data : data,
 				success : function(data, textStatus, xhr) {
-					var runObject = addRunFromCSV("Run #" + (getNumberOfRuns() + 1), generateNextColor(), data);
+					var runObject = addRunFromCSV("Run #" + (colorsUsed + 1), generateNextColor(), data);
 					
 					numberOfRunsInProgress--;
 					

@@ -7,6 +7,7 @@ $configuration = Spyc::YAMLLoad('parameters.yaml');
 $parameters = $configuration['parameters'];
 $measurements = $configuration['measurements'];
 $initial_help = $configuration['initial_help'];
+$advanced_help = $configuration['advanced_help'];
 
 $missing_parameter = "Missing \"%s\" attribute on configuration element.";
 $too_many_items = "Configuration_element has %d extra element(s).";
@@ -206,8 +207,9 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
   <title>RDCEP :: WebDICE</title>
   <link rel="stylesheet" href="styles.css" type="text/css" media="screen" title="Default Stylesheet" charset="utf-8"/>
   <link rel="stylesheet" type="text/css" media="screen, projection" href="http://www.frequency-decoder.com/demo/fd-slider/css/fd-slider.mhtml.min.css" />
-	<script src="javascript/fd-slider.min.js"></script>
-	<script src="javascript/jquery.min.js"></script>
+  <script src="javascript/fd-slider.min.js"></script>
+  <script src="javascript/jquery.min.js"></script>
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>
   <script type='text/javascript'>
 <?php
 	echo "    Options = window.Options || { }\n";
@@ -220,7 +222,8 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
   <script type='text/javascript' src='javascript/main.js'></script>
 </head>
 <body>
-<h1>RDCEP :: WebDICE</h1>
+<h1 id='heading'>RDCEP :: WebDICE</h1>
+<a id='display-help' href=''>Help</a>
 <div id='sidebar'>
   <form id='submission'>
     <div id='parameters'>
@@ -280,7 +283,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 		?>
     </div>
     <div id='controls'>
-      <input type='reset' value='Reset'/><input type='submit' value='Make New Run'/>
+      <input type='submit' id='delete-all' value='Delete All Runs'/><input type='submit' value='Make New Run'/>
     </div>
   </form>
   <ul id='runs'></ul>
@@ -294,6 +297,32 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 			echo "    <p>$paragraph</p>\n";
 		}
 ?>  </div>
+</div>
+<div id='overlay'>
+  <div class='slug'></div>
+  <div class='article' id='advanced-help'>
+<?php
+		$paragraphs = explode("\n", $advanced_help);
+		
+		foreach ($paragraphs as $paragraph) {
+			$paragraph = htmlentities($paragraph);
+			
+			if (preg_match('/^##### (.*)/', $paragraph, $matches))
+				echo "    <h5>{$matches[1]}</h5>\n";
+			else if (preg_match('/^#### (.*)/', $paragraph, $matches))
+				echo "    <h4>{$matches[1]}</h4>\n";
+			else if (preg_match('/^### (.*)/', $paragraph, $matches))
+				echo "    <h3>{$matches[1]}</h3>\n";
+			else if (preg_match('/^## (.*)/', $paragraph, $matches))
+				echo "    <h2>{$matches[1]}</h2>\n";
+			else if (preg_match('/^# (.*)/', $paragraph, $matches))
+				echo "    <h1>{$matches[1]}</h1>\n";
+			else
+				echo "    <p>$paragraph</p>\n";
+		}
+?>
+    <a href='' id='hide-help'>Hide</a>
+  </div>
 </div>
 </body>
 </html><?php } ?>
