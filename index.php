@@ -285,7 +285,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
   </form>
   <ul id='runs'></ul>
 </div>
-<div id='content' class='yesruns'>
+<div id='content'>
   <div class='initial'>
 <?php
 		$paragraphs = explode("\n", $initial_help);

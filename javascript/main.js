@@ -149,6 +149,11 @@
 			var updateViewport = function() {
 				var colors = [ ];
 				
+				if (getNumberOfRuns() > 0) 
+					contentDiv.setAttribute('class', 'hasruns');
+				else
+					contentDiv.setAttribute('class', '');
+				
 				for (var j = 0; j < getNumberOfRuns(); j++) {
 					if (runsBeingDisplayed[j].visible)
 						colors.push(runsBeingDisplayed[j].color);
