@@ -32,7 +32,7 @@
 #content.hasruns .initial{display:none;}
 #content.hasnoruns .graph{display:none;}
 #content>div>div>div{display:none !important;}
-#overlay{opacity:0;}
+#overlay{opacity:0;display:none;}
 #overlay .slug{position:fixed;top:0;left:0;right:0;bottom:0;background-color:#000;}
 #overlay .slug{opacity:0.5;z-index:1000;}
 #overlay .article{padding:1em 3em;width:40em;margin:0 auto;position:absolute;overflow:auto;}
