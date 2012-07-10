@@ -162,15 +162,15 @@
 			var updateViewport = function() {
 				var colors = [ ];
 				
-				if (getNumberOfRuns() > 0) 
-					contentDiv.setAttribute('class', 'hasruns');
-				else
-					contentDiv.setAttribute('class', 'hasnoruns');
-				
 				for (var j = 0; j < getNumberOfRuns(); j++) {
 					if (runsBeingDisplayed[j].visible)
 						colors.push(runsBeingDisplayed[j].color);
 				}
+				
+				if (colors.length > 0) 
+					contentDiv.setAttribute('class', 'hasruns');
+				else
+					contentDiv.setAttribute('class', 'hasnoruns');
 				
 				var options = {
 					title : measurement.name,
