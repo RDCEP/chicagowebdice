@@ -252,7 +252,7 @@
 				url : 'index.php',
 				data : data,
 				success : function(data, textStatus, xhr) {
-					var runObject = addRunFromCSV("Run #" + getNumberOfRuns(), generateNextColor(), data);
+					var runObject = addRunFromCSV("Run #" + (getNumberOfRuns() + 1), generateNextColor(), data);
 					
 					numberOfRunsInProgress--;
 					
