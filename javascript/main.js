@@ -44,20 +44,26 @@
 	var initializeTrivialTabsUI = function() {
 		$('.tabs').each(function() {
 			var currentlySelectedLink = $(this).find('a.selected')[0]
-			var currentlySelectedTabID = currentlySelectedLink.getAttribute('id').substring(8);
+			var currentlySelectedTabID = (currentlySelectedLink.getAttribute('id') || '').substring(8);
 			var currentlySelectedTab = document.getElementById(currentlySelectedTabID);
 			
 			$(this).find('a').each(function() {
-				var tabID = this.getAttribute('id').substring(8);
+				var tabID = (this.getAttribute('id') || '').substring(8);
 				var tabElement = document.getElementById(tabID);
 				
 				this.onclick = function() {
-					currentlySelectedLink.setAttribute('class', '');
-					currentlySelectedTab.setAttribute('class', 'tab notselected');
+					if (currentlySelectedLink)
+						currentlySelectedLink.setAttribute('class', '');
+					if (currentlySelectedTab)
+						currentlySelectedTab.setAttribute('class', 'tab notselected');
+					
 					currentlySelectedLink = this;
 					currentlySelectedTab = tabElement;
-					currentlySelectedLink.setAttribute('class', 'selected');
-					currentlySelectedTab.setAttribute('class', 'tab selected');
+					
+					if (currentlySelectedLink)
+						currentlySelectedLink.setAttribute('class', 'selected');
+					if (currentlySelectedTab)
+						currentlySelectedTab.setAttribute('class', 'tab selected');
 					
 					return false;
 				}
@@ -195,7 +201,7 @@
 				var options = {
 					title : measurement.name,
 					width : contentDiv.offsetWidth / 2.05,
-					height : contentDiv.offsetHeight / 2.05,
+					height : contentDiv.offsetHeight / 2.05 - 30,
 					hAxis : { format : '####' },
 					legend : {'position' : 'none' },
 					colors : colors

@@ -28,13 +28,17 @@
 #runs li img{position:absolute;top:1.5em;right:1em;}
 #runs li .slab{position:absolute;top:1.5em;left:1em;width:0.8em;height:0.8em;border:1px solid #000;}
 #runs li input{position:absolute;right:15px;top:20px;}
-#content{position:absolute;top:6em;left:18em;right:0;bottom:0;overflow:auto;padding-left:3px;}
+#content{position:absolute;top:6em;left:18em;right:0;bottom:0;overflow:auto;padding-left:3px;padding-top:2em;}
 #content div{float:left;}
 #content .initial{position:absolute;background-color:#eee;font:1em/1.5em Helvetica,sans-serif;}
 #content .initial{top:3em;left:4em;bottom:4em;right:4em;border-radius:1em;padding:2em;}
 #content .initial p{margin-bottom:1em;}
 #content.hasruns .initial{display:none;}
 #content.hasnoruns .graph{display:none;}
+#content.hasnoruns .tabs{display:none !important;}
+#content .tabs{background-color:#eee;margin-left:1px;}
+#content .tabs a{border-color:#eee;}
+#content .tabs .selected{background-color:#fff;}
 #content>div>div>div{display:none !important;}
 #overlay{opacity:0;display:none;}
 #overlay .slug{position:fixed;top:0;left:0;right:0;bottom:0;background-color:#000;}
@@ -54,6 +58,6 @@
 .tabs{height:2.4em;font:0.8em/1em Helvetica,sans-serif;position:absolute;top:0;left:0;right:0;}
 .tabs{background-color:#fff;border-bottom:1px solid #ccc;}
 .tabs a{text-decoration:none;color:#000;display:block;float:left;padding:0.8em;}
-.tabs a{border-right:1px solid #fff;border-left:1px solid #fff;}
+.tabs a{border-right:1px solid transparent;border-left:1px solid transparent;}
 .tabs a.selected{background-color:#eee;border-color:#ccc;}
 .tab.notselected{display:none;}

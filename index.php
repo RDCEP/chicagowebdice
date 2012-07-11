@@ -196,7 +196,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 	putenv("XAPPLRESDIR=/usr/local/MATLAB/MATLAB_Compiler_Runtime/v716/X11/app-defaults");
 	
 	$flattened = implode(' ', $arguments);
-	$r = popen("bin/diceDriverStub.py run DICE2007Run step DICE2007Step $flattened", "r");
+	$r = popen("bin/diceDriver run DICE2007Run step DICE2007Step $flattened", "r");
 	
 	$number_of_blank_lines = 0;
 	$output = "";
@@ -338,7 +338,8 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
   </form>
   <ul id='runs'></ul>
 </div>
-<div id='content'>
+<div id='content' class='hasnoruns'>
+	<div class='tabs'><a href='' class='selected'>4 Graphs</a> <a href='#'>Custom Graph</a> <a href='#'>Download Data</a></div>
   <div class='initial'>
 <?php
 		$paragraphs = explode("\n", $initial_help);
