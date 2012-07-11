@@ -139,14 +139,13 @@ foreach ($measurements as $measurement) {
 if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 	if (isset($_POST['data'])) {
 		
-		header('Content-type: text/plain');
-		header('Content-Disposition: file=\"WebDICE-Data.csv\"');
+		header('Content-type: application/octet-stream');
+		header('Content-Disposition: attachment; filename="WebDICE-Data.csv"');
 		header('Cache-Control: private');
 		
 		echo $_POST['data'];
 		
 	} else {
-		
 		
 		$values = array();
 	
@@ -361,6 +360,10 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 ?>  </div>
   <div id='four-graphs' class='tab selected'></div>
   <div id='custom-graph' class='tab notselected'>Custom Graphs</div>
+  <form method='post' id='download-data' action='index.php' target='_blank'>
+    <textarea name='data' id='download-textarea'></textarea>
+    <input type='submit' value='Download Data'/>
+  </form>
 </div>
 <div id='overlay'>
   <div class='slug'></div>

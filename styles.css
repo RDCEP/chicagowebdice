@@ -40,6 +40,11 @@
 #content .tabs{background-color:#eee;margin-left:1px;}
 #content .tabs .selected{background-color:#fff;}-
 #content>div>div>div{display:none !important;}
+#download-data{position:absolute;right:1em;bottom:0;}
+#download-data input{display:block;border:0px solid red;background-color:#eee;border:1px solid #ccc;}
+#download-data input{font:0.7em Helvetica,sans-serif;padding:0.5em;border-bottom:none;}
+#download-data input{cursor:pointer;}
+#download-data textarea{display:none;}
 #four-graphs{position:absolute;top:2em;left:3px;right:0;bottom:0;}
 #custom-graph{position:absolute;top:2em;left:3px;right:0;bottom:0;}
 #overlay{opacity:0;display:none;}
