@@ -137,88 +137,99 @@ foreach ($measurements as $measurement) {
 }
 
 if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
-	$values = array();
+	if (isset($_POST['data'])) {
+		
+		header('Content-type: text/plain');
+		header('Content-Disposition: file=\"WebDICE-Data.csv\"');
+		header('Cache-Control: private');
+		
+		echo $_POST['data'];
+		
+	} else {
+		
+		
+		$values = array();
 	
-	foreach ($all_parameters as $machine_name => $parameter) {
-		if (isset($_POST[$machine_name])) {
-			$value = $_POST[$machine_name];
-		} else if ($parameter['is_range_control']){
-			$value = $parameter['default'];
-		} else {
-			$value = NULL;
-		}
-		
-		if ($parameter['is_range_control']) {
-			if ($value < $parameter['min'])
-				$value = $parameter['min'];
-			
-			if ($value > $parameter['max'])
-				$value = $parameter['max'];
-		
-			/*
-			 * We quantize parameters because it might be useful to
-			 * try and cache requests. Discretized parameter parsing
-			 * is crucial to that effort.
-			 */
-			$value = round(($value - $parameter['min']) / $parameter['step']) * $parameter['step'];
-			
-		} else if ($parameter['is_select_control']) {
-			if (!isset($parameter['indexed_values'][$machine_name])) {
-				$keys = array_keys($parameter['indexed_values']);
-				$value = $keys[0];
+		foreach ($all_parameters as $machine_name => $parameter) {
+			if (isset($_POST[$machine_name])) {
+				$value = $_POST[$machine_name];
+			} else if ($parameter['is_range_control']){
+				$value = $parameter['default'];
+			} else {
+				$value = NULL;
 			}
-		}
 		
-		$values[$machine_name] = $value;
+			if ($parameter['is_range_control']) {
+				if ($value < $parameter['min'])
+					$value = $parameter['min'];
+			
+				if ($value > $parameter['max'])
+					$value = $parameter['max'];
+		
+				/*
+				 * We quantize parameters because it might be useful to
+				 * try and cache requests. Discretized parameter parsing
+				 * is crucial to that effort.
+				 */
+				$value = round(($value - $parameter['min']) / $parameter['step']) * $parameter['step'];
+			
+			} else if ($parameter['is_select_control']) {
+				if (!isset($parameter['indexed_values'][$machine_name])) {
+					$keys = array_keys($parameter['indexed_values']);
+					$value = $keys[0];
+				}
+			}
+		
+			$values[$machine_name] = $value;
+		}
+	
+		$arguments = array( );
+	
+		foreach ($values as $name => $value) {
+			$arguments[] = "param";
+			$arguments[] = escapeshellarg($name);
+			$arguments[] = escapeshellarg($value);
+		}
+	
+		$current_load_path = getenv("LD_LIBRARY_PATH");
+		$new_load_path = 
+			"/usr/local/MATLAB/MATLAB_Compiler_Runtime/v716/bin/glnx86:".
+			"/usr/local/MATLAB/MATLAB_Compiler_Runtime/v716/runtime/glnx86:".
+			"/usr/local/MATLAB/MATLAB_Compiler_Runtime/v716/sys/os/glnx86:".
+			"/usr/local/MATLAB/MATLAB_Compiler_Runtime/v716/sys/java/jre/glnx86/jre/lib/i386/native_threads:".
+			"/usr/local/MATLAB/MATLAB_Compiler_Runtime/v716/sys/java/jre/glnx86/jre/lib/i386/server:".
+			"/usr/local/MATLAB/MATLAB_Compiler_Runtime/v716/sys/java/jre/glnx86/jre/lib/i386:".
+			"/usr/lib/x86_64-linux-gnu/:".
+			"/var/www/development/lib";
+		if ($current_load_path) $new_load_path = "$current_load_path:$new_load_path";
+	
+		putenv("LD_LIBRARY_PATH=$new_load_path");
+		putenv("XAPPLRESDIR=/usr/local/MATLAB/MATLAB_Compiler_Runtime/v716/X11/app-defaults");
+	
+		$flattened = implode(' ', $arguments);
+		$r = popen("bin/diceDriver run DICE2007Run step DICE2007Step $flattened", "r");
+	
+		$number_of_blank_lines = 0;
+		$output = "";
+		while (($line = fgets($r)) !== FALSE) {
+			if (strlen(trim($line)) <= 1) $number_of_blank_lines++;
+			else if ($number_of_blank_lines > 2)
+				$output .= $line;
+		}
+	
+		if (pclose($r) != 0)
+			header('HTTP/1.0 500 Internal Server Error');
+		else
+			echo $output;
+	
+		putenv("LD_LIBRARY_PATH=$current_load_path");
 	}
-	
-	$arguments = array( );
-	
-	foreach ($values as $name => $value) {
-		$arguments[] = "param";
-		$arguments[] = escapeshellarg($name);
-		$arguments[] = escapeshellarg($value);
-	}
-	
-	$current_load_path = getenv("LD_LIBRARY_PATH");
-	$new_load_path = 
-		"/usr/local/MATLAB/MATLAB_Compiler_Runtime/v716/bin/glnx86:".
-		"/usr/local/MATLAB/MATLAB_Compiler_Runtime/v716/runtime/glnx86:".
-		"/usr/local/MATLAB/MATLAB_Compiler_Runtime/v716/sys/os/glnx86:".
-		"/usr/local/MATLAB/MATLAB_Compiler_Runtime/v716/sys/java/jre/glnx86/jre/lib/i386/native_threads:".
-		"/usr/local/MATLAB/MATLAB_Compiler_Runtime/v716/sys/java/jre/glnx86/jre/lib/i386/server:".
-		"/usr/local/MATLAB/MATLAB_Compiler_Runtime/v716/sys/java/jre/glnx86/jre/lib/i386:".
-		"/usr/lib/x86_64-linux-gnu/:".
-		"/var/www/development/lib";
-	if ($current_load_path) $new_load_path = "$current_load_path:$new_load_path";
-	
-	putenv("LD_LIBRARY_PATH=$new_load_path");
-	putenv("XAPPLRESDIR=/usr/local/MATLAB/MATLAB_Compiler_Runtime/v716/X11/app-defaults");
-	
-	$flattened = implode(' ', $arguments);
-	$r = popen("bin/diceDriver run DICE2007Run step DICE2007Step $flattened", "r");
-	
-	$number_of_blank_lines = 0;
-	$output = "";
-	while (($line = fgets($r)) !== FALSE) {
-		if (strlen(trim($line)) <= 1) $number_of_blank_lines++;
-		else if ($number_of_blank_lines > 2)
-			$output .= $line;
-	}
-	
-	if (pclose($r) != 0)
-		header('HTTP/1.0 500 Internal Server Error');
-	else
-		echo $output;
-	
-	putenv("LD_LIBRARY_PATH=$current_load_path");
 } else {
 	
 	function format_for_web($text) {
 		return preg_replace('/^\(([^)]+)\)/', '<sup>$1</sup>',
 			preg_replace('/_\(([^)]+)\)/', '<sub>$1</sub>', htmlentities($text)));
 	}
-	
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
   "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
@@ -339,7 +350,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
   <ul id='runs'></ul>
 </div>
 <div id='content' class='hasnoruns'>
-	<div class='tabs'><a href='' class='selected'>4 Graphs</a> <a href='#'>Custom Graph</a> <a href='#'>Download Data</a></div>
+  <div class='tabs'><a href='' class='selected' id='link-to-four-graphs'>4 Graphs</a> <a href='#' id='link-to-custom-graph'>Custom Graph</a></div>
   <div class='initial'>
 <?php
 		$paragraphs = explode("\n", $initial_help);
@@ -348,6 +359,8 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 			echo "    <p>$paragraph</p>\n";
 		}
 ?>  </div>
+  <div id='four-graphs' class='tab selected'></div>
+  <div id='custom-graph' class='tab notselected'>Custom Graphs</div>
 </div>
 <div id='overlay'>
   <div class='slug'></div>
