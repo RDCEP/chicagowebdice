@@ -7,15 +7,29 @@ about: >
   are first listed here.
 
 initial_help: >
-  Welcome to WebDICE. This informational help box will describe, in a few
-  words, how to use this model and understand its output. It will disappear,
-  however, after you create a model run, to avoid cluttering your workspace.
-  
-  To begin, click "Make New Run" to the left to create a run with default
-  parameters.
-  
-  This message is unhelpful. To edit it, please change the relevant lines
-  in parameters.yaml.
+  webDICE is a simulation tool designed to show how climate change might
+  affect people now and in the future. It is based on the most widely-used
+  model of the economy and the climate developed by Professor William Nordhaus,
+  of Yale University. Researchers at the University of Chicago have developed
+  a way for the model to run quickly, with an easy to use web-based interface.
+  The interface allows you to modify the variables in the model to reflect
+  your views about the economy and climate change.
+
+  To run a simulation, click on the "make new run" button at the bottom of
+  the page. The variables are set to the defaults based on our best guess
+  of the correct values. Because these values reflect predictions about
+  what will happen in the future, they only reflect one possibility. You
+  can change the variables to reflect your views by moving the sliders.
+  Running a simulation will let you see how the outcomes change. The most
+  important variables can be found on the "Basic simulation" tab. You
+  can modify most of the other variables in the model on the "Advanced" tab.
+
+  The model has a number of additional features which you may find useful
+  such as calculating the optimal carbon tax and running Monte Carlo
+  simulations. They are described in more detail in our FAQ [link].
+
+  We are continually working to improve the model and the interface. If
+  you have suggestions, you can contact as at [email].
 
 advanced_help: >
   ## WebDICE Documentation

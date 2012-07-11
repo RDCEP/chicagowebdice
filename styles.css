@@ -29,7 +29,7 @@
 #runs li input{position:absolute;right:15px;top:20px;}
 #content{position:absolute;top:6em;left:18em;right:0;bottom:0;overflow:auto;padding-left:3px;}
 #content div{float:left;}
-#content .initial{position:absolute;background-color:#eee;font:1.2em/1.5em Helvetica,sans-serif;}
+#content .initial{position:absolute;background-color:#eee;font:1em/1.5em Helvetica,sans-serif;}
 #content .initial{top:3em;left:4em;bottom:4em;right:4em;border-radius:1em;padding:2em;}
 #content .initial p{margin-bottom:1em;}
 #content.hasruns .initial{display:none;}
