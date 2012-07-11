@@ -29,7 +29,7 @@
 #runs li .slab{position:absolute;top:1.5em;left:1em;width:0.8em;height:0.8em;border:1px solid #000;}
 #runs li input{position:absolute;right:15px;top:20px;}
 #content{position:absolute;top:6em;left:18em;right:0;bottom:0;overflow:auto;}
-#content div{float:left;}
+#content .graph{float:left;}
 #content .initial{position:absolute;background-color:#eee;font:1em/1.5em Helvetica,sans-serif;}
 #content .initial{top:3em;left:4em;bottom:4em;right:4em;border-radius:1em;padding:2em;}
 #content .initial p{margin-bottom:1em;}
@@ -46,8 +46,13 @@
 #download-data input{font:0.7em Helvetica,sans-serif;padding:0.5em;border-bottom:none;}
 #download-data input{cursor:pointer;}
 #download-data textarea{display:none;}
-#four-graphs{position:absolute;top:2em;left:3px;right:0;bottom:0;}
-#custom-graph{position:absolute;top:2em;left:3px;right:0;bottom:0;}
+#four-graphs{position:absolute;top:2em;left:1px;right:0;bottom:0;}
+#custom-graph{position:absolute;top:2em;left:1px;right:0;bottom:0;}
+#graph-controls{position:absolute;bottom:0;left:0px;right:0;height:5em;background-color:#eee;}
+#graph-controls{border-top:1px solid #ccc;font:0.8em Helvetica,sans-serif;}
+#graph-controls div{float:left;width:15em;border-right:1px solid #ccc;padding:1em 2em;height:5em;}
+#graph-controls h2{font:bold 1em Helvetica,sans-serif;text-transform:uppercase;}
+#graph-controls input,#graph-controls select{width:15em;}
 #overlay{opacity:0;display:none;}
 #overlay .slug{position:fixed;top:0;left:0;right:0;bottom:0;background-color:#000;}
 #overlay .slug{opacity:0.5;z-index:1000;}

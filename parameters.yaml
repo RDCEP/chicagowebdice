@@ -245,20 +245,28 @@ parameters:
         description: n/a
 
 measurements:
-  - name: Atmospheric Temperature Increase
-    machine_name: tempAtmosphere
-    unit: °C from 1900
-    description: n/a
   - name: Income per Capita
     machine_name: consumptionpercapita
     unit: per Person
     description: n/a
     format: "$#.##"
+    location: topright
+  - name: Atmospheric Temperature Increase
+    machine_name: tempAtmosphere
+    unit: °C from 1900
+    description: n/a
+    location: topleft
   - name: Carbon Mass in Atmosphere
     machine_name: massAtmosphere
     unit: Gt of Carbon
     description: n/a
+    location: bottomleft
   - name: Total Emissions per Year
     machine_name: emissionsTotal
     unit: Gt Carbon / 10 yr
     description: n/a
+    # location: bottomright
+  - name: Industrial Emissions
+    machine_name: emissionsIndustrial
+    unit: Gt Carbon
+    location: bottomright

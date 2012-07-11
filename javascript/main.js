@@ -129,7 +129,10 @@
 				var dataArray = fields[measurement.machine_name];
 				
 				for (var j = 0; j < numberOfStepsInSimulation; j++) {
-					var value = parseFloat(dataArray[j]);
+					if (dataArray)
+						var value = parseFloat(dataArray[j]);
+					else
+						var value = null;
 					
 					data.setCell(j, getNumberOfMeasurements() * nextRun + i + 1, value);
 				}
@@ -232,6 +235,74 @@
 			handlersForDataChanged.push(updateData);
 		}
 		
+		var buildCustomizeableChart = function() {
+			var div = document.getElementById('large-graph');
+			var selectXAxis = document.getElementById('select-x-axis');
+			var selectYAxis = document.getElementById('select-y-axis');
+			
+			selectXAxis.disabled = 'disabled';
+			
+			var chart = new google.visualization.LineChart(div);
+			var view = new google.visualization.DataView(data);
+			
+			var updateViewport = function() {
+				var colors = [ ];
+				
+				for (var j = 0; j < getNumberOfRuns(); j++) {
+					if (runsBeingDisplayed[j].visible)
+						colors.push(runsBeingDisplayed[j].color);
+				}
+				
+				var selectedXOption = $(selectXAxis).find('option:selected').text();
+				var selectedYOption = $(selectYAxis).find('option:selected').text();
+				
+				var options = {
+					title : (selectedYOption + ' vs. ' + selectedXOption),
+					width : contentDiv.offsetWidth,
+					height : contentDiv.offsetHeight - 80,
+					legend : {'position' : 'none' },
+					colors : colors
+				};
+				
+				chart.draw(view, options);
+			}
+			
+			var updateData = function() {
+				var visibleColumns = [ ];
+				var index = -1;
+				
+				for (var i = 0; i < Options.measurements.length; i++) {
+					if (Options.measurements[i].machine_name == selectYAxis.value) {
+						index = i;
+					}
+				}
+				
+				for (var j = 0; j < data.getNumberOfColumns(); j++) {
+					var measurementID = (j - 1) % getNumberOfMeasurements();
+					var runID = parseInt((j - 1) / getNumberOfMeasurements());
+					
+					if ((j == 0) || (measurementID == index && runsBeingDisplayed[runID].visible))
+						visibleColumns.push(j);
+				}
+				
+				view.setColumns(visibleColumns);
+				
+				updateViewport();
+			}
+			
+			selectXAxis.onchange = function() {
+				updateAllData();
+			}
+			
+			selectYAxis.onchange = function() {
+				updateAllData();
+			}
+			
+			updateData();
+			handlersForViewportChanged.push(updateViewport);
+			handlersForDataChanged.push(updateData);
+		}
+		
 		var updateAllViewports = function() {
 			for (var i = 0; i < handlersForViewportChanged.length; i++) {
 				handlersForViewportChanged[i]();
@@ -281,8 +352,15 @@
 		
 		formatMeasurement(0, -1, "####"); // hackish much?
 		
-		for (var i = 0; i < Options.measurements.length; i++) {
-			buildChart(i, Options.measurements[i]);
+		for (var i = 0; i < Options.locations.length; i++) {
+			var location = Options.locations[i];
+			
+			for (var j = 0; j < Options.measurements.length; j++) {
+				var measurement = Options.measurements[j];
+				
+				if (measurement.location == location)
+					buildChart(j, measurement);
+			}
 		}
 		
 		var helpButton = document.getElementById('display-help');
@@ -340,6 +418,7 @@
 		}
 		handlersForDataChanged.push(updateDownloadedText);
 		
+		buildCustomizeableChart();
 		initializeTrivialTabsUI();
 		
 		var displayConditionalHelp = function() {

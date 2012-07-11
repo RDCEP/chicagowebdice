@@ -17,10 +17,14 @@ $non_numeric_configuration = "The \"min,\" \"max,\" and \"step\" options are num
 $duplicate_property = "Multiple parameters with machine name \"%s\".";
 $duplicate_option = "Multiple options with machine_name \"%s\".";
 $invalid_default = "The default must be between the minimum and maximum.";
+$no_graph_in_location = "There is no graph set to display in location %s.";
 
 $tabs = array();
 $all_parameters = array();
 $selected_tab = NULL;
+$graphs = array();
+
+$graph_locations = array('topleft', 'topright', 'bottomleft', 'bottomright');
 
 foreach ($parameters as $parameter) {
 	$required = array("name", "machine_name", "section", "tab");
@@ -130,10 +134,27 @@ foreach ($measurements as $measurement) {
 	if (isset($measurement["format"]))
 		$optional[] = "format";
 	
+	if (isset($measurement["location"]))
+		$optional[] = "location";
+	
 	$size = count($required) + count($optional);
 	
 	if (count($measurement) > $size)
 		trigger_error(sprintf($too_many_items, count($measurement) - $size), E_USER_ERROR);
+	
+	if (isset($measurement["location"])) {
+		$location = $measurement["location"];
+		
+		if (isset($graphs[$location]))
+			trigger_error(sprintf($duplicate_graph, $location), E_USER_ERROR);
+		
+		$graphs[$location] = &$measurement;
+	}
+}
+
+foreach ($graph_locations as $location) {
+	if (!isset($graphs[$location]))
+		trigger_error(sprintf($no_graph_in_location, $location), E_USER_ERROR);
 }
 
 if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
@@ -245,7 +266,9 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 	echo "    Options = window.Options || { }\n";
 	
 	$json = json_encode($measurements);
+	$locations = json_encode($graph_locations);
 	echo "    Options.measurements = $json;\n";
+	echo "    Options.locations = $locations;\n";
 	?>
   </script>
   <script type='text/javascript' src='https://www.google.com/jsapi'></script>
@@ -359,7 +382,38 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 		}
 ?>  </div>
   <div id='four-graphs' class='tab selected'></div>
-  <div id='custom-graph' class='tab notselected'>Custom Graphs</div>
+  <div id='custom-graph' class='tab notselected'>
+    <div id='large-graph'></div>
+    <div id='graph-controls'>
+      <div>
+        <h2>X-Axis</h2>
+        <select id='select-x-axis'>
+          <option>Year</option>
+<?php
+		foreach ($measurements as $measurement) {
+			$machine_name = htmlentities($measurement['machine_name']);
+			$measurement_name = htmlentities($measurement['name']);
+
+			print "          <option value='$machine_name'>$measurement_name</option>\n";
+		}
+?>
+           </select>
+      </div>
+      <div>
+        <h2>Y-Axis</h2>
+        <select id='select-y-axis'>
+<?php
+		foreach ($measurements as $measurement) {
+			$machine_name = htmlentities($measurement['machine_name']);
+			$measurement_name = htmlentities($measurement['name']);
+
+			print "          <option value='$machine_name'>$measurement_name</option>\n";
+		}
+?>
+        </select>
+      </div>
+    </div>
+  </div>
   <form method='post' id='download-data' action='index.php' target='_blank'>
     <textarea name='data' id='download-textarea'></textarea>
     <input type='submit' value='Download Data'/>
