@@ -199,6 +199,12 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 	
 	putenv("LD_LIBRARY_PATH=$current_load_path");
 } else {
+	
+	function format_for_web($text) {
+		return preg_replace('/^\(([^)]+)\)/', '<sup>$1</sup>',
+			preg_replace('/_\(([^)]+)\)/', '<sub>$1</sub>', htmlentities($text)));
+	}
+	
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
   "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
@@ -229,20 +235,20 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
     <div id='parameters'>
 <?php
 		foreach ($sections as $section) {
-			$section_name = htmlentities($section['name']);
+			$section_name = format_for_web($section['name']);
 			$parameters = $section['parameters'];
 			
 			print "      <h2>$section_name</h2>\n";
 			print "      <ul>\n";
 			
 			foreach ($parameters as $parameter) {
-				$name = $parameter['name'];
-				$machine_name = $parameter['machine_name'];
+				$name = format_for_web($parameter['name']);
+				$machine_name = htmlentities($parameter['machine_name']);
 				$is_select_control = $parameter['is_select_control'];
 				$is_range_control = $parameter['is_range_control'];
 				
 				if (isset($parameter['description'])) {
-					$description = $parameter['description'];
+					$description = htmlentities($parameter['description']);
 					print "        <li><label title='$description'>$name ";
 				} else {
 					print "        <li><label>$name ";
