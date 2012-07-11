@@ -10,8 +10,8 @@
 #display-help:hover{text-decoration:underline;}
 #sidebar{position:absolute;top:6em;left:0;width:18em;background-color:#eee;bottom:0;border-right:1px solid #aaa;}
 #submission{position:absolute;top:0;left:0;right:0;bottom:0px;}
-#parameters{position:absolute;top:0;left:0;right:0;bottom:1.8em;overflow:auto;}
-#parameters{padding-top:2em;border-bottom:1px solid #ddd;}
+#parameters{position:absolute;top:0;left:0;right:0;bottom:1.8em;overflow:auto;border-bottom:1px solid #ddd;}
+#parameters.has-tabs{padding-top:2em;}
 #submission h2{font:bold 0.8em Helvetica,sans-serif;padding:1.5em 1em 0.5em 1em;}
 #submission li{list-style-type:none;font:0.8em Helvetica,sans-serif;padding:0.5em 1em;position:relative;}
 #submission #parameters input,#submission #parameters .fd-slider{position:absolute;right:1em;width:5em;top:0.4em;}

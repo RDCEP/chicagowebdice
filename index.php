@@ -246,8 +246,12 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 <a id='display-help' href=''>Documentation</a>
 <div id='sidebar'>
   <form id='submission'>
-    <div id='parameters'>
 <?php
+		if (count($tabs) <= 2)
+			print "    <div id='parameters'>\n";
+		else
+			print "    <div id='parameters' class='has-tabs'>\n";
+		
 		print "      <div id='sidebar-tabs' class='tabs'>\n";
 		
 		foreach ($tabs as $tab) {
