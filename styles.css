@@ -34,11 +34,14 @@
 #content .initial{top:3em;left:4em;bottom:4em;right:4em;border-radius:1em;padding:2em;}
 #content .initial p{margin-bottom:1em;}
 #content.hasruns .initial{display:none;}
-#content.hasnoruns .graph{display:none;}
+#content.hasnoruns #four-graphs{display:none;}
+#content.hasnoruns #custom-graph{display:none;}
 #content.hasnoruns .tabs{display:none !important;}
 #content .tabs{background-color:#eee;margin-left:1px;}
-#content .tabs .selected{background-color:#fff;}
+#content .tabs .selected{background-color:#fff;}-
 #content>div>div>div{display:none !important;}
+#four-graphs{position:absolute;top:2em;left:0;right:0;bottom:0;}
+#custom-graph{position:absolute;top:2em;left:0;right:0;bottom:0;}
 #overlay{opacity:0;display:none;}
 #overlay .slug{position:fixed;top:0;left:0;right:0;bottom:0;background-color:#000;}
 #overlay .slug{opacity:0.5;z-index:1000;}

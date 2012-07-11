@@ -74,6 +74,7 @@
 	
 	var initializeUI = function() {
 		var contentDiv = document.getElementById('content');
+		var fourGraphsDiv = document.getElementById('four-graphs');
 		var runsUL = document.getElementById('runs');
 		var submissionDiv = document.getElementById('submission');
 		var overlayDiv = document.getElementById('overlay');
@@ -185,7 +186,7 @@
 		var buildChart = function(index, measurement) {
 			var div = document.createElement("div");
 			div.setAttribute('class', 'graph');
-			contentDiv.appendChild(div);
+			fourGraphsDiv.appendChild(div);
 			
 			var chart = new google.visualization.LineChart(div);
 			var view = new google.visualization.DataView(data);
@@ -201,7 +202,7 @@
 				var options = {
 					title : measurement.name,
 					width : contentDiv.offsetWidth / 2.05,
-					height : contentDiv.offsetHeight / 2.05 - 30,
+					height : (contentDiv.offsetHeight - 30) / 2.05,
 					hAxis : { format : '####' },
 					legend : {'position' : 'none' },
 					colors : colors
