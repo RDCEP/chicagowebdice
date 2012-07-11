@@ -335,11 +335,44 @@
 		var form = document.getElementById('submission');
 		form.onsubmit = function() {
 			var data = $(form).serialize();
+			var changes = [ ];
+			
+			$(form).find('input[type!=submit],select').each(function() {
+				if (this.tagName.toLowerCase() == 'select') {
+					var defaultValue = $(this).find('option').first().val().trim()
+					var changedValue = $(this).find('option:checked').first().val().trim()
+					var areEqual = (defaultValue == changedValue);
+				} else {
+					var defaultValue = this.defaultValue;
+					var changedValue = this.value;
+					var areEqual = (parseFloat(defaultValue) == parseFloat(changedValue));
+				}
+				
+				if (!areEqual) {
+					var description = this.parentNode.firstChild.nodeValue.trim();
+					var heading = $(this.parentNode.parentNode.parentNode).prev('h2').first().text();
+					
+					changes.push([ '[' + heading + '] ' + description, changedValue ]);
+				};
+			});
+			
+			var runTextualDescription = "Run Parameters:";
+			
+			for (var i = 0; i < changes.length; i++) {
+				var change = changes[i];
+				
+				runTextualDescription += "\n" + change[0] + ": " + change[1];
+			}
+			
+			if (changes.length == 0)
+				runTextualDescription += " (default parameters)";
 			
 			var createdLI = document.createElement('li');
 			var createdLABEL = document.createElement('label');
 			var progressIMG = document.createElement('img');
 			var textNode = document.createTextNode("Executing run...");
+			
+			createdLI.setAttribute('title', runTextualDescription);
 			
 			progressIMG.setAttribute('src', 'images/progress.gif');
 			createdLI.appendChild(createdLABEL);
