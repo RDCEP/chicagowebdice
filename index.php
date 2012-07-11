@@ -258,7 +258,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 <div id='sidebar'>
   <form id='submission'>
 <?php
-		if (count($tabs) <= 2)
+		if (count($tabs) <= 1)
 			print "    <div id='parameters'>\n";
 		else
 			print "    <div id='parameters' class='has-tabs'>\n";
