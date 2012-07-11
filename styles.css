@@ -28,7 +28,7 @@
 #runs li img{position:absolute;top:1.5em;right:1em;}
 #runs li .slab{position:absolute;top:1.5em;left:1em;width:0.8em;height:0.8em;border:1px solid #000;}
 #runs li input{position:absolute;right:15px;top:20px;}
-#content{position:absolute;top:6em;left:18em;right:0;bottom:0;overflow:auto;padding-left:3px;padding-top:2em;}
+#content{position:absolute;top:6em;left:18em;right:0;bottom:0;overflow:auto;}
 #content div{float:left;}
 #content .initial{position:absolute;background-color:#eee;font:1em/1.5em Helvetica,sans-serif;}
 #content .initial{top:3em;left:4em;bottom:4em;right:4em;border-radius:1em;padding:2em;}
@@ -40,8 +40,8 @@
 #content .tabs{background-color:#eee;margin-left:1px;}
 #content .tabs .selected{background-color:#fff;}-
 #content>div>div>div{display:none !important;}
-#four-graphs{position:absolute;top:2em;left:0;right:0;bottom:0;}
-#custom-graph{position:absolute;top:2em;left:0;right:0;bottom:0;}
+#four-graphs{position:absolute;top:2em;left:3px;right:0;bottom:0;}
+#custom-graph{position:absolute;top:2em;left:3px;right:0;bottom:0;}
 #overlay{opacity:0;display:none;}
 #overlay .slug{position:fixed;top:0;left:0;right:0;bottom:0;background-color:#000;}
 #overlay .slug{opacity:0.5;z-index:1000;}
