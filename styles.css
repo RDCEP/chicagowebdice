@@ -37,7 +37,6 @@
 #content.hasnoruns .graph{display:none;}
 #content.hasnoruns .tabs{display:none !important;}
 #content .tabs{background-color:#eee;margin-left:1px;}
-#content .tabs a{border-color:#eee;}
 #content .tabs .selected{background-color:#fff;}
 #content>div>div>div{display:none !important;}
 #overlay{opacity:0;display:none;}
