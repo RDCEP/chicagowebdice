@@ -144,7 +144,7 @@ parameters:
     machine_name: popasym
     min: 8000
     max: 12000
-    step: 2000
+    step: 200
     default: 8600
   - name: Capital Depreciation
     tab: Advanced
