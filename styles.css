@@ -36,6 +36,7 @@
 #content.hasruns .initial{display:none;}
 #content.hasnoruns #four-graphs{display:none;}
 #content.hasnoruns #custom-graph{display:none;}
+#content.hasnoruns #download-data{display:none;}
 #content.hasnoruns .tabs{display:none !important;}
 #content .tabs{background-color:#eee;margin-left:1px;}
 #content .tabs .selected{background-color:#fff;}-
