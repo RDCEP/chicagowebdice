@@ -89,6 +89,7 @@ last_modified: 5 July 2012
 parameters:
   - name: Climate Sensitivity
     machine_name: t2xco2
+    tab: Basic
     section: Model Parameters
     min: 1
     max: 7
@@ -97,6 +98,7 @@ parameters:
     description: n/a
   - name: Environment Damages
     machine_name: a3
+    tab: Basic
     section: Model Parameters
     min: 1
     max: 3
@@ -105,55 +107,63 @@ parameters:
     description: n/a
   - name: Technology Growth
     machine_name: technology
+    tab: Basic
     section: Model Parameters
     min: 0.05
     max: 0.15
     step: 0.05
     default: 0.1
     description: n/a
-  - name: Consumption Elasticity  
-    section: Advanced Parameters
+  - name: Consumption Elasticity
+    tab: Basic
+    section: Economic Controls
     machine_name: elasmu
     min: 1
     default: 2
     max: 3
     step: 0.1
   - name: Time Preference Rate
-    section: Advanced Parameters
+    tab: Basic
+    section: Economic Controls
     machine_name: prstp
     min: 0
     default: 0.015
     max: 4
     step: 0.005
   - name: Savings Rate
-    section: Advanced Parameters
+    tab: Basic
+    section: Economic Controls
     machine_name: savings
     default: 0.2
     min: 0.15
     max: 0.25
     step: 0.05
   - name: Max Population
-    section: Advanced Parameters
+    tab: Advanced
+    section: Societal Controls
     machine_name: popasym
     min: 8000
     max: 12000
     step: 2000
     default: 8600
   - name: Capital Depreciation
-    section: Advanced Parameters
+    tab: Advanced
+    section: Economic Controls
     machine_name: dk
     default: 0.1
     min: 0.08
     max: 0.2
     step: 0.01
   - name: Carbon Reduction
-    section: Advanced Parameters
+    tab: Advanced
+    section: Economic Controls
     machine_name: dsig
     default: 0.003
     min: 0
     max: 0.06
     step: 0.001
   - name: Doubling Damage
+    tab: Advanced
     section: CO_(2) Controls
     machine_name: a2
     default: 0.0028 # 388
@@ -161,6 +171,7 @@ parameters:
     max:  0.0035
     step: 0.0001
   - name: Cost
+    tab: Advanced
     section: Abatement
     machine_name: expcost2
     default: 2.8
@@ -168,6 +179,7 @@ parameters:
     max: 4
     step: 0.1
   - name: Decline Rate of Cost
+    tab: Advanced
     section: Abatement
     machine_name: gback
     default: 0.05
@@ -175,6 +187,7 @@ parameters:
     max: 0.2
     step: 0.05
   - name: Fossil Fuel Reserves
+    tab: Advanced
     section: CO_(2) Controls
     machine_name: fosslim
     min: 6000
@@ -182,6 +195,7 @@ parameters:
     step: 500
     default: 6000
   - name: Emissions by 2050
+    tab: Basic
     machine_name: e2050
     section: Carbon Policy
     min: 0.00
@@ -189,6 +203,7 @@ parameters:
     step: 0.10
     default: 0.00
   - name: Emissions by 2100
+    tab: Basic
     machine_name: e2100
     section: Carbon Policy
     min: 0.00
@@ -196,6 +211,7 @@ parameters:
     step: 0.10
     default: 0.00
   - name: Emissions by 2150
+    tab: Basic
     machine_name: e2150
     section: Carbon Policy
     min: 0.00
@@ -203,6 +219,7 @@ parameters:
     step: 0.10
     default: 0.00
   - name: Oceanic Model
+    tab: Advanced
     machine_name: oceanmodel
     section: Model Design 
     values:
@@ -213,6 +230,7 @@ parameters:
         machine_name: glotter
         description: n/a
   - name: Damages Model
+    tab: Advanced
     machine_name: damages_model
     section: Model Design
     values:

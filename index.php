@@ -18,11 +18,12 @@ $duplicate_property = "Multiple parameters with machine name \"%s\".";
 $duplicate_option = "Multiple options with machine_name \"%s\".";
 $invalid_default = "The default must be between the minimum and maximum.";
 
-$sections = array();
+$tabs = array();
 $all_parameters = array();
+$selected_tab = NULL;
 
 foreach ($parameters as $parameter) {
-	$required = array("name", "machine_name", "section");
+	$required = array("name", "machine_name", "section", "tab");
 	$optional = array();
 	
 	$is_select_control = isset($parameter['values']);
@@ -51,6 +52,8 @@ foreach ($parameters as $parameter) {
 	
 	$name = $parameter['name'];
 	$machine_name = $parameter['machine_name'];
+	$tab_name = $parameter['tab'];
+	$cleaned_tab_name = preg_replace('/[^a-z]/', '', strtolower($parameter['tab']));
 	$section_name = $parameter['section'];
 	$cleaned_section_name = preg_replace('/[^a-z]/', '', strtolower($parameter['section']));
 	
@@ -91,14 +94,25 @@ foreach ($parameters as $parameter) {
 	else
 		$all_parameters[$machine_name] = $parameter;
 	
-	if (!isset($sections[$cleaned_section_name])) {
-		$sections[$cleaned_section_name] = array(
+	if (!isset($tabs[$cleaned_tab_name])) {
+		$tabs[$cleaned_tab_name] = array(
+			"name" => $tab_name,
+			"sections" => array( ),
+			"html_id" => "tab-$cleaned_tab_name"
+		);
+		
+		if ($selected_tab == NULL)
+			$selected_tab = &$tabs[$cleaned_tab_name];
+	}
+	
+	if (!isset($tabs[$cleaned_tab_name]["sections"][$cleaned_section_name])) {
+		$tabs[$cleaned_tab_name]["sections"][$cleaned_section_name] = array(
 			"name" => $section_name,
 			"parameters" => array( )
 		);
 	}
 	
-	$sections[$cleaned_section_name]["parameters"][] = $parameter;
+	$tabs[$cleaned_tab_name]["sections"][$cleaned_section_name]["parameters"][] = $parameter;
 }
 
 foreach ($measurements as $measurement) {
@@ -182,7 +196,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 	putenv("XAPPLRESDIR=/usr/local/MATLAB/MATLAB_Compiler_Runtime/v716/X11/app-defaults");
 	
 	$flattened = implode(' ', $arguments);
-	$r = popen("bin/diceDriver run DICE2007Run step DICE2007Step $flattened", "r");
+	$r = popen("bin/diceDriverStub.py run DICE2007Run step DICE2007Step $flattened", "r");
 	
 	$number_of_blank_lines = 0;
 	$output = "";
@@ -234,57 +248,83 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
   <form id='submission'>
     <div id='parameters'>
 <?php
-		foreach ($sections as $section) {
-			$section_name = format_for_web($section['name']);
-			$parameters = $section['parameters'];
+		print "      <div id='sidebar-tabs' class='tabs'>\n";
+		
+		foreach ($tabs as $tab) {
+			$tab_name = format_for_web($tab['name']);
+			$tab_id = htmlentities($tab['html_id']);
 			
-			print "      <h2>$section_name</h2>\n";
-			print "      <ul>\n";
+			if ($tab === $selected_tab)
+				print "        <a href='' class='selected' id='link-to-$tab_id'>$tab_name</a>\n";
+			else
+				print "        <a href='' id='link-to-$tab_id'>$tab_name</a>\n";
+		}
+		print "      </div>\n";
+		
+		foreach ($tabs as $tab) {
+			$tab_id = htmlentities($tab['html_id']);
+			$sections = $tab['sections'];
 			
-			foreach ($parameters as $parameter) {
-				$name = format_for_web($parameter['name']);
-				$machine_name = htmlentities($parameter['machine_name']);
-				$is_select_control = $parameter['is_select_control'];
-				$is_range_control = $parameter['is_range_control'];
+			if ($tab === $selected_tab)
+				print "      <div id='$tab_id' class='tab selected'>\n";
+			else
+				print "      <div id='$tab_id' class='tab notselected'>\n";
+			
+			foreach ($sections as $section) {
+				$section_name = format_for_web($section['name']);
+				$parameters = $section['parameters'];
 				
-				if (isset($parameter['description'])) {
-					$description = htmlentities($parameter['description']);
-					print "        <li><label title='$description'>$name ";
-				} else {
-					print "        <li><label>$name ";
-				}
+				print "        <h2>$section_name</h2>\n";
+				print "        <ul>\n";
 				
-				if ($is_select_control) {
-					$values = $parameter['values'];
+				foreach ($parameters as $parameter) {
+					$name = format_for_web($parameter['name']);
+					$machine_name = htmlentities($parameter['machine_name']);
+					$is_select_control = $parameter['is_select_control'];
+					$is_range_control = $parameter['is_range_control'];
 					
-					print "<select name='$machine_name'>\n";
-					
-					foreach ($values as $value) {
-						$option_machine_name = $value['machine_name'];
-						$option_name = $value['name'];
-						
-						if (isset($value['description'])) {
-							$description = htmlentities($value['description']);
-							
-							print "          <option name='$option_machine_name' title='$description'>$option_name</option>\n";
-						} else {
-							print "          <option name='$option_machine_name'>$option_name</option>\n";
-						}
+					if (isset($parameter['description'])) {
+						$description = htmlentities($parameter['description']);
+						print "          <li><label title='$description'>$name ";
+					} else {
+						print "          <li><label>$name ";
 					}
 					
-					print "        </select></li>\n";
-				} else if ($is_range_control) {
-					$min = $parameter['min'];
-					$max = $parameter['max'];
-					$step = $parameter['step'];
-					$default = $parameter['default'];
+					if ($is_select_control) {
+						$values = $parameter['values'];
+						
+						print "<select name='$machine_name'>\n";
+						
+						foreach ($values as $value) {
+							$option_machine_name = $value['machine_name'];
+							$option_name = $value['name'];
+							
+							if (isset($value['description'])) {
+								$description = htmlentities($value['description']);
+							
+								print "            <option name='$option_machine_name' ";
+								print "title='$description'>$option_name</option>\n";
+							} else {
+								print "            <option name='$option_machine_name'>$option_name</option>\n";
+							}
+						}
+						
+						print "            </select></li>\n";
+					} else if ($is_range_control) {
+						$min = $parameter['min'];
+						$max = $parameter['max'];
+						$step = $parameter['step'];
+						$default = $parameter['default'];
 					
-					print "<span class='label'>$default</span> <input name='$machine_name' ";
-					print "type='range' min='$min' max='$max' step='$step' value='$default'/></label></li>\n";
+						print "<span class='label'>$default</span> <input name='$machine_name' ";
+						print "type='range' min='$min' max='$max' step='$step' value='$default'/></label></li>\n";
+					}
 				}
+			
+				print "        </ul>\n";
 			}
 			
-			print "      </ul>\n";
+			print "      </div>";
 		}
 		?>
     </div>

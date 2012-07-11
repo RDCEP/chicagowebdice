@@ -10,7 +10,8 @@
 #display-help:hover{text-decoration:underline;}
 #sidebar{position:absolute;top:6em;left:0;width:18em;background-color:#eee;bottom:0;border-right:1px solid #aaa;}
 #submission{position:absolute;top:0;left:0;right:0;bottom:0px;}
-#parameters{position:absolute;top:0;left:0;right:0;bottom:1.8em;overflow:auto;border-bottom:1px solid #ddd;}
+#parameters{position:absolute;top:0;left:0;right:0;bottom:1.8em;overflow:auto;}
+#parameters{padding-top:2em;border-bottom:1px solid #ddd;}
 #submission h2{font:bold 0.8em Helvetica,sans-serif;padding:1.5em 1em 0.5em 1em;}
 #submission li{list-style-type:none;font:0.8em Helvetica,sans-serif;padding:0.5em 1em;position:relative;}
 #submission #parameters input,#submission #parameters .fd-slider{position:absolute;right:1em;width:5em;top:0.4em;}
@@ -49,3 +50,10 @@
 #overlay .article p{margin-bottom:1em;}
 #hide-help{position:absolute;top:1em;right:1em;color:#222;font:0.9em Helvetica,sans-serif;}
 #MathJax_Message{display:none !important;}
+
+.tabs{height:2.4em;font:0.8em/1em Helvetica,sans-serif;position:absolute;top:0;left:0;right:0;}
+.tabs{background-color:#fff;border-bottom:1px solid #ccc;}
+.tabs a{text-decoration:none;color:#000;display:block;float:left;padding:0.8em;}
+.tabs a{border-right:1px solid #fff;border-left:1px solid #fff;}
+.tabs a.selected{background-color:#eee;border-color:#ccc;}
+.tab.notselected{display:none;}

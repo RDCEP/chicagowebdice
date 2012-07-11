@@ -41,6 +41,31 @@
 		return color;
 	}
 	
+	var initializeTrivialTabsUI = function() {
+		$('.tabs').each(function() {
+			var currentlySelectedLink = $(this).find('a.selected')[0]
+			var currentlySelectedTabID = currentlySelectedLink.getAttribute('id').substring(8);
+			var currentlySelectedTab = document.getElementById(currentlySelectedTabID);
+			
+			$(this).find('a').each(function() {
+				var tabID = this.getAttribute('id').substring(8);
+				var tabElement = document.getElementById(tabID);
+				
+				this.onclick = function() {
+					currentlySelectedLink.setAttribute('class', '');
+					currentlySelectedTab.setAttribute('class', 'tab notselected');
+					currentlySelectedLink = this;
+					currentlySelectedTab = tabElement;
+					currentlySelectedLink.setAttribute('class', 'selected');
+					currentlySelectedTab.setAttribute('class', 'tab selected');
+					
+					return false;
+				}
+				
+			});	
+		});
+	}
+	
 	var initializeUI = function() {
 		var contentDiv = document.getElementById('content');
 		var runsUL = document.getElementById('runs');
@@ -278,6 +303,8 @@
 			
 			return false;
 		}
+		
+		initializeTrivialTabsUI();
 		
 		var displayConditionalHelp = function() {
 			var numberVisible = 0;
