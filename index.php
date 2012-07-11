@@ -223,7 +223,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 </head>
 <body>
 <h1 id='heading'> <span>RDCEP</span> :: WebDICE</h1>
-<a id='display-help' href=''>Help</a>
+<a id='display-help' href=''>Documentation</a>
 <div id='sidebar'>
   <form id='submission'>
     <div id='parameters'>
