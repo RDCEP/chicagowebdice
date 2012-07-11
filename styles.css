@@ -8,7 +8,7 @@
 #display-help{font:0.9em Helvetica,sans-serif;color:white;padding:0.4em;}
 #display-help{text-decoration:none;}
 #display-help:hover{text-decoration:underline;}
-#sidebar{position:absolute;top:6em;left:0;width:16em;background-color:#eee;bottom:0;border-right:1px solid #aaa;}
+#sidebar{position:absolute;top:6em;left:0;width:18em;background-color:#eee;bottom:0;border-right:1px solid #aaa;}
 #submission{position:absolute;top:0;left:0;right:0;bottom:0px;}
 #parameters{position:absolute;top:0;left:0;right:0;bottom:1.8em;overflow:auto;border-bottom:1px solid #ddd;}
 #submission h2{font:bold 0.8em Helvetica,sans-serif;padding:1.5em 1em 0.5em 1em;}
@@ -27,7 +27,7 @@
 #runs li img{position:absolute;top:1.5em;right:1em;}
 #runs li .slab{position:absolute;top:1.5em;left:1em;width:0.8em;height:0.8em;border:1px solid #000;}
 #runs li input{position:absolute;right:15px;top:20px;}
-#content{position:absolute;top:6em;left:16em;right:0;bottom:0;overflow:auto;padding-left:3px;}
+#content{position:absolute;top:6em;left:18em;right:0;bottom:0;overflow:auto;padding-left:3px;}
 #content div{float:left;}
 #content .initial{position:absolute;background-color:#eee;font:1.2em/1.5em Helvetica,sans-serif;}
 #content .initial{top:3em;left:4em;bottom:4em;right:4em;border-radius:1em;padding:2em;}
