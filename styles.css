@@ -47,3 +47,4 @@
 #overlay .article h5{font:bold 0.8em/2.5em Helvetica,sans-serif;color:#333;}
 #overlay .article p{margin-bottom:1em;}
 #hide-help{position:absolute;top:1em;right:1em;color:#222;font:0.9em Helvetica,sans-serif;}
+#MathJax_Message{display:none !important;}
