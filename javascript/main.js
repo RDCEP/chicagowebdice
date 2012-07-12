@@ -121,7 +121,7 @@
 			return formatColumnOfDataTable(data, columnID, format, unit);
 		}
 		
-		var addRun = function(description, color, fields) {
+		var addRun = function(description, color, fields, changesFromDefault) {
 			var nextRun = getNumberOfRuns();
 			
 			for (var i = 0; i < Options.measurements.length; i++) {
@@ -146,7 +146,8 @@
 			}
 			
 			var runObject =  { description : description, color : color,
-			                   visible : true, index : nextRun };
+			                   visible : true, index : nextRun,
+			                   changesFromDefault : changesFromDefault };
 			runsBeingDisplayed.push(runObject);
 			
 			updateAllData();
@@ -154,7 +155,7 @@
 			return runObject;
 		}
 		
-		var addRunFromCSV = function(description, color, result) {
+		var addRunFromCSV = function(description, color, result, changesFromDefault) {
 			var fields = new Object;
 			var lines = result.split('\n');
 			
@@ -166,7 +167,7 @@
 					fields[name] = line.slice(1);
 			}
 			
-			return addRun(description, color, fields);
+			return addRun(description, color, fields, changesFromDefault);
 		}
 		
 		var removeRun = function(index) {
@@ -560,26 +561,30 @@
 					var defaultValue = $(this).find('option').first().val().trim()
 					var changedValue = $(this).find('option:checked').first().val().trim()
 					var areEqual = (defaultValue == changedValue);
+					var deviation = (areEqual ? 0 : 0.10); // 25% deviation.
 				} else {
 					var defaultValue = this.defaultValue;
 					var changedValue = this.value;
 					var areEqual = (parseFloat(defaultValue) == parseFloat(changedValue));
+					var deviation = Math.abs(Math.log(parseFloat(changedValue) / parseFloat(defaultValue)));
 				}
 				
 				if (!areEqual) {
 					var description = this.parentNode.firstChild.nodeValue.trim();
 					var heading = $(this.parentNode.parentNode.parentNode).prev('h2').first().text();
 					
-					changes.push([ '[' + heading + '] ' + description, changedValue ]);
+					changes.push([ heading, description, changedValue, defaultValue, deviation ]);
 				};
 			});
+			
+			changes.sort(function(a, b) { return b[4] - a[4]; });
 			
 			var runTextualDescription = "Run Parameters:";
 			
 			for (var i = 0; i < changes.length; i++) {
 				var change = changes[i];
 				
-				runTextualDescription += "\n" + change[0] + ": " + change[1];
+				runTextualDescription += "\n[" + change[0] + "] " + change[1] + ": " + change[2];
 			}
 			
 			if (changes.length == 0)
@@ -594,8 +599,8 @@
 			
 			progressIMG.setAttribute('src', 'images/progress.gif');
 			createdLI.appendChild(createdLABEL);
-			createdLABEL.appendChild(progressIMG);
 			createdLABEL.appendChild(textNode);
+			createdLABEL.appendChild(progressIMG);
 			runsUL.appendChild(createdLI);
 			
 			numberOfRunsInProgress++;
@@ -607,7 +612,8 @@
 				url : 'index.php',
 				data : data,
 				success : function(data, textStatus, xhr) {
-					var runObject = addRunFromCSV("Run #" + (getNumberOfRuns() + 1), generateNextColor(), data);
+					var runObject = addRunFromCSV("Run #" + (getNumberOfRuns() + 1),
+						generateNextColor(), data, changes);
 					
 					numberOfRunsInProgress--;
 					
