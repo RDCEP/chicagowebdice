@@ -100,9 +100,7 @@
 			return (index / numberOfStepsInSimulation) * (endYear - startYear) + startYear;
 		}
 		
-		var formatMeasurement = function(runIndex, measurement, format, unit) {
-			var columnId = runIndex * getNumberOfMeasurements() + measurement + 1;
-			
+		var formatColumnOfDataTable = function(table, columnID, format, unit) {
 			var options = { };
 			
 			if (format !== undefined)
@@ -113,7 +111,13 @@
 			
 			var formatter = new google.visualization.NumberFormat(options);
 			
-			formatter.format(data, columnId);
+			formatter.format(table, columnID);
+		}
+		
+		var formatMeasurement = function(runIndex, measurement, format, unit) {
+			var columnID = runIndex * getNumberOfMeasurements() + measurement + 1;
+			
+			return formatColumnOfDataTable(data, columnID, format, unit);
 		}
 		
 		var addRun = function(description, color, fields) {
@@ -240,10 +244,8 @@
 			var selectXAxis = document.getElementById('select-x-axis');
 			var selectYAxis = document.getElementById('select-y-axis');
 			
-			selectXAxis.disabled = 'disabled';
-			
 			var chart = new google.visualization.LineChart(div);
-			var view = new google.visualization.DataView(data);
+			var table = null;
 			
 			var updateViewport = function() {
 				var colors = [ ];
@@ -261,31 +263,121 @@
 					width : contentDiv.offsetWidth,
 					height : contentDiv.offsetHeight - 80,
 					legend : {'position' : 'none' },
-					colors : colors
+					colors : colors,
+					pointSize : 2,
+					hAxis : { title : selectedXOption },
+					vAxis : { title : selectedYOption }
 				};
 				
-				chart.draw(view, options);
+				chart.draw(table, options);
 			}
 			
 			var updateData = function() {
 				var visibleColumns = [ ];
 				var index = -1;
 				
-				for (var i = 0; i < Options.measurements.length; i++) {
-					if (Options.measurements[i].machine_name == selectYAxis.value) {
-						index = i;
+				var XAxis = selectXAxis.value;
+				var YAxis = selectYAxis.value;
+				var isTimeSeriesData = (XAxis == 'year')
+				
+				var XMeasurementIndex = null, XMeasurement = null, XLabel = null;
+				var YMeasurementIndex = null, YMeasurement = null;
+				
+				if (isTimeSeriesData) {
+					XLabel = "Time";
+				} else {
+					for (var i = 0; i < Options.measurements.length; i++) {
+						if (Options.measurements[i].machine_name == XAxis) {
+							XMeasurementIndex = i;
+							XMeasurement = Options.measurements[i];
+						}
 					}
 				}
 				
-				for (var j = 0; j < data.getNumberOfColumns(); j++) {
-					var measurementID = (j - 1) % getNumberOfMeasurements();
-					var runID = parseInt((j - 1) / getNumberOfMeasurements());
-					
-					if ((j == 0) || (measurementID == index && runsBeingDisplayed[runID].visible))
-						visibleColumns.push(j);
+				for (var i = 0; i < Options.measurements.length; i++) {
+					if (Options.measurements[i].machine_name == YAxis) {
+						YMeasurementIndex = i;
+						YMeasurement = Options.measurements[i];
+					}
 				}
 				
-				view.setColumns(visibleColumns);
+				var dataLiteral = {
+					cols : [{ label : XLabel, type: 'number' }],
+					rows : [ ]
+				};
+				
+				var numberOfColumnsInNewTable = 1;
+				
+				for (var i = 0; i < getNumberOfRuns(); i++) {
+					if (runsBeingDisplayed[i].visible)
+						numberOfColumnsInNewTable += 2;
+				}
+				
+				for (var i = 0; i < getNumberOfRuns(); i++) {
+					if (!runsBeingDisplayed[i].visible)
+						continue;
+					
+					var newRowColumnIndex = dataLiteral.cols.length;
+					
+					dataLiteral.cols.push({ label : YMeasurement.name, type: 'number' });
+					dataLiteral.cols.push({ type : 'string', role : 'tooltip', p : { role : 'tooltip' } });
+					
+					if (isTimeSeriesData)
+						var columnX = 0;
+					else
+						var columnX = i * getNumberOfMeasurements() + XMeasurementIndex + 1;
+					var columnY = i * getNumberOfMeasurements() + YMeasurementIndex + 1;
+					
+					for (var j = 0; j < numberOfStepsInSimulation; j++) {
+						var rows = [ ];
+						
+						if (isTimeSeriesData)
+							var tooltip = (
+								runsBeingDisplayed[i].description + "\n" +
+								"Year: " + parseInt(mapIndexToYear(j)) + "\n" +
+								YMeasurement.name + ": " + data.getFormattedValue(j, columnY)
+							);
+						else
+							var tooltip = (
+								runsBeingDisplayed[i].description + "\n" +
+								"Year: " + parseInt(mapIndexToYear(j)) + "\n" +
+								XMeasurement.name + ": " + data.getFormattedValue(j, columnX) + "\n" +
+								YMeasurement.name + ": " + data.getFormattedValue(j, columnY)
+							);
+						
+						for (var k = 0; k < numberOfColumnsInNewTable; k++) {
+							if (k == newRowColumnIndex)
+								rows[k] = { v : data.getValue(j, columnY) };
+							else if (k == (newRowColumnIndex + 1))
+								rows[k] = { v : tooltip, f : tooltip };
+							else if (k == 0)
+								rows[k] = { v : data.getValue(j, columnX) };
+							else
+								rows[k] = null;
+						}
+						
+						dataLiteral.rows.push({
+							c : rows
+						});
+					}
+				}
+				
+				var view = table = new google.visualization.DataTable(dataLiteral);
+				
+				for (var k = 0; k < numberOfColumnsInNewTable; k++) {
+					if (k == 0 && isTimeSeriesData) {
+						
+						formatColumnOfDataTable(table, 0, '####', null);
+						
+					} else {
+						if (k == 0)
+							var measurement = XMeasurement;
+						else
+							var measurement = YMeasurement;
+						
+						formatColumnOfDataTable(table, k, measurement.format, measurement.unit);
+					}
+				}
 				
 				updateViewport();
 			}

@@ -388,7 +388,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
       <div>
         <h2>X-Axis</h2>
         <select id='select-x-axis'>
-          <option>Year</option>
+          <option value='year'>Year</option>
 <?php
 		foreach ($measurements as $measurement) {
 			$machine_name = htmlentities($measurement['machine_name']);
