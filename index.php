@@ -397,7 +397,8 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 			print "          <option value='$machine_name'>$measurement_name</option>\n";
 		}
 ?>
-           </select>
+         </select>
+         <label><input type='checkbox' id='logarithmic-x'/> Logarithmic</label>
       </div>
       <div>
         <h2>Y-Axis</h2>
@@ -411,6 +412,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 		}
 ?>
         </select>
+        <label><input type='checkbox' id='logarithmic-y'/> Logarithmic</label>
       </div>
     </div>
   </div>

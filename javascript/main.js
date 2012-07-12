@@ -243,6 +243,8 @@
 			var div = document.getElementById('large-graph');
 			var selectXAxis = document.getElementById('select-x-axis');
 			var selectYAxis = document.getElementById('select-y-axis');
+			var checkedLogarithmicX = document.getElementById('logarithmic-x');
+			var checkedLogarithmicY = document.getElementById('logarithmic-y');
 			
 			var chart = new google.visualization.LineChart(div);
 			var table = null;
@@ -258,15 +260,17 @@
 				var selectedXOption = $(selectXAxis).find('option:selected').text();
 				var selectedYOption = $(selectYAxis).find('option:selected').text();
 				
+				checkedLogarithmicX.parentNode.style.display = (selectXAxis.value == 'year') ? 'none' : 'block';
+				
 				var options = {
 					title : (selectedYOption + ' vs. ' + selectedXOption),
 					width : contentDiv.offsetWidth,
-					height : contentDiv.offsetHeight - 80,
+					height : contentDiv.offsetHeight - 120,
 					legend : {'position' : 'none' },
 					colors : colors,
 					pointSize : 2,
-					hAxis : { title : selectedXOption },
-					vAxis : { title : selectedYOption }
+					hAxis : { title : selectedXOption, logScale : !!checkedLogarithmicX.checked },
+					vAxis : { title : selectedYOption, logScale : !!checkedLogarithmicY.checked }
 				};
 				
 				chart.draw(table, options);
@@ -383,11 +387,23 @@
 			}
 			
 			selectXAxis.onchange = function() {
+				checkedLogarithmicX.checked = false;
+				
 				updateAllData();
 			}
 			
 			selectYAxis.onchange = function() {
+				checkedLogarithmicY.checked = false;
+				
 				updateAllData();
+			}
+			
+			checkedLogarithmicX.onchange = function() {
+				updateAllViewports();
+			}
+			
+			checkedLogarithmicY.onchange = function() {
+				updateAllViewports();
 			}
 			
 			updateData();
