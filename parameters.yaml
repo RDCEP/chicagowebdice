@@ -265,8 +265,7 @@ measurements:
     machine_name: emissionsTotal
     unit: Gt Carbon / 10 yr
     description: n/a
-    # location: bottomright
+    location: bottomright
   - name: Industrial Emissions
     machine_name: emissionsIndustrial
     unit: Gt Carbon
-    location: bottomright
