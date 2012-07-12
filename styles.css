@@ -2,13 +2,22 @@
 #heading{background:url(images/header.png);}
 #heading{position:absolute;top:0;left:0;right:0;padding:0 1em;font:bold 2em/3.5em Helvetica,sans-serif;}
 #heading{color:white;text-shadow:0 0 5px #444;border-bottom:1px solid #262;margin-top:-1px;}
-#heading span{background:url(images/RDCEP.png) no-repeat;position:inline-block;}
-#heading span{margin:-15px;padding:15px 15px 15px 90px;}
+#heading span{background:20px 8px url(images/RDCEP.png) no-repeat;display:block;float:left;}
+#heading span{padding-left:180px;height:150px;margin-bottom:-100px;margin-right:0.5ex;}
+#heading span{position:relative;z-index:100;}
 #display-help{position:absolute;top:3em;right:2em;z-index:10;display:block;}
 #display-help{font:0.9em Helvetica,sans-serif;color:white;padding:0.4em;}
-#display-help{text-decoration:none;}
+#display-help{text-decoration:none;cursor:pointer;}
 #display-help:hover{text-decoration:underline;}
-#sidebar{position:absolute;top:7em;left:0;width:18em;background-color:#eee;bottom:0;border-right:1px solid #aaa;}
+#view-source{position:absolute;top:3em;right:11em;z-index:10;display:block;}
+#view-source{font:0.9em Helvetica,sans-serif;color:white;padding:0.4em;}
+#view-source{text-decoration:none;}
+#view-source:hover{text-decoration:underline;}
+#sidebar{position:absolute;top:9.5em;left:0;width:18em;background-color:#eee;bottom:0;border-right:1px solid #aaa;}
+#back-to-rdcep{position:absolute;height:2.5em;top:7em;left:0;right:0;background-color:#596D26;}
+#back-to-rdcep{border-top:1px solid #697E33;border-bottom:1px solid #697E33;margin-top:-2px;padding-left:18.5em;}
+#back-to-rdcep a{color:#eee;font:0.9em/2.8em Helvetica,sans-serif;text-decoration:none;}
+#back-to-rdcep a:hover{color:white;}
 #submission{position:absolute;top:0;left:0;right:0;bottom:0px;}
 #parameters{position:absolute;top:0;left:0;right:0;bottom:1.8em;overflow:auto;border-bottom:1px solid #ddd;}
 #parameters.has-tabs{padding-top:2em;}
@@ -28,7 +37,7 @@
 #runs li img{position:absolute;top:1.5em;right:1em;}
 #runs li .slab{position:absolute;top:1.5em;left:1em;width:0.8em;height:0.8em;border:1px solid #000;}
 #runs li input{position:absolute;right:15px;top:20px;}
-#content{position:absolute;top:7em;left:18em;right:0;bottom:0;overflow:auto;}
+#content{position:absolute;top:9.5em;left:18em;right:0;bottom:0;overflow:auto;}
 #content .graph{float:left;}
 #content .initial{position:absolute;background-color:#eee;font:1em/1.5em Helvetica,sans-serif;}
 #content .initial{top:3em;left:4em;bottom:4em;right:4em;border-radius:1em;padding:2em;}
