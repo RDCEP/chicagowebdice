@@ -609,7 +609,7 @@
 				url : 'index.php',
 				data : data,
 				success : function(data, textStatus, xhr) {
-					var runObject = addRunFromCSV("Run #" + (colorsUsed + 1), generateNextColor(), data);
+					var runObject = addRunFromCSV("Run #" + (getNumberOfRuns() + 1), generateNextColor(), data);
 					
 					numberOfRunsInProgress--;
 					
