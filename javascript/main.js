@@ -261,8 +261,6 @@
 				var selectedXOption = $(selectXAxis).find('option:selected').text();
 				var selectedYOption = $(selectYAxis).find('option:selected').text();
 				
-				checkedLogarithmicX.parentNode.style.display = (selectXAxis.value == 'year') ? 'none' : 'block';
-				
 				var options = {
 					title : (selectedYOption + ' vs. ' + selectedXOption),
 					width : contentDiv.offsetWidth,
