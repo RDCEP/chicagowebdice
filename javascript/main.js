@@ -274,6 +274,9 @@
 					vAxis : { title : selectedYOption, logScale : !!checkedLogarithmicY.checked }
 				};
 				
+				if (selectXAxis.value == 'year')
+					options.hAxis.format = '####';
+				
 				chart.draw(table, options);
 			}
 			
