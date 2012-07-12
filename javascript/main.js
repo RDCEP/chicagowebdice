@@ -668,6 +668,12 @@
 			$(this).parents('label').find('span.label').text(value);
 		});
 		
+		$('#reset-inputs').click(function(e) {
+			e.preventDefault();
+			form.reset();
+			$('input[type=range]', form).change();
+		});
+		
 		window.onresize = function() {
 			updateAllViewports();
 		}
