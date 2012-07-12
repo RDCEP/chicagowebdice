@@ -1,14 +1,15 @@
 (function($) {
-	var numberOfStepsInSimulation = 60;
-	var startYear = 2005;
-	var endYear = 2200;
-	var colorsUsed = 0;
-	var numberOfRunsInProgress = 0;
-	
 	var niceColors = [
 		[ 204, 0, 0 ], [ 241, 194, 50 ], [106, 168, 79], [ 61, 133, 198 ], [ 103, 78, 167 ], [ 166, 77, 121 ],
 		[ 230, 155, 56 ], [ 69, 129, 142 ], [ 60, 120, 216 ]
 	]
+	
+	var numberOfStepsInSimulation = 60;
+	var startYear = 2005;
+	var endYear = 2200;
+	var colorsUsed = parseInt(Math.random() * niceColors.length);
+	var numberOfRunsInProgress = 0;
+	
 	
 	var generateNextColor = function() {
 		var nextColor = niceColors[(colorsUsed++) % niceColors.length];
@@ -183,7 +184,7 @@
 		var removeAllRuns = function() {
 			data.removeColumns(1, getNumberOfRuns() * getNumberOfMeasurements());
 			
-			colorsUsed = 0;
+			colorsUsed = parseInt(Math.random() * niceColors.length);
 			
 			runsBeingDisplayed.splice(0, runsBeingDisplayed.length);
 			
