@@ -366,7 +366,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 		?>
     </div>
     <div id='controls'>
-      <input type='reset' value='Reset to Defaults'/>
+      <input type='reset' value='Reset Inputs'/>
       <input type='submit' id='delete-all' value='Clear Graphs' disabled='disabled'/>
       <input type='submit' value='Run Model'/>
     </div>
