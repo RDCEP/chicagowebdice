@@ -1,12 +1,16 @@
 <?php
 
 require_once('lib/spyc.php');
+require_once('lib/markdown.php');
 
 $configuration = Spyc::YAMLLoad('parameters.yaml');
 
 $parameters = $configuration['parameters'];
 $measurements = $configuration['measurements'];
 $initial_help = $configuration['initial_help'];
+
+$basic_help = $configuration['basic_help'];
+$intermediate_help = $configuration['intermediate_help'];
 $advanced_help = $configuration['advanced_help'];
 
 $missing_parameter = "Missing \"%s\" attribute on configuration element.";
@@ -250,6 +254,13 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 		return preg_replace('/^\(([^)]+)\)/', '<sup>$1</sup>',
 			preg_replace('/_\(([^)]+)\)/', '<sub>$1</sub>', htmlentities($text)));
 	}
+	
+	function markdownify($text) {
+		$formatted = str_replace("\n", "\n\n", $text);
+		
+		return Markdown($formatted);
+	}
+	
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
   "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
@@ -434,26 +445,16 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 <div id='overlay'>
   <div class='slug'></div>
   <div class='article' id='advanced-help'>
-<?php
-		$paragraphs = explode("\n", $advanced_help);
-		
-		foreach ($paragraphs as $paragraph) {
-			$paragraph = htmlentities($paragraph);
-			
-			if (preg_match('/^##### (.*)/', $paragraph, $matches))
-				echo "    <h5>{$matches[1]}</h5>\n";
-			else if (preg_match('/^#### (.*)/', $paragraph, $matches))
-				echo "    <h4>{$matches[1]}</h4>\n";
-			else if (preg_match('/^### (.*)/', $paragraph, $matches))
-				echo "    <h3>{$matches[1]}</h3>\n";
-			else if (preg_match('/^## (.*)/', $paragraph, $matches))
-				echo "    <h2>{$matches[1]}</h2>\n";
-			else if (preg_match('/^# (.*)/', $paragraph, $matches))
-				echo "    <h1>{$matches[1]}</h1>\n";
-			else
-				echo "    <p>$paragraph</p>\n";
-		}
-?>
+    <div class='tabs'>
+      <a href='' class='selected' id='link-to-help-basic'>Basic</a>
+      <a href='' id='link-to-help-intermediate'>Intermediate</a>
+      <a href='' id='link-to-help-advanced'>Advanced</a>
+    </div>
+    
+    <div id='help-basic' class='tab selected'><?php echo markdownify($basic_help); ?></div>
+    <div id='help-intermediate' class='tab notselected'><?php echo markdownify("$intermediate_help"); ?></div>
+    <div id='help-advanced' class='tab notselected'><?php echo markdownify("$advanced_help"); ?></div>
+    
     <a href='' id='hide-help'>Hide</a>
   </div>
 </div>

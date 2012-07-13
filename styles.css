@@ -65,11 +65,10 @@
 #graph-controls label{padding:0.5em 1em;font-size:0.9em;}
 #graph-controls div.short{width:7.5em;}
 #graph-controls .short input,#graph-controls .short select{width:7.5em;}
-
 #overlay{opacity:0;display:none;}
 #overlay .slug{position:fixed;top:0;left:0;right:0;bottom:0;background-color:#000;}
 #overlay .slug{opacity:0.5;z-index:1000;}
-#overlay .article{padding:1em 3em;width:40em;margin:0 auto;position:absolute;overflow:auto;}
+#overlay .article{padding:3em;width:40em;margin:0 auto;position:absolute;overflow:auto;}
 #overlay .article{top:200px;left:0;right:0;bottom:0;border-left:1px solid #999;border-right:1px solid #999;}
 #overlay .article{background-color:#fff;font:0.9em/1.7em Helvetica,sans-serif;z-index:2000;}
 #overlay .article h1{font:1.5em/2.5em Helvetica,sans-serif;}
@@ -78,7 +77,9 @@
 #overlay .article h4{font:bold 0.9em/2.5em Helvetica,sans-serif;color:#333;}
 #overlay .article h5{font:bold 0.8em/2.5em Helvetica,sans-serif;color:#333;}
 #overlay .article p{margin-bottom:1em;}
-#hide-help{position:absolute;top:1em;right:1em;color:#222;font:0.9em Helvetica,sans-serif;}
+#overlay .tabs{background-color:#eee;margin-left:1px;}
+#overlay .tabs .selected{background-color:#fff;}
+#hide-help{position:absolute;top:0.5em;right:1.5em;color:#222;font:0.9em Helvetica,sans-serif;}
 #MathJax_Message{display:none !important;}
 
 .tabs{height:2.4em;font:0.8em/1em Helvetica,sans-serif;position:absolute;top:0;left:0;right:0;}
