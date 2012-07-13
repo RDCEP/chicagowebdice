@@ -10,7 +10,6 @@
 	var colorsUsed = parseInt(Math.random() * niceColors.length);
 	var numberOfRunsInProgress = 0;
 	
-	
 	var generateNextColor = function() {
 		var nextColor = niceColors[(colorsUsed++) % niceColors.length];
 		var rgb = [ nextColor[0], nextColor[1], nextColor[2] ];
@@ -98,7 +97,7 @@
 		}
 		
 		var mapIndexToYear = function(index) {
-			return (index / numberOfStepsInSimulation) * (endYear - startYear) + startYear;
+			return (index / (numberOfStepsInSimulation - 1)) * (endYear - startYear) + startYear;
 		}
 		
 		var formatColumnOfDataTable = function(table, columnID, format, unit) {
@@ -247,6 +246,8 @@
 			var selectYAxis = document.getElementById('select-y-axis');
 			var checkedLogarithmicX = document.getElementById('logarithmic-x');
 			var checkedLogarithmicY = document.getElementById('logarithmic-y');
+			var selectLabelsType = document.getElementById('series-labels');
+			var previousXAxis = selectXAxis.value;
 			
 			var chart = new google.visualization.LineChart(div);
 			var table = null;
@@ -273,8 +274,13 @@
 					vAxis : { title : selectedYOption, logScale : !!checkedLogarithmicY.checked }
 				};
 				
-				if (selectXAxis.value == 'year')
+				if (selectXAxis.value == 'year') {
 					options.hAxis.format = '####';
+					selectLabelsType.disabled = 'disabled';
+					selectLabelsType.value = 'none';
+				} else {
+					selectLabelsType.disabled = false;
+				}
 				
 				chart.draw(table, options);
 			}
@@ -317,7 +323,7 @@
 				
 				for (var i = 0; i < getNumberOfRuns(); i++) {
 					if (runsBeingDisplayed[i].visible)
-						numberOfColumnsInNewTable += 2;
+						numberOfColumnsInNewTable += 3;
 				}
 				
 				for (var i = 0; i < getNumberOfRuns(); i++) {
@@ -328,6 +334,7 @@
 					
 					dataLiteral.cols.push({ label : YMeasurement.name, type: 'number' });
 					dataLiteral.cols.push({ type : 'string', role : 'tooltip', p : { role : 'tooltip' } });
+					dataLiteral.cols.push({ type : 'string', role : 'annotation', p : { role : 'annotation' } });
 					
 					if (isTimeSeriesData)
 						var columnX = 0;
@@ -337,17 +344,20 @@
 					
 					for (var j = 0; j < numberOfStepsInSimulation; j++) {
 						var rows = [ ];
+						var y = parseInt(mapIndexToYear(j));
+						var isPossibleYear = (j == 0 || ((j % 20) == 0) || j == 59)
+						var displayYearLabels = isPossibleYear && (selectLabelsType.value == 'years');
 						
 						if (isTimeSeriesData)
 							var tooltip = (
 								runsBeingDisplayed[i].description + "\n" +
-								"Year: " + parseInt(mapIndexToYear(j)) + "\n" +
+								"Year: " + y + "\n" +
 								YMeasurement.name + ": " + data.getFormattedValue(j, columnY)
 							);
 						else
 							var tooltip = (
 								runsBeingDisplayed[i].description + "\n" +
-								"Year: " + parseInt(mapIndexToYear(j)) + "\n" +
+								"Year: " + y + "\n" +
 								XMeasurement.name + ": " + data.getFormattedValue(j, columnX) + "\n" +
 								YMeasurement.name + ": " + data.getFormattedValue(j, columnY)
 							);
@@ -357,6 +367,8 @@
 								rows[k] = { v : data.getValue(j, columnY) };
 							else if (k == (newRowColumnIndex + 1))
 								rows[k] = { v : tooltip, f : tooltip };
+							else if (k == (newRowColumnIndex + 2) && displayYearLabels)
+								rows[k] = { v : y };
 							else if (k == 0)
 								rows[k] = { v : data.getValue(j, columnX) };
 							else
@@ -392,6 +404,11 @@
 			selectXAxis.onchange = function() {
 				checkedLogarithmicX.checked = false;
 				
+				if (previousXAxis == 'year')
+					selectLabelsType.value = 'years';
+				
+				previousXAxis = selectXAxis.value;
+				
 				updateAllData();
 			}
 			
@@ -407,6 +424,10 @@
 			
 			checkedLogarithmicY.onchange = function() {
 				updateAllViewports();
+			}
+			
+			selectLabelsType.onchange = function() {
+				updateAllData();
 			}
 			
 			updateData();

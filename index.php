@@ -417,6 +417,13 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
         </select>
         <label><input type='checkbox' id='logarithmic-y'/> Logarithmic</label>
       </div>
+      <div>
+        <h2>Labels</h2>
+        <select id='series-labels'>
+          <option value='none'>None</option>
+          <option value='years'>Years</option>
+        </select>
+      </div>
     </div>
   </div>
   <form method='post' id='download-data' action='index.php' target='_blank'>
