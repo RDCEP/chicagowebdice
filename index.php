@@ -271,7 +271,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
   <link rel="stylesheet" type="text/css" media="screen, projection" href="http://www.frequency-decoder.com/demo/fd-slider/css/fd-slider.mhtml.min.css" />
   <script src="javascript/fd-slider.min.js"></script>
   <script src="javascript/jquery.min.js"></script>
-  <script type="text/javascript" src="javascript/MathJax.js?config=default"></script>
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>
   <script type='text/javascript'>
 <?php
 	echo "    Options = window.Options || { }\n";
