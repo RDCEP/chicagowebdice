@@ -577,7 +577,7 @@
 			var data = $(form).serialize();
 			var changes = [ ];
 			
-			$(form).find('input[type!=submit],select').each(function() {
+			$(form).find('input[type!=submit][type!=reset],select').each(function() {
 				if (this.tagName.toLowerCase() == 'select') {
 					var defaultValue = $(this).find('option').first().val().trim()
 					var changedValue = $(this).find('option:checked').first().val().trim()
