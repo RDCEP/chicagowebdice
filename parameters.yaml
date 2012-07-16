@@ -1,10 +1,11 @@
-about: >
+﻿about: >
   This file describes all the numeric parameters for the model. All values
   are assumed to be floats unless otherwise specified, and have the given
   range and precision values.
   
   The order of sections in the interface is the same as the order that they
   are first listed here.
+
 
 initial_help: >
   webDICE is a simulation tool designed to show how climate change might
