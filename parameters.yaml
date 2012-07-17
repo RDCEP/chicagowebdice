@@ -287,6 +287,17 @@ parameters:
       - name: Damages to Productivity
         machine_name: productivity
         description: n/a
+  - name: Run Type
+    tab: Advanced
+    machine_name: run
+    section: Optimization
+    values:
+      -name: DICE 2007
+       machine_name: DICE2007Run
+       description: n/a
+      -name: @Optimization
+       machine_name: @OptimizeRun
+       description: n/a
 
 measurements:
   - name: Income per Capita
