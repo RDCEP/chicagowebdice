@@ -293,9 +293,9 @@ parameters:
     section: Optimization
     values:
       -name: DICE 2007
-       machine_name: DICE2007Run
+       machine_name: @DICE2007Run
        description: n/a
-      -name: @Optimization
+      -name: Optimization
        machine_name: @OptimizeRun
        description: n/a
 
