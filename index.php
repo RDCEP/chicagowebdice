@@ -339,7 +339,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 						if(isset($parameter['unit'])){
 							$unit = $parameter['unit'];
 							$description = htmlentities($parameter['description']);
-							print "          <li><label title='$description'>$name -- $unit ";
+							print "          <li><label title='$description'>$name ($unit) ";
 						} else {
 							$description = htmlentities($parameter['description']);
 							print "          <li><label title='$description'>$name ";
@@ -347,7 +347,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 					} else {
 						if(isset($parameter['unit'])){
 							$unit = $parameter['unit'];
-							print "          <li>$name -- $unit ";
+							print "          <li>$name  ($unit) ";
 						} else {
 							print "          <li><label>$name ";
 						}
