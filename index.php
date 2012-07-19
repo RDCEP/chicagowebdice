@@ -369,7 +369,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 						$default = $parameter['default'];
 						$unit = $parameter['unit'];
 
-						if(isset $parameter['unit']){					
+						if(isset($parameter['unit'])){					
 							print "<span class='label'>$default $unit</span> <input name='$machine_name' ";
 						} else {
 							print "<span class='label'>$default</span> <input name='$machine_name' ";
