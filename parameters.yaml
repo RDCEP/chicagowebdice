@@ -149,7 +149,7 @@ parameters:
     max: 3
     step: 0.5
     default: 2
-    description: n/a
+    description: This is just a test to see if my changes are working
   - name: Technology Growth
     machine_name: technology
     tab: Basic
