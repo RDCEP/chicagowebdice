@@ -532,7 +532,7 @@
 					if(run.visible){
 						var measurement = Options.measurements[j];
 					
-						var columnValue = run.description + ' / ' + measurement.name + ' (' + measurement.unit + ')';
+						var columnValue = run.description //+ ' / ' + measurement.name + ' (' + measurement.unit + ')';
 					
 						downloadTextarea.value += ',' + columnValue;
 					}
