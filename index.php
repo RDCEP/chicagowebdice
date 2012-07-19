@@ -47,6 +47,9 @@ foreach ($parameters as $parameter) {
 	
 	if (isset($parameter['description']))
 		$optional[] = 'description';
+
+	if(isset($parameter['unit']))
+		$optional[] = 'unit';
 	
 	$size = count($required) + count($optional);
 	
@@ -364,8 +367,9 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 						$max = $parameter['max'];
 						$step = $parameter['step'];
 						$default = $parameter['default'];
+						$unit = $parameter['unit'];
 					
-						print "<span class='label'>$default</span> <input name='$machine_name' ";
+						print "<span class='label'>$default</span> <span class='label'>$unit</span> <input name='$machine_name' ";
 						print "type='range' min='$min' max='$max' step='$step' value='$default'/></label></li>\n";
 					}
 				}

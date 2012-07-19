@@ -140,6 +140,7 @@ parameters:
     step: 0.5
     default: 3
     description: The amount global temperature changes for a doubling of atmospheric carbon concentrations
+    unit: Deg C
   - name: Environment Damages
     machine_name: a3
     tab: Basic
