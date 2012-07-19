@@ -367,10 +367,12 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 						$max = $parameter['max'];
 						$step = $parameter['step'];
 						$default = $parameter['default'];
-						$unit = $parameter['unit'];
+						if(isset($parameter['unit'])){
+							$unit = $parameter['unit'];
+						}
 
 						if(isset($parameter['unit'])){					
-							print "<span class='label'>$default $unit</span> <input name='$machine_name' ";
+							print "<span class='label'>$default $unit  </span> <input name='$machine_name' ";
 						} else {
 							print "<span class='label'>$default</span> <input name='$machine_name' ";
 						}
