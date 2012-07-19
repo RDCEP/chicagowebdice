@@ -139,7 +139,7 @@ parameters:
     max: 7
     step: 0.5
     default: 3
-    description: How the climate responds to emissions
+    description: The amount global temperature changes for a doubling of atmospheric carbon concentrations
   - name: Environment Damages
     machine_name: a3
     tab: Basic
@@ -157,7 +157,7 @@ parameters:
     max: 0.15
     step: 0.05
     default: 0.1
-    description: n/a
+    description: The global rate of growth of technology. Affects total productivity and thus economic growth
   - name: Consumption Elasticity
     tab: Basic
     section: Economic Controls
@@ -166,6 +166,7 @@ parameters:
     default: 2
     max: 3
     step: 0.1
+    description: n/a
   - name: Time Preference Rate
     tab: Basic
     section: Economic Controls
@@ -174,6 +175,7 @@ parameters:
     default: 0.015
     max: 4
     step: 0.005
+    description: Higher values give short term impacts more weight than long term impacts
   - name: Savings Rate
     tab: Basic
     section: Economic Controls
@@ -246,6 +248,7 @@ parameters:
     max: 1.00
     step: 0.10
     default: 0.00
+    description: The mandated decrease in emissions by 2050 as a share of 2005 year emissions.
   - name: Emissions by 2100
     tab: Basic
     machine_name: e2100
@@ -254,6 +257,7 @@ parameters:
     max: 1.00
     step: 0.10
     default: 0.00
+    description: The mandated decrease in emissions by 2100 as a share of 2005 year emissions.
   - name: Emissions by 2150
     tab: Basic
     machine_name: e2150
@@ -262,6 +266,7 @@ parameters:
     max: 1.00
     step: 0.10
     default: 0.00
+    description: The mandated decrease in emissions by 2150 as a share of 2005 year emissions.
   - name: Oceanic Model
     tab: Advanced
     machine_name: oceanmodel
@@ -280,13 +285,13 @@ parameters:
     values:
       - name: DICE Damages to Gross Output
         machine_name: dice
-        description: n/a
+        description: Climate change destroys a certain percentage of global output
       - name: Kopp Damages to Capital
         machine_name: kopp
-        description: n/a
+        description: Climate change destroys a certain percentage of global input
       - name: Damages to Productivity
         machine_name: productivity
-        description: n/a
+        description: Climate change reduces the rate of growth in global productivity
   - name: Run Type
     tab: Advanced
     machine_name: run
@@ -303,23 +308,23 @@ measurements:
   - name: Income per Capita
     machine_name: consumptionpercapita
     unit: per Person
-    description: n/a
+    description: Global average GDP per capita
     format: "$#.##"
     location: topright
   - name: Atmospheric Temperature Increase
     machine_name: tempAtmosphere
     unit: °C from 1900
-    description: n/a
+    description: Projected increases in global average temperatures compared to pre-industrial temperatures
     location: topleft
   - name: Carbon Mass in Atmosphere
     machine_name: massAtmosphere
     unit: Gt of Carbon
-    description: n/a
+    description: The projected concentration of carbon in the atmosphere.
     location: bottomleft
   - name: Total Emissions per Year
     machine_name: emissionsTotal
     unit: Gt Carbon / 10 yr
-    description: n/a
+    description: Projected path of annual future carbon emissions
     location: bottomright
   - name: Industrial Emissions
     machine_name: emissionsIndustrial
