@@ -529,7 +529,7 @@
 			for (var i = 0; i < getNumberOfRuns(); i++) {
 				for (var j = 0; j < getNumberOfMeasurements(); j++) {
 					var run = runsBeingDisplayed[i];
-					if(runsBeingDisplayed[i].visible){
+					if(run.visible){
 						var measurement = Options.measurements[j];
 					
 						var columnValue = run.description + ' / ' + measurement.name + ' (' + measurement.unit + ')';
