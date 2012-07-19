@@ -336,10 +336,21 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 					$is_range_control = $parameter['is_range_control'];
 					
 					if (isset($parameter['description'])) {
-						$description = htmlentities($parameter['description']);
-						print "          <li><label title='$description'>$name ";
+						if(isset($parameter['unit'])){
+							$unit = $parameter['unit'];
+							$description = htmlentities($parameter['description']);
+							print "          <li><label title='$description'>$name -- $unit ";
+						} else {
+							$description = htmlentities($parameter['description']);
+							print "          <li><label title='$description'>$name ";
+						}
 					} else {
-						print "          <li><label>$name ";
+						if(isset($parameter['unit'])){
+							$unit = $parameter['unit'];
+							print "          <li>$name -- $unit ";
+						} else {
+							print "          <li><label>$name ";
+						}
 					}
 					
 					if ($is_select_control) {
@@ -367,15 +378,8 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 						$max = $parameter['max'];
 						$step = $parameter['step'];
 						$default = $parameter['default'];
-						if(isset($parameter['unit'])){
-							$unit = $parameter['unit'];
-						}
-
-						if(isset($parameter['unit'])){					
-							print "<span class='label'>$default $unit  </span> <input name='$machine_name' ";
-						} else {
-							print "<span class='label'>$default</span> <input name='$machine_name' ";
-						}
+				
+						print "<span class='label'>$default</span> <input name='$machine_name' ";
 						print "type='range' min='$min' max='$max' step='$step' value='$default'/></label></li>\n";
 					}
 				}
