@@ -529,11 +529,13 @@
 			for (var i = 0; i < getNumberOfRuns(); i++) {
 				for (var j = 0; j < getNumberOfMeasurements(); j++) {
 					var run = runsBeingDisplayed[i];
-					var measurement = Options.measurements[j];
+					if(runsBeingDisplayed[i].visible){
+						var measurement = Options.measurements[j];
 					
-					var columnValue = run.description + ' / ' + measurement.name;
+						var columnValue = run.description + ' / ' + measurement.name + ' (' + measurement.unit + ')';
 					
-					downloadTextarea.value += ',' + columnValue;
+						downloadTextarea.value += ',' + columnValue;
+					}
 				}
 			}
 			
