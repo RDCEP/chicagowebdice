@@ -211,8 +211,8 @@
 					title : measurement.name,
 					width : contentDiv.offsetWidth / 2.05,
 					height : (contentDiv.offsetHeight - 30) / 2.05,
-					hAxis : { title : year, format : '####' },
-					yAxis : { title : measurement.unit},
+					hAxis : { title : 'year', format : '####' },
+					yAxis : { title : measurement.unit },
 					legend : {'position' : 'none' },
 					colors : colors
 				};
