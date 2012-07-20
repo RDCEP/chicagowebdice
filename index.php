@@ -453,7 +453,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
   </div>
   <form method='post' id='download-data' action='index.php' target='_blank'>
     <textarea name='data' id='download-textarea'></textarea>
-    <input type='submit' value='Download Graphs as CSV'/>
+    <input type='submit' value='Download Selected Runs as CSV'/>
   </form>
 </div>
 <div id='overlay'>
