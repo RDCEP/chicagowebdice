@@ -524,25 +524,36 @@
 		var downloadTextarea = document.getElementById('download-textarea');
 		var updateDownloadedText = function() {
 			downloadTextarea.value = 'Approximate Year';
+			var downloadData = data;
 			
 			for (var i = 0; i < getNumberOfRuns(); i++) {
-				for (var j = 0; j < getNumberOfMeasurements(); j++) {
-					var run = runsBeingDisplayed[i];
-					var measurement = Options.measurements[j];
+				var run = runsBeingDisplayed[i];
+				if(run.visible){
+					for (var j = 0; j < getNumberOfMeasurements(); j++) {
 					
-					var columnValue = run.description + ' / ' + measurement.name;
-					
-					downloadTextarea.value += ',' + columnValue;
+							var measurement = Options.measurements[j];
+
+							var columnValue = run.description + ' / ' + measurement.name + ' (' + measurement.unit + ')';
+
+							downloadTextarea.value += ',' + columnValue;
+					}
+				} 
+			}
+
+			for(var d = getNumberOfRuns(); d>-1; d--){
+				var run = runsBeingDisplayed[d];
+				if(!run.visible){
+					downloadData.removeColums((d*4)+1, 4);
 				}
 			}
 			
 			downloadTextarea.value += '\n';
 			
 			for (var y = 0; y < numberOfStepsInSimulation; y++) {
-				downloadTextarea.value += data.getValue(y, 0);
+				downloadTextarea.value += downloadData.getValue(y, 0);
 				
-				for (var i = 1; i < data.getNumberOfColumns(); i++) {
-					downloadTextarea.value += ',' + data.getValue(y, i);
+				for (var i = 1; i < downloadData.getNumberOfColumns(); i++) {
+					downloadTextarea.value += ',' + downloadData.getValue(y, i);
 				}
 				
 				downloadTextarea.value += '\n';
