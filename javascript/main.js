@@ -529,7 +529,6 @@
 			
 			for (var i = 0; i < getNumberOfRuns(); i++) {
 				var run = runsBeingDisplayed[i];
-				if(run.visible){
 					for (var j = 0; j < getNumberOfMeasurements(); j++) {
 					
 							var measurement = Options.measurements[j];
@@ -538,14 +537,6 @@
 
 							downloadTextarea.value += ',' + columnValue;
 					}
-				} 
-			}
-
-			for(var d = getNumberOfRuns()-1; d>-1; d--){
-				var run = runsBeingDisplayed[d];
-				if(!run.visible){
-					downloadData.removeColums((d*4)+1, 4);
-				}
 			}
 			
 			downloadTextarea.value += '\n';
