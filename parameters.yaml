@@ -178,7 +178,7 @@ parameters:
   - name: 2050
     tab: Basic
     machine_name: e2050
-    section: Emission Reductions By:
+    section: Emission Reductions By
     min: 0.00
     max: 1.00
     step: 0.10
@@ -187,7 +187,7 @@ parameters:
   - name: 2100
     tab: Basic
     machine_name: e2100
-    section: Emission Reductions By:
+    section: Emission Reductions By
     min: 0.00
     max: 1.00
     step: 0.10
@@ -196,7 +196,7 @@ parameters:
   - name: 2150
     tab: Basic
     machine_name: e2150
-    section: Emission Reductions By:
+    section: Emission Reductions By
     min: 0.00
     max: 1.00
     step: 0.10
