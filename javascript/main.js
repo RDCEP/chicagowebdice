@@ -537,16 +537,14 @@
 							var columnValue = run.description + ' / ' + measurement.name + ' (' + measurement.unit + ')';
 
 							downloadTextarea.value += ',' + columnValue;
-					} else {
-					downloadData.setColumnLabel((i*4) + 1, 'x');
+					}
 				} 
 			}
 
-			var colcount = downloadData.getNumberOfColumns();
-			for(var d = 0, d<colcount, d++){
-				if(downloadData.getColumnLabel() == 'x'){
-					downloadData.removeColums(d,4);
-					colcount = colcount - 4;
+			for(var d = getNumberOfRuns()-1; d>-1; d--){
+				var run = runsBeingDisplayed[d];
+				if(!run.visible){
+					downloadData.removeColums((d*4)+1, 4);
 				}
 			}
 			
@@ -556,7 +554,7 @@
 				downloadTextarea.value += downloadData.getValue(y, 0);
 				
 				for (var i = 1; i < downloadData.getNumberOfColumns(); i++) {
-					downloadTextarea.value += ',' + downloadData.getValue(y, i);
+					downloadTextarea.value += ',' + downloadData.getNumberOfColumns();
 				}
 				
 				downloadTextarea.value += '\n';
