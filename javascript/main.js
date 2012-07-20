@@ -526,9 +526,11 @@
 		var updateDownloadedText = function() {
 			downloadTextarea.value = 'Approximate Year';
 			var downloadData = data;
+			var unselectedCols = new Array();
 			
 			for (var i = 0; i < getNumberOfRuns(); i++) {
 				var run = runsBeingDisplayed[i];
+				if(run.visible){
 					for (var j = 0; j < getNumberOfMeasurements(); j++) {
 					
 							var measurement = Options.measurements[j];
@@ -536,7 +538,15 @@
 							var columnValue = run.description + ' / ' + measurement.name + ' (' + measurement.unit + ')';
 
 							downloadTextarea.value += ',' + columnValue;
-					}
+
+					} 
+				} else {
+					unselectedCols.push(i*5 + 1);
+					unselectedCols.push(i*5 + 2);
+					unselectedCols.push(i*5 + 3);
+					unselectedCols.push(i*5 + 4);
+					unselectedCols.push(i*5 + 5);
+				}
 			}
 			
 			downloadTextarea.value += '\n';
@@ -545,7 +555,9 @@
 				downloadTextarea.value += downloadData.getValue(y, 0);
 				
 				for (var i = 1; i < downloadData.getNumberOfColumns(); i++) {
-					downloadTextarea.value += ',' + downloadData.getValue(y, i);
+					if(!unselectedCols.indexOf(i) = -1){
+						downloadTextarea.value += ',' + downloadData.getValue(y, i);
+					}
 				}
 				
 				downloadTextarea.value += '\n';
