@@ -139,85 +139,70 @@ parameters:
     max: 7
     step: 0.5
     default: 3
-    description: The amount global temperature changes for a doubling of atmospheric carbon concentrations
+    description: Temperature increase if atomspheric co2 concentration reach double pre-industrial revolution levels
     unit: Deg C
-  - name: Environment Damages
+  - name: Rate of Increase of Harm
     machine_name: a3
     tab: Basic
-    section: Model Parameters
+    section: Harm from Climate Change
     min: 1
     max: 3
     step: 0.5
     default: 2
-    description: This is just a test to see if my changes are working
-  - name: Technology Growth
-    machine_name: technology
+    description: n/a
+  - name: Harm from 2.5% Increase
+    tab: Basic
+    section: Harm from Climate Change
+    machine_name: a2
+    default: 0.0028 # 388
+    min:  0.002
+    max:  0.0035
+    step: 0.0001
+  - name: Rate of Decline of Technological Growth
+    machine_name: dela
     tab: Basic
     section: Model Parameters
     min: 0.05
     max: 0.15
     step: 0.05
     default: 0.1
-    description: The global rate of growth of technology. Affects total productivity and thus economic growth
-  - name: Consumption Elasticity
-    tab: Basic
-    section: Economic Controls
-    machine_name: elasmu
-    min: 1
-    default: 2
-    max: 3
-    step: 0.1
     description: n/a
-  - name: Time Preference Rate
+  - name: Reduction in Carbon Intensity
     tab: Basic
-    section: Economic Controls
-    machine_name: prstp
-    min: 0
-    default: 0.015
-    max: 4
-    step: 0.005
-    description: Higher values give short term impacts more weight than long term impacts
-  - name: Savings Rate
-    tab: Basic
-    section: Economic Controls
-    machine_name: savings
-    default: 0.2
-    min: 0.15
-    max: 0.25
-    step: 0.05
-  - name: Max Population
-    tab: Advanced
-    section: Societal Controls
-    machine_name: popasym
-    min: 8000
-    max: 12000
-    step: 200
-    default: 8600
-  - name: Capital Depreciation
-    tab: Advanced
-    section: Economic Controls
-    machine_name: dk
-    default: 0.1
-    min: 0.08
-    max: 0.2
-    step: 0.01
-  - name: Carbon Reduction
-    tab: Advanced
-    section: Economic Controls
+    section: Model Parameters
     machine_name: dsig
     default: 0.003
     min: 0
     max: 0.06
     step: 0.001
-  - name: Doubling Damage
-    tab: Advanced
-    section: CO_(2) Controls
-    machine_name: a2
-    default: 0.0028 # 388
-    min:  0.002
-    max:  0.0035
-    step: 0.0001
-  - name: Cost
+  - name: 2050
+    tab: Basic
+    machine_name: e2050
+    section: Emission Reductions By:
+    min: 0.00
+    max: 1.00
+    step: 0.10
+    default: 0.00
+    description: The mandated decrease in emissions by 2050 as a share of 2005 year emissions.
+  - name: 2100
+    tab: Basic
+    machine_name: e2100
+    section: Emission Reductions By:
+    min: 0.00
+    max: 1.00
+    step: 0.10
+    default: 0.00
+    description: The mandated decrease in emissions by 2100 as a share of 2005 year emissions.
+  - name: 2150
+    tab: Basic
+    machine_name: e2150
+    section: Emission Reductions By:
+    min: 0.00
+    max: 1.00
+    step: 0.10
+    default: 0.00
+    description: The mandated decrease in emissions by 2150 as a share of 2005 year emissions.
+  - name: Marginal Cost
     tab: Advanced
     section: Abatement
     machine_name: expcost2
@@ -225,7 +210,7 @@ parameters:
     min: 2
     max: 4
     step: 0.1
-  - name: Decline Rate of Cost
+  - name: Rate of Cost Reduction
     tab: Advanced
     section: Abatement
     machine_name: gback
@@ -233,42 +218,39 @@ parameters:
     min: 0
     max: 0.2
     step: 0.05
+  - name: Max Population
+    tab: Advanced
+    section: Additional Parameters
+    machine_name: popasym
+    min: 8000
+    max: 12000
+    step: 200
+    default: 8600
+  - name: Capital Depreciation
+    tab: Advanced
+    section: Additional Parameters
+    machine_name: dk
+    default: 0.1
+    min: 0.08
+    max: 0.2
+    step: 0.01
+  - name: Savings Rate
+    tab: Basic
+    section: Additional Parameters
+    machine_name: savings
+    default: 0.2
+    min: 0.15
+    max: 0.25
+    step: 0.05
   - name: Fossil Fuel Reserves
     tab: Advanced
-    section: CO_(2) Controls
+    section: Additional Parameters
     machine_name: fosslim
     min: 6000
     max: 9000
     step: 500
     default: 6000
-  - name: Emissions by 2050
-    tab: Basic
-    machine_name: e2050
-    section: Carbon Policy
-    min: 0.00
-    max: 1.00
-    step: 0.10
-    default: 0.00
-    description: The mandated decrease in emissions by 2050 as a share of 2005 year emissions.
-  - name: Emissions by 2100
-    tab: Basic
-    machine_name: e2100
-    section: Carbon Policy
-    min: 0.00
-    max: 1.00
-    step: 0.10
-    default: 0.00
-    description: The mandated decrease in emissions by 2100 as a share of 2005 year emissions.
-  - name: Emissions by 2150
-    tab: Basic
-    machine_name: e2150
-    section: Carbon Policy
-    min: 0.00
-    max: 1.00
-    step: 0.10
-    default: 0.00
-    description: The mandated decrease in emissions by 2150 as a share of 2005 year emissions.
-  - name: Oceanic Model
+  - name: Carbon Cycle
     tab: Advanced
     machine_name: oceanmodel
     section: Model Design 
@@ -293,17 +275,25 @@ parameters:
       - name: Damages to Productivity
         machine_name: productivity
         description: Climate change reduces the rate of growth in global productivity
-  - name: Run Type
-    tab: Advanced
-    machine_name: run
-    section: Optimization
-    values:
-      -name: DICE 2007
-       machine_name: @DICE2007Run
-       description: n/a
-      -name: Optimization
-       machine_name: @OptimizeRun
-       description: n/a
+  - name: Consumption Elasticity
+    tab: Optimization
+    section: Additional Parameters
+    machine_name: elasmu
+    min: 1
+    default: 2
+    max: 3
+    step: 0.1
+    description: n/a
+  - name: Time Preference Rate
+    tab: Optimization
+    section: Additional Parameters
+    machine_name: prstp
+    min: 0
+    default: 0.015
+    max: 4
+    step: 0.005
+    description: Higher values give short term impacts more weight than long term impacts
+
 
 measurements:
   - name: Income per Capita
