@@ -540,7 +540,7 @@
 				} 
 			}
 
-			for(var d = getNumberOfRuns(); d>-1; d--){
+			for(var d = getNumberOfRuns()-1; d>-1; d--){
 				var run = runsBeingDisplayed[d];
 				if(!run.visible){
 					downloadData.removeColums((d*4)+1, 4);
