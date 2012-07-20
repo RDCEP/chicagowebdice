@@ -211,8 +211,7 @@
 					title : measurement.name,
 					width : contentDiv.offsetWidth / 2.05,
 					height : (contentDiv.offsetHeight - 30) / 2.05,
-					hAxis : { title : 'year', format : '####' },
-					yAxis : { title : measurement.unit },
+					hAxis : { format : '####' },
 					legend : {'position' : 'none' },
 					colors : colors
 				};
@@ -525,27 +524,36 @@
 		var downloadTextarea = document.getElementById('download-textarea');
 		var updateDownloadedText = function() {
 			downloadTextarea.value = 'Approximate Year';
+			var downloadData = data;
 			
 			for (var i = 0; i < getNumberOfRuns(); i++) {
-				for (var j = 0; j < getNumberOfMeasurements(); j++) {
-					var run = runsBeingDisplayed[i];
-					if(run.visible){
-						var measurement = Options.measurements[j];
+				var run = runsBeingDisplayed[i];
+				if(run.visible){
+					for (var j = 0; j < getNumberOfMeasurements(); j++) {
 					
-						var columnValue = run.description //+ ' / ' + measurement.name + ' (' + measurement.unit + ')';
-					
-						downloadTextarea.value += ',' + columnValue;
+							var measurement = Options.measurements[j];
+
+							var columnValue = run.description + ' / ' + measurement.name + ' (' + measurement.unit + ')';
+
+							downloadTextarea.value += ',' + columnValue;
 					}
+				} 
+			}
+
+			for(var d = getNumberOfRuns(); d>-1; d--){
+				var run = runsBeingDisplayed[d];
+				if(!run.visible){
+					downloadData.removeColums((d*4)+1, 4);
 				}
 			}
 			
 			downloadTextarea.value += '\n';
 			
 			for (var y = 0; y < numberOfStepsInSimulation; y++) {
-				downloadTextarea.value += data.getValue(y, 0);
+				downloadTextarea.value += downloadData.getValue(y, 0);
 				
-				for (var i = 1; i < data.getNumberOfColumns(); i++) {
-					downloadTextarea.value += ',' + data.getValue(y, i);
+				for (var i = 1; i < downloadData.getNumberOfColumns(); i++) {
+					downloadTextarea.value += ',' + downloadData.getValue(y, i);
 				}
 				
 				downloadTextarea.value += '\n';
@@ -577,112 +585,109 @@
 		
 		var form = document.getElementById('submission');
 		form.onsubmit = function() {
+			var data = $(form).serialize();
+			var changes = [ ];
 			
-			/* We're putting the hackish-equivalent of a try...finally statement here! */
-			
-			setTimeout(function() {
-				var data = $(form).serialize();
-				var changes = [ ];
-			
-				$(form).find('input[type!=submit][type!=reset],select').each(function() {
-					if (this.tagName.toLowerCase() == 'select') {
-						var defaultValue = $(this).find('option').first().text().trim()
-						var changedValue = $(this).find('option:checked').first().text().trim()
-						var areEqual = (defaultValue == changedValue);
-						var deviation = (areEqual ? 0 : 0.10); // 25% deviation.
-					} else {
-						var defaultValue = this.defaultValue;
-						var changedValue = this.value;
-						var areEqual = (parseFloat(defaultValue) == parseFloat(changedValue));
-						var deviation = Math.abs(Math.log(parseFloat(changedValue) / parseFloat(defaultValue)));
-					}
-				
-					if (!areEqual) {
-						var description = this.parentNode.firstChild.nodeValue.trim();
-						var heading = $(this.parentNode.parentNode.parentNode).prev('h2').first().text();
-					
-						changes.push([ heading, description, changedValue, defaultValue, deviation ]);
-					};
-				});
-			
-				changes.sort(function(a, b) { return b[4] - a[4]; });
-			
-				var runTextualDescription = "Run Parameters:";
-			
-				for (var i = 0; i < changes.length; i++) {
-					var change = changes[i];
-				
-					runTextualDescription += "\n[" + change[0] + "] " + change[1] + ": " + change[2];
+			$(form).find('input[type!=submit][type!=reset],select').each(function() {
+				if (this.tagName.toLowerCase() == 'select') {
+					var defaultValue = $(this).find('option').first().val().trim()
+					var changedValue = $(this).find('option:checked').first().val().trim()
+					var areEqual = (defaultValue == changedValue);
+					var deviation = (areEqual ? 0 : 0.10); // 25% deviation.
+				} else {
+					var defaultValue = this.defaultValue;
+					var changedValue = this.value;
+					var areEqual = (parseFloat(defaultValue) == parseFloat(changedValue));
+					var deviation = Math.abs(Math.log(parseFloat(changedValue) / parseFloat(defaultValue)));
 				}
-			
-				if (changes.length == 0)
-					runTextualDescription += " (default parameters)";
-			
-				var createdLI = document.createElement('li');
-				var createdLABEL = document.createElement('label');
-				var progressIMG = document.createElement('img');
-				var textNode = document.createTextNode("Executing run...");
-			
-				createdLI.setAttribute('title', runTextualDescription);
-			
-				progressIMG.setAttribute('src', 'images/progress.gif');
-				createdLI.appendChild(createdLABEL);
-				createdLABEL.appendChild(textNode);
-				createdLABEL.appendChild(progressIMG);
-				runsUL.appendChild(createdLI);
-			
-				numberOfRunsInProgress++;
-			
-				updateRunsListHeight();
-			
-				$.ajax({
-					type : 'POST',
-					url : 'index.php',
-					data : data,
-					success : function(data, textStatus, xhr) {
-						var runObject = addRunFromCSV("Run #" + (getNumberOfRuns() + 1),
-							generateNextColor(), data, changes);
+				
+				if (!areEqual) {
+					var description = this.parentNode.firstChild.nodeValue.trim();
+					var heading = $(this.parentNode.parentNode.parentNode).prev('h2').first().text();
 					
+					changes.push([ heading, description, changedValue, defaultValue, deviation ]);
+				};
+			});
+			
+			changes.sort(function(a, b) { return b[4] - a[4]; });
+			
+			var runTextualDescription = "Run Parameters:";
+			
+			for (var i = 0; i < changes.length; i++) {
+				var change = changes[i];
+				
+				runTextualDescription += "\n[" + change[0] + "] " + change[1] + ": " + change[2];
+			}
+			
+			if (changes.length == 0)
+				runTextualDescription += " (default parameters)";
+			
+			var createdLI = document.createElement('li');
+			var createdLABEL = document.createElement('label');
+			var progressIMG = document.createElement('img');
+			var textNode = document.createTextNode("Executing run...");
+			
+			createdLI.setAttribute('title', runTextualDescription);
+			
+			progressIMG.setAttribute('src', 'images/progress.gif');
+			createdLI.appendChild(createdLABEL);
+			createdLABEL.appendChild(textNode);
+			createdLABEL.appendChild(progressIMG);
+			runsUL.appendChild(createdLI);
+			
+			numberOfRunsInProgress++;
+			
+			updateRunsListHeight();
+			
+			$.ajax({
+				type : 'POST',
+				url : 'index.php',
+				data : data,
+				success : function(data, textStatus, xhr) {
+					var runObject = addRunFromCSV("Run #" + (getNumberOfRuns() + 1),
+						generateNextColor(), data, changes);
+					
+					numberOfRunsInProgress--;
+					
+					textNode.nodeValue = runObject.description;
+					createdLABEL.removeChild(progressIMG);
+					
+					var visibilityCheckbox = document.createElement('input');
+					visibilityCheckbox.setAttribute('type', 'checkbox');
+					visibilityCheckbox.setAttribute('checked', 'checked');
+					
+					visibilityCheckbox.onchange = function() {
+						runObject.visible = visibilityCheckbox.checked;
+						updateAllData();
+					}
+					
+					createdLABEL.appendChild(visibilityCheckbox);
+					
+					var colorSlab = document.createElement('span');
+					colorSlab.style.backgroundColor = runObject.color;
+					colorSlab.style.borderColor = darkenColorSlightly(runObject.color);
+					colorSlab.setAttribute('class', 'slab');
+					
+					createdLABEL.appendChild(colorSlab);
+				},
+				error : function(xhr, textStatus, errorType) {
+					textNode.nodeValue = "Model Run Failed!";
+					createdLABEL.removeChild(progressIMG);
+					
+					$(createdLABEL).css({backgroundColor:'#fe0'});
+					
+					setTimeout(function() {
 						numberOfRunsInProgress--;
-					
-						textNode.nodeValue = runObject.description;
-						createdLABEL.removeChild(progressIMG);
-					
-						var visibilityCheckbox = document.createElement('input');
-						visibilityCheckbox.setAttribute('type', 'checkbox');
-						visibilityCheckbox.setAttribute('checked', 'checked');
-					
-						visibilityCheckbox.onchange = function() {
-							runObject.visible = visibilityCheckbox.checked;
-							updateAllData();
-						}
-					
-						createdLABEL.appendChild(visibilityCheckbox);
-					
-						var colorSlab = document.createElement('span');
-						colorSlab.style.backgroundColor = runObject.color;
-						colorSlab.style.borderColor = darkenColorSlightly(runObject.color);
-						colorSlab.setAttribute('class', 'slab');
-					
-						createdLABEL.appendChild(colorSlab);
-					},
-					error : function(xhr, textStatus, errorType) {
-						textNode.nodeValue = "Model Run Failed!";
-						createdLABEL.removeChild(progressIMG);
-					
-						$(createdLABEL).css({backgroundColor:'#fe0'});
-					
-						setTimeout(function() {
-							numberOfRunsInProgress--;
 						
-							$(createdLI).remove();
-							updateRunsListHeight();
-						}, 5000);
-					},
-					dataType : 'text',
-					timeout : 10000
-				});
-			}, 0); return false;
+						$(createdLI).remove();
+						updateRunsListHeight();
+					}, 5000);
+				},
+				dataType : 'text',
+				timeout : 10000
+			});
+			
+			return false;
 		}
 		
 		$('input[type=range]', form).change(function() {
