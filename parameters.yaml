@@ -158,7 +158,7 @@ parameters:
     min:  0.002
     max:  0.0035
     step: 0.0001
-  - name: Rate of Decline of Technological Growth
+  - name: Decline of Technology Growth
     machine_name: dela
     tab: Basic
     section: Model Parameters
@@ -167,7 +167,7 @@ parameters:
     step: 0.05
     default: 0.1
     description: n/a
-  - name: Reduction in Carbon Intensity
+  - name: Reduction in Carbon
     tab: Basic
     section: Model Parameters
     machine_name: dsig
@@ -218,6 +218,14 @@ parameters:
     min: 0
     max: 0.2
     step: 0.05
+  - name: Future Cost to Replace
+    tab: Advanced
+    section: Abatement
+    machine_name: backrat
+    default: 2
+    min: 0.5
+    max: 4
+    step: 0.5
   - name: Max Population
     tab: Advanced
     section: Additional Parameters
@@ -235,7 +243,7 @@ parameters:
     max: 0.2
     step: 0.01
   - name: Savings Rate
-    tab: Basic
+    tab: Advanced
     section: Additional Parameters
     machine_name: savings
     default: 0.2
