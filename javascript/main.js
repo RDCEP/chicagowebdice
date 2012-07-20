@@ -555,7 +555,7 @@
 				downloadTextarea.value += downloadData.getValue(y, 0);
 				
 				for (var i = 1; i < downloadData.getNumberOfColumns(); i++) {
-					if(!unselectedCols.indexOf(i) == -1){
+					if(unselectedCols.indexOf(i) == -1){
 						downloadTextarea.value += ',' + downloadData.getValue(y, i);
 					}
 				}
