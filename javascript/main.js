@@ -539,7 +539,6 @@
 							downloadTextarea.value += ',' + columnValue;
 					} else {
 					downloadData.setColumnLabel((i*4) + 1, 'x');
-					}
 				} 
 			}
 
