@@ -462,7 +462,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
     <div class='tabs'>
       <a href='' class='selected' id='link-to-help-basic'>Basic</a>
       <a href='' id='link-to-help-intermediate'>Intermediate</a>
-      <a href='' id='link-to-help-advanced'>Advanced</a>
+      <a href='' id='link-to-help-advanced'>Model Equations</a>
     </div>
     
     <div id='help-basic' class='tab selected'><?php echo markdownify($basic_help); ?></div>
