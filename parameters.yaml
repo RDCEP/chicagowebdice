@@ -104,7 +104,7 @@ advanced_help: >
   
   \section{EQUATIONS}
   
-  \textcolor{red}{- get rid of all 10s except for $\rho$. Is it consistent
+  \textcolor{red}{- get rid of all 10s except for $$\rho$$. Is it consistent
   with matlab code?}
     
   \textcolor{red}{- (Eq)s are my new notation for equations and (A)s
@@ -138,7 +138,7 @@ advanced_help: >
   
   (Eq10) $$A_{g}(t)=A_{g}(0)\times exp(-\Delta_{a}\times(t-1))$$
   
-  (Eq11) $$A(t)=\frac{0.95\times A(t-1)}{1-A_{g}(t-1)}$ for $t\geq1$$
+  (Eq11) $$A(t)=\frac{0.95\times A(t-1)}{1-A_{g}(t-1)}$$ for $$t\geq1$$
   given $$A(0)$$
   
   \textbf{Climate damage function}
