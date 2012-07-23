@@ -98,237 +98,198 @@ intermediate_help: >
 
 advanced_help: >
   ## WebDICE Documentation [Large Version]
-  \begin{document}
   EQUATIONS and VARIABLES TAB: DICE-2007 MODEL
-  
-  
-  \section{EQUATIONS}
-  
-  \textcolor{red}{- get rid of all 10s except for $\rho$. Is it consistent
-  with matlab code?}
-    
-  \textcolor{red}{- (Eq)s are my new notation for equations and (A)s
-  are Nodhaus'. Newly added equations do not have (A)s.}
-  
-  \textbf{Objective function}
-  
-  (Eq1) (A.1) $W=\sum_{t=1}^{Tmax}U[c(t),L(t)]R(t)$
-  
-  (Eq2) (A.2) $R(t)=1/[(1+\rho)^{(10\times(t-1))}]$ 
-  
-  (Eq3) (A.3) $U[c(t),L(t)]=L(t)[c(t)^{1-\alpha}/(1-\alpha)]$
-  
-  (Eq4) (A.8) $c(t)=C(t)/L(t)$
-  
-  \textbf{Population function}
-  
-  (Eq5) $L(t)=L(0)\times\left(1-\frac{e^{L_{g}\times(t-1)}-1}{e^{L_{g}(t-1)}}\right)+L(Tmax)\times\left(\frac{e^{L_{g}\times(t-  1)}-1}{e^{L_{g}(t-1)}}\right)$
-  
-  \textbf{Production function}
-  
-  (Eq6) (A.4) $Q(t)=\Omega(t)[1-\Lambda(t)]A(t)K(t)^{\gamma}L(t)^{1-\gamma}$
-  
-  (Eq7) (A.7) $Q(t)=C(t)+I(t)$
-  
-  (Eq8) $I(t)=s\times Q(t)$ 
-  
-  (Eq9) (A.9) $K(t)=I(t)+(1-\delta_{K})K(t-1)$
-  
-  \textbf{Total Factor Productivity}
-  
-  (Eq10) $A_{g}(t)=A_{g}(0)\times exp(-\Delta_{a}\times(t-1))$
-  
-  (Eq11) $A(t)=\frac{0.95\times A(t-1)}{1-A_{g}(t-1)}$ for $t\geq1$
-  given $A(0)$
-  
-  \textbf{Climate damage function}
-  
-  (Eq12) (A.5) $\Omega(t)=1/[1+\pi_{2}T_{AT}(t)^{\epsilon}]$ 
-  
-  \textbf{Abatement cost function}
-  
-  (Eq13) (A.6) $\Lambda(t)=\theta_{1}(t)\mu(t)^{\theta_{2}}$
-  
-  \textcolor{red}{(Eq14) $\theta_{1}(t)=\left[\frac{BC(0)\times\sigma(t)}{\theta_{2}}\right]\times\left[\frac{BC(0)}{BC  (Tmax)}-1+\frac{exp(-BC_{g}(0)\times(t-1))}{BC(0)/BC(Tmax)}\right]$}
-  
-  \textbf{Emission function}
-  
-  (Eq15) (A.12) $E(t)=E_{Ind}(t)+E_{Land}(t)$
-  
-  (Eq16) (A.11) $E_{Ind}(t)=\sigma(t)[1-\mu(t)]A(t)K(t)^{\gamma}L(t)^{1-\gamma}$
-  
-  (Eq17) $\sigma_{g}(t)=\sigma_{g}(0)\times exp(-\sigma_{d1}\times(t-1))$
-  \textcolor{red}{{*}{*}{*} why not add minus sign in front of $\sigma_{g}(0)$
-  and let $\sigma_{g}(o)>$0 so that }$\sigma_{g}(t)=-\sigma_{g}(0)\times exp(-\sigma_{d1}\times(t-1))$
-  \textcolor{red}{?}
-  
-  (Eq18) $\sigma(t)=\frac{\sigma(t-1)}{1-\sigma_{g}(t)}$ for $t\geq1$
-  given $\sigma(0)$
-  
-  (Eq19) (A.12) $CCum{\color{red}\geq}\sum_{t=0}^{Tmax}E_{Ind}(t)$
-  
-  (Eq20) $E_{Land}(t)=E_{Land}(0)\times(1-0.1)^{t-1}$
-  
-  \textbf{Social Cost of Carbon / Carbon tax / Carbon price }
-  
-  (Eq21) $P(t)=\theta_{1}(t)\mu(t)^{\theta_{2}-1}$
-  
-  \textbf{\textcolor{red}{CARBON CYCLE AND CLIMATE MODEL EQUATIONS ...
-  TO BE ADDED LATER...}}
-  
-  
-  \section{VARIABLES}
-  
-  $t$: time in decades from 2001-2010, 2011-2020, ..., 2590-2600. The
-  last time period is 60 and this period 60 is denoted $Tmax$.
-  
-  $C(t)$ total consumption
-  
-  $c(t)$ per capita consumption
-  
-  $L(t)$ population in millions
-  
-  $I(t)$ investment
-  
-  $K(t)$ capital 
-  
-  $R(t)$ social time preference discount factor
-  
-  $\rho(t)$ social time preference rate per year
-  
-  $A(t)$ total factor productivity 
-  
-  $A_{g}(t)$ growth rate of total factor productivity per decade
-  
-  $E(t)$ total carbon emissions (billions of metric tons of carbon
-  per period)
-  
-  $E_{Land}(t)$ carbon emissions from land use/ deforestation (billions
-  of metric tons of carbon per period)
-  
-  $E_{Ind}(t)$ industrial carbon emissions (billions of metric tons
-  of carbon per period
-  
-  $T_{AT}(t)$ global mean surface temperature ($\ensuremath{^{\circ}}C$
-  increase from 1900 )
-  
-  $\sigma(t)$ ratio of uncontrolled industrial emissions to output
-  (metric tons of carbon per output in 2005 prices)
-  
-  $\sigma_{g}(t)$ \textcolor{red}{rate of decline of carbon intensity
-  per decade}
-  
-  $\Omega(t)$ damage function; $1-\Omega(t)$ is the percentage of
-  output that vanish due to higher mean surface temperature
-  
-  $\Lambda(t)$ abatement cost function; the percentage of output that
-  vanish in order to keep the emission level under policy
-  
-  
-  \subsection{PARAMETERS THAT USERS CHOOSE}
-  
-  \textcolor{red}{determine the appropriate range for each parameter}
-  
-  $\alpha$: elasticity of marginal utility of consumption
-  
-  $\rho$: social time preference rate {}``per year''.\textbf{ }We
-  will average it over 10 years according to (Eq2) $\in[0,1]$
-  
-  $L(Tmax)$: asymptotic population in millions in the last period
-  
-  $\Delta_{a}:$ decline rate of technological change per decade\textbf{
-  >0}
-  
-  \textcolor{red}{{*}{*}{*} change the matlab code: it assumes $\Delta_{a}$
-  is annual decline rate and multiplies 10. Maybe that's why we had
-  decreasing TFP for large $\Delta_{a}?$}
-  
-  $\delta_{K}$: depreciation rate of technological change\textbf{ }per
-  decade
-  
-  $\sigma_{d1}$: decline rate of decarbonization per decade 
-  
-  $\epsilon$: damage exponent in climate damage function
-  
-  $\pi_{2}$: coefficient on the damage exponent term, $T_{AT}(t)^{\epsilon}$
-  in climate damage function
-  
-  $BC_{g}(0)$: inital cost decline in backstop technology \% per decade
-  =0.05
-  
-  $\theta_{2}$: exponent of emission reduction rate in abatement cost
-  function >1
-  
-  \textbf{$CCum$: }\textcolor{red}{maximum cumulative extraction fossil
-  fuels ????? }
-  
-  \textcolor{red}{Or maximum consumption of fossil fuels (billions of
-  metric tons of cabon) in Nordhaus' dice-2007 appendix. should be equivalent?}
-  
-  $s$: savings rate $\in[0,1]$
-  
-  carbon policy variables (ecaps)-----> \textcolor{red}{How does it
-  affect $\mu(t)$? }
-  
-  \textcolor{red}{param.e2005cap is the emissions cap as a percentage
-  of year 2005 emissions}
-  
-  emissions cap by 2050 $\in[0,1]$
-  
-  emissions cap by 2100 $\in[0,1]$
-  
-  emissions cap by 2150 $\in[0,1]$
-  
-  
-  \subsection{PARAMETERS FROM DATA ARE..}
-  
-  \textcolor{red}{delete?: number of scenarios to run?=1}
-  
-  \textcolor{red}{delete?: $\mu(t)$: emission reduction rate,} It represents
-  the fractional reduction of emissions relative to uncontrolled emissions\textcolor{red}{.
-  fraction of controlled emission in 2005 set to =0 for now. . }
-  
-  $L(0):$ 2005 world populations in millions = 6514
-  
-  $L_{g}$: growth rate of population per decade =0.35 \textcolor{red}{???
-  TOO HIGH?}
-  
-  $A(0)$ : inital level of total factor productivity =0.02722
-  
-  $A_{g}(0):$ initial growth rate of TFP per decade =0.092
-  
-  $\gamma:$ capital elasticity of output in production function =0.300
-  
-  $Q(0):$ 2005 world gross output in 2005 US dollars in trillions=61.1
-  
-  $K(0)$: 2005 capital value in 2005 US dollars in trillions=137
-  
-  $\sigma(0)$: 2005 effective carbon intensity / $CO_{2}$-equivalent
-  emissions and GNP ratio in 2005 =0.13418
-  
-  $\sigma_{g}(0)$:\textcolor{red}{{} initial growth of carbon intensity
-  per decade =-0.0730 <0}
-  
-  \textcolor{red}{initial rate of decline of carbon intensity per decade
-  = 0.0730 >0}
-  
-  $E_{Land}(0)$: carbon emissions from deforestation 2005 (GtC per
-  decade) =11
-  
-  $E(0)$: total emissions in year 2005 =84.1910
-  
-  $\pi_{1}$: damage intercept =0.0000
-  
-  \textcolor{red}{$BC(0)$} : Backstop tech Cost /cost of backstop technology
-  in 2005 = 1.17
-  
-  \textcolor{red}{$BC(0)/BC(Tmax)$}: ratio of initial to final backstop
-  cost =2
-  
-  \textcolor{red}{What about letting users choose $BC(Tmax)$ (or equivalently
-  the ratio $BC(0)/BC(Tmax))$ depending on their extent of optimism
-  on future tech growth?}
-  \end{document}
+<p>
+
+EQUATIONS
+=========
+
+**Objective function**
+
+(Eq1) (A.1) $W=\sum_{t=1}^{Tmax}U[c(t),L(t)]R(t)$
+
+(Eq2) (A.2) $R(t)=1/[(1+\rho)^{(10\times(t-1))}]$
+
+(Eq3) (A.3) $U[c(t),L(t)]=L(t)[c(t)^{1-\alpha}/(1-\alpha)]$
+
+(Eq4) (A.8) $c(t)=C(t)/L(t)$
+
+**Population function**
+
+(Eq5)
+$L(t)=L(0)\times\left(1-\frac{e^{L_{g}\times(t-1)}-1}{e^{L_{g}(t-1)}}\right)+L(Tmax)\times\left(\frac{e^{L_{g}\times(t-1)}-1}{e^{L_{g}(t-1)}}\right)$
+
+**Production function**
+
+(Eq6) (A.4)
+$Q(t)=\Omega(t)[1-\Lambda(t)]A(t)K(t)^{\gamma}L(t)^{1-\gamma}$
+
+(Eq7) (A.7) $Q(t)=C(t)+I(t)$
+
+(Eq8) $I(t)=s\times Q(t)$
+
+(Eq9) (A.9) $K(t)=I(t)+(1-\delta_{K})K(t-1)$
+
+**Total Factor Productivity**
+
+(Eq10) $A_{g}(t)=A_{g}(0)\times exp(-\Delta_{a}\times(t-1))$
+
+(Eq11) $A(t)=\frac{0.95\times A(t-1)}{1-A_{g}(t-1)}$ for $t\geq1$ given
+$A(0)$
+
+**Climate damage function**
+
+(Eq12) (A.5) $\Omega(t)=1/[1+\pi_{2}T_{AT}(t)^{\epsilon}]$
+
+**Abatement cost function**
+
+(Eq13) (A.6) $\Lambda(t)=\theta_{1}(t)\mu(t)^{\theta_{2}}$
+
+**Emission function**
+
+(Eq15) (A.12) $E(t)=E_{Ind}(t)+E_{Land}(t)$
+
+(Eq16) (A.11)
+$E_{Ind}(t)=\sigma(t)[1-\mu(t)]A(t)K(t)^{\gamma}L(t)^{1-\gamma}$
+
+(Eq17) $\sigma_{g}(t)=\sigma_{g}(0)\times exp(-\sigma_{d1}\times(t-1))$
+$\sigma_{g}(t)=-\sigma_{g}(0)\times exp(-\sigma_{d1}\times(t-1))$
+
+(Eq18) $\sigma(t)=\frac{\sigma(t-1)}{1-\sigma_{g}(t)}$ for $t\geq1$
+given $\sigma(0)$
+
+(Eq19) (A.12) $CCum{\color{red}\geq}\sum_{t=0}^{Tmax}E_{Ind}(t)$
+
+(Eq20) $E_{Land}(t)=E_{Land}(0)\times(1-0.1)^{t-1}$
+
+**Social Cost of Carbon / Carbon tax / Carbon price **
+
+(Eq21) $P(t)=\theta_{1}(t)\mu(t)^{\theta_{2}-1}$
+
+****
+
+VARIABLES
+=========
+
+$t$: time in decades from 2001-2010, 2011-2020, ..., 2590-2600. The last
+time period is 60 and this period 60 is denoted $Tmax$.
+
+$C(t)$ total consumption
+
+$c(t)$ per capita consumption
+
+$L(t)$ population in millions
+
+$I(t)$ investment
+
+$K(t)$ capital
+
+$R(t)$ social time preference discount factor
+
+$\rho(t)$ social time preference rate per year
+
+$A(t)$ total factor productivity
+
+$A_{g}(t)$ growth rate of total factor productivity per decade
+
+$E(t)$ total carbon emissions (billions of metric tons of carbon per
+period)
+
+$E_{Land}(t)$ carbon emissions from land use/ deforestation (billions of
+metric tons of carbon per period)
+
+$E_{Ind}(t)$ industrial carbon emissions (billions of metric tons of
+carbon per period
+
+$T_{AT}(t)$ global mean surface temperature ($\ensuremath{^{\circ}}C$
+increase from 1900 )
+
+$\sigma(t)$ ratio of uncontrolled industrial emissions to output (metric
+tons of carbon per output in 2005 prices)
+
+$\sigma_{g}(t)$
+
+$\Omega(t)$ damage function; $1-\Omega(t)$ is the percentage of output
+that vanish due to higher mean surface temperature
+
+$\Lambda(t)$ abatement cost function; the percentage of output that
+vanish in order to keep the emission level under policy
+
+PARAMETERS THAT USERS CHOOSE
+----------------------------
+
+$\alpha$: elasticity of marginal utility of consumption
+
+$\rho$: social time preference rate “per year”.** **We will average it
+over 10 years according to (Eq2) $\in[0,1]$
+
+$L(Tmax)$: asymptotic population in millions in the last period
+
+$\Delta_{a}:$ decline rate of technological change per decade** \>0**
+
+$\delta_{K}$: depreciation rate of technological change** **per decade
+
+$\sigma_{d1}$: decline rate of decarbonization per decade
+
+$\epsilon$: damage exponent in climate damage function
+
+$\pi_{2}$: coefficient on the damage exponent term,
+$T_{AT}(t)^{\epsilon}$ in climate damage function
+
+$BC_{g}(0)$: inital cost decline in backstop technology % per decade
+=0.05
+
+$\theta_{2}$: exponent of emission reduction rate in abatement cost
+function \>1
+
+**$CCum$: **
+
+$s$: savings rate $\in[0,1]$
+
+carbon policy variables (ecaps)—–\>
+
+emissions cap by 2050 $\in[0,1]$
+
+emissions cap by 2100 $\in[0,1]$
+
+emissions cap by 2150 $\in[0,1]$
+
+PARAMETERS FROM DATA ARE..
+--------------------------
+
+It represents the fractional reduction of emissions relative to
+uncontrolled emissions
+
+$L(0):$ 2005 world populations in millions = 6514
+
+$L_{g}$: growth rate of population per decade =0.35
+
+$A(0)$ : inital level of total factor productivity =0.02722
+
+$A_{g}(0):$ initial growth rate of TFP per decade =0.092
+
+$\gamma:$ capital elasticity of output in production function =0.300
+
+$Q(0):$ 2005 world gross output in 2005 US dollars in trillions=61.1
+
+$K(0)$: 2005 capital value in 2005 US dollars in trillions=137
+
+$\sigma(0)$: 2005 effective carbon intensity / $CO_{2}$-equivalent
+emissions and GNP ratio in 2005 =0.13418
+
+$\sigma_{g}(0)$:
+
+$E_{Land}(0)$: carbon emissions from deforestation 2005 (GtC per decade)
+=11
+
+$E(0)$: total emissions in year 2005 =84.1910
+
+$\pi_{1}$: damage intercept =0.0000
+
+: Backstop tech Cost /cost of backstop technology in 2005 = 1.17
+
+: ratio of initial to final backstop cost =2
+</p>
   
   
   
