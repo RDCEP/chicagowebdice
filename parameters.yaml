@@ -99,16 +99,15 @@ intermediate_help: >
 advanced_help: >
   ## WebDICE Documentation [Large Version]
   EQUATIONS and VARIABLES TAB: DICE-2007 MODEL
-  <p>
   
   EQUATIONS
   ========= 
   
   **Objective function**
   
-  (Eq1) (A.1) $W=\sum_{t=1}^{Tmax}U[c(t),L(t)]R(t)$
+  <p>(Eq1) (A.1) $W=\sum_{t=1}^{Tmax}U[c(t),L(t)]R(t)$(</p>
   
-  (Eq2) (A.2) $R(t)=1/[(1+\rho)^{(10\times(t-1))}]$
+  <p>(Eq2) (A.2) $R(t)=1/[(1+\rho)^{(10\times(t-1))}]$</p>
   
   (Eq3) (A.3) $U[c(t),L(t)]=L(t)[c(t)^{1-\alpha}/(1-\alpha)]$
   
