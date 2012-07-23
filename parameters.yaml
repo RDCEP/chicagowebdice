@@ -105,7 +105,7 @@ advanced_help: >
   
   **Objective function**
   
-  <p>(Eq1) (A.1) $W=\sum_{t=1}^{Tmax}U[c(t),L(t)]R(t)$(</p>
+  <p>(Eq1) (A.1) $$W=\sum_{t=1}^{Tmax}U[c(t),L(t)]R(t)$$</p>
   
   <p>(Eq2) (A.2) $R(t)=1/[(1+\rho)^{(10\times(t-1))}]$</p>
   
