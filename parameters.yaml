@@ -98,35 +98,8 @@ intermediate_help: >
 
 advanced_help: >
   ## WebDICE Documentation [Large Version]
-  
-  This block of text is primarily to explain the rationale behind all
-  the various parameters in WebDICE as well as explain more about the
-  internal processes of the model.
-  
-  Here is the quadratic formula:
-  
-  <p>$$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$</p>
-  <!-- The <p></p> tags are necessary for Markdown -->
-  
-  And here is the equation for the identity matrix:
-  
-  <p>$$I_{x,y} = \delta_{xy}$$</p>
-  
-  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-  veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
-  ea commodo consequat. Duis aute irure dolor in reprehenderit in
-  voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
-  Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
-  deserunt mollit anim id est laborum.
-  
-  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-  veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-  commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-  velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-  occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
-  anim id est laborum.
+  Nothin'
+
 
 last_modified: 5 July 2012 
 
@@ -166,7 +139,7 @@ parameters:
     step: 0.05
     default: 0.1
     description: Decline in the rate of growth in productivity over time
-  - name: Energy Intensity of the Economy
+  - name: Economic Energy Intensity
     tab: Basic
     section: Model Parameters
     machine_name: dsig
