@@ -139,9 +139,8 @@ parameters:
     max: 7
     step: 0.5
     default: 3
-    description: Temperature increase if atomspheric co2 concentration reach double pre-industrial revolution levels
-    unit: Deg C
-  - name: Rate of Increase of Harm
+    description: Temperature increase in °C from doubling of atmospheric CO2 
+  - name: Exponent of the Damage Function
     machine_name: a3
     tab: Basic
     section: Harm from Climate Change
@@ -149,7 +148,7 @@ parameters:
     max: 3
     step: 0.5
     default: 2
-    description: n/a
+    description: Increase in harms from climate change due to an increase in temperatures
   - name: Harm from 2.5% Increase
     tab: Basic
     section: Harm from Climate Change
@@ -158,7 +157,7 @@ parameters:
     min:  0.002
     max:  0.0035
     step: 0.0001
-  - name: Decline of Technology Growth
+  - name: Technological Growth
     machine_name: dela
     tab: Basic
     section: Model Parameters
@@ -166,8 +165,8 @@ parameters:
     max: 0.15
     step: 0.05
     default: 0.1
-    description: n/a
-  - name: Reduction in Carbon
+    description: Decline in the rate of growth in productivity over time
+  - name: Energy Intensity of the Economy
     tab: Basic
     section: Model Parameters
     machine_name: dsig
@@ -175,10 +174,11 @@ parameters:
     min: 0
     max: 0.06
     step: 0.001
+    description: Rate of decline in energy use per $ of GDP
   - name: 2050
     tab: Basic
     machine_name: e2050
-    section: Emission Reductions By
+    section: Reduction in Emissions below 2005 in
     min: 0.00
     max: 1.00
     step: 0.10
@@ -187,7 +187,7 @@ parameters:
   - name: 2100
     tab: Basic
     machine_name: e2100
-    section: Emission Reductions By
+    section: Reduction in Emissions below 2005 in
     min: 0.00
     max: 1.00
     step: 0.10
@@ -196,13 +196,13 @@ parameters:
   - name: 2150
     tab: Basic
     machine_name: e2150
-    section: Emission Reductions By
+    section: Reduction in Emissions below 2005 in
     min: 0.00
     max: 1.00
     step: 0.10
     default: 0.00
     description: The mandated decrease in emissions by 2150 as a share of 2005 year emissions.
-  - name: Marginal Cost
+  - name: Marginal Cost of abatement
     tab: Advanced
     section: Abatement
     machine_name: expcost2
@@ -210,7 +210,8 @@ parameters:
     min: 2
     max: 4
     step: 0.1
-  - name: Rate of Cost Reduction
+    description: Additional cost from more abatement
+  - name: Reduction in Abatement costs
     tab: Advanced
     section: Abatement
     machine_name: gback
@@ -218,7 +219,8 @@ parameters:
     min: 0
     max: 0.2
     step: 0.05
-  - name: Future Cost to Replace
+    description: Rate of decline in costs of reduction emissions
+  - name: Cost of Replacing all Emissions
     tab: Advanced
     section: Abatement
     machine_name: backrat
@@ -226,6 +228,7 @@ parameters:
     min: 0.5
     max: 4
     step: 0.5
+    description: Change in cost of replacing all emissions in the future in $ per ton of CO2, relative to today’s cost
   - name: Max Population
     tab: Advanced
     section: Additional Parameters
@@ -234,7 +237,8 @@ parameters:
     max: 12000
     step: 200
     default: 8600
-  - name: Capital Depreciation
+    description: Number, in millions, that the population grows asymptotically towards
+  - name: Depreciation Rate
     tab: Advanced
     section: Additional Parameters
     machine_name: dk
@@ -242,6 +246,7 @@ parameters:
     min: 0.08
     max: 0.2
     step: 0.01
+    description: Rate of depreciation per year
   - name: Savings Rate
     tab: Advanced
     section: Additional Parameters
@@ -250,6 +255,7 @@ parameters:
     min: 0.15
     max: 0.25
     step: 0.05
+    description: Savings are per year
   - name: Fossil Fuel Reserves
     tab: Advanced
     section: Additional Parameters
@@ -258,21 +264,22 @@ parameters:
     max: 9000
     step: 500
     default: 6000
+    description: Fossil fuels remaining, measured in CO2 emissions
   - name: Carbon Cycle
     tab: Advanced
     machine_name: oceanmodel
     section: Model Design 
+    description: Oceanic model of carbon transfer
     values:
       - name: DICE
         machine_name: dice
-        description: n/a
       - name: Glotter
         machine_name: glotter
-        description: n/a
   - name: Damages Model
     tab: Advanced
     machine_name: damages_model
     section: Model Design
+    description: Way that climate change harms enter the economy
     values:
       - name: DICE Damages to Gross Output
         machine_name: dice
@@ -283,7 +290,7 @@ parameters:
       - name: Damages to Productivity
         machine_name: productivity
         description: Climate change reduces the rate of growth in global productivity
-  - name: Consumption Elasticity
+  - name: Elasticity of Marginal Consumption
     tab: Optimization
     section: Additional Parameters
     machine_name: elasmu
@@ -291,8 +298,8 @@ parameters:
     default: 2
     max: 3
     step: 0.1
-    description: n/a
-  - name: Time Preference Rate
+    description: Exponent of consumption in utility function
+  - name: Pure Rate of Time Preference
     tab: Optimization
     section: Additional Parameters
     machine_name: prstp
@@ -300,7 +307,7 @@ parameters:
     default: 0.015
     max: 4
     step: 0.005
-    description: Higher values give short term impacts more weight than long term impacts
+    description: Discount rate applied to utility
 
 
 measurements:
