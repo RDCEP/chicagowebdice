@@ -98,19 +98,6 @@ intermediate_help: >
 
 advanced_help: >
   ## WebDICE Documentation [Large Version]
-  %% LyX 2.0.0 created this file. For more info, see http://www.lyx.org/.
-  %% Do not edit unless you really know what you are doing.
-  \documentclass[english]{article}
-  \usepackage[T1]{fontenc}
-  \usepackage[latin9]{inputenc}
-  \usepackage[letterpaper]{geometry}
-  \geometry{verbose,tmargin=3cm,bmargin=4cm,lmargin=3cm,rmargin=3cm,headheight=2.5cm,headsep=1cm}
-  \setlength{\parskip}{\medskipamount}
-  \setlength{\parindent}{0pt}
-  \usepackage{color}
-  \usepackage{setspace}
-  \onehalfspacing
-  \usepackage{babel}
   \begin{document}
   EQUATIONS and VARIABLES TAB: DICE-2007 MODEL
   
