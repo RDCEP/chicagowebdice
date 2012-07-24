@@ -27,10 +27,10 @@ initial_help: >
 
   The model has a number of additional features which you may find useful
   such as calculating the optimal carbon tax and running Monte Carlo
-  simulations. They are described in more detail in our FAQ [link].
+  simulations. They are described in more detail in our documentation above.
 
   We are continually working to improve the model and the interface. If
-  you have suggestions, you can contact as at [email].
+  you have suggestions, you can contact us at <a href="mailto:info-rdcep@ci.uchicago.edu">[info-rdcep@ci.uchicago.edu]</a>.
 
 basic_help: >
   ## WebDICE Documentation [Small Version]
