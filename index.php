@@ -391,7 +391,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 						print "type='range' min='$min' max='$max' step='$step' value='$default'/></label></li>\n";
 					}
 				}
-				if('optimization' === $selected_tab)
+				if('tab-optimization' === $selected_tab)
 					print"<li><input type='submit' id='run-opt' value='Run Optimization'/></li>\n";
 
 				print "        </ul>\n";
