@@ -398,7 +398,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 					} else if ($is_submit_control){
 						$id = $parameters['id'];
 
-						print "<input type='submit' id='$id' value='name'/>"
+						print "<input type='submit' id='$id' value='name'/>";
 					}
 				}
 
