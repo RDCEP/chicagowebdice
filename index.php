@@ -329,10 +329,10 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 				$section_name = format_for_web($section['name']);
 				$parameters = $section['parameters'];
 				
-				print "        <h2>$section_name</h2>\n";
+				print "      <h2>$section_name</h2>\n";
 				if(isset($parameter['subheading'])){
-					print "        <h6>$parameter['subheading']</h6>\n";
-					print "        \n";
+					print "      <h6>$parameter['subheading']</h6>\n";
+					print "      \n";
 				}
 				print "        <ul>\n";
 				
