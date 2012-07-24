@@ -373,8 +373,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 						
 						foreach ($values as $value) {
 							$option_machine_name = $value['machine_name'];
-							$option_name =  $tab_name;
-							//$value['name'];
+							$option_name = $value['name'];
 							
 							if (isset($value['description'])) {
 								$description = htmlentities($value['description']);
@@ -396,9 +395,9 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 						print "<span class='label'>$default</span> <input name='$machine_name' ";
 						print "type='range' min='$min' max='$max' step='$step' value='$default'/></label></li>\n";
 					} else if ($is_submit_control){
-						$id = $parameters['id'];
+						$id = $parameter['id'];
 
-						print "<input type='submit' id='$id' value='name'/>";
+						print "<input type='submit' id='$id' value='$name'/>";
 					}
 				}
 
