@@ -357,10 +357,10 @@ parameters:
     machine_name: dela
     tab: Basic
     section: Model Parameters
-    min: 0.05
-    max: 0.15
-    step: 0.05
-    default: 0.1
+    min: 0.0005
+    max: 0.015
+    step: 0.0005
+    default: 0.001
     description: Decline in the rate of growth in productivity over time
   - name: Economic Energy Intensity
     tab: Basic
@@ -383,7 +383,8 @@ parameters:
   - name: 2100
     tab: Basic
     machine_name: e2100
-    section: User Controls /n Reduction in Emissions Below 2005 in
+    section: User Controls
+    Reduction in Emissions Below 2005 in
     min: 0.00
     max: 1.00
     step: 0.10
