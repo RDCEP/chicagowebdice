@@ -333,7 +333,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 				print "        <ul>\n";
 				if(isset($parameter['subheading'])){
 					$subheading = $parameters['subheading'];
-					print "      $subheading \n";
+					print "      <li>$subheading \n";
 					print "      \n";
 				}
 				
