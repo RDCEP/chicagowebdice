@@ -43,7 +43,7 @@ foreach ($parameters as $parameter) {
 	else if ($is_select_control)
 		array_push($required, "values");
 	else if($is_submit_control)
-		array_push($required, "id");
+		array_push($required, "id", "button_name");
 	
 	if (isset($parameter['step']))
 		$optional[] = 'step';
@@ -396,8 +396,9 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 						print "type='range' min='$min' max='$max' step='$step' value='$default'/></label></li>\n";
 					} else if ($is_submit_control){
 						$id = $parameter['id'];
+						$button_name = $parameter['button_name'];
 
-						print "<input type='submit' id='$id' value='$name'/>";
+						print "<input type='submit' id='$id' value='$button_name'/>";
 					}
 				}
 
