@@ -521,6 +521,12 @@
 			
 			return false;
 		}
+
+		var runOptimizationButton = document.getElementById('run-opt');
+		runOptimizationButton.onclick = function() {
+			//code to come later
+			//run dice optimization
+		}
 		
 		var downloadTextarea = document.getElementById('download-textarea');
 		var updateDownloadedText = function() {
@@ -586,6 +592,8 @@
 		
 		handlersForViewportChanged.push(displayConditionalHelp);
 		handlersForDataChanged.push(displayConditionalHelp);
+
+
 		
 		var form = document.getElementById('submission');
 		form.onsubmit = function() {
