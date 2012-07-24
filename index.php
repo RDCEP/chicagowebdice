@@ -50,6 +50,9 @@ foreach ($parameters as $parameter) {
 
 	if(isset($parameter['unit']))
 		$optional[] = 'unit';
+
+	if(isset($parameter['subheading']))
+		$optional[] = 'subheading';
 	
 	$size = count($required) + count($optional);
 	
@@ -328,6 +331,10 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 				
 				print "        <h2>$section_name</h2>\n";
 				print "        <ul>\n";
+				if(isset($parameter['subheading'])){
+					print "	$parameter['subheading'] \n";
+					print "\n";
+				}
 				
 				foreach ($parameters as $parameter) {
 					$name = format_for_web($parameter['name']);

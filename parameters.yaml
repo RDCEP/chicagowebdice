@@ -343,8 +343,8 @@ parameters:
     max: 7
     step: 0.5
     default: 3
-    description: Temperature increase in °C from doubling of atmospheric CO2 
-  - name: Exponent of the Damage Function
+    description: Temperature increase in degrees C from doubling of atmospheric CO2 
+  - name: Exponent of Damage Function
     machine_name: a3
     tab: Basic
     section: Model Parameters
@@ -362,7 +362,7 @@ parameters:
     step: 0.0005
     default: 0.001
     description: Decline in the rate of growth in productivity over time
-  - name: Economic Energy Intensity
+  - name: Energy Intensity
     tab: Basic
     section: Model Parameters
     machine_name: dsig
@@ -374,7 +374,8 @@ parameters:
   - name: 2050
     tab: Basic
     machine_name: e2050
-    section: User Controls /n Reduction in Emissions Below 2005 in
+    section: User Controls
+    subheading: Reduction in Emissions Below 2005 in
     min: 0.00
     max: 1.00
     step: 0.10
@@ -384,7 +385,7 @@ parameters:
     tab: Basic
     machine_name: e2100
     section: User Controls
-    Reduction in Emissions Below 2005 in
+    subheading: Reduction in Emissions Below 2005 in
     min: 0.00
     max: 1.00
     step: 0.10
@@ -393,7 +394,8 @@ parameters:
   - name: 2150
     tab: Basic
     machine_name: e2150
-    section: User Controls /n Reduction in Emissions Below 2005 in
+    section: User Controls
+    subheading: Reduction in Emissions Below 2005 in
     min: 0.00
     max: 1.00
     step: 0.10
@@ -487,7 +489,7 @@ parameters:
       - name: Damages to Productivity
         machine_name: productivity
         description: Climate change reduces the rate of growth in global productivity
-  - name: Elasticity of Marginal Consumption
+  - name: Elasticity of Marg. Consump.
     tab: Optimization
     section: Additional Parameters
     machine_name: elasmu
