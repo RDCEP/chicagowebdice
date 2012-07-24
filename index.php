@@ -330,12 +330,12 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 				$parameters = $section['parameters'];
 				
 				print "      <h2>$section_name</h2>\n";
+				print "        <ul>\n";
 				if(isset($parameter['subheading'])){
-				$subheading = $parameter['subheading'];
-					print "      <h6>$subheading</h6>\n";
+					$subheading = $parameters['subheading'];
+					print "      $subheading \n";
 					print "      \n";
 				}
-				print "        <ul>\n";
 				
 				foreach ($parameters as $parameter) {
 					$name = format_for_web($parameter['name']);
