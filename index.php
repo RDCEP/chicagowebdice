@@ -36,7 +36,7 @@ foreach ($parameters as $parameter) {
 	
 	$is_select_control = isset($parameter['values']);
 	$is_range_control = isset($parameter['min']);
-	$is_submit_control = isset$parameter['id']);
+	$is_submit_control = isset($parameter['id']);
 	
 	if ($is_range_control)
 		array_push($required, "min", "max", "default");
