@@ -368,7 +368,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 						
 						foreach ($values as $value) {
 							$option_machine_name = $value['machine_name'];
-							$option_name =   $selected_tab;
+							$option_name =  $tab_name;
 							/*$value['name'];
 							*
 							*/
