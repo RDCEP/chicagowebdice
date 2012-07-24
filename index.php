@@ -392,6 +392,9 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 					}
 				}
 			
+				if('Optimization' === $selected_tab)
+					print"<li><input type='submit' id='run-opt' value='Run Optimization'/></li>\n"
+
 				print "        </ul>\n";
 			}
 			
