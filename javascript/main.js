@@ -526,6 +526,7 @@
 		runOptimizationButton.onclick = function() {
 			//code to come later
 			//run dice optimization
+			return false;
 		}
 		
 		var downloadTextarea = document.getElementById('download-textarea');
