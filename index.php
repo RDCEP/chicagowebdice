@@ -35,12 +35,15 @@ foreach ($parameters as $parameter) {
 	$optional = array();
 	
 	$is_select_control = isset($parameter['values']);
-	$is_range_control = !$is_select_control;
+	$is_range_control = isset($parameter['min']);
+	$is_submit_control = isset$parameter['id']);
 	
 	if ($is_range_control)
 		array_push($required, "min", "max", "default");
 	else if ($is_select_control)
 		array_push($required, "values");
+	else if($is_submit_control)
+		array_push($required, "id");
 	
 	if (isset($parameter['step']))
 		$optional[] = 'step';
@@ -73,6 +76,7 @@ foreach ($parameters as $parameter) {
 	
 	$parameter['is_select_control'] = $is_select_control;
 	$parameter['is_range_control'] = $is_range_control;
+	$parameter['is_submit_control'] = $is_submit_control;
 	
 	if ($is_select_control) {
 		$parameter['indexed_values'] = array();
@@ -342,6 +346,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 					$machine_name = htmlentities($parameter['machine_name']);
 					$is_select_control = $parameter['is_select_control'];
 					$is_range_control = $parameter['is_range_control'];
+					$is_submit_control = $parameter['is_submit_control'];
 					
 					if (isset($parameter['description'])) {
 						if(isset($parameter['unit'])){
@@ -369,9 +374,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 						foreach ($values as $value) {
 							$option_machine_name = $value['machine_name'];
 							$option_name =  $tab_name;
-							/*$value['name'];
-							*
-							*/
+							//$value['name'];
 							
 							if (isset($value['description'])) {
 								$description = htmlentities($value['description']);
@@ -392,6 +395,10 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 				
 						print "<span class='label'>$default</span> <input name='$machine_name' ";
 						print "type='range' min='$min' max='$max' step='$step' value='$default'/></label></li>\n";
+					} else if ($is_submit_control){
+						$id = $parameters['id'];
+
+						print "<input type='submit' id='$id' value='name'/>"
 					}
 				}
 
@@ -405,7 +412,6 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
     <div id='controls'>
       <input type='reset' id='reset-inputs' value='Reset Inputs'/>
       <input type='submit' id='delete-all' value='Clear Graphs' disabled='disabled'/>
-      <input type='submit' id='run-opt' value='Run Optimization'/>
       <input type='submit' value='Run Model'/>
     </div>
   </form>

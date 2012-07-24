@@ -504,6 +504,11 @@ parameters:
     max: 4
     step: 0.005
     description: Discount rate applied to utility
+  - name: Run Optimization
+    tab: Optimization
+    section: Run Model
+    machine_name: run-opt
+    id: run-opt
 
 
 measurements:
