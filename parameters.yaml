@@ -505,6 +505,7 @@ parameters:
     step: 0.005
     description: Discount rate applied to utility
   - name: Run Optimization
+    button_name: Run
     tab: Optimization
     section: Run Model
     machine_name: run-opt
