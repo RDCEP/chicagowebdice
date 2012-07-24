@@ -332,8 +332,8 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 				print "      <h2>$section_name</h2>\n";
 				print "        <ul>\n";
 				if(isset($parameter['subheading'])){
-					$subheading = $parameters['subheading'];
-					print "      <li>$subheading \n";
+					$subheading_name = $parameters['subheading'];
+					print "      <li>$subheading_name</li>\n";
 					print "      \n";
 				}
 				
