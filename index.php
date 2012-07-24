@@ -391,10 +391,6 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 						print "type='range' min='$min' max='$max' step='$step' value='$default'/></label></li>\n";
 					}
 				}
-			
-				if('Optimization' === $selected_tab){
-					print "        <input type='submit' id='run-opt' value='Run Optimization'/>\n";
-					}
 
 				print "        </ul>\n";
 			}
@@ -406,6 +402,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
     <div id='controls'>
       <input type='reset' id='reset-inputs' value='Reset Inputs'/>
       <input type='submit' id='delete-all' value='Clear Graphs' disabled='disabled'/>
+      <input type='submit' id='run-opt' value='Run Optimization'/>
       <input type='submit' value='Run Model'/>
     </div>
   </form>
