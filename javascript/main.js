@@ -709,9 +709,9 @@
 			
 			//var offset = Math.pow(10, 3 - s);
 			//var value = parseInt(parseFloat(this.value) * offset) / offset;
-			var value = (parseFloat(this.value)).toFixed(this.precision);
+			var value = (parseFloat(this.value)).toFixed(this.pre_cision);
 			
-			$(this).parents('label').find('span.label').text(this.precision);
+			$(this).parents('label').find('span.label').text(value);
 		});
 		
 		$('#reset-inputs').click(function(e) {
