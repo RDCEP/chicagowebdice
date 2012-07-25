@@ -392,7 +392,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 						$max = $parameter['max'];
 						$step = $parameter['step'];
 						$default = $parameter['default'];
-						$precision = $parameter['precision']
+						$precision = $parameter['precision'];
 				
 						print "<span class='label'>$default</span> <input name='$machine_name' ";
 						print "type='range' min='$min' max='$max' step='$step' value='$default'/></label></li>\n";
