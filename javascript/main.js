@@ -711,7 +711,7 @@
 			//var value = parseInt(parseFloat(this.value) * offset) / offset;
 			var value = parseFloat((parseFloat(this.value)).toFixed(4));
 			
-			$(this).parents('label').find('span.label').text(value);
+			$(this).parents('label').find('span.label').text(this.min);
 		});
 		
 		$('#reset-inputs').click(function(e) {
