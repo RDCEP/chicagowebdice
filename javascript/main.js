@@ -709,7 +709,7 @@
 			
 			//var offset = Math.pow(10, 3 - s);
 			//var value = parseInt(parseFloat(this.value) * offset) / offset;
-			var value = parseFloat(this.value);
+			var value = parseFloat((this.value).toFixed(4));
 			
 			$(this).parents('label').find('span.label').text(value);
 		});
