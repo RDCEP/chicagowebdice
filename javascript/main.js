@@ -704,11 +704,12 @@
 		}
 		
 		$('input[type=range]', form).change(function() {
-			var s = Math.ceil(Math.log(parseFloat(this.value)));
-			if (!(s > s) && !(s < s)) s = 1;
+			//var s = Math.ceil(Math.log(parseFloat(this.value)));
+			//if (!(s > s) && !(s < s)) s = 1;
 			
-			var offset = Math.pow(10, 3 - s);
-			var value = parseInt(parseFloat(this.value) * offset) / offset;
+			//var offset = Math.pow(10, 3 - s);
+			//var value = parseInt(parseFloat(this.value) * offset) / offset;
+			var value = parseFloat(this.value);
 			
 			$(this).parents('label').find('span.label').text(value);
 		});
