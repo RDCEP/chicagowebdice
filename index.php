@@ -401,6 +401,8 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 						$button_name = $parameter['button_name'];
 
 						print "<input type='submit' id='$id' value='$button_name'/>";
+
+						//tettesttes
 					}
 				}
 
