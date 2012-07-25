@@ -395,7 +395,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 						$precision = $parameter['precision'];
 				
 						print "<span class='label'>$default</span> <input name='$machine_name' ";
-						print "type='range' min='$min' max='$max' step='$step' value='$default' pre_cision='$precision'/></label></li>\n";
+						print "type='range' min='$min' max='$max' step='$step' value='$default' data-precision='$precision'/></label></li>\n";
 					} else if ($is_submit_control){
 						$id = $parameter['id'];
 						$button_name = $parameter['button_name'];
