@@ -211,7 +211,7 @@
 					title : measurement.name,
 					width : contentDiv.offsetWidth / 2.05,
 					height : (contentDiv.offsetHeight - 30) / 2.05,
-					hAxis : { format : '####', title : 'time' },
+					hAxis : { format : '####', title : 'year' },
 					vAxis : { title : measurement.unit },
 					legend : {'position' : 'none' },
 					colors : colors
