@@ -39,7 +39,7 @@ foreach ($parameters as $parameter) {
 	$is_submit_control = isset($parameter['id']);
 	
 	if ($is_range_control)
-		array_push($required, "min", "max", "default");
+		array_push($required, "min", "max", "default", "precision");
 	else if ($is_select_control)
 		array_push($required, "values");
 	else if($is_submit_control)
@@ -99,6 +99,7 @@ foreach ($parameters as $parameter) {
 		if (!is_numeric($parameter['min']) ||
 		    !is_numeric($parameter['max']) ||
 		    !is_numeric($parameter['step']) ||
+		    !is_numeric($parameter['precision']) ||
 		    !is_numeric($parameter['default']))
 			trigger_error($non_numeric_configuration, E_USER_ERROR);
 		
@@ -391,6 +392,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 						$max = $parameter['max'];
 						$step = $parameter['step'];
 						$default = $parameter['default'];
+						$precision = $parameter['precision']
 				
 						print "<span class='label'>$default</span> <input name='$machine_name' ";
 						print "type='range' min='$min' max='$max' step='$step' value='$default'/></label></li>\n";
