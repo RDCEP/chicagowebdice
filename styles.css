@@ -13,6 +13,7 @@
 #view-source{font:0.9em Helvetica,sans-serif;color:white;padding:0.4em;}
 #view-source{text-decoration:none;}
 #view-source:hover{text-decoration:underline;}
+#sidebar{position:absolute;top:9.5em;left:0;width:19em;background-color:#eee;bottom:0;border-right:1px solid #aaa;}
 #sidebar .hasruns{position:absolute;top:9.5em;left:0;width:19em;background-color:#eee;bottom:0;border-right:1px solid #aaa;height:100%;}
 #sidebar .hasnoruns{position:absolute;top:9.5em;left:0;width:19em;background-color:#eee;bottom:0;border-right:1px solid #aaa;}
 #back-to-rdcep{position:absolute;height:2.5em;top:7em;left:0;right:0;background-color:#596D26;}
