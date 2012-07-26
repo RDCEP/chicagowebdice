@@ -34,8 +34,8 @@ setup:
 	mkdir -p $(MCRINSTALLROOT)
 	## Comment the following and uncomment the next line if running a 64-bit
 	## build of bin/diceDriver. It's unlikely that this is the case.
-	wget $(X86MCRURL) -o $(MCRINSTALLROOT)/MCRInstaller.zip
-	# wget $(X86_64MCRURL) -o $(MCRINSTALLROOT)/MCRInstaller.zip
+	wget -O $(MCRINSTALLROOT)/MCRInstaller.zip $(X86MCRURL)
+	# wget -O $(MCRINSTALLROOT)/MCRInstaller.zip $(X86_64MCRURL)
 	unzip $(MCRINSTALLROOT)/MCRInstaller.zip
 	$(MCRINSTALLROOT)/install -mode silent
 	mkdir -p $(WEBROOT)/development
