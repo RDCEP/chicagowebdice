@@ -79,6 +79,7 @@
 		var submissionDiv = document.getElementById('submission');
 		var overlayDiv = document.getElementById('overlay');
 		var advancedHelpDiv = document.getElementById('advanced-help');
+		var sidebarDiv = document.getElementById('sidebar');
 		var runsBeingDisplayed = [ ];
 		var nextRunNumber = 1;
 		
@@ -583,10 +584,13 @@
 					numberVisible++;
 			}
 			
-			if (numberVisible > 0)
+			if (numberVisible > 0){
 				contentDiv.setAttribute('class', 'hasruns');
-			else
+				sidebarDiv.setAttribute('class', 'hasruns');
+			} else{
 				contentDiv.setAttribute('class', 'hasnoruns');
+				sidebarDiv.setAttribute('class', 'hasnoruns');
+			}
 			
 			deleteAllButton.disabled = (numberVisible == 0);
 		}

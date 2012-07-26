@@ -300,7 +300,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 <h1 id='heading'> <span>RDCEP</span> :: WebDICE</h1>
 <div id='back-to-rdcep'><a href='http://www.rdcep.org/'>Back to RDCEP</a></div>
 <a id='display-help'>Documentation</a> <a id='view-source' href='https://www.github.com/RDCEP/chicagowebdice/'>View Source</a>
-<div id='sidebar'>
+<div id='sidebar' class='hasnoruns'>
   <form id='submission'>
 <?php
 		if (count($tabs) <= 1)

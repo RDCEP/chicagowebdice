@@ -13,7 +13,8 @@
 #view-source{font:0.9em Helvetica,sans-serif;color:white;padding:0.4em;}
 #view-source{text-decoration:none;}
 #view-source:hover{text-decoration:underline;}
-#sidebar{position:absolute;top:9.5em;left:0;width:19em;background-color:#eee;bottom:0;border-right:1px solid #aaa;height:100%}
+#sidebar .hasruns{position:absolute;top:9.5em;left:0;width:19em;background-color:#eee;bottom:0;border-right:1px solid #aaa;height:100%;}
+#sidebar .hasnoruns{position:absolute;top:9.5em;left:0;width:19em;background-color:#eee;bottom:0;border-right:1px solid #aaa;}
 #back-to-rdcep{position:absolute;height:2.5em;top:7em;left:0;right:0;background-color:#596D26;}
 #back-to-rdcep{border-top:1px solid #697E33;border-bottom:1px solid #697E33;margin-top:-2px;padding-left:18.5em;}
 #back-to-rdcep a{color:#eee;font:0.9em/2.8em Helvetica,sans-serif;text-decoration:none;}
@@ -37,12 +38,12 @@
 #runs li img{position:absolute;top:1.5em;right:1em;}
 #runs li .slab{position:absolute;top:1.5em;left:1em;width:0.8em;height:0.8em;border:1px solid #000;}
 #runs li input{position:absolute;right:15px;top:20px;}
-#content{position:absolute;top:9.5em;left:19em;right:0;bottom:0;overflow:auto;height:100%}
+#content{position:absolute;top:9.5em;left:19em;right:0;bottom:0;overflow:auto;}
 #content .graph{float:left;}
 #content .initial{position:absolute;background-color:#eee;font:1em/1.5em Helvetica,sans-serif;}
 #content .initial{top:3em;left:4em;bottom:4em;right:4em;border-radius:1em;padding:2em;}
 #content .initial p{margin-bottom:1em;}
-#content.hasruns .initial{display:none;}
+#content.hasruns .initial{display:none;height=100%;}
 #content.hasnoruns #four-graphs{display:none;}
 #content.hasnoruns #custom-graph{display:none;}
 #content.hasnoruns #download-data{display:none;}
