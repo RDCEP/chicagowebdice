@@ -457,6 +457,8 @@
 			
 			$(submissionDiv).animate({ bottom: outerHeight }, "slow");
 			$(runsUL).animate({ height:outerHeight, scrollTop : (bottomHeight - outerHeight) }, "slow");
+			$(sidebarDiv).animate({height:100%}, "slow");
+			$(contentDiv).animate({height:100%}, "slow");
 		}
 		
 		var setVisibilityOfOverlay = function(visible) {
@@ -585,8 +587,6 @@
 			}
 			
 			if (numberVisible > 0){
-				contentDiv.setAttribute('style', 'height:100%');
-				sidebarDiv.setAttribute('style', 'height:100%');
 				contentDiv.setAttribute('class', 'hasruns');
 			} else{
 				contentDiv.setAttribute('class', 'hasnoruns');
