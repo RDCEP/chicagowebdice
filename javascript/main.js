@@ -586,8 +586,8 @@
 			
 			if (numberVisible > 0){
 				contentDiv.setAttribute('class', 'hasruns');
-				contentDiv.setAttribute('height', '100%');
-				sidebarDiv.setAttribute('height', '100%');
+				contentDiv.setAttribute('style', 'height:100%');
+				sidebarDiv.setAttribute('style', 'height:100%');
 			} else{
 				contentDiv.setAttribute('class', 'hasnoruns');
 			}
