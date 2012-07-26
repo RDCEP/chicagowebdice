@@ -248,8 +248,6 @@ parameters:
     values:
       - name: DICE
         machine_name: dice
-      - name: Glotter
-        machine_name: glotter
   - name: Damages Model
     tab: Advanced
     machine_name: damages_model
