@@ -457,8 +457,8 @@
 			
 			$(submissionDiv).animate({ bottom: outerHeight }, "slow");
 			$(runsUL).animate({ height:outerHeight, scrollTop : (bottomHeight - outerHeight) }, "slow");
-			$(sidebarDiv).animate({height:100%}, "slow");
-			$(contentDiv).animate({height:100%}, "slow");
+			$(sidebarDiv).animate({ height:100% }, "slow");
+			$(contentDiv).animate({ height:100% }, "slow");
 		}
 		
 		var setVisibilityOfOverlay = function(visible) {
@@ -704,7 +704,7 @@
 						}, 5000);
 					},
 					dataType : 'text',
-					timeout : 10000
+					timeout : 50000
 				});
 			
 				}, 0); return false;
