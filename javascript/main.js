@@ -588,6 +588,7 @@
 				contentDiv.setAttribute('style', 'height:100%');
 				sidebarDiv.setAttribute('style', 'height:100%');
 				contentDiv.setAttribute('class', 'hasruns');
+				updateAllViewports();
 			} else{
 				contentDiv.setAttribute('class', 'hasnoruns');
 			}
