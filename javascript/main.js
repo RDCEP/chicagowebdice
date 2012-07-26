@@ -586,10 +586,10 @@
 			
 			if (numberVisible > 0){
 				contentDiv.setAttribute('class', 'hasruns');
-				sidebarDiv.setAttribute('class', 'hasruns');
+				contentDiv.setAttribute('height', '100%');
+				sidebarDiv.setAttribute('height', '100%');
 			} else{
 				contentDiv.setAttribute('class', 'hasnoruns');
-				sidebarDiv.setAttribute('class', 'hasnoruns');
 			}
 			
 			deleteAllButton.disabled = (numberVisible == 0);
