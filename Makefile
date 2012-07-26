@@ -30,7 +30,8 @@ bin/diceDriver: bin/diceDriver32
 	ln -s `pwd`/bin/diceDriver32 bin/diceDriver
 
 setup:
-	apt-get install lamp-server git unzip ia32-libs
+	## Uncomment the following dependency if running a 64-bit install.
+	apt-get install lamp-server git unzip # ia32-libs
 	mkdir -p $(MCRINSTALLROOT)
 	## Comment the following and uncomment the next line if running a 64-bit
 	## build of bin/diceDriver. It's unlikely that this is the case.
