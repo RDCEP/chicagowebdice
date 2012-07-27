@@ -96,84 +96,6 @@ intermediate_help: >
   occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
   anim id est laborum.
 
-parameters_help: >
-  This could be some kind of FAQ, offering answers to questions or more info on specific parameters.
-
-
-  <a href="#test"> Test </a> <br />
-  <a href="#test2"> Test2 </a> <br />
-  <a href="#test3"> Test3 </a> <br />
-  <a href="#test4"> Test4 </a> <br />
-  <a href="#test5"> Test5 </a> <br />
-  <a href="#test6"> Test6 </a> <br />
-  <a href="#test7"> Test7 </a> <br />
-  <a href="#test8"> Test8 </a> <br />
-  <a href="#test9"> Test9 </a> <br />
-  <a href="#test10"> Test10 </a> <br />
-  <a href="#test11"> Test11 </a> <br />
-  <a href="#test12"> Test12 </a> <br />
-  <a href="#test13"> Test13 </a> <br />
-  <a href="#test14"> Test14 </a> <br />
-  <a href="#test15"> Test15 </a> <br />
-  <a href="#test16"> Test16 </a> <br />
-  <a href="#test17"> Test17 </a> <br />
-  <a href="#test18"> Test18 </a> <br />
-
-  <a name="test"> </a>
-  <h3>Test</h3>
-  Some kinda description
-
-  <h3><a name="test2"> Test2 </a></h3>
-  Some kinda description
-
-  <h3><a name="test3"> You can name these things whatever you want but for clarity's sake it makes sense to keep the naming consistant</a></h3>
-  Like we would name this Test3
-
-  <h3><a name="test4"> Test4 </a></h3>
-  Some kinda description
-
-  <h3><a name="test5"> Test5 </a></h3>
-  Some kinda description
-
-  <h3><a name="test6"> Test6 </a></h3>
-  Some kinda description
-
-  <h3><a name="test7"> Test7 </a></h3>
-  Some kinda description
-
-  <h3><a name="test8"> Test8 </a></h3>
-  Some kinda description
-
-  <h3><a name="test9"> Test9 </a></h3>
-  Some kinda description
-
-  <h3><a name="test10"> Test10 </a></h3>
-  Some kinda description
-
-  <h3><a name="test11"> Test11 </a></h3>
-  Some kinda description
-
-  <h3><a name="test12"> Test12 </a></h3>
-  Some kinda description
-
-  <h3><a name="test13"> Test13 </a></h3>
-  Some kinda description
-
-  <h3><a name="test14"> Test14 </a></h3>
-  Some kinda description
-
-  <h3><a name="test15"> Test15 </a></h3>
-  Some kinda description
-
-  <h3><a name="test16"> Test16 </a></h3>
-  Some kinda description
-
-  <h3><a name="test17"> Test17 </a></h3>
-  Some kinda description
-
-  <h3><a name="test18"> Test18 </a></h3>
-  Some kinda description
-
 advanced_help: >
   ## WebDICE Documentation [Large Version]
 
@@ -394,3 +316,39 @@ measurements:
   - name: Industrial Emissions
     machine_name: emissionsIndustrial
     unit: Gt Carbon
+
+
+questions:
+  - question: What is the answer to the ultimate question, of life, the universe, and everything?
+    question_shortname: ultques
+    answer: 42
+  - question: Why?
+    question_shortname: why
+    answer: Why not?
+  - question: Is the answe to this question 'no'?
+    question_shortname: paradox
+    answer: Yes... no.... uhhh..... *head exploded*
+  - question: Does Aidan feel like coming up with more questions?
+    question_shortname: doesdaidan
+    answer: No.
+  - question: Test
+    question_shortname: test
+    answer: Test
+  - question: Test2
+    question_shortname: test2
+    answer: Test2
+  - question: Test3
+    question_shortname: test3
+    answer: Test3
+  - question: Test4
+    question_shortname: test4
+    answer: Test4
+  - question: Test5
+    question_shortname: test5
+    answer: Test5
+  - question: Test6
+    question_shortname: test6
+    answer: Test6
+  - question: Test7
+    question_shortname: test7
+    answer: Test7

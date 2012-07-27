@@ -7,11 +7,11 @@ $configuration = Spyc::YAMLLoad('parameters.yaml');
 
 $parameters = $configuration['parameters'];
 $measurements = $configuration['measurements'];
+$questions = $configuration['questions'];
 $initial_help = $configuration['initial_help'];
 
 $basic_help = $configuration['basic_help'];
 $intermediate_help = $configuration['intermediate_help'];
-$parameters_help = $configuration['parameters_help'];
 $advanced_help = $configuration['advanced_help'];
 
 $missing_parameter = "Missing \"%s\" attribute on configuration element.";
@@ -166,6 +166,20 @@ foreach ($measurements as $measurement) {
 		
 		$graphs[$location] = &$measurement;
 	}
+}
+
+foreach ($questions as $question){
+	$required = array("question", "question_shortname", "answer");
+	foreach($required as $name){
+		if(!isset($question[$name]))
+			trigger_error(sprintf($missing_parameter, $name), E_USER_ERROR);
+	}
+
+	$size = count($required);
+	
+	if (count($question) > $size)
+		trigger_error(sprintf($too_many_items, count($measurement) - $size), E_USER_ERROR);
+
 }
 
 foreach ($graph_locations as $location) {
@@ -493,10 +507,20 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
       <a href='' id='link-to-help-parameters'>Parameters</a>
       <a href='' id='link-to-help-advanced'>Model Equations</a>
     </div>
+    <?php
+	var top = "";
+	var bottom = "";
+	foreach($questions as $question){
+		top = top . "<a href=#" . $question_shortname . "> " . $question . " </a> </br>" . " /n";
+		bottom = bottom . "<a name=" . $question_shortname . "></a>" . " /n" . " <u><h3>" . $question . "</h3></u>" . " /n" . $answer . " /n"
+	}
+
+	var $faq = top . " /n" . bottom;
+    ?>
     
     <div id='help-basic' class='tab selected'><?php echo markdownify($basic_help); ?></div>
     <div id='help-intermediate' class='tab notselected'><?php echo markdownify("$intermediate_help"); ?></div>
-    <div id='help-parameters' class='tab notselected'><?php echo markdownify("$parameters_help"); ?></div>
+    <div id='help-parameters' class='tab notselected'><?php echo markdownify("$faq"); ?></div>
     <div id='help-advanced' class='tab notselected'><object data="images/equations.pdf" type="application/pdf" width=100% height=100%></object></div>
     
     <a href='' id='hide-help'>Hide</a>
