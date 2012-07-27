@@ -11,7 +11,7 @@ $initial_help = $configuration['initial_help'];
 
 $basic_help = $configuration['basic_help'];
 $intermediate_help = $configuration['intermediate_help'];
-$parameter_help = $configuration['parameters_help'];
+$parameters_help = $configuration['parameters_help'];
 $advanced_help = $configuration['advanced_help'];
 
 $missing_parameter = "Missing \"%s\" attribute on configuration element.";
