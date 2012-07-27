@@ -519,7 +519,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 		$bottom = $bottom . "<li><a name=" . $question_shortname . "></a>" . "<u><h3>" . $question . "</h3></u>" . $answer . "<br /><br />";
 	}
 
-	$faq = $top . "<br /><br />" . $bottom . </ul>;
+	$faq = $top . "<br /><br />" . $bottom . "</ul>";
     ?>
     
     <div id='help-basic' class='tab selected'><?php echo markdownify($basic_help); ?></div>
