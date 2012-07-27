@@ -504,7 +504,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
     <div class='tabs'>
       <a href='' class='selected' id='link-to-help-basic'>Basic</a>
       <a href='' id='link-to-help-intermediate'>Intermediate</a>
-      <a href='' id='link-to-help-parameters'>Parameters</a>
+      <a href='' id='link-to-faq'>FAQ</a>
       <a href='' id='link-to-help-advanced'>Model Equations</a>
     </div>
     <?php
@@ -524,7 +524,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
     
     <div id='help-basic' class='tab selected'><?php echo markdownify($basic_help); ?></div>
     <div id='help-intermediate' class='tab notselected'><?php echo markdownify("$intermediate_help"); ?></div>
-    <div id='help-parameters' class='tab notselected'><?php echo markdownify("$faq"); ?></div>
+    <div id='faq' class='tab notselected'><?php echo markdownify("$faq"); ?></div>
     <div id='help-advanced' class='tab notselected'><object data="images/equations.pdf" type="application/pdf" width=100% height=100%></object></div>
     
     <a href='' id='hide-help'>Hide</a>
