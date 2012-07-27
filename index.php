@@ -509,17 +509,17 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
     </div>
     <?php
 	$top = "<h1>FAQ<br /><u>Questions</u></h1><br />";
-	$bottom = "<h1><u>Answers</u></h1><br /><ul>";
+	$bottom = "<h1><u>Answers</u></h1><br />";
 	foreach($questions as $questiondata){
 		$question = $questiondata['question'];
 		$question_shortname = $questiondata['question_shortname'];
 		$answer = $questiondata['answer'];
 
 		$top = $top . "<a href=#" . $question_shortname . "> " . $question . " </a> </br>";
-		$bottom = $bottom . "<li><a name=" . $question_shortname . "></a>" . "<u><h3>" . $question . "</h3></u>" . $answer . "<br /><br />";
+		$bottom = $bottom . "<a name=" . $question_shortname . "></a>" . "<u><h3>" . $question . "</h3></u>" . $answer . "<br /><br />";
 	}
 
-	$faq = $top . "<br /><br />" . $bottom . "</ul>";
+	$faq = $top . "<br /><br />" . $bottom;
     ?>
     
     <div id='help-basic' class='tab selected'><?php echo markdownify($basic_help); ?></div>
