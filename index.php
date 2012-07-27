@@ -508,14 +508,18 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
       <a href='' id='link-to-help-advanced'>Model Equations</a>
     </div>
     <?php
-	var top = "";
-	var bottom = "";
-	foreach($questions as $question){
-		top = top . "<a href=#" . $question_shortname . "> " . $question . " </a> </br>" . " /n";
-		bottom = bottom . "<a name=" . $question_shortname . "></a>" . " /n" . " <u><h3>" . $question . "</h3></u>" . " /n" . $answer . " /n"
+	$top = "";
+	$bottom = "";
+	foreach($questions as $questiondata){
+		$question = $questiondata['question'];
+		$question_shortname = $questiondata['question_shortname'];
+		$answer = $questiondata['answer'];
+
+		$top = $top . "<a href=#" . $question_shortname . "> " . $question . " </a> </br>" . " /n";
+		$bottom = $bottom . "<a name=" . $question_shortname . "></a>" . " /n" . " <u><h3>" . $question . "</h3></u>" . " /n" . $answer . " /n"
 	}
 
-	var $faq = top . " /n" . bottom;
+	$faq = $top . " /n" . $bottom;
     ?>
     
     <div id='help-basic' class='tab selected'><?php echo markdownify($basic_help); ?></div>
