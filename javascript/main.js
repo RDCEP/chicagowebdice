@@ -458,7 +458,7 @@
 			$(submissionDiv).animate({ bottom: outerHeight }, "slow");
 			$(runsUL).animate({ height:outerHeight, scrollTop : (bottomHeight - outerHeight) }, "slow");
 			$(sidebarDiv).animate( { height: '100%' }, "slow");
-			$(contentDiv).animate( { height: '100%' }, "slow");
+			$(contentDiv).animate( { height: '100%' }, "fast");
 		}
 		
 		var setVisibilityOfOverlay = function(visible) {
