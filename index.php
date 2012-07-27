@@ -396,7 +396,8 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 						$precision = $parameter['precision'];
 
 						$tickMarkRight = (((($max - $default)/($max - $min)) * 5) + 0.5);
-						print"<span id='tick' style=\"right:'$tickMarkRight'em\">^</span>";
+						$tickMarkRightWithUnit = $tickMarkRight + "em";
+						print"<span id='tick' style=\"right:$tickMarkRightWithUnit\">^</span>";
 				
 						print "<span class='label'>$default</span> <input name='$machine_name' ";
 						print "type='range' min='$min' max='$max' step='$step' value='$default' data-prec='$precision'/></label></li>\n";
