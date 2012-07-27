@@ -516,7 +516,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 		$answer = $questiondata['answer'];
 
 		$top = $top . "<a href=#" . $question_shortname . "> " . $question . " </a> </br>" . " /n";
-		$bottom = $bottom . "<a name=" . $question_shortname . "></a>" . " /n" . " <u><h3>" . $question . "</h3></u>" . " /n" . $answer . " /n"
+		$bottom = $bottom . "<a name=" . $question_shortname . "></a>" . " /n" . " <u><h3>" . $question . "</h3></u>" . " /n" . $answer . " /n";
 	}
 
 	$faq = $top . " /n" . $bottom;
