@@ -100,24 +100,24 @@ parameters_help: >
   This could be some kind of FAQ, offering answers to questions or more info on specific parameters.
 
 
-  <a href="#test"> Test </a>
-  <a href="#test2"> Test2 </a>
-  <a href="#test3"> Test3 </a>
-  <a href="#test4"> Test4 </a>
-  <a href="#test5"> Test5 </a>
-  <a href="#test6"> Test6 </a>
-  <a href="#test7"> Test7 </a>
-  <a href="#test8"> Test8 </a>
-  <a href="#test9"> Test9 </a>
-  <a href="#test10"> Test10 </a>
-  <a href="#test11"> Test11 </a>
-  <a href="#test12"> Test12 </a>
-  <a href="#test13"> Test13 </a>
-  <a href="#test14"> Test14 </a>
-  <a href="#test15"> Test15 </a>
-  <a href="#test16"> Test16 </a>
-  <a href="#test17"> Test17 </a>
-  <a href="#test18"> Test18 </a>
+  <a href="#test"> Test </a> <br />
+  <a href="#test2"> Test2 </a> <br />
+  <a href="#test3"> Test3 </a> <br />
+  <a href="#test4"> Test4 </a> <br />
+  <a href="#test5"> Test5 </a> <br />
+  <a href="#test6"> Test6 </a> <br />
+  <a href="#test7"> Test7 </a> <br />
+  <a href="#test8"> Test8 </a> <br />
+  <a href="#test9"> Test9 </a> <br />
+  <a href="#test10"> Test10 </a> <br />
+  <a href="#test11"> Test11 </a> <br />
+  <a href="#test12"> Test12 </a> <br />
+  <a href="#test13"> Test13 </a> <br />
+  <a href="#test14"> Test14 </a> <br />
+  <a href="#test15"> Test15 </a> <br />
+  <a href="#test16"> Test16 </a> <br />
+  <a href="#test17"> Test17 </a> <br />
+  <a href="#test18"> Test18 </a> <br />
 
   <h3><a name="test"> Test </a></h3>
   Some kinda description
@@ -125,7 +125,7 @@ parameters_help: >
   <h3><a name="test2"> Test2 </a></h3>
   Some kinda description
 
-  <h3><a name="test3"> You can name these things whatever you want but for clarity's sake it makes sense to keep the naming consistant with the links </a></h3>
+  <h3><a name="test3"> You can name these things whatever you want but for clarity's sake it makes sense to keep the naming consistant</a></h3>
   Like we would name this Test3
 
   <h3><a name="test4"> Test4 </a></h3>
