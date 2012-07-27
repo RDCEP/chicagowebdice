@@ -119,7 +119,8 @@ parameters_help: >
   <a href="#test17"> Test17 </a> <br />
   <a href="#test18"> Test18 </a> <br />
 
-  <h3><a name="test"> Test </a></h3>
+  <a name="test"> </a>
+  <h3>Test</h3>
   Some kinda description
 
   <h3><a name="test2"> Test2 </a></h3>
