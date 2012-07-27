@@ -353,11 +353,11 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 					if (isset($parameter['description'])) {
 						if(isset($parameter['unit'])){
 							$unit = $parameter['unit'];
-							$description = htmlentities($parameter['description']) . " Click to read more!";
-							print "          <li><label title='$description'><a href='#test' onclick='setVisibilityOfOverlay(true);'>$name</a> ($unit) ";
+							$description = htmlentities($parameter['description']);
+							print "          <li><label title='$description'>$name ($unit) ";
 						} else {
-							$description = htmlentities($parameter['description']) . " Click to read more!";
-							print "          <li><label title='$description'><a href='#test' onclick='setVisibilityOfOverlay(true);'>$name</a> ";
+							$description = htmlentities($parameter['description']);
+							print "          <li><label title='$description'>$name ";
 						}
 					} else {
 						if(isset($parameter['unit'])){
