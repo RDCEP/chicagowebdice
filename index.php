@@ -353,11 +353,11 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 					if (isset($parameter['description'])) {
 						if(isset($parameter['unit'])){
 							$unit = $parameter['unit'];
-							$description = htmlentities($parameter['description']);
-							print "          <li><label title='$description'>$name ($unit) ";
+							$description = htmlentities($parameter['description']) . " Click to read more!";
+							print "          <li><label title='$description'><a href='#test' onclick='setVisibilityOfOverlay(true);'>$name</a> ($unit) ";
 						} else {
-							$description = htmlentities($parameter['description']);
-							print "          <li><label title='$description'>$name ";
+							$description = htmlentities($parameter['description']) . " Click to read more!";
+							print "          <li><label title='$description'><a href='#test' onclick='setVisibilityOfOverlay(true);'>$name</a> ";
 						}
 					} else {
 						if(isset($parameter['unit'])){
@@ -379,7 +379,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 							$option_name = $value['name'];
 							
 							if (isset($value['description'])) {
-								$description = htmlentities($value['description']) . " <a href=\"#test#\" onclick=\"setVisibilityOfOverlay(true);\"> Read More </a>";
+								$description = htmlentities($value['description']);
 							
 								print "            <option name='$option_machine_name' ";
 								print "title='$description'>$option_name</option>\n";
