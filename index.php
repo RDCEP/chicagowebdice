@@ -508,15 +508,15 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
       <a href='' id='link-to-help-advanced'>Model Equations</a>
     </div>
     <?php
-	$top = "";
-	$bottom = "";
+	$top = "<h1>Questions<h1><br /><br />";
+	$bottom = "<h1>Answers<h1><br /><br />";
 	foreach($questions as $questiondata){
 		$question = $questiondata['question'];
 		$question_shortname = $questiondata['question_shortname'];
 		$answer = $questiondata['answer'];
 
-		$top = $top . "<a href=#" . $question_shortname . "> " . $question . " </a> </br>" . " /n";
-		$bottom = $bottom . "<a name=" . $question_shortname . "></a>" . " /n" . " <u><h3>" . $question . "</h3></u>" . " /n" . $answer . " /n";
+		$top = $top . "<a href=#" . $question_shortname . "> " . $question . " </a> </br>";
+		$bottom = $bottom . "<a name=" . $question_shortname . "></a>" . "<u><h3>" . $question . "</h3></u>" . $answer . "<br /><br />";
 	}
 
 	$faq = $top . " /n" . $bottom;
