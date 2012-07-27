@@ -9,7 +9,7 @@ XAPPRLRESDIR=$(MATLABROOT)/X11/app-defaults
 MATLAB_FILES=src/DICE2007Param.m src/DICE2007ParamExo.m src/DICE2007Run.m src/DICE2007Setup.m src/DICE2007Step.m src/OptimizeParam.m src/OptimizeParamExo.m src/OptimizeRun.m src/simDICE.m
 MCC_OPTS=-T link:lib -nodisplay -d lib/ -v
 CPP_FILES=src/libwebdice.cpp
-PATH=$(MATLABROOT)/runtime/glnx86:$(MATLABROOT)/sys/os/glnx86:$(MATLABROOT)/sys/java/jre/glnx86/jre/lib/i386/native_threads:$(MATLABROOT)/sys/java/jre/glnx86/jre/lib/i386/server:$(MATLABROOT)/sys/java/jre/glnx86/jre/lib/i386:$PATH
+PATH=$(MATLABROOT)/runtime/glnx86:$(MATLABROOT)/sys/os/glnx86:$(MATLABROOT)/sys/java/jre/glnx86/jre/lib/i386/native_threads:$(MATLABROOT)/sys/java/jre/glnx86/jre/lib/i386/server:$(MATLABROOT)/sys/java/jre/glnx86/jre/lib/i386:$(PATH)
 
 unexport DISPLAY
 
