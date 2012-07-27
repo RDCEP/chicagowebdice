@@ -325,7 +325,7 @@ questions:
   - question: Why?
     question_shortname: why
     answer: Why not?
-  - question: Is the answe to this question 'no'?
+  - question: Is the answer to this question 'no'?
     question_shortname: paradox
     answer: Yes... no.... uhhh..... *head exploded*
   - question: Does Aidan feel like coming up with more questions?
@@ -334,21 +334,21 @@ questions:
   - question: Test
     question_shortname: test
     answer: Test
-  - question: Test2
+  - question: Test 2
     question_shortname: test2
-    answer: Test2
-  - question: Test3
+    answer: Test 2
+  - question: Test 3
     question_shortname: test3
-    answer: Test3
-  - question: Test4
+    answer: Test 3
+  - question: Test 4
     question_shortname: test4
-    answer: Test4
-  - question: Test5
+    answer: Test 4
+  - question: Test 5
     question_shortname: test5
-    answer: Test5
-  - question: Test6
+    answer: Test 5
+  - question: Test 6
     question_shortname: test6
-    answer: Test6
-  - question: Test7
+    answer: Test 6
+  - question: Test 7
     question_shortname: test7
-    answer: Test7
+    answer: Test 7
