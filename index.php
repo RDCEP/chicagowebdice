@@ -11,6 +11,7 @@ $initial_help = $configuration['initial_help'];
 
 $basic_help = $configuration['basic_help'];
 $intermediate_help = $configuration['intermediate_help'];
+$parameter_help = $configuration['parameters_help']
 $advanced_help = $configuration['advanced_help'];
 
 $missing_parameter = "Missing \"%s\" attribute on configuration element.";
@@ -378,7 +379,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 							$option_name = $value['name'];
 							
 							if (isset($value['description'])) {
-								$description = htmlentities($value['description']);
+								$description = htmlentities($value['description']) . " <a href=\"#test#\" onclick=\"setVisibilityOfOverlay(true);\"> Read More </a>";
 							
 								print "            <option name='$option_machine_name' ";
 								print "title='$description'>$option_name</option>\n";
@@ -494,6 +495,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
     
     <div id='help-basic' class='tab selected'><?php echo markdownify($basic_help); ?></div>
     <div id='help-intermediate' class='tab notselected'><?php echo markdownify("$intermediate_help"); ?></div>
+    <div id='help-parameters' class='tab notselected'><?php echo markdownify("$parameters_help"); ?></div>
     <div id='help-advanced' class='tab notselected'><object data="images/equations.pdf" type="application/pdf" width=100% height=100%></object></div>
     
     <a href='' id='hide-help'>Hide</a>

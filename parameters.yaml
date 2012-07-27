@@ -96,6 +96,13 @@ intermediate_help: >
   occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
   anim id est laborum.
 
+parameter_help: >
+  <h3><a name="test"> Test </a></h3>
+  Some description
+  
+  <h3><a name="test2"> Test 2 </a></h3>
+  Some other description
+
 advanced_help: >
   ## WebDICE Documentation [Large Version]
 
