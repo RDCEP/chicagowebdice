@@ -40,7 +40,7 @@
 #content{position:absolute;top:9.5em;left:19em;right:0;bottom:0;overflow:auto;}
 #content .graph{float:left;}
 #content .initial{position:absolute;background-color:#eee;font:1em/1.5em Helvetica,sans-serif;}
-#content .initial{top:3em;left:4em;bottom:4em;right:4em;border-radius:1em;padding:2em;}
+#content .initial{top:3em;left:4em;bottom:1em;right:4em;border-radius:1em;padding:2em;}
 #content .initial p{margin-bottom:1em;}
 #content.hasruns .initial{display:none;}
 #content.hasnoruns #four-graphs{display:none;}
