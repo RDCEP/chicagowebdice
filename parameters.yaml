@@ -294,7 +294,7 @@ parameters:
 measurements:
   - name: Income per Capita
     machine_name: consumptionpercapita
-    unit: $ per Person
+    unit: $ per Person per Year
     description: Global average GDP per capita
     format: "$#.##"
     location: topright
