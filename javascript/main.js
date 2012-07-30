@@ -534,15 +534,15 @@
 			return false;
 		}
 
-		var goToFAQPageButtonArray = document.getElementsById('faqbutton');
-		for(var i = 0; i<goToFAQPageButtonArray.length; i++){
-			var currentFAQButton = goToFAQPageButton[i];
-			currentFAQButton.onclick = function() {
-				setVisibilityOfOverlay(true);
-				window.location.assign("http://webdice.rdcep.org/#" . currentFAQButton.getAttribute("data-question_shortname"));
-				return false;
-			}
-		}
+		//var goToFAQPageButtonArray = document.getElementsById('faqbutton');
+		//for(var i = 0; i<goToFAQPageButtonArray.length; i++){
+		//	var currentFAQButton = goToFAQPageButton[i];
+		//	currentFAQButton.onclick = function() {
+		//		setVisibilityOfOverlay(true);
+		//		window.location.assign("http://webdice.rdcep.org/#" . currentFAQButton.getAttribute("data-question_shortname"));
+		//		return false;
+		//	}
+		//}
 		
 		var downloadTextarea = document.getElementById('download-textarea');
 		var updateDownloadedText = function() {
