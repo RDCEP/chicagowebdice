@@ -499,7 +499,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 </div>
 <div id='overlay'>
   <div class='slug'></div>
-  <div class='article' id='advanced-help'>
+  <div id='advanced-help'>
     <div class='tabs'>
       <a href='' class='selected' id='link-to-help-basic'>Basic</a>
       <a href='' id='link-to-help-intermediate'>Intermediate</a>
