@@ -628,7 +628,7 @@
 						var deviation = (areEqual ? 0 : 0.10); // 25% deviation.
 					} else {
 						var defaultValue = this.defaultValue;
-						var changedValue = this.value;
+						var changedValue = parseFloat(this.value).toFixed(this.getAttribute("data-prec"));
 						var areEqual = (parseFloat(defaultValue) == parseFloat(changedValue));
 						var deviation = Math.abs(Math.log(parseFloat(changedValue) / parseFloat(defaultValue)));
 					}
