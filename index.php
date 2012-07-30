@@ -3,6 +3,7 @@
 require_once('lib/spyc.php');
 require_once('lib/markdown.php');
 
+ //This loads the yaml file and sorts it into a heirerchy of arrays.
 $configuration = Spyc::YAMLLoad('parameters.yaml');
 
 $parameters = $configuration['parameters'];
@@ -14,6 +15,8 @@ $basic_help = $configuration['basic_help'];
 $intermediate_help = $configuration['intermediate_help'];
 $advanced_help = $configuration['advanced_help'];
 
+
+//The next two hundred lines or so are just checking to make sure that every element in the yaml file has its necessary components.
 $missing_parameter = "Missing \"%s\" attribute on configuration element.";
 $too_many_items = "Configuration_element has %d extra element(s).";
 $option_no_name = "Parameter option element has no \"name\" option and should.";
@@ -187,6 +190,7 @@ foreach ($graph_locations as $location) {
 		trigger_error(sprintf($no_graph_in_location, $location), E_USER_ERROR);
 }
 
+//This loads the matlab compiler runtime and sends it the value of all the parameters to execute a run.
 if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 	if (isset($_POST['data'])) {
 		
@@ -325,6 +329,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 		
 		print "      <div id='sidebar-tabs' class='tabs'>\n";
 		
+		//we now go through each tab in the yaml file and create it
 		foreach ($tabs as $tab) {
 			$tab_name = format_for_web($tab['name']);
 			$tab_id = htmlentities($tab['html_id']);
@@ -416,8 +421,6 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 						$button_name = $parameter['button_name'];
 
 						print "<input type='submit' id='$id' value='$button_name'/>";
-
-						//tettesttes
 					}
 				}
 
@@ -501,7 +504,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
       <a href='' id='link-to-help-intermediate'>Intermediate</a>
       <a href='' id='link-to-faq'>FAQ</a>
       <a href='' id='link-to-help-advanced'>Model Equations</a>
-    </div>
+      </div>
     <?php
 	$top = "<h1>FAQ<br /><u>Questions</u></h1><br />";
 	$bottom = "<h1><u>Answers</u></h1><br />";
@@ -520,8 +523,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
     <div id='help-basic' class='tab selected'><?php echo markdownify($basic_help); ?></div>
     <div id='help-intermediate' class='tab notselected'><?php echo markdownify("$intermediate_help"); ?></div>
     <div id='faq' class='tab notselected'><?php echo markdownify("$faq"); ?></div>
-    <div id='help-advanced' class='tab notselected'><object data="images/equations.pdf" type="application/pdf" width=100% height=100%></object></div>
-    
+    <div id='help-advanced' class='tab notselected'><object data="images/equations.pdf" type="application/pdf" width=100% height=98%></object></div>
     <a href='' id='hide-help'>Hide</a>
   </div>
 </div>
