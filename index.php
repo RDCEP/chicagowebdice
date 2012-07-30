@@ -376,7 +376,6 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 							print "          <li><label>$name ";
 						}
 					}
-					print"	<a 
 
 					
 					if ($is_select_control) {
