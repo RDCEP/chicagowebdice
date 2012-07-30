@@ -376,7 +376,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 							print "          <li><label>$name ";
 						}
 					}
-					print "	<a onlick='goToFAQPage(\"test\")'>?</a> ";
+					print "	<a onclick=\"goToFAQPage('test')\">?</a> ";
 
 					
 					if ($is_select_control) {
