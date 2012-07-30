@@ -314,7 +314,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 <body>
 <h1 id='heading'> <span>RDCEP</span> :: WebDICE</h1>
 <div id='back-to-rdcep'><a href='http://www.rdcep.org/'>Back to RDCEP</a></div>
-<a id='display-help'>Documentation</a> <a id='view-source' href='https://www.github.com/RDCEP/chicagowebdice/'>View Source</a>
+<a id='display-help'>Documentation</a> <a id='view-source' href='https://www.github.com/RDCEP/chicagowebdice/' target='_blank'>View Source</a>
 <div id='sidebar'>
   <form id='submission'>
 <?php
@@ -376,6 +376,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 							print "          <li><label>$name ";
 						}
 					}
+					print"	<a 
 
 					
 					if ($is_select_control) {
