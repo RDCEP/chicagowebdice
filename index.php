@@ -376,7 +376,6 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 							print "          <li><label>$name ";
 						}
 					}
-					print "	<input type='submit' id='faqbutton' value='?' data-question_shortname='test'/>";
 
 					
 					if ($is_select_control) {
