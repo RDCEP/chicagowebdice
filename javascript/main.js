@@ -477,6 +477,11 @@
 			});
 			$(advancedHelpDiv).animate({ top : advancedHelpOffset });
 		}
+
+		var goToFAQPage = function(question_shortname) {
+			setVisiblityOfOverlay(true);
+			window.location.assign("https://www.webdice.rdcep.org/#" . question_shortname);
+		}
 		
 		// Prepare initial contents of dataset.
 		

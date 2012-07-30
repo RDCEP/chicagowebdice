@@ -351,11 +351,6 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 				
 				print "      <h2>$section_name</h2>\n";
 				print "        <ul>\n";
-				if(isset($parameter['subheading'])){
-					$subheading_name = $parameters['subheading'];
-					print "      <li>$subheading_name</li>\n";
-					print "      \n";
-				}
 				
 				foreach ($parameters as $parameter) {
 					$name = format_for_web($parameter['name']);
@@ -381,6 +376,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 							print "          <li><label>$name ";
 						}
 					}
+					print "	<a onlick="goToFAQPage("test")>?</a> ";
 
 					
 					if ($is_select_control) {
