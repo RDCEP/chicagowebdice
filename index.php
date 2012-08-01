@@ -405,7 +405,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 						$default = $parameter['default'];
 						$precision = $parameter['precision'];
 
-						$tickMarkRight = (((($max - $default)/($max - $min)) * 66) + 7.3);
+						$tickMarkRight = (pow(((($max - $default)/($max - $min)) * 66), 2.1362) * 0.0008);
 						$tickMarkRightWithUnit = $tickMarkRight . "px";
 						print"<span id='tick' style=\"right:$tickMarkRightWithUnit\">^</span>";
 				
