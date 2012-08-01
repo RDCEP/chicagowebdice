@@ -406,7 +406,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 						$precision = $parameter['precision'];
 
 						$tickMarkRight = ((($max - $default)/($max - $min)) * 66);
-						$tickMarkRight = $tickMarkRight - (pow($tickMarkRight, 2.1362) *0.0008); //to adjust for spacing issues
+						$tickMarkRight = ($tickMarkRight - (pow($tickMarkRight, 2.1362) *0.0008)) + 6.5; //to adjust for spacing issues
 						$tickMarkRightWithUnit = $tickMarkRight . "px";
 						print"<span id='tick' style=\"right:$tickMarkRightWithUnit\">^</span>";
 				
