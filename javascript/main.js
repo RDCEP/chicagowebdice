@@ -473,8 +473,10 @@
 				var overlayVisibility = 0.0;
 				var advancedHelpOffset = 200;
 				var overlayDisplay = 'none';
-				$(sidebarDiv).animate( { height: '100%' }, "slow");
-				$(contentDiv).animate( { height: '100%' }, "fast");
+				if(getNumberOfRuns() > 0){
+					$(sidebarDiv).animate( { height: '100%' }, "slow");
+					$(contentDiv).animate( { height: '100%' }, "fast");
+				}
 			}
 			
 			$(overlayDiv).css({ display : 'block' }).animate({ opacity : overlayVisibility }, function() {
