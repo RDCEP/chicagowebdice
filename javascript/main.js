@@ -466,10 +466,14 @@
 				var overlayVisibility = 1.0;
 				var advancedHelpOffset = 0;
 				var overlayDisplay = 'block';
+				$(sidebarDiv).animate( { height: 'null' }, "fast");
+				$(contentDiv).animate( { height: 'null' }, "fast");
 			} else {
 				var overlayVisibility = 0.0;
 				var advancedHelpOffset = 200;
 				var overlayDisplay = 'none';
+				$(sidebarDiv).animate( { height: '100%' }, "slow");
+				$(contentDiv).animate( { height: '100%' }, "fast");
 			}
 			
 			$(overlayDiv).css({ display : 'block' }).animate({ opacity : overlayVisibility }, function() {
@@ -504,7 +508,6 @@
 		var helpButton = document.getElementById('display-help');
 		helpButton.onclick = function() {
 			setVisibilityOfOverlay(true);
-			
 			return false;
 		}
 		
