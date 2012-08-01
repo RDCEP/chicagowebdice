@@ -466,8 +466,9 @@
 				var overlayVisibility = 1.0;
 				var advancedHelpOffset = 0;
 				var overlayDisplay = 'block';
-				$(sidebarDiv).animate( { height: 'auto' }, "fast");
-				$(contentDiv).animate( { height: 'auto' }, "fast");
+				contentDiv.setAttribute('style', 'height:auto');
+				sidebarDiv.setAttribute('style', 'height:auto');
+
 			} else {
 				var overlayVisibility = 0.0;
 				var advancedHelpOffset = 200;
