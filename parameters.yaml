@@ -21,6 +21,9 @@
   Some need entries, subentries, and data. All you have to do is type in what you need, and it will
   Be findable in index.php under configuration['header'] and any subarrays beneath that. 
 
+  Sorry if that explanation was too convoluted. Basically, all this file does is store data. What happens
+  to that data is completely determined by the index.php file.
+
   Indentation is extremely important in this yaml file. Anything indented by two spaces is assumed
   to be "under" whatever is above it. Not indenting by two spaces makes the yaml reader think it is
   something new. 
@@ -37,12 +40,10 @@ initial_help: >
 
   To run a simulation, click on the "make new run" button at the bottom of
   the page. The variables are set to the defaults based on our best guess
-  of the correct values. Because these values reflect predictions about
-  what will happen in the future, they only reflect one possibility. You
-  can change the variables to reflect your views by moving the sliders.
-  Running a simulation will let you see how the outcomes change. The most
-  important variables can be found on the "Basic simulation" tab. You
-  can modify most of the other variables in the model on the "Advanced" tab.
+  of the correct values. You can change the variables to reflect your views 
+  by moving the sliders. Running a simulation will let you see how the outcomes 
+  change. The most important variables can be found on the "Basic simulation"
+  tab. You can modify most of the other variables in the model on the "Advanced" tab.
 
   The model has a number of additional features which you may find useful
   such as calculating the optimal carbon tax and running Monte Carlo
@@ -50,6 +51,7 @@ initial_help: >
 
   We are continually working to improve the model and the interface. If
   you have suggestions, you can contact us at <a href="mailto:info-rdcep@ci.uchicago.edu" target="_blank">[info-rdcep@ci.uchicago.edu]</a>.
+  This site was desgined by Jeremy Archer and <a href="http://www.rdcep.org/summer-interns/aidan-sadowski" target="_blank">Aidan Sadowski</a>
 
 basic_help: >
   ## WebDICE Documentation [Small Version]
