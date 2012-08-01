@@ -405,8 +405,8 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 						$default = $parameter['default'];
 						$precision = $parameter['precision'];
 
-						$tickMarkRight = (((($max - $default)/($max - $min)) * 5) + 0.76);
-						$tickMarkRightWithUnit = $tickMarkRight . "em";
+						$tickMarkRight = (((($max - $default)/($max - $min)) * 66) + 7.3);
+						$tickMarkRightWithUnit = $tickMarkRight . "px";
 						print"<span id='tick' style=\"right:$tickMarkRightWithUnit\">^</span>";
 				
 						print "<span class='label'>$default</span> <input name='$machine_name' ";
