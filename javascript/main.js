@@ -466,14 +466,14 @@
 				var overlayVisibility = 1.0;
 				var advancedHelpOffset = 0;
 				var overlayDisplay = 'block';
-				$(sidebarDiv).animate( { height: 'null' }, "fast");
-				$(contentDiv).animate( { height: 'null' }, "fast");
+				$(sidebarDiv).animate( { overflow: 'hidden' }, "fast");
+				$(contentDiv).animate( { overflow: 'hidden' }, "fast");
 			} else {
 				var overlayVisibility = 0.0;
 				var advancedHelpOffset = 200;
 				var overlayDisplay = 'none';
-				$(sidebarDiv).animate( { height: '100%' }, "slow");
-				$(contentDiv).animate( { height: '100%' }, "fast");
+				$(sidebarDiv).animate( { overflow: 'auto' }, "slow");
+				$(contentDiv).animate( { overfow: 'auto' }, "fast");
 			}
 			
 			$(overlayDiv).css({ display : 'block' }).animate({ opacity : overlayVisibility }, function() {
