@@ -459,7 +459,6 @@
 			$(runsUL).animate({ height:outerHeight, scrollTop : (bottomHeight - outerHeight) }, "slow");
 			$(sidebarDiv).animate( { height: '100%' }, "slow");
 			$(contentDiv).animate( { height: '100%' }, "fast");
-			setTimeout(function() {window.scrollTo(0,160);},900);
 		}
 		
 		var setVisibilityOfOverlay = function(visible) {
