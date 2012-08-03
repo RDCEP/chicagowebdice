@@ -1,4 +1,5 @@
 (function($) {
+	//This first bit is just color selection for the graphs
 	var niceColors = [
 		[ 204, 0, 0 ], [ 241, 194, 50 ], [106, 168, 79], [ 61, 133, 198 ], [ 103, 78, 167 ], [ 166, 77, 121 ],
 		[ 230, 155, 56 ], [ 69, 129, 142 ], [ 60, 120, 216 ]
@@ -41,6 +42,7 @@
 		return color;
 	}
 	
+	//This changes tabs when you click them by changing the css class. tab notselected is set to display:none, so only the selected tab shows.
 	var initializeTrivialTabsUI = function() {
 		$('.tabs').each(function() {
 			var currentlySelectedLink = $(this).find('a.selected')[0]
@@ -461,6 +463,7 @@
 			$(contentDiv).animate( { height: '100%' }, "fast");
 		}
 		
+		//This runs when "documentation" is clicked
 		var setVisibilityOfOverlay = function(visible) {
 			if (visible) {
 				var overlayVisibility = 1.0;
@@ -487,8 +490,7 @@
 
 
 		
-		// Prepare initial contents of dataset.
-		
+		// Prepare initial contents of dataset for CSV download
 		data.addColumn('number', 'Year');
 		
 		for (var i = 0; i < numberOfStepsInSimulation; i++) {
@@ -508,6 +510,7 @@
 			}
 		}
 		
+		//Most of the button actions are determine blow. 
 		var helpButton = document.getElementById('display-help');
 		helpButton.onclick = function() {
 			setVisibilityOfOverlay(true);
@@ -540,6 +543,12 @@
 			return false;
 		}
 
+		/*
+		 *There was origionally going to be an image next to each parameter that linked to a specific
+		 *part of the FAQ for more information. I could never get this working and decided it was
+		 *unnecessary/redundant because of  the tooltip descriptions. I left the non-functional code here
+		 *however, in case anyone wanted to fix and implement it.
+		 */
 		//var goToFAQPageButtonArray = document.getElementsById('faqbutton');
 		//for(var i = 0; i<goToFAQPageButtonArray.length; i++){
 		//	var currentFAQButton = goToFAQPageButton[i];
@@ -550,6 +559,7 @@
 		//	}
 		//}
 		
+		//This is how the csv file is downloded. All the data for the runs are stored in $data. (csv means comma seperated value)
 		var downloadTextarea = document.getElementById('download-textarea');
 		var updateDownloadedText = function() {
 			downloadTextarea.value = 'Approximate Year';
@@ -558,9 +568,10 @@
 			
 			for (var i = 0; i < getNumberOfRuns(); i++) {
 				var run = runsBeingDisplayed[i];
+				//Only selected, or visible, runs arw downloaded. 
 				if(run.visible){
 					for (var j = 0; j < getNumberOfMeasurements(); j++) {
-					
+							//This creates the header of the csv "table"
 							var measurement = Options.measurements[j];
 
 							var columnValue = run.description + ' / ' + measurement.name + ' (' + measurement.unit + ')';
@@ -569,6 +580,7 @@
 
 					} 
 				} else {
+					//This adds to an array of columns that the download should ignore
 					unselectedCols.push(i*5 + 1);
 					unselectedCols.push(i*5 + 2);
 					unselectedCols.push(i*5 + 3);
@@ -591,11 +603,16 @@
 				downloadTextarea.value += '\n';
 			}
 		}
+		//whenever the data is changed, the above function will run
 		handlersForDataChanged.push(updateDownloadedText);
 		
+
+
+
 		buildCustomizeableChart();
 		initializeTrivialTabsUI();
 		
+		//checks if there are runs. If not, shows initial help page.
 		var displayConditionalHelp = function() {
 			var numberVisible = 0;
 			
@@ -613,11 +630,17 @@
 			deleteAllButton.disabled = (numberVisible == 0);
 		}
 		
+		//the above function will run when the data is changed.
 		handlersForViewportChanged.push(displayConditionalHelp);
 		handlersForDataChanged.push(displayConditionalHelp);
 
 
-		
+		/*
+		 *Whenever something on the page changes (meaning is clicked by the user),
+		 *and it isn't handled by one of the .onclick methods way above, it is handled here.
+		 *It determines the type of input and updates the page accordingly.
+		 *(This is what runs when the user clicks "run model")
+		*/
 		var form = document.getElementById('submission');
 		form.onsubmit = function() {
 			/* We're putting the hackish-equivalent of a try...finally statement here! (Jermey's Safari fix that I accidentally somehow deleted)*/
@@ -626,6 +649,11 @@
 				var data = $(form).serialize();
 				var changes = [ ];
 			
+				/*
+				 *All of this is just to find the changes in values for a submitted run so that
+				 *It can be put in a tooltip display when the user hovers over the "run #" in the bottom
+				 *left hand corner.
+				*/
 				$(form).find('input[type!=submit][type!=reset],select').each(function() {
 					if (this.tagName.toLowerCase() == 'select') {
 						var defaultValue = $(this).find('option').first().val().trim()
@@ -649,7 +677,7 @@
 			
 				changes.sort(function(a, b) { return b[4] - a[4]; });
 			
-				var runTextualDescription = "Run Parameters:";
+				var runTextualDescription = "Run Parameters:"; //This is going to be the tooltip
 				
 				for (var i = 0; i < changes.length; i++) {
 					var change = changes[i];
@@ -677,7 +705,7 @@
 			
 				updateRunsListHeight();
 			
-				$.ajax({
+				$.ajax({ //Now we are going to actually execute the run
 					type : 'POST',
 					url : 'index.php',
 					data : data,
@@ -729,16 +757,19 @@
 			}
 		
 		$('input[type=range]', form).change(function() {
-			//var s = Math.ceil(Math.log(parseFloat(this.value)));
-			//if (!(s > s) && !(s < s)) s = 1;
-			
-			//var offset = Math.pow(10, 3 - s);
-			//var value = parseInt(parseFloat(this.value) * offset) / offset;
+			/*
+			 *Here is where we update the label next to the range slider when the user
+			 *drags it. We first round this value to a specified number of declimal places,
+			 *then set the label to that value.
+			*/
 			var value = parseFloat(this.value).toFixed(this.getAttribute("data-prec"));
-			
 			$(this).parents('label').find('span.label').text(value);
 		});
 		
+		/* 
+		 *This runs when you click "reset inputs". It runs the function above on a form
+		 *reset so all its inputs are what they were when the page was intitalized.
+		*/
 		$('#reset-inputs').click(function(e) {
 			e.preventDefault();
 			form.reset();
