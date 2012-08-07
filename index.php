@@ -171,7 +171,7 @@ foreach ($measurements as $measurement) {
 }
 
 foreach ($questions as $question){
-	$required = array("question", "question_shortname", "answer");
+	$required = array("question", "answer");
 	foreach($required as $name){
 		if(!isset($question[$name]))
 			trigger_error(sprintf($missing_parameter, $name), E_USER_ERROR);
@@ -539,15 +539,18 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 	 *string $top and answers to the string $bottom, complete with line breaks, whitespace, and internal 
 	 *bookmarks for <a> linking the questions to answers. the '.' concatenates strings.
 	*/
+	$quesnum = 0;
 	$top = "<h1>FAQ<br /><u>Questions</u></h1><br />";
 	$bottom = "<h1><u>Answers</u></h1><br />";
 	foreach($questions as $questiondata){
 		$question = $questiondata['question'];
-		$question_shortname = $questiondata['question_shortname'];
+		$question_shortname = "question" . $quesnum;
 		$answer = $questiondata['answer'];
 
 		$top = $top . "<a href=#" . $question_shortname . "> " . $question . " </a> </br>";
 		$bottom = $bottom . "<a name=" . $question_shortname . "></a>" . "<u><h3>" . $question . "</h3></u>" . $answer . "<br /><br />";
+
+		$quesnum = $quesnum + 1;
 	}
 
 	$faq = $top . "<br /><br />" . $bottom;
