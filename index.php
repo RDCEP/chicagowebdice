@@ -535,31 +535,34 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
     </div>
     <?php
 	/*
-	 *This is the construction page for the FAQ. We iterate through the yaml file, adding questions to the
-	 *string $top and answers to the string $bottom, complete with line breaks, whitespace, and internal 
-	 *bookmarks for <a> linking the questions to answers. the '.' concatenates strings.
-	*/
-	$quesnum = 0;
-	$top = "<h1>FAQ<br /><u>Questions</u></h1><br />";
-	$bottom = "<h1><u>Answers</u></h1><br />";
-	foreach($questions as $questiondata){
-		$question = $questiondata['question'];
-		$question_shortname = "question" . $quesnum;
-		$answer = $questiondata['answer'];
+	*/*
+	 **This is the construction page for the FAQ. We iterate through the yaml file, adding questions to the
+	 **string $top and answers to the string $bottom, complete with line breaks, whitespace, and internal 
+	 **bookmarks for <a> linking the questions to answers. the '.' concatenates strings.
+	 **NOTE: The FAQ is not set to display because the documentation pdfs have a sort of
+	* *FAQ in them, rendering this tab unecessary. I will leave in the support for it.
+	**/
+	*$quesnum = 0;
+	*$top = "<h1>FAQ<br /><u>Questions</u></h1><br />";
+	*$bottom = "<h1><u>Answers</u></h1><br />";
+	*foreach($questions as $questiondata){
+	*	$question = $questiondata['question'];
+	*	$question_shortname = "question" . $quesnum;
+	*	$answer = $questiondata['answer'];
 
-		$top = $top . "<a href=#" . $question_shortname . "> " . $question . " </a> </br>";
-		$bottom = $bottom . "<a name=" . $question_shortname . "></a>" . "<u><h3>" . $question . "</h3></u>" . $answer . "<br /><br />";
+	*	$top = $top . "<a href=#" . $question_shortname . "> " . $question . " </a> </br>";
+	*	$bottom = $bottom . "<a name=" . $question_shortname . "></a>" . "<u><h3>" . $question . "</h3></u>" . $answer . "<br /><br />";
 
-		$quesnum = $quesnum + 1;
-	}
+	*	$quesnum = $quesnum + 1;
+	*}
 
-	$faq = $top . "<br /><br />" . $bottom;
+	*$faq = $top . "<br /><br />" . $bottom;
     ?>
     
-    <div id='help-basic' class='tab selected'><?php echo markdownify($basic_help); ?></div>
-    <div id='help-intermediate' class='tab notselected'><?php echo markdownify("$intermediate_help"); ?></div>
-    <div id='faq' class='tab notselected'><?php echo markdownify("$faq"); ?></div>
-    <div id='help-advanced' class='tab notselected'><object data="images/equationsTab.pdf" type="application/pdf" width=100% height=98%></object></div>
+    <div id='help-basic' class='tab selected'><object data="images/basicTab.pdf" type="application/pdf" width=100% height=98%></div>
+    <div id='help-intermediate' class='tab notselected'><object data="images/intermediateTab.pdf" type="application/pdf" width=100% height=98%>; ?></div>
+    //<div id='faq' class='tab notselected'><?php echo markdownify("$faq"); ?></div>
+    <div id='help-advanced' class='tab notselected'><object data="images/equationTab.pdf" type="application/pdf" width=100% height=98%></object></div>
     
     <a href='' id='hide-help'>Hide</a>
   </div>
