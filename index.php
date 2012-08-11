@@ -535,13 +535,11 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
     </div>
     <?php
 	/*
-	*/*
 	 **This is the construction page for the FAQ. We iterate through the yaml file, adding questions to the
 	 **string $top and answers to the string $bottom, complete with line breaks, whitespace, and internal 
 	 **bookmarks for <a> linking the questions to answers. the '.' concatenates strings.
 	 **NOTE: The FAQ is not set to display because the documentation pdfs have a sort of
 	* *FAQ in them, rendering this tab unecessary. I will leave in the support for it.
-	**/
 	*$quesnum = 0;
 	*$top = "<h1>FAQ<br /><u>Questions</u></h1><br />";
 	*$bottom = "<h1><u>Answers</u></h1><br />";
@@ -557,6 +555,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 	*}
 
 	*$faq = $top . "<br /><br />" . $bottom;
+	*/
     ?>
     
     <div id='help-basic' class='tab selected'><object data="images/basicTab.pdf" type="application/pdf" width=100% height=98%></div>
