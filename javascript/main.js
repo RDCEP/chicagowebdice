@@ -1,4 +1,5 @@
 (function($) {
+	//This first bit is just color selection for the graphs
 	var niceColors = [
 		[ 204, 0, 0 ], [ 241, 194, 50 ], [106, 168, 79], [ 61, 133, 198 ], [ 103, 78, 167 ], [ 166, 77, 121 ],
 		[ 230, 155, 56 ], [ 69, 129, 142 ], [ 60, 120, 216 ]
@@ -41,6 +42,7 @@
 		return color;
 	}
 	
+	//This changes tabs when you click them by changing the css class. tab notselected is set to display:none, so only the selected tab shows.
 	var initializeTrivialTabsUI = function() {
 		$('.tabs').each(function() {
 			var currentlySelectedLink = $(this).find('a.selected')[0]
@@ -79,6 +81,7 @@
 		var submissionDiv = document.getElementById('submission');
 		var overlayDiv = document.getElementById('overlay');
 		var advancedHelpDiv = document.getElementById('advanced-help');
+		var sidebarDiv = document.getElementById('sidebar');
 		var runsBeingDisplayed = [ ];
 		var nextRunNumber = 1;
 		
@@ -456,17 +459,27 @@
 			
 			$(submissionDiv).animate({ bottom: outerHeight }, "slow");
 			$(runsUL).animate({ height:outerHeight, scrollTop : (bottomHeight - outerHeight) }, "slow");
+			$(sidebarDiv).animate( { height: '100%' }, "slow");
+			$(contentDiv).animate( { height: '100%' }, "fast");
 		}
 		
+		//This runs when "documentation" is clicked
 		var setVisibilityOfOverlay = function(visible) {
 			if (visible) {
 				var overlayVisibility = 1.0;
 				var advancedHelpOffset = 0;
 				var overlayDisplay = 'block';
+				contentDiv.setAttribute('style', 'height:auto');
+				sidebarDiv.setAttribute('style', 'height:auto');
+
 			} else {
 				var overlayVisibility = 0.0;
 				var advancedHelpOffset = 200;
 				var overlayDisplay = 'none';
+				if(getNumberOfRuns() > 0){
+					$(sidebarDiv).animate( { height: '100%' }, "slow");
+					$(contentDiv).animate( { height: '100%' }, "fast");
+				}
 			}
 			
 			$(overlayDiv).css({ display : 'block' }).animate({ opacity : overlayVisibility }, function() {
@@ -474,9 +487,10 @@
 			});
 			$(advancedHelpDiv).animate({ top : advancedHelpOffset });
 		}
+
+
 		
-		// Prepare initial contents of dataset.
-		
+		// Prepare initial contents of dataset for CSV download
 		data.addColumn('number', 'Year');
 		
 		for (var i = 0; i < numberOfStepsInSimulation; i++) {
@@ -496,10 +510,10 @@
 			}
 		}
 		
+		//Most of the button actions are determine blow. 
 		var helpButton = document.getElementById('display-help');
 		helpButton.onclick = function() {
 			setVisibilityOfOverlay(true);
-			
 			return false;
 		}
 		
@@ -528,7 +542,24 @@
 			//run dice optimization
 			return false;
 		}
+
+		/*
+		 *There was origionally going to be an image next to each parameter that linked to a specific
+		 *part of the FAQ for more information. I could never get this working and decided it was
+		 *unnecessary/redundant because of  the tooltip descriptions. I left the non-functional code here
+		 *however, in case anyone wanted to fix and implement it.
+		 */
+		//var goToFAQPageButtonArray = document.getElementsById('faqbutton');
+		//for(var i = 0; i<goToFAQPageButtonArray.length; i++){
+		//	var currentFAQButton = goToFAQPageButton[i];
+		//	currentFAQButton.onclick = function() {
+		//		setVisibilityOfOverlay(true);
+		//		window.location.assign("http://webdice.rdcep.org/#" . currentFAQButton.getAttribute("data-question_shortname"));
+		//		return false;
+		//	}
+		//}
 		
+		//This is how the csv file is downloded. All the data for the runs are stored in $data. (csv means comma seperated value)
 		var downloadTextarea = document.getElementById('download-textarea');
 		var updateDownloadedText = function() {
 			downloadTextarea.value = 'Approximate Year';
@@ -537,9 +568,10 @@
 			
 			for (var i = 0; i < getNumberOfRuns(); i++) {
 				var run = runsBeingDisplayed[i];
+				//Only selected, or visible, runs arw downloaded. 
 				if(run.visible){
 					for (var j = 0; j < getNumberOfMeasurements(); j++) {
-					
+							//This creates the header of the csv "table"
 							var measurement = Options.measurements[j];
 
 							var columnValue = run.description + ' / ' + measurement.name + ' (' + measurement.unit + ')';
@@ -548,6 +580,7 @@
 
 					} 
 				} else {
+					//This adds to an array of columns that the download should ignore
 					unselectedCols.push(i*5 + 1);
 					unselectedCols.push(i*5 + 2);
 					unselectedCols.push(i*5 + 3);
@@ -570,11 +603,16 @@
 				downloadTextarea.value += '\n';
 			}
 		}
+		//whenever the data is changed, the above function will run
 		handlersForDataChanged.push(updateDownloadedText);
 		
+
+
+
 		buildCustomizeableChart();
 		initializeTrivialTabsUI();
 		
+		//checks if there are runs. If not, shows initial help page.
 		var displayConditionalHelp = function() {
 			var numberVisible = 0;
 			
@@ -583,137 +621,155 @@
 					numberVisible++;
 			}
 			
-			if (numberVisible > 0)
+			if (numberVisible > 0){
 				contentDiv.setAttribute('class', 'hasruns');
-			else
+			} else{
 				contentDiv.setAttribute('class', 'hasnoruns');
+			}
 			
 			deleteAllButton.disabled = (numberVisible == 0);
 		}
 		
+		//the above function will run when the data is changed.
 		handlersForViewportChanged.push(displayConditionalHelp);
 		handlersForDataChanged.push(displayConditionalHelp);
 
 
-		
+		/*
+		 *Whenever something on the page changes (meaning is clicked by the user),
+		 *and it isn't handled by one of the .onclick methods way above, it is handled here.
+		 *It determines the type of input and updates the page accordingly.
+		 *(This is what runs when the user clicks "run model")
+		*/
 		var form = document.getElementById('submission');
 		form.onsubmit = function() {
-			var data = $(form).serialize();
-			var changes = [ ];
+			/* We're putting the hackish-equivalent of a try...finally statement here! (Jermey's Safari fix that I accidentally somehow deleted)*/
+
+			setTimeout(function() {
+				var data = $(form).serialize();
+				var changes = [ ];
 			
-			$(form).find('input[type!=submit][type!=reset],select').each(function() {
-				if (this.tagName.toLowerCase() == 'select') {
-					var defaultValue = $(this).find('option').first().val().trim()
-					var changedValue = $(this).find('option:checked').first().val().trim()
-					var areEqual = (defaultValue == changedValue);
-					var deviation = (areEqual ? 0 : 0.10); // 25% deviation.
-				} else {
-					var defaultValue = this.defaultValue;
-					var changedValue = this.value;
-					var areEqual = (parseFloat(defaultValue) == parseFloat(changedValue));
-					var deviation = Math.abs(Math.log(parseFloat(changedValue) / parseFloat(defaultValue)));
-				}
-				
-				if (!areEqual) {
-					var description = this.parentNode.firstChild.nodeValue.trim();
-					var heading = $(this.parentNode.parentNode.parentNode).prev('h2').first().text();
-					
-					changes.push([ heading, description, changedValue, defaultValue, deviation ]);
-				};
-			});
-			
-			changes.sort(function(a, b) { return b[4] - a[4]; });
-			
-			var runTextualDescription = "Run Parameters:";
-			
-			for (var i = 0; i < changes.length; i++) {
-				var change = changes[i];
-				
-				runTextualDescription += "\n[" + change[0] + "] " + change[1] + ": " + change[2];
-			}
-			
-			if (changes.length == 0)
-				runTextualDescription += " (default parameters)";
-			
-			var createdLI = document.createElement('li');
-			var createdLABEL = document.createElement('label');
-			var progressIMG = document.createElement('img');
-			var textNode = document.createTextNode("Executing run...");
-			
-			createdLI.setAttribute('title', runTextualDescription);
-			
-			progressIMG.setAttribute('src', 'images/progress.gif');
-			createdLI.appendChild(createdLABEL);
-			createdLABEL.appendChild(textNode);
-			createdLABEL.appendChild(progressIMG);
-			runsUL.appendChild(createdLI);
-			
-			numberOfRunsInProgress++;
-			
-			updateRunsListHeight();
-			
-			$.ajax({
-				type : 'POST',
-				url : 'index.php',
-				data : data,
-				success : function(data, textStatus, xhr) {
-					var runObject = addRunFromCSV("Run #" + (getNumberOfRuns() + 1),
-						generateNextColor(), data, changes);
-					
-					numberOfRunsInProgress--;
-					
-					textNode.nodeValue = runObject.description;
-					createdLABEL.removeChild(progressIMG);
-					
-					var visibilityCheckbox = document.createElement('input');
-					visibilityCheckbox.setAttribute('type', 'checkbox');
-					visibilityCheckbox.setAttribute('checked', 'checked');
-					
-					visibilityCheckbox.onchange = function() {
-						runObject.visible = visibilityCheckbox.checked;
-						updateAllData();
+				/*
+				 *All of this is just to find the changes in values for a submitted run so that
+				 *It can be put in a tooltip display when the user hovers over the "run #" in the bottom
+				 *left hand corner.
+				*/
+				$(form).find('input[type!=submit][type!=reset],select').each(function() {
+					if (this.tagName.toLowerCase() == 'select') {
+						var defaultValue = $(this).find('option').first().val().trim()
+						var changedValue = $(this).find('option:checked').first().val().trim()
+						var areEqual = (defaultValue == changedValue);
+						var deviation = (areEqual ? 0 : 0.10); // 25% deviation.
+					} else {
+						var defaultValue = this.defaultValue;
+						var changedValue = parseFloat(this.value).toFixed(this.getAttribute("data-prec"));
+						var areEqual = (parseFloat(defaultValue) == parseFloat(changedValue));
+						var deviation = Math.abs(Math.log(parseFloat(changedValue) / parseFloat(defaultValue)));
 					}
 					
-					createdLABEL.appendChild(visibilityCheckbox);
-					
-					var colorSlab = document.createElement('span');
-					colorSlab.style.backgroundColor = runObject.color;
-					colorSlab.style.borderColor = darkenColorSlightly(runObject.color);
-					colorSlab.setAttribute('class', 'slab');
-					
-					createdLABEL.appendChild(colorSlab);
-				},
-				error : function(xhr, textStatus, errorType) {
-					textNode.nodeValue = "Model Run Failed!";
-					createdLABEL.removeChild(progressIMG);
-					
-					$(createdLABEL).css({backgroundColor:'#fe0'});
-					
-					setTimeout(function() {
-						numberOfRunsInProgress--;
+					if (!areEqual) {
+						var description = this.parentNode.firstChild.nodeValue.trim();
+						var heading = $(this.parentNode.parentNode.parentNode).prev('h2').first().text();
 						
-						$(createdLI).remove();
-						updateRunsListHeight();
-					}, 5000);
-				},
-				dataType : 'text',
-				timeout : 10000
-			});
+						changes.push([ heading, description, changedValue, defaultValue, deviation ]);
+					};
+				});
 			
-			return false;
-		}
+				changes.sort(function(a, b) { return b[4] - a[4]; });
+			
+				var runTextualDescription = "Run Parameters:"; //This is going to be the tooltip
+				
+				for (var i = 0; i < changes.length; i++) {
+					var change = changes[i];
+				
+					runTextualDescription += "\n[" + change[0] + "] " + change[1] + ": " + change[2];
+				}
+			
+				if (changes.length == 0)
+					runTextualDescription += " (default parameters)";
+			
+				var createdLI = document.createElement('li');
+				var createdLABEL = document.createElement('label');
+				var progressIMG = document.createElement('img');
+				var textNode = document.createTextNode("Executing run...");
+			
+				createdLI.setAttribute('title', runTextualDescription);
+			
+				progressIMG.setAttribute('src', 'images/progress.gif');
+				createdLI.appendChild(createdLABEL);
+				createdLABEL.appendChild(textNode);
+				createdLABEL.appendChild(progressIMG);
+				runsUL.appendChild(createdLI);
+			
+				numberOfRunsInProgress++;
+			
+				updateRunsListHeight();
+			
+				$.ajax({ //Now we are going to actually execute the run
+					type : 'POST',
+					url : 'index.php',
+					data : data,
+					success : function(data, textStatus, xhr) {
+						var runObject = addRunFromCSV("Run #" + (getNumberOfRuns() + 1),
+							generateNextColor(), data, changes);
+					
+						numberOfRunsInProgress--;
+					
+						textNode.nodeValue = runObject.description;
+						createdLABEL.removeChild(progressIMG);
+					
+						var visibilityCheckbox = document.createElement('input');
+						visibilityCheckbox.setAttribute('type', 'checkbox');
+						visibilityCheckbox.setAttribute('checked', 'checked');
+					
+						visibilityCheckbox.onchange = function() {
+							runObject.visible = visibilityCheckbox.checked;
+							updateAllData();
+						}
+					
+						createdLABEL.appendChild(visibilityCheckbox);
+					
+						var colorSlab = document.createElement('span');
+						colorSlab.style.backgroundColor = runObject.color;
+						colorSlab.style.borderColor = darkenColorSlightly(runObject.color);
+						colorSlab.setAttribute('class', 'slab');
+					
+						createdLABEL.appendChild(colorSlab);
+					},
+					error : function(xhr, textStatus, errorType) {
+						textNode.nodeValue = "Model Run Failed!";
+						createdLABEL.removeChild(progressIMG);
+					
+						$(createdLABEL).css({backgroundColor:'#fe0'});
+					
+						setTimeout(function() {
+							numberOfRunsInProgress--;
+							
+							$(createdLI).remove();
+							updateRunsListHeight();
+						}, 5000);
+					},
+					dataType : 'text',
+					timeout : 50000
+				});
+			
+				}, 0); return false;
+			}
 		
 		$('input[type=range]', form).change(function() {
-			//var s = Math.ceil(Math.log(parseFloat(this.value)));
-			//if (!(s > s) && !(s < s)) s = 1;
-			
-			//var offset = Math.pow(10, 3 - s);
-			//var value = parseInt(parseFloat(this.value) * offset) / offset;
+			/*
+			 *Here is where we update the label next to the range slider when the user
+			 *drags it. We first round this value to a specified number of declimal places,
+			 *then set the label to that value.
+			*/
 			var value = parseFloat(this.value).toFixed(this.getAttribute("data-prec"));
-			
 			$(this).parents('label').find('span.label').text(value);
 		});
 		
+		/* 
+		 *This runs when you click "reset inputs". It runs the function above on a form
+		 *reset so all its inputs are what they were when the page was intitalized.
+		*/
 		$('#reset-inputs').click(function(e) {
 			e.preventDefault();
 			form.reset();

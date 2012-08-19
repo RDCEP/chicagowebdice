@@ -1,11 +1,8 @@
 #!/usr/bin/env python
 
 import random
-import time
-import sys
 
 def main():
-  time.sleep(1)
   data = {
     "emissionsTotal": [
       87.972,97.4694,107.3874,117.5434,127.9259,
@@ -74,8 +71,6 @@ def main():
     shift = random.uniform(-0.2, 0.2) * sum(value) / len(value)
     exponent = random.uniform(0.9, 1.1)
     print "%s %s" % (name, ' '.join(("%.3f" % max(0, (x ** exponent) * factor + shift)) for x in value))
-  
-  sys.exit(0)
   
 if __name__ == '__main__':
   main()

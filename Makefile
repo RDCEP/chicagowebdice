@@ -9,6 +9,7 @@ XAPPRLRESDIR=$(MATLABROOT)/X11/app-defaults
 MATLAB_FILES=src/DICE2007Param.m src/DICE2007ParamExo.m src/DICE2007Run.m src/DICE2007Setup.m src/DICE2007Step.m src/OptimizeParam.m src/OptimizeParamExo.m src/OptimizeRun.m src/simDICE.m
 MCC_OPTS=-T link:lib -nodisplay -d lib/ -v
 CPP_FILES=src/libwebdice.cpp
+export PATH := $(PATH):$(MATLABROOT)/runtime/glnx86:$(MATLABROOT)/sys/os/glnx86:$(MATLABROOT)/sys/java/jre/glnx86/jre/lib/i386/native_threads:$(MATLABROOT)/sys/java/jre/glnx86/jre/lib/i386/server:$(MATLABROOT)/sys/java/jre/glnx86/jre/lib/i386
 
 unexport DISPLAY
 
@@ -30,12 +31,13 @@ bin/diceDriver: bin/diceDriver
 	ln -s `pwd`/bin/diceDriver bin/diceDriver
 
 setup:
-	apt-get install lamp-server git unzip ia32-libs
+	## Uncomment the following dependency if running a 64-bit install.
+	apt-get install lamp-server git unzip # ia32-libs
 	mkdir -p $(MCRINSTALLROOT)
 	## Comment the following and uncomment the next line if running a 64-bit
 	## build of bin/diceDriver. It's unlikely that this is the case.
-	wget $(X86MCRURL) -o $(MCRINSTALLROOT)/MCRInstaller.zip
-	# wget $(X86_64MCRURL) -o $(MCRINSTALLROOT)/MCRInstaller.zip
+	wget -O $(MCRINSTALLROOT)/MCRInstaller.zip $(X86MCRURL)
+	# wget -O $(MCRINSTALLROOT)/MCRInstaller.zip $(X86_64MCRURL)
 	unzip $(MCRINSTALLROOT)/MCRInstaller.zip
 	$(MCRINSTALLROOT)/install -mode silent
 	mkdir -p $(WEBROOT)/development
