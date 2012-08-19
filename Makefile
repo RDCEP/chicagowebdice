@@ -14,20 +14,20 @@ unexport DISPLAY
 
 compile: bin/diceDriver
 
-lib/libwebdice32.so:
-	mcc -W cpplib:libwebdice32 -b32 $(MCC_OPTS) $(MATLAB_FILES)
+lib/libwebdice.so:
+	mcc -W cpplib:libwebdice -b $(MCC_OPTS) $(MATLAB_FILES)
 
-lib/libwebdice64.so:
-	mcc -W cpplib:libwebdice64 -b64 $(MCC_OPTS) $(MATLAB_FILES)
+#lib/libwebdice64.so:
+#	mcc -W cpplib:libwebdice64 -b64 $(MCC_OPTS) $(MATLAB_FILES)
 
-bin/diceDriver32: lib/libwebdice32.so
-	mbuild $(CPP_FILES) -glnx86 -Llib/ -Isrc/ -llib/libwebdice32.so
+bin/diceDriver: lib/libwebdice.so
+	mbuild $(CPP_FILES) -glnx86 -Llib/ -Isrc/ -llib/libwebdice.so
 
-bin/diceDriver64: lib/libwebdice64.so
-	mbuild $(CPP_FILES) -glnxa64 -Llib/ -Isrc/ -llib/libwebdice64.so
+#bin/diceDriver64: lib/libwebdice64.so
+#	mbuild $(CPP_FILES) -glnxa64 -Llib/ -Isrc/ -llib/libwebdice64.so
 
-bin/diceDriver: bin/diceDriver32
-	ln -s `pwd`/bin/diceDriver32 bin/diceDriver
+bin/diceDriver: bin/diceDriver
+	ln -s `pwd`/bin/diceDriver bin/diceDriver
 
 setup:
 	apt-get install lamp-server git unzip ia32-libs
