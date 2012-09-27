@@ -261,10 +261,19 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 			"/usr/local/MATLAB/MATLAB_Compiler_Runtime/v716/sys/java/jre/glnx86/jre/lib/i386:".
 			"/usr/lib/x86_64-linux-gnu/:".
 			"/var/www/development/lib";
-		if ($current_load_path) $new_load_path = "$current_load_path:$new_load_path";
+		$new_load_path_64 = 
+			"/usr/local/MATLAB/MATLAB_Compiler_Runtime/v717/bin/glnxa64:".
+			"/usr/local/MATLAB/MATLAB_Compiler_Runtime/v717/runtime/glnxa64:".
+			"/usr/local/MATLAB/MATLAB_Compiler_Runtime/v717/sys/os/glnxa64:".
+			"/usr/local/MATLAB/MATLAB_Compiler_Runtime/v717/sys/java/jre/glnxa64/jre/lib/i386/native_threads:".
+			"/usr/local/MATLAB/MATLAB_Compiler_Runtime/v717/sys/java/jre/glnxa64/jre/lib/i386/server:".
+			"/usr/local/MATLAB/MATLAB_Compiler_Runtime/v717/sys/java/jre/glnxa64/jre/lib/i386:".
+			"/usr/lib/x86_64-linux-gnu/:".
+			"/var/www/development/lib";
+		if ($current_load_path) $new_load_path_64 = "$current_load_path:$new_load_path_64";
 	
-		putenv("LD_LIBRARY_PATH=$new_load_path");
-		putenv("XAPPLRESDIR=/usr/local/MATLAB/MATLAB_Compiler_Runtime/v716/X11/app-defaults");
+		putenv("LD_LIBRARY_PATH=$new_load_path_64");
+		putenv("XAPPLRESDIR=/usr/local/MATLAB/MATLAB_Compiler_Runtime/v717/X11/app-defaults");
 	
 		$flattened = implode(' ', $arguments);
 		
