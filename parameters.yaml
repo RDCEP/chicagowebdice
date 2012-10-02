@@ -279,12 +279,12 @@ parameters:
       - name: DICE Damages to Gross Output
         machine_name: dice
         description: Climate change destroys a certain percentage of global output
-      - name: Kopp Damages to Capital
-        machine_name: kopp
-        description: Climate change destroys a certain percentage of global input
-      - name: Damages to Productivity
-        machine_name: productivity
-        description: Climate change reduces the rate of growth in global productivity
+#      - name: Kopp Damages to Capital
+#        machine_name: kopp
+#        description: Climate change destroys a certain percentage of global input
+#      - name: Damages to Productivity
+#        machine_name: productivity
+#        description: Climate change reduces the rate of growth in global productivity
   - name: Elasticity of Marg. Consump.
     tab: Optimization
     section: Additional Parameters
