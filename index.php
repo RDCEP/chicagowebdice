@@ -476,7 +476,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
   <ul id='runs'></ul>
 </div>
 <div id='content' class='hasnoruns'>
-  <div class='tabs'><a href='' class='selected' id='link-to-four-graphs'>Four Graphs</a> <a href='#' id='link-to-custom-graph'>Single Graph</a></div>
+  <div class='tabs'><a href='' class='selected' id='link-to-four-graphs'>Basic Graphs</a> <a href='#' id='link-to-custom-graph'>Advanced Graph</a></div>
   <div class='initial'>
 <?php
 		$paragraphs = explode("\n", $initial_help);
