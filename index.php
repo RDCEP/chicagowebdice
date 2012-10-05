@@ -406,17 +406,17 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 							*/
 							$unit = $parameter['unit'];
 							$description = htmlentities($parameter['description']);
-							print "          <li><label title='$description' $class>$name ($unit) </label>";
+							print "          <li><label title='$description' $class>$name ($unit) ";
 						} else {
 							$description = htmlentities($parameter['description']);
-							print "          <li><label title='$description' $class>$name </label>";
+							print "          <li><label title='$description' $class>$name ";
 						}
 					} else {
 						if(isset($parameter['unit'])){
 							$unit = $parameter['unit'];
 							print "          <li $class>$name  ($unit) ";
 						} else {
-							print "          <li><label $class>$name </label>";
+							print "          <li><label $class>$name ";
 						}
 					}
 
@@ -453,9 +453,9 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 						$tickMarkLeft = ($tickMarkLeft - (pow($tickMarkLeft, 2.1362) *0.0008)) + 6; //to adjust for spacing issues
 						$tickMarkLeftWithUnit = $tickMarkLeft . "%";
 
-						print "<span class='label'>$default</span> <input name='$machine_name' $disabled ";
+						print "<span class='label'>$default</span></label> <input name='$machine_name' $disabled ";
 						print "type='range' min='$min' max='$max' step='$step' value='$default' data-prec='$precision'/></label>\n";
-            print"<span class='tick' style=\"right:$tickMarkLeftWithUnit\" $class>^</span></li>\n";
+            print"<span class='tick' style=\"left:$tickMarkLeftWithUnit\" $class>^</span></li>\n";
 
 					} else if ($is_submit_control){
 						$id = $parameter['id'];

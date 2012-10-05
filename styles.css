@@ -25,8 +25,8 @@
 #submission h2{font:bold 0.8em Helvetica,sans-serif;padding:1.5em 0 0.5em;}
 #submission li{list-style-type:none;font:0.8em Helvetica,sans-serif;position:relative;padding:0 0 .5em;}
 #submission #parameters input,#submission #parameters .fd-slider{width:100%;}
-#submission .label{width:4em;text-align:right;color:#666;position:absolute;right:0;top:0;}
-#submission label {width:15em;display:block;}
+#submission .label{width:4em;text-align:right;color:#666;position:absolute;right:0;bottom:0;}
+#submission label {width:15em;display:block;padding-right:6em;position:relative;}
 #submission select{width:100%;}
 #submission sub,#submission sup{font-size:0.7em;}
 #controls{position:absolute;bottom:0px;height:1.5em;left:0;right:0;text-align:right;}

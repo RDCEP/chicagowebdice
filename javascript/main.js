@@ -763,7 +763,7 @@
 			 *then set the label to that value.
 			*/
 			var value = parseFloat(this.value).toFixed(this.getAttribute("data-prec"));
-            $(this).prevAll('span.label').text(value);
+            $(this).prevAll('label').children('span.label')text(value);
 		});
 		
 		/* 
