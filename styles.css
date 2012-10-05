@@ -89,3 +89,5 @@
 .tabs a{border-right:1px solid transparent;border-left:1px solid transparent;}
 .tabs a.selected{background-color:#eee;border-color:#ccc;}
 .tab.notselected{display:none;}
+
+.disabled {color:#999999;}

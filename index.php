@@ -58,7 +58,10 @@ foreach ($parameters as $parameter) {
 		$optional[] = 'unit';
 
 	if(isset($parameter['subheading']))
-		$optional[] = 'subheading';
+    $optional[] = 'subheading';
+
+  if(isset($parameter['disabled']))
+    $optional[] = 'disabled';
 	
 	$size = count($required) + count($optional);
 	
@@ -387,7 +390,14 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 					$is_select_control = $parameter['is_select_control'];
 					$is_range_control = $parameter['is_range_control'];
 					$is_submit_control = $parameter['is_submit_control'];
-					
+
+          if (isset($parameter['disabled'])) {
+            $disabled = "disabled='disabled' ";
+            $class = "class='disabled' ";
+          } else {
+            $disabled = ''; $class = '';
+          }
+
 					if (isset($parameter['description'])) {
 						if(isset($parameter['unit'])){ 
 							/*
@@ -396,17 +406,17 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 							*/
 							$unit = $parameter['unit'];
 							$description = htmlentities($parameter['description']);
-							print "          <li><label title='$description'>$name ($unit) ";
+							print "          <li><label title='$description' $class>$name ($unit) ";
 						} else {
 							$description = htmlentities($parameter['description']);
-							print "          <li><label title='$description'>$name ";
+							print "          <li><label title='$description' $class>$name ";
 						}
 					} else {
 						if(isset($parameter['unit'])){
 							$unit = $parameter['unit'];
-							print "          <li>$name  ($unit) ";
+							print "          <li $class>$name  ($unit) ";
 						} else {
-							print "          <li><label>$name ";
+							print "          <li><label $class>$name ";
 						}
 					}
 
@@ -414,12 +424,12 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 					if ($is_select_control) {
 						$values = $parameter['values'];
 						
-						print "<select name='$machine_name'>\n";
+						print "<select name='$machine_name' $disabled>\n";
 						
 						foreach ($values as $value) {
 							$option_machine_name = $value['machine_name'];
 							$option_name = $value['name'];
-							
+
 							if (isset($value['description'])) {
 								$description = htmlentities($value['description']);
 							
@@ -442,9 +452,9 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 						$tickMarkRight = ((($max - $default)/($max - $min)) * 66);
 						$tickMarkRight = ($tickMarkRight - (pow($tickMarkRight, 2.1362) *0.0008)) + 6; //to adjust for spacing issues
 						$tickMarkRightWithUnit = $tickMarkRight . "px";
-						print"<span id='tick' style=\"right:$tickMarkRightWithUnit\">^</span>";
+						print"<span id='tick' style=\"right:$tickMarkRightWithUnit\" $class>^</span>";
 				
-						print "<span class='label'>$default</span> <input name='$machine_name' ";
+						print "<span class='label'>$default</span> <input name='$machine_name' $disabled ";
 						print "type='range' min='$min' max='$max' step='$step' value='$default' data-prec='$precision'/></label></li>\n";
 
 					} else if ($is_submit_control){

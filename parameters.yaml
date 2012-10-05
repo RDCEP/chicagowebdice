@@ -267,6 +267,7 @@ parameters:
     machine_name: oceanmodel
     section: Model Design 
     description: Oceanic model of carbon transfer
+    disabled: true
     values:
       - name: DICE
         machine_name: dice
@@ -275,6 +276,7 @@ parameters:
     machine_name: damages_model
     section: Model Design
     description: Way that climate change harms enter the economy
+    disabled: true
     values:
       - name: DICE Damages to Gross Output
         machine_name: dice
