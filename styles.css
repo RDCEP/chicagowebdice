@@ -21,11 +21,13 @@
 #submission{position:absolute;top:0;left:0;right:0;bottom:0px;}
 #parameters{position:absolute;top:0;left:0;right:0;bottom:1.8em;overflow:auto;border-bottom:1px solid #ddd;}
 #parameters.has-tabs{padding-top:2em;}
-#submission h2{font:bold 0.8em Helvetica,sans-serif;padding:1.5em 1em 0.5em 1em;}
-#submission li{list-style-type:none;font:0.8em Helvetica,sans-serif;padding:0.5em 1em;position:relative;}
-#submission #parameters input,#submission #parameters .fd-slider{position:absolute;right:7.3px;width:66px;top:0.4em;}
-#submission .label{position:absolute;right:6em;width:4em;text-align:right;color:#666;}
-#submission select{position:absolute;right:1em;width:8em;}
+#parameters .tab {padding:0 1em;}
+#submission h2{font:bold 0.8em Helvetica,sans-serif;padding:1.5em 0 0.5em;}
+#submission li{list-style-type:none;font:0.8em Helvetica,sans-serif;position:relative;padding:0 0 .5em;}
+#submission #parameters input,#submission #parameters .fd-slider{width:100%;}
+#submission .label{width:4em;text-align:right;color:#666;position:absolute;right:0;top:0;}
+#submission label {width:15em;display:block;}
+#submission select{width:100%;}
 #submission sub,#submission sup{font-size:0.7em;}
 #controls{position:absolute;bottom:0px;height:1.5em;left:0;right:0;text-align:right;}
 #controls{padding-top:0.4em;border-bottom:1px solid #999;}

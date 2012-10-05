@@ -481,7 +481,7 @@
 					$(contentDiv).animate( { height: '100%' }, "fast");
 				}
 			}
-			
+
 			$(overlayDiv).css({ display : 'block' }).animate({ opacity : overlayVisibility }, function() {
 				$(overlayDiv).css({ display : overlayDisplay });
 			});
@@ -489,7 +489,7 @@
 		}
 
 
-		
+
 		// Prepare initial contents of dataset for CSV download
 		data.addColumn('number', 'Year');
 		
@@ -510,20 +510,20 @@
 			}
 		}
 		
-		//Most of the button actions are determine blow. 
+		//Most of the button actions are determine blow.
 		var helpButton = document.getElementById('display-help');
 		helpButton.onclick = function() {
 			setVisibilityOfOverlay(true);
 			return false;
 		}
-		
+
 		var hideHelpButton = document.getElementById('hide-help');
 		hideHelpButton.onclick = function() {
 			setVisibilityOfOverlay(false);
-			
+
 			return false;
 		}
-		
+
 		var deleteAllButton = document.getElementById('delete-all');
 		deleteAllButton.onclick = function() {
 			for (var i = 0; i < runsBeingDisplayed.length; i++)
@@ -763,7 +763,7 @@
 			 *then set the label to that value.
 			*/
 			var value = parseFloat(this.value).toFixed(this.getAttribute("data-prec"));
-			$(this).parents('label').find('span.label').text(value);
+            $(this).prevAll('span.label').text(value);
 		});
 		
 		/* 

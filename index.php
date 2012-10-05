@@ -449,14 +449,13 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 						$default = $parameter['default'];
 						$precision = $parameter['precision'];
 
-						$tickMarkRight = ((($max - $default)/($max - $min)) * 66);
-						$tickMarkRight = ($tickMarkRight - (pow($tickMarkRight, 2.1362) *0.0008)) + 6; //to adjust for spacing issues
-						$tickMarkRightWithUnit = $tickMarkRight . "px";
-						print"<span id='tick' style=\"right:$tickMarkRightWithUnit\" $class>^</span>";
-				
-						print "<span class='label'>$default</span> <input name='$machine_name' $disabled ";
-						print "type='range' min='$min' max='$max' step='$step' value='$default' data-prec='$precision'/></label></li>\n";
+            $tickMarkLeft = ((($default - $min)/($max - $min)) * 100);
+						$tickMarkLeft = ($tickMarkLeft - (pow($tickMarkLeft, 2.1362) *0.0008)) + 6; //to adjust for spacing issues
+						$tickMarkLeftWithUnit = $tickMarkLeft . "%";
 
+						print "<span class='label'>$default</span> <input name='$machine_name' $disabled ";
+						print "type='range' min='$min' max='$max' step='$step' value='$default' data-prec='$precision'/></label>\n";
+            print"<span id='tick' style=\"right:$tickMarkLeftWithUnit\" $class>^</span></li>\n";
 					} else if ($is_submit_control){
 						$id = $parameter['id'];
 						$button_name = $parameter['button_name'];
