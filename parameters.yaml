@@ -122,39 +122,39 @@ advanced_help: >
   ## WebDICE Documentation [Large Version]
 
 parameters:
-  - name: Climate Sensitivity
+  - name: How much will temperatures go up?
     machine_name: t2xco2
     tab: Basic
-    section: Model Parameters
+    section: Your beliefs about the climate and the future
     min: 1
     max: 7
     step: 0.5
     default: 3.0
     precision: 1
     description: Temperature increase in degrees C from doubling of atmospheric CO2 
-  - name: Exponent of Damage Function
+  - name: How large will the harms be?
     machine_name: a3
     tab: Basic
-    section: Model Parameters
+    section: Your beliefs about the climate and the future
     min: 1
     max: 3
     step: 0.5
     default: 2.0
     precision: 1
     description: Increase in harms from climate change due to an increase in temperatures
-  - name: Technological Growth
+  - name: How much will growth slow down in the future?
     machine_name: dela
     tab: Basic
-    section: Model Parameters
+    section: Your beliefs about the climate and the future
     min: 0.0005
     max: 0.015
     step: 0.0005
     default: 0.0010
     precision: 4
     description: Decline in the rate of growth in productivity over time
-  - name: Energy Intensity
+  - name: How much more energy efficient will we be?
     tab: Basic
-    section: Model Parameters
+    section: Your beliefs about the climate and the future
     machine_name: dsig
     default: 0.003
     min: 0
@@ -165,7 +165,7 @@ parameters:
   - name: 2050
     tab: Basic
     machine_name: e2050
-    section: User Controls - Reduction in emissions below 2005 emissions in
+    section: Simulated climate treaty: Choose limitations on emissions(as a percent of 2005 emissions):
     min: 0.00
     max: 1.00
     step: 0.10
@@ -175,7 +175,7 @@ parameters:
   - name: 2100
     tab: Basic
     machine_name: e2100
-    section: User Controls - Reduction in emissions below 2005 emissions in
+    section: Simulated climate treaty: Choose limitations on emissions (as a percent of 2005 emissions):
     min: 0.00
     max: 1.00
     step: 0.10
@@ -185,16 +185,16 @@ parameters:
   - name: 2150
     tab: Basic
     machine_name: e2150
-    section: User Controls - Reduction in emissions below 2005 emissions in
+    section: Simulated climate treaty: Choose limitations on emissions (as a percent of 2005 emissions):
     min: 0.00
     max: 1.00
     step: 0.10
     default: 0.00
     precision: 2
     description: The mandated decrease in emissions by 2150 as a share of 2005 year emissions.
-  - name: Marginal Cost of abatement
+  - name: Marginal cost of abatement
     tab: Advanced
-    section: Abatement
+    section: Costs of emissions control
     machine_name: expcost2
     default: 2.8
     min: 2
@@ -202,9 +202,9 @@ parameters:
     step: 0.1
     precision: 1
     description: Additional cost from more abatement
-  - name: Reduction in Abatement costs
+  - name: Rate of decline of clean energy costs
     tab: Advanced
-    section: Abatement
+    section: Costs of emissions control
     machine_name: gback
     default: 0.05
     min: 0
@@ -212,9 +212,9 @@ parameters:
     step: 0.05
     precision: 2
     description: Rate of decline in costs of reduction emissions
-  - name: Cost of Replacing all Emissions
+  - name: Ratio of current to future clean energy costs
     tab: Advanced
-    section: Abatement
+    section: Costs of emissions control
     machine_name: backrat
     default: 2.0
     min: 0.5
@@ -222,7 +222,7 @@ parameters:
     step: 0.5
     precision: 1
     description: Cost of replacing all emissions in 2012 $ per ton of CO_{2} , relative to future cost
-  - name: Max Population
+  - name: Max population
     tab: Advanced
     section: Additional Parameters
     machine_name: popasym
@@ -232,7 +232,7 @@ parameters:
     default: 8600
     precision: 0
     description: Number, in millions, that the population grows asymptotically towards
-  - name: Depreciation Rate
+  - name: Depreciation rate
     tab: Advanced
     section: Additional Parameters
     machine_name: dk
@@ -242,7 +242,7 @@ parameters:
     step: 0.01
     precision: 2
     description: Rate of depreciation per year
-  - name: Savings Rate
+  - name: Savings rate
     tab: Advanced
     section: Additional Parameters
     machine_name: savings
@@ -252,7 +252,7 @@ parameters:
     step: 0.05
     precision: 2
     description: Savings are per year
-  - name: Fossil Fuel Reserves
+  - name: Fossil fuel reserves
     tab: Advanced
     section: Additional Parameters
     machine_name: fosslim
@@ -262,7 +262,7 @@ parameters:
     default: 6000
     precision: 0
     description: Fossil fuels remaining, measured in CO2 emissions
-  - name: Carbon Cycle
+  - name: Carbon cycle
     tab: Advanced
     machine_name: oceanmodel
     section: Model Design 
@@ -270,7 +270,7 @@ parameters:
     values:
       - name: DICE
         machine_name: dice
-  - name: Damages Model
+  - name: Damages model
     tab: Advanced
     machine_name: damages_model
     section: Model Design
@@ -285,7 +285,7 @@ parameters:
 #      - name: Damages to Productivity
 #        machine_name: productivity
 #        description: Climate change reduces the rate of growth in global productivity
-  - name: Elasticity of Marg. Consump.
+  - name: Elasticity of marg. consump.
     tab: Optimization
     section: Additional Parameters
     machine_name: elasmu
@@ -295,7 +295,7 @@ parameters:
     step: 0.1
     precision: 1
     description: Exponent of consumption in utility function
-  - name: Pure Rate of Time Preference
+  - name: Pure rate of time preference
     tab: Optimization
     section: Additional Parameters
     machine_name: prstp
@@ -305,7 +305,7 @@ parameters:
     step: 0.005
     precision: 3
     description: Discount rate applied to utility
-  - name: Run Optimization
+  - name: Run optimization
     button_name: Run
     tab: Optimization
     section: Run Model
