@@ -455,7 +455,8 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 
 						print "<span class='label'>$default</span> <input name='$machine_name' $disabled ";
 						print "type='range' min='$min' max='$max' step='$step' value='$default' data-prec='$precision'/></label>\n";
-            print"<span id='tick' style=\"right:$tickMarkLeftWithUnit\" $class>^</span></li>\n";
+            print"<span class='tick' style=\"right:$tickMarkLeftWithUnit\" $class>^</span></li>\n";
+
 					} else if ($is_submit_control){
 						$id = $parameter['id'];
 						$button_name = $parameter['button_name'];
