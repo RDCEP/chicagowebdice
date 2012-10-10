@@ -25,7 +25,7 @@
 #parameters.has-tabs{padding-top:2em;}
 #parameters .tab {padding:0 1em;}
 #submission h2{font:bold 0.8em Helvetica,sans-serif;padding:1.5em 0 0.5em;}
-#submission li{list-style-type:none;font:0.8em Helvetica,sans-serif;position:relative;padding:0 0 .5em;}
+#submission li{list-style-type:none;font:0.8em Helvetica,sans-serif;position:relative;padding:0 0 1em;}
 #submission #parameters input,#submission #parameters .fd-slider{width:100%;}
 #submission .label{width:4em;text-align:right;color:#666;position:absolute;right:0;bottom:0;}
 #submission label {width:15em;display:block;padding-right:6em;position:relative;}
@@ -85,7 +85,9 @@
 #overlay .tabs .selected{background-color:#fff;}
 #hide-help{position:absolute;top:0.5em;right:1.5em;color:#222;font:0.9em Helvetica,sans-serif;}
 #MathJax_Message{display:none !important;}
-.tick{position:relative;top:0;color:#666;font:0.9em Helvetica,sans-serif;}
+.tick-wrap {position:absolute;left:8px;right:8px;}
+.tick{position:relative;top:-.5em;color:#f00;font:1em Helvetica,sans-serif;text-align:center;
+    display:block;width:100%;}
 
 .tabs{height:2.4em;font:0.8em/1em Helvetica,sans-serif;position:absolute;top:0;left:0;right:0;}
 .tabs{background-color:#fff;border-bottom:1px solid #ccc;}

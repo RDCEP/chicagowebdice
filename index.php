@@ -457,13 +457,13 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 						$default = $parameter['default'];
 						$precision = $parameter['precision'];
 
-            $tickMarkLeft = ((($default - $min)/($max - $min)) * 100);
-						$tickMarkLeft = ($tickMarkLeft - (pow($tickMarkLeft, 2.1362) *0.0008)) + 6; //to adjust for spacing issues
+            $tickMarkLeft = (($default - $min)/($max - $min)) * 100;
+						$tickMarkLeft = $tickMarkLeft - 50;
 						$tickMarkLeftWithUnit = $tickMarkLeft . "%";
 
 						print "<span class='label'>$default</span></label> <input name='$machine_name' $disabled ";
 						print "type='range' min='$min' max='$max' step='$step' value='$default' data-prec='$precision'/></label>\n";
-            print"<span class='tick' style=\"left:$tickMarkLeftWithUnit\" $class>^</span></li>\n";
+            print"<div class="tick-wrap"><span class='tick' style=\"left:$tickMarkLeftWithUnit\" $class>&bullet;</span></div></li>\n";
 
 					} else if ($is_submit_control){
 						$id = $parameter['id'];
