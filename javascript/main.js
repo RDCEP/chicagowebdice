@@ -463,33 +463,6 @@
 			$(contentDiv).animate( { height: '100%' }, "fast");
 		}
 		
-		//This runs when "documentation" is clicked
-		var setVisibilityOfOverlay = function(visible) {
-			if (visible) {
-				var overlayVisibility = 1.0;
-				var advancedHelpOffset = 0;
-				var overlayDisplay = 'block';
-				contentDiv.setAttribute('style', 'height:auto');
-				sidebarDiv.setAttribute('style', 'height:auto');
-
-			} else {
-				var overlayVisibility = 0.0;
-				var advancedHelpOffset = 200;
-				var overlayDisplay = 'none';
-				if(getNumberOfRuns() > 0){
-					$(sidebarDiv).animate( { height: '100%' }, "slow");
-					$(contentDiv).animate( { height: '100%' }, "fast");
-				}
-			}
-
-			$(overlayDiv).css({ display : 'block' }).animate({ opacity : overlayVisibility }, function() {
-				$(overlayDiv).css({ display : overlayDisplay });
-			});
-			$(advancedHelpDiv).animate({ top : advancedHelpOffset });
-		}
-
-
-
 		// Prepare initial contents of dataset for CSV download
 		data.addColumn('number', 'Year');
 		
@@ -510,20 +483,6 @@
 			}
 		}
 		
-		//Most of the button actions are determine blow.
-		var helpButton = document.getElementById('display-help');
-		helpButton.onclick = function() {
-			setVisibilityOfOverlay(true);
-			return false;
-		}
-
-		var hideHelpButton = document.getElementById('hide-help');
-		hideHelpButton.onclick = function() {
-			setVisibilityOfOverlay(false);
-
-			return false;
-		}
-
 		var deleteAllButton = document.getElementById('delete-all');
 		deleteAllButton.onclick = function() {
 			for (var i = 0; i < runsBeingDisplayed.length; i++)
