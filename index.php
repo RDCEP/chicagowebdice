@@ -285,8 +285,9 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 		 *We pass it the type of run, the type of step, and $flattened, the string of parameters and values.
 		 *The output is recorded into $r.
 		*/
-		$r = popen("bin/diceDriver run DICE2007Run step DICE2007Step $flattened", "r");
-	
+		//$r = popen("bin/diceDriver run DICE2007Run step DICE2007Step $flattened", "r");
+		$r = popen("bin/diceDriverTemp run DICE2007Run step DICE2007Step $flattened 2>&1", "r");
+
 		$number_of_blank_lines = 0;
 		$output = "";
 		while (($line = fgets($r)) !== FALSE) {
