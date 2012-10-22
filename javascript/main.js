@@ -627,8 +627,8 @@
 					}
 					
 					if (!areEqual) {
-						var description = this.parentNode.firstChild.nodeValue.trim();
-						var heading = $(this.parentNode.parentNode.parentNode).prev('h2').first().text();
+						var description = this.parentNode.firstChild.firstChild.nodeValue.trim();
+						var heading = $(this.parentNode.parentNode).prev('h2').first().text();
 						
 						changes.push([ heading, description, changedValue, defaultValue, deviation ]);
 					};
