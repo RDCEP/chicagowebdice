@@ -233,6 +233,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 				 * try and cache requests. Discretized parameter parsing
 				 * is crucial to that effort.
 				*/
+        //TODO: This is screwing the parameters whose minimum is greater than zero.
 				$value = round(($value - $parameter['min']) / $parameter['step']) * $parameter['step'];
 			
 			} else if ($parameter['is_select_control']) {
@@ -272,7 +273,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 			"/usr/local/MATLAB/MATLAB_Compiler_Runtime/v717/sys/java/jre/glnxa64/jre/lib/i386/server:".
 			"/usr/local/MATLAB/MATLAB_Compiler_Runtime/v717/sys/java/jre/glnxa64/jre/lib/i386:".
 			"/usr/lib/x86_64-linux-gnu/:".
-			"/var/www/development/lib";
+			"/var/www/development/lib:";
 		if ($current_load_path) $new_load_path_64 = "$current_load_path:$new_load_path_64";
 	
 		putenv("LD_LIBRARY_PATH=$new_load_path_64");
@@ -463,7 +464,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
 
 						print "<span class='label'>$default</span></label> <input name='$machine_name' $disabled ";
 						print "type='range' min='$min' max='$max' step='$step' value='$default' data-prec='$precision'/></label>\n";
-            print"<div class='tick-wrap'><span class='tick' style=\"left:$tickMarkLeftWithUnit\" $class>&bullet;</span></div></li>\n";
+            print "<div class='tick-wrap'><span class='tick' style=\"left:$tickMarkLeftWithUnit\" $class>&bullet;</span></div></li>\n";
 
 					} else if ($is_submit_control){
 						$id = $parameter['id'];
