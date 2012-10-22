@@ -21,9 +21,9 @@
 <div id='back-to-rdcep'><a href='http://www.rdcep.org/'>Back to RDCEP</a></div>
 <ul id='help-menu'>
   <li id='display-help'>Documentation<ul>
-    <li><a target="_blank" href="/docs/webdice_basic_help.pdf">Basic</a></li>
-    <li><a target="_blank" href="/docs/webdice_intermediate_help.pdf">Intermediate</a></li>
-    <li><a target="_blank" href="/docs/webdice_equation_help.pdf">Equations</a></li>
+    <li><a target="_blank" href="/static/docs/webdice_basic_help.pdf">Basic</a></li>
+    <li><a target="_blank" href="/static/docs/webdice_intermediate_help.pdf">Intermediate</a></li>
+    <li><a target="_blank" href="/static/docs/webdice_equation_help.pdf">Equations</a></li>
   </ul></li>
   <li id='view-source'><a href='https://www.github.com/RDCEP/chicagowebdice/' target='_blank'>View Source</a></li>
 </ul>
