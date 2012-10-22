@@ -7,6 +7,7 @@ from equations import excel, matlab, docs
 #class dice2007(diceParams, excel.ExcelLoop):
 class dice2007(diceParams):
     def __init__(self, decade=False, eq='nordhaus'):
+        #TODO: Sort out decade shit
         self.eq = excel.ExcelLoop()
         if eq == 'matlab':
             self.eq = matlab.MatlabLoop()
@@ -17,6 +18,10 @@ class dice2007(diceParams):
         else:
             self.decade = 1
         diceParams.__init__(self)
+    @property
+    def aa(self):
+        """temp coefficient; pi_2, temp squared coefficient; epsilon, damage exponent"""
+        return np.array([self.a1, self.a2, self.a3])
     @property
     def gfacpop(self):
         """L_g, Population growth factor"""
@@ -30,28 +35,9 @@ class dice2007(diceParams):
         """A_g, Growth rate of total factor productivity"""
         return self._ga0 * np.exp(-self.dela * 10 * self.t0)
     @property
-    def al(self):
-        """A, Total factor productivity"""
-        al = np.linspace(self._a0, self._a0, self.tmax)
-        for i in range(self.tmax):
-            if i > 0:
-                #TODO: In Optimized run, there's no .95. Ask David et al about this.
-#                al[i] = (.95 * al[i-1]) / (1 - self.ga[i-1])
-                al[i] = al[i-1] / (1 - self.ga[i-1])
-        return al
-    @property
     def gsig(self):
         """sigma_g, Rate of decline of carbon intensity"""
         return self._gsigma * np.exp(-self.dsig * 10 * self.t0 - self.dsig2 * 10 * (self.t0 ** 2))
-    @property
-    def sigma(self):
-        """sigma, Ratio of uncontrolled industrial emissions to output"""
-        #TODO: Get rid of for loop -- use ufunc
-        sigma = np.linspace(self._sig0, self._sig0, self.tmax)
-        for i in range(self.tmax):
-            if i > 0:
-                sigma[i] = sigma[i-1] / (1 - self.gsig[i])
-        return sigma
     @property
     def gcost1(self):
         """theta_1, Growth of cost factor"""
@@ -90,30 +76,15 @@ class dice2007(diceParams):
             self.fex0 + .1 * (self.fex1 - self.fex0) * np.arange(11),
             self.fex0 + np.linspace(.36,.36, 49),
             ))
-    def calc_miu(self):
-        """mu, emissions reduction rate"""
-        def emissions_cap_miu(miu, eind, ecap, sigma, al, capital, l):
-            if eind > (ecap * self._e2005):
-                return 1 - (ecap * self._e2005) / (10 * sigma * al * (capital**self._gama) * (l**(1-self._gama)))
-            else:
-                return miu
-        ecm = np.vectorize(emissions_cap_miu)
-        #TODO: Rewrite. miu can't be set as it's a property
-        self.miu = ecm(self.miu, self.emissions_industrial, self.e2005cap, self.sigma, self.al, self.capital, self.l)
-    def calc_emissions_industrial(self):
-        def emissions_cap_ind(eind, ecap):
-            if eind > (ecap * self._e2005):
-                return ecap * self._e2005
-            else:
-                return eind
-        eci = np.vectorize(emissions_cap_ind)
-        self.emissions_industrial = eci(self.emissions_industrial, self.e2005cap)
-        self.emissions_total = self.emissions_total + self.etree
 
     def loop(self):
         """Step function for calculating endogenous variables"""
         for i in range(self.tmax):
             if i > 0:
+                self.sigma[i] = self.sigma[i-1] / (1 - self.gsig[i])
+                #TODO: In Optimized run, there's no .95. Ask David et al about this.
+#                self.al[i] = (.95 * self.al[i-1]) / (1 - self.ga[i-1])
+                self.al[i] = self.al[i-1] / (1 - self.ga[i-1])
                 self.capital[i] = self.eq.capital(self.capital[i-1], self.dk,
                     self.investment[i-1])
             self.gross_output[i] = self.eq.gross_output(self.al[i], self.capital[i], self._gama, self.l[i])

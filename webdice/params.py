@@ -38,7 +38,10 @@ class diceParams(object):
         self.cc = np.array([.220, 0, .300, .050])
         self.fco22x = 3.8 # Estimated forcings of equilibrium CO2 doubling
         # Climate damage selfeters, calibrated for quadratic at 2.5 C for 2105
-        self.aa = np.array([0, 0.0028388, 2])
+#        self.aa = np.array([0, 0.0028388, 2])
+        self.a1 = 0
+        self.a2 = 0.0028388
+        self.a3 = 2
         ## Abatement cost
         self.expcost2 = 2.8 # Exponent of control cost function
         self._pback = 1.17 # Cost of backstop 2005, thousands of $ per tC 2005
@@ -65,6 +68,8 @@ class diceParams(object):
         self.miu_2005 = 0 # emission control rate (fraction of uncontrolled emissions)
         self.t0 = np.linspace(0, self.tmax-1, self.tmax)
         self.t1 = self.t0 + 1
+        self.sigma = np.linspace(self._sig0, self._sig0, self.tmax)
+        self.al = np.linspace(self._a0, self._a0, self.tmax)
         self.capital = np.linspace(self._k0, self._k0, self.tmax)
         self.output = np.linspace(self._q0, self._q0, self.tmax)
         self.mass_atmosphere = np.linspace(self.mat2000, self.mat2000, self.tmax)
