@@ -126,7 +126,7 @@ if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(usage='%(prog)s [-h] [-e EQUATION] variables')
     eq_help = """
-    Defaults to the equations from Norhaus's Excel. Options are 'docs' or 'matlab'.
+    Defaults to the equations from Norhaus's Excel. Options are 'docs', 'matlab', or 'all'.
     """
     var_help = """
     You can print the following: capital, gross_output, emissions_industrial,
@@ -138,16 +138,27 @@ if __name__ == '__main__':
     parser.add_argument('-e', '--equation', help=eq_help)
     parser.add_argument('variables', help=var_help, metavar='var1[,var2,...]')
     args = parser.parse_args()
-    d = dice2007()
+
     if args.equation == 'matlab':
-        d = dice2007(eq='matlab')
+        d = [dice2007(eq='matlab')]
     elif args.equation == 'docs':
-        d = dice2007(eq='docs')
-    d.loop()
+        d = [dice2007(eq='docs')]
+    elif args.equation == 'all':
+        d = [
+            dice2007(),
+            dice2007(eq='matlab'),
+            dice2007(eq='docs'),
+        ]
+    else:
+        d = [dice2007()]
+    for m in d:
+        m.loop()
     try:
         for v in args.variables.split(','):
             try:
-                print '%s: ' % v, getattr(d, v)
+                for m in d:
+                    print m.eq.__module__
+                    print '%s: ' % v, getattr(m, v)
             except: print 'No variable named %s' % v
     except:
         print 'No variables specified'
