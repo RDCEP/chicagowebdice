@@ -2,7 +2,6 @@ import numpy as np
 from params import diceParams
 from equations import excel, matlab, docs
 
-#class dice2007(diceParams, excel.ExcelLoop):
 class dice2007(diceParams):
     def __init__(self, decade=False, eq='nordhaus'):
         #TODO: Sort out decade shit
@@ -67,9 +66,9 @@ class dice2007(diceParams):
     def partfract(self):
         """phi, Fraction of emissions in control regime"""
         return np.concatenate((
-            np.linspace(self.partfract1, self.partfract1, 1), # 1
-            self.partfract21 + (self.partfract2 - self.partfract21) * np.exp(-self.dpartfract * np.arange(23)), # 23
-            np.linspace(self.partfract21, self.partfract21, 36), # 36
+            np.linspace(self.partfract1, self.partfract1, 1),
+            self.partfract21 + (self.partfract2 - self.partfract21) * np.exp(-self.dpartfract * np.arange(23)),
+            np.linspace(self.partfract21, self.partfract21, 36),
             ))
     @property
     def forcoth(self):
@@ -138,7 +137,6 @@ if __name__ == '__main__':
     parser.add_argument('-e', '--equation', help=eq_help)
     parser.add_argument('variables', help=var_help, metavar='var1[,var2,...]')
     args = parser.parse_args()
-
     if args.equation == 'matlab':
         d = [dice2007(eq='matlab')]
     elif args.equation == 'docs':
@@ -157,9 +155,9 @@ if __name__ == '__main__':
         for v in args.variables.split(','):
             try:
                 for m in d:
-                    print m.eq.__module__
                     print '%s: ' % v, getattr(m, v)
-            except: print 'No variable named %s' % v
+            except:
+                print 'No variable named %s' % v
     except:
         print 'No variables specified'
         print 'You can print the following: capital, gross_output, emissions_industrial,'
