@@ -14,6 +14,8 @@ function [vars] = OptimizeRun(vars, param)
   fitoptions=optimset('Display','iter','TolX',1e-10,'TolFun',1e-20,'MaxIter',param.maxIter,'Algorithm','sqp');
 
   % Run optimization
+  % x = fmincon(fun, x0, A,       b,       Aeq,beq,lb,       ub,       nonlcon,options)
+  % x = fmincon(myRun,
   x = fmincon(myRun, x0, param.A, param.b, [], [], param.lb, param.ub, [], fitoptions);
 
   param.(param.optVariable) = x;
