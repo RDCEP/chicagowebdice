@@ -1,5 +1,3 @@
-import sys
-import argparse
 import numpy as np
 from params import diceParams
 from equations import excel, matlab, docs
@@ -126,6 +124,7 @@ class dice2007(diceParams):
             self.utility_discounted[i] = self.eq.utility_discounted(self.utility[i], self.pref_fac[i], self.l[i])
 
 if __name__ == '__main__':
+    import argparse
     parser = argparse.ArgumentParser(usage='%(prog)s [-h] [-e EQUATION] variables')
     eq_help = """
     Defaults to the equations from Norhaus's Excel. Options are 'docs' or 'matlab'.
