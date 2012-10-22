@@ -3,10 +3,10 @@
 <head>
   <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
   <title>RDCEP :: WebDICE</title>
-  <link rel="stylesheet" href="styles.css" type="text/css" media="screen" title="Default Stylesheet" charset="utf-8"/>
-  <link rel="stylesheet" type="text/css" media="screen, projection" href="http://www.frequency-decoder.com/demo/fd-slider/css/fd-slider.mhtml.min.css" />
-  <script src="javascript/fd-slider.min.js"></script>
-  <script src="javascript/jquery.min.js"></script>
+  <link rel="stylesheet" href="/static/css/styles.css" type="text/css" media="screen" title="Default Stylesheet" charset="utf-8"/>
+  <link rel="stylesheet" type="text/css" media="screen, projection" href="/static/css/fd-slider.min.css" />
+  <script src="/static/js/fd-slider.min.js"></script>
+  <script src="/static/js/jquery.min.js"></script>
   <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>
   <script type='text/javascript'>
     Options = window.Options || { };
