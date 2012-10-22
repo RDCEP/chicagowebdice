@@ -1,6 +1,6 @@
 import numpy as np
 
-class MatlabLoop(object):
+class DocsLoop(object):
     def __init__(self):
         pass
     def capital(self, capital, dk, investment):
@@ -18,7 +18,7 @@ class MatlabLoop(object):
     def mass_lower(self, mass_upper, mass_lower, b):
         return b[1][2] * mass_upper + b[2][2] * mass_lower
     def forcing(self, fco22x, mass_atmosphere, matPI, forcoth, ma_next):
-        return fco22x * np.log((mass_atmosphere + .000001)/matPI/np.log(2)) + forcoth
+        return fco22x * np.log2(mass_atmosphere/matPI) + forcoth
     def temp_atmosphere(self, temp_atmosphere, temp_lower, forcing, lam, c):
         return temp_atmosphere + c[0] * (forcing - lam * temp_atmosphere - c[2] * (temp_atmosphere - temp_lower))
     def temp_lower(self, temp_atmosphere, temp_lower, c):
@@ -28,7 +28,7 @@ class MatlabLoop(object):
     def participation_markup(self, participation, expcost2):
         return participation**(1-expcost2)
     def damage(self, gross_output, temp_atmosphere, aa):
-        return 1/( 1 + aa[0] * temp_atmosphere + aa[1] * temp_atmosphere**aa[2])
+        return 1/( 1 + aa[0] * temp_atmosphere**aa[2])
     def abatement(self, gross_output, miu, gcost1, expcost2, partfract):
         return partfract**(1-expcost2) * gcost1 * (miu**expcost2)
     def output(self, gross_output, damage, abatement):
@@ -36,7 +36,7 @@ class MatlabLoop(object):
     def investment(self, savings, output):
         return savings * output
     def consumption(self, output, savings):
-        return (1 - savings) * output
+        return output - (savings * output)
     def consumption_percapita(self, consumption, l):
         return 1000 * consumption / l
     def utility(self, consumption_percapita, elasmu, l):
@@ -51,5 +51,3 @@ class MatlabLoop(object):
         if emissions_industrial < (_e2005 * ecap):
             return 0.
         else: return 1 - ((emissions_industrial * ecap) / (sigma * gross_output))
-
-

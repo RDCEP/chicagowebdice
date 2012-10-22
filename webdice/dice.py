@@ -1,11 +1,17 @@
+import sys
+import argparse
 import numpy as np
 from params import diceParams
-from equations import excel
+from equations import excel, matlab, docs
 
 #class dice2007(diceParams, excel.ExcelLoop):
 class dice2007(diceParams):
-    def __init__(self, decade=False):
+    def __init__(self, decade=False, eq='nordhaus'):
         self.eq = excel.ExcelLoop()
+        if eq == 'matlab':
+            self.eq = matlab.MatlabLoop()
+        elif eq == 'docs':
+            self.eq = docs.DocsLoop()
         if decade:
             self.decade = 10
         else:
@@ -62,6 +68,14 @@ class dice2007(diceParams):
 #        return 1 / ((1 + self.prstp)**(10*self.t0))
         return 1 / ((1 + self.prstp)**(self.decade*self.t0))
     @property
+    def ecap(self):
+        return np.concatenate((
+            np.linspace(0, 0, 5),
+            np.linspace(self.e2050, self.e2050, 5),
+            np.linspace(self.e2100, self.e2050, 5),
+            np.linspace(self.e2150, self.e2050, 45),
+            ))
+    @property
     def partfract(self):
         """phi, Fraction of emissions in control regime"""
         return np.concatenate((
@@ -100,13 +114,10 @@ class dice2007(diceParams):
         """Step function for calculating endogenous variables"""
         for i in range(self.tmax):
             if i > 0:
-                self.capital[i] = self.eq.capital(self.capital[i-1], self.dk, self.investment[i-1])
+                self.capital[i] = self.eq.capital(self.capital[i-1], self.dk,
+                    self.investment[i-1])
             self.gross_output[i] = self.eq.gross_output(self.al[i], self.capital[i], self._gama, self.l[i])
-            self.emissions_industrial[i] = self.decade* self.eq.emissions_industrial(self.sigma[i], self.miu[i], self.gross_output[i])
-            if self.eq.__module__ != 'equations.excel':
-                if self.emissions_industrial[i] > (self.e2005cap[i] * self._e2005):
-                    self.miu[i] = 1 - (self.e2005cap[i] * self._e2005) / (10 * self.sigma[i] * self.gross_output[i])
-                    self.emissions_industrial[i] = self.e2005cap[i] * self._e2005
+            self.emissions_industrial[i] = self.decade * self.eq.emissions_industrial(self.sigma[i], self.miu[i], self.gross_output[i])
             self.emissions_total[i] = self.eq.emissions_total(self.emissions_industrial[i], self.etree[i])
             if i > 0:
                 self.carbon_emitted[i] = self.carbon_emitted[i-1] + self.emissions_total[i]
@@ -119,7 +130,6 @@ class dice2007(diceParams):
                     self.mass_atmosphere[i-1], self.mass_upper[i-1], self.bb)
                 self.mass_upper[i] = self.eq.mass_upper(self.mass_atmosphere[i-1], self.mass_upper[i-1], self.mass_lower[i-1], self.bb)
                 self.mass_lower[i] = self.eq.mass_lower(self.mass_upper[i-1], self.mass_lower[i-1], self.bb)
-
             self.forcing[i] = self.fco22x * np.log((self.mass_atmosphere[i] / self.matPI)) + self.forcoth[i]
             ma2 = self.eq.mass_atmosphere(self.emissions_total[i],self.mass_atmosphere[i], self.mass_upper[i], self.bb)
             self.forcing[i] = self.eq.forcing(self.fco22x, self.mass_atmosphere[i], self.matPI, self.forcoth[i], ma2)
@@ -131,39 +141,76 @@ class dice2007(diceParams):
             self.abatement[i] = self.eq.abatement(self.gross_output[i], self.miu[i], self.gcost1[i], self.expcost2, self.partfract[i])
             self.output[i] = self.eq.output(self.gross_output[i], self.damage[i], self.abatement[i])
             self.investment[i] = self.eq.investment(self.savings, self.output[i])
-
-            self.consumption[i] = self.eq.consumption(self.output[i], self.investment[i])
+#            if self.eq.__module__ != 'equations.excel':
+            if True:
+                if i == 0:
+                    self.miu[i] = self.miu_2005
+                else:
+                    self.miu[i] = self.eq.miu(self.emissions_industrial[i], self.ecap[i], self._e2005, self.sigma[i], self.gross_output[i])
+            self.consumption[i] = self.eq.consumption(self.output[i], self.savings)
             self.consumption_percapita[i] = self.eq.consumption_percapita(self.consumption[i], self.l[i])
             self.utility[i] = self.eq.utility(self.consumption_percapita[i], self.elasmu, self.l[i])
             if i > 0:
                 self.pref_fac[i] = self.eq.preference_factor(self.prstp, self.pref_fac[i-1])
             self.utility_discounted[i] = self.eq.utility_discounted(self.utility[i], self.pref_fac[i], self.l[i])
 
-d = dice2007()
-d.loop()
-print getattr(d,'al')
-#print 'capital: ', d.capital
-#print 'gross_output: ', d.gross_output
-#print 'emissions_ind: ', d.emissions_industrial
-#print 'emissions_total: ', d.emissions_total
-#print 'mass_atmosphere: ', d.mass_atmosphere[-1]
-#print 'mass_upper: ', d.mass_upper[-1]
-#print 'mass_lower: ', d.mass_lower[-1]
-#print 'forcing: ', d.forcing
-#print 'temp_lower: ', d.temp_lower
-#print 'temp_atmosphere: ', d.temp_atmosphere
-#print 'damage: ', d.damage[-1]
-#print 'abatement: ', d.abatement[-1]
-#print 'output: ', d.output
-#print 'investment: ', d.investment
-#print 'capital: ', d.capital
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(usage='%(prog)s [-h] [-e EQUATION] variables')
+    eq_help = """
+    Defaults to the equations from Norhaus's Excel. Options are 'docs' or 'matlab'.
+    """
+    var_help = """
+    You can print the following: capital, gross_output, emissions_industrial,
+    emissions_total, mass_atmosphere, mass_lower, mass_upper, forcing,
+    temp_atmosphere, temp_lower, damage, abatement, output, investment,
+    carbon_emitted, consumption, consumption_percapita, utility,
+    utility_discounted, and welfare.
+    """
+    parser.add_argument('-e', '--equation', help=eq_help)
+    parser.add_argument('variables', help=var_help, metavar='var1[,var2,...]')
+    args = parser.parse_args()
+    print args
+    d = dice2007()
+    if args.equation == 'matlab':
+        d = dice2007(eq='matlab')
+    elif args.equation == 'docs':
+        d = dice2007(eq='docs')
+    d.loop()
+    try:
+        for v in args.variables.split(','):
+            try:
+                print '%s: ' % v, getattr(d, v)
+            except: print 'No variable named %s' % v
+    except:
+        print 'No variables specified'
+        print 'You can print the following: capital, gross_output, emissions_industrial,'
+        print 'emissions_total, mass_atmosphere, mass_lower, mass_upper, forcing,'
+        print 'temp_atmosphere, temp_lower, damage, abatement, output, investment,'
+        print 'carbon_emitted, consumption, consumption_percapita, utility,'
+        print 'utility_discounted, and welfare'
+    #print 'miu: ', d.miu
+    #print 'capital: ', d.capital
+    #print 'gross_output: ', d.gross_output
+    #print 'emissions_ind: ', d.emissions_industrial
+    #print 'emissions_total: ', d.emissions_total
+    #print 'mass_atmosphere: ', d.mass_atmosphere[-1]
+    #print 'mass_upper: ', d.mass_upper[-1]
+    #print 'mass_lower: ', d.mass_lower[-1]
+    #print 'forcing: ', d.forcing
+    #print 'temp_lower: ', d.temp_lower
+    #print 'temp_atmosphere: ', d.temp_atmosphere
+    #print 'damage: ', d.damage[-1]
+    #print 'abatement: ', d.abatement[-1]
+    #print 'output: ', d.output
+    #print 'investment: ', d.investment
+    #print 'capital: ', d.capital
 
-#print 'carbon emitted: ', d.carbon_emitted
-#print 'participation: ', d.participation
-#print 'participation_markup: ', d.participation_markup
-#print 'consumption: ', d.consumption
-#print 'consumption_percapita: ', d.consumption_percapita
-#print 'utility: ', d.utility
-#print 'utility_discounted: ', d.utility_discounted
-#print 'miu: ', d.miu
-#print d.welfare
+    #print 'carbon emitted: ', d.carbon_emitted
+    #print 'participation: ', d.participation
+    #print 'participation_markup: ', d.participation_markup
+    #print 'consumption: ', d.consumption
+    #print 'consumption_percapita: ', d.consumption_percapita
+    #print 'utility: ', d.utility
+    #print 'utility_discounted: ', d.utility_discounted
+    #print 'miu: ', d.miu
+    #print d.welfare

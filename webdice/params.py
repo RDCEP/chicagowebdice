@@ -50,6 +50,9 @@ class diceParams(object):
         self.partfract2 = 1. # Fraction of emissions under control regime 2015
         self.partfract21 = 1. # Fraction of emissions under control regime 2205
         self.dpartfract = 0. # Decline rate of participation
+        self.e2050 = 0.
+        self.e2100 = 0.
+        self.e2150 = 0.
         ## Availability of fossil fuels
         self.fosslim = 6000. # Maximum cumulative extraction fossil fuels
         ## Scaling and inessential selfeters
@@ -73,7 +76,6 @@ class diceParams(object):
         self.forcing = np.zeros(self.tmax)
         self.emissions_industrial = np.zeros(self.tmax)
         self.emissions_total = np.zeros(self.tmax)
-#        self.carbon_emitted = 0
         self.carbon_emitted = np.zeros(self.tmax)
         self.participation = np.zeros(self.tmax)
         self.participation_markup = np.zeros(self.tmax)
@@ -84,10 +86,10 @@ class diceParams(object):
         self.consumption_percapita = np.zeros(self.tmax)
         self.utility = np.zeros(self.tmax)
         self.utility_discounted = np.zeros(self.tmax)
-        self.e2005cap = np.ones(self.tmax)
-        self.miu = np.linspace(self.miu_2005, self.miu_2005, self.tmax)
+        #self.e2005cap = np.ones(self.tmax)
         self.miu = np.array([0.005, 0.004, 0.006, 0.009, 0.013, 0.018, 0.025, 0.033, 0.042, 0.053, 0.065, 0.08, 0.095,
                              0.113, 0.132, 0.154, 0.177, 0.203, 0.231, 0.261, 0.294, 0.33, 0.368, 0.41, 0.456, 1, 1, 1,
                              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
+        #self.miu = np.linspace(self.miu_2005, self.miu_2005, self.tmax)
         self.pref_fac = np.ones(self.tmax)
 

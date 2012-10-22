@@ -34,12 +34,11 @@ class ExcelLoop(object):
         return (gross_output - damage) - abatement
     def investment(self, savings, output):
         return savings * output
-    def consumption(self, output, investment):
-        return output - investment
+    def consumption(self, output, savings):
+        return output - (savings * output)
     def consumption_percapita(self, consumption, l):
         return (consumption / l) * 1000
     def utility(self, consumption_percapita, elasmu, l):
-#            return l * (consumption_percapita**(1-elasmu) / (1 - elasmu))
         return (1 / (1 - elasmu)) * consumption_percapita**(1-elasmu) + 1
     def utility_discounted(self, utility, pref_fac, l):
 #            return utility * rr
@@ -48,3 +47,7 @@ class ExcelLoop(object):
         return pref_fac / (1 + prstp)**10
     def welfare(self, utility, rr):
         return -np.sum(utility * rr)
+    def miu(self, emissions_industrial, ecap, _e2005, sigma, gross_output):
+        if emissions_industrial < (_e2005 * ecap):
+            return 0.
+        else: return 1 - ((emissions_industrial * ecap) / (sigma * gross_output))
