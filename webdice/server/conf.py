@@ -3,17 +3,12 @@ import HTMLParser
 import re
 
 htmlp = HTMLParser.HTMLParser()
-YAML = file('../../../parameters.yaml', 'r')
+YAML = file('../parameters.yaml', 'r')
 CONF_FILE = yaml.load(YAML)
-parameters = CONF_FILE['parameters']
-measurements = CONF_FILE['measurements']
-questions = CONF_FILE['questions']
-initial_help = CONF_FILE['initial_help']
+YAML.close()
 basic_help = CONF_FILE['basic_help']
 intermediate_help = CONF_FILE['intermediate_help']
 advanced_help = CONF_FILE['advanced_help']
-
-
 
 def format_for_web(text):
     return re.sub(r'/^\(([^)]+)\)/', '<sup>$1</sup>',
@@ -30,30 +25,22 @@ def options(p, opts, opt):
     else: opts.append(opt)
 
 def foo():
-    conf = yaml.load(YAML)
-    parameters = conf['parameters']
-    measurements = conf['measurements']
-    questions = conf['questions']
-    initial_help = conf['initial_help']
-    basic_help = conf['basic_help']
-    intermediate_help = conf['intermediate_help']
-    advanced_help = conf['advanced_help']
-
-    #The next 100 lines or so are just checking to make sure all the data for each input is set
-    missing_parameter = "Missing \"%s\" attribute on configuration element."
-    too_many_items = "Configuration_element has %d extra element(s)."
-    option_no_name = "Parameter option element has no \"name\" option and should."
-    option_no_machine_name = "Parameter option element has no \"machine_name\" option and should."
-    non_numeric_configuration = "The \"min,\" \"max,\" and \"step\" options are numeric."
-    duplicate_property = "Multiple parameters with machine name \"%s\"."
-    duplicate_option = "Multiple options with machine_name \"%s\"."
-    invalid_default = "The default must be between the minimum and maximum."
-    no_graph_in_location = "There is no graph set to display in location %s."
-    tabs = {}
-    all_parameters = {}
-    selected_tab = None
-    graphs = {}
-    graph_locations = ['topleft', 'topright', 'bottomleft', 'bottomright']
+    pass
+#    #The next 100 lines or so are just checking to make sure all the data for each input is set
+#    missing_parameter = "Missing \"%s\" attribute on configuration element."
+#    too_many_items = "Configuration_element has %d extra element(s)."
+#    option_no_name = "Parameter option element has no \"name\" option and should."
+#    option_no_machine_name = "Parameter option element has no \"machine_name\" option and should."
+#    non_numeric_configuration = "The \"min,\" \"max,\" and \"step\" options are numeric."
+#    duplicate_property = "Multiple parameters with machine name \"%s\"."
+#    duplicate_option = "Multiple options with machine_name \"%s\"."
+#    invalid_default = "The default must be between the minimum and maximum."
+#    no_graph_in_location = "There is no graph set to display in location %s."
+#    tabs = {}
+#    all_parameters = {}
+#    selected_tab = None
+#    graphs = {}
+#    graph_locations = ['topleft', 'topright', 'bottomleft', 'bottomright']
 
 def get_tabs():
     tabs, parameters, all_parameters, selected = build_data()
@@ -84,11 +71,10 @@ def get_graph_locations():
     return graph_locations
 
 def build_data():
+    parameters = CONF_FILE['parameters']
     tabs = {}
     all_parameters = {}
-    selected_tab = None
-    graphs = {}
-    graph_locations = ['topleft', 'topright', 'bottomleft', 'bottomright']
+    selected_tab = 'basic'
     for parameter in parameters:
         is_select_control = False
         is_range_control = False
@@ -107,7 +93,7 @@ def build_data():
             required.append('values')
             is_select_control = True
             parameter['is_select_control'] = True
-        try: parameter['is_submit_control']
+        try: parameter['id']
         except KeyError: parameter['is_submit_control'] = False
         else:
             required.extend(['id', 'button_name'])
@@ -118,7 +104,7 @@ def build_data():
         options(parameter, optional, 'unit')
         options(parameter, optional, 'subheading')
         options(parameter, optional, 'disabled')
-        size = len(required) + len(optional);
+        size = len(required) + len(optional)
         #        if len(parameter) > size:
         #PHP:            trigger_error(sprintf(too_many_items, count(parameter) - size), E_USER_ERROR);
         #        for name in required:
@@ -166,21 +152,21 @@ def build_data():
                 'sections': {},
                 'html_id': 'tab-'+cleaned_tab_name,
                 }
-            if not selected_tab:
+            if selected_tab is None:
             #                selected_tab = &tabs[cleaned_tab_name]
                 selected_tab = tabs[cleaned_tab_name]
 
-        try: tabs[cleaned_tab_name]["sections"][cleaned_section_name]
+        try: tabs[cleaned_tab_name]['sections'][cleaned_section_name]
         except:
-            tabs[cleaned_tab_name]["sections"][cleaned_section_name] = {
+            tabs[cleaned_tab_name]['sections'][cleaned_section_name] = {
                 'name': section_name,
                 'parameters': [],
                 }
         tabs[cleaned_tab_name]['sections'][cleaned_section_name]['parameters'].append(parameter)
-        return tabs, parameters, all_parameters, selected_tab
+    return tabs, parameters, all_parameters, selected_tab
 
 def build_measurements():
-    optional = []
+    measurements = CONF_FILE['measurements']
     graphs = {}
     graph_locations = ['topleft', 'topright', 'bottomleft', 'bottomright']
     for measurement in measurements:
@@ -188,7 +174,7 @@ def build_measurements():
         optional = []
         for name in required:
             try: measurement[name]
-            except KeyError, e: print e
+            except KeyError, e: pass
         options(measurement, optional, 'description')
         options(measurement, optional, 'format')
         options(measurement, optional, 'location')
@@ -196,7 +182,7 @@ def build_measurements():
         #        if (count($measurement) > $size)
         #        trigger_error(sprintf($too_many_items, count($measurement) - $size), E_USER_ERROR);
         try: measurement['location']
-        except KeyError, e: print e, 'foo'
+        except KeyError, e: pass
         else:
             location = measurement['location']
             try: graphs[location]
@@ -205,10 +191,11 @@ def build_measurements():
             #            else: trigger_error(sprintf($duplicate_graph, $location), E_USER_ERROR);
     for location in graph_locations:
         try: graphs[location]
-        except KeyError, e: print e
+        except KeyError, e: pass
     return measurements, graphs, graph_locations
 
 def build_questions():
+    questions = CONF_FILE['questions']
     for question in questions:
         required = ['question', 'answer']
         for name in required:
@@ -219,13 +206,10 @@ def build_questions():
         if len(question) > size:
             pass #trigger_error(sprintf(too_many_items, count(measurement) - size), E_USER_ERROR);
 
-
-
 def tabs_html():
     tabs = get_tabs()
     selected_tab = get_selected_tab()
     html = ''
-
     if len(tabs) <= 1:
         html += '<div id="parameters">\n'
     else:
@@ -282,6 +266,7 @@ def tabs_html():
                         description = htmlp.unescape(parameter['description'])
                         html += '<li><label title="%s" %s>%s (%s) ' % (description, clas, name, unit)
                 if is_select_control:
+                    html += '</label>\n'
                     values = parameter['values']
                     html += '<select name="%s" %s>\n' % (machine_name, disabled)
                     for value in values:
@@ -312,12 +297,13 @@ def tabs_html():
                 elif is_submit_control:
                     id = parameter['id']
                     button_name = parameter['button_name']
-                    html += '<input type="submit" id="%s" value="%s"/>' % (id, button_name)
+                    html += '</label><input type="submit" id="%s" value="%s"/></li>' % (id, button_name)
             html += '</ul>\n'
         html += '</div>'
     return html
 
 def paragraphs_html():
+    initial_help = CONF_FILE['initial_help']
     html = ''
     paragraphs = initial_help.split('\n')
     for paragraph in paragraphs:
@@ -332,3 +318,4 @@ def measurements_html():
         measurement_name = htmlp.unescape(measurement['name'])
         html += '<option value="%s">%s</option>\n' % (machine_name, measurement_name)
     return html
+

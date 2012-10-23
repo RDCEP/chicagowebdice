@@ -495,12 +495,12 @@
 			return false;
 		}
 
-		var runOptimizationButton = document.getElementById('run-opt');
-		runOptimizationButton.onclick = function() {
+//		var runOptimizationButton = document.getElementById('run-opt');
+//		runOptimizationButton.onclick = function() {
 			//code to come later
 			//run dice optimization
-			return false;
-		}
+//			return false;
+//		}
 
 		/*
 		 *There was origionally going to be an image next to each parameter that linked to a specific
@@ -654,7 +654,7 @@
 			
 				createdLI.setAttribute('title', runTextualDescription);
 			
-				progressIMG.setAttribute('src', 'images/progress.gif');
+				progressIMG.setAttribute('src', '/static/images/progress.gif');
 				createdLI.appendChild(createdLABEL);
 				createdLABEL.appendChild(textNode);
 				createdLABEL.appendChild(progressIMG);

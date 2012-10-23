@@ -1,8 +1,12 @@
 import json
+from datetime import datetime
+import bottle
 from bottle import route, request, default_app, template
 from beaker.middleware import SessionMiddleware
 from dice import dice2007
 from server.conf import *
+
+bottle.TEMPLATE_PATH = ['../templates/',]
 
 session_opts = {
     'session.type': 'ext:memcached',
@@ -27,22 +31,28 @@ def process_vars(form, s):
     if form.get('cap_percentage'):
         pass
 
+@route('/')
 def index():
+#    print tabs_html()
+    do_session(request)
     measurements = get_measurements()
     graph_locations = get_graph_locations()
     m = json.JSONEncoder().encode(measurements)
     g = json.JSONEncoder().encode(graph_locations)
-    tpl = template('./templates/index',
+    now = datetime.now().strftime('%Y%m%d%H%M%S')
+    tpl = template('index',
         measurements=m,
         graph_locations=g,
         tabs_html=tabs_html(),
         dropdowns=measurements_html(),
-        paragraphs_html=paragraphs_html()
+        paragraphs_html=paragraphs_html(),
+        now=now,
     )
     return tpl
 
 @route('/ajax', method='POST')
 def graphs():
+    do_session(request)
     form = request.form
     all_parameters = get_all_parameters()
     values = {}

@@ -10,11 +10,11 @@
   <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>
   <script type='text/javascript'>
     Options = window.Options || { };
-	Options.measurements = {{ measurements }};
-	Options.locations = {{ graph_locations }};
+	Options.measurements = {{! measurements }};
+	Options.locations = {{! graph_locations }};
   </script>
   <script type='text/javascript' src='https://www.google.com/jsapi'></script>
-  <script type='text/javascript' src='javascript/main.js'></script>
+  <script type='text/javascript' src='/static/js/main.js?{{ now }}'></script>
 </head>
 <body>
 <h1 id='heading'> <span>RDCEP</span> :: WebDICE</h1>
