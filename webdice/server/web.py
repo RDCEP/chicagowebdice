@@ -24,13 +24,6 @@ def do_session(request):
     if 'dice' not in s: s['dice'] = dice
     return s
 
-def process_vars(form, s):
-    # Get data from AJAX
-    # Check for updated wind capacity, update property, create new plot object
-    foo = form.foo
-    if form.get('cap_percentage'):
-        pass
-
 @route('/')
 def index():
 #    print tabs_html()
@@ -50,59 +43,21 @@ def index():
     )
     return tpl
 
-@route('/ajax', method='POST')
+@route('/run', method='POST')
 def graphs():
     do_session(request)
-    form = request.form
+    form = request.forms
     all_parameters = get_all_parameters()
-    values = {}
-    for machine_name, parameter in all_parameters:
-        try: form[machine_name]
-        except:
-            if parameter['is_range_control']:
-                value = parameter['default']
-            else: value = None
-        else: value = form[machine_name]
-        if parameter['is_range_control']:
-            if value < parameter['min']:
-                value = parameter['min']
-            if value > parameter['max']:
-                value = parameter['max']
-                #value = round((value - parameter['min']) / parameter['step']) * parameter['step']
-        elif parameter['is_select_control']:
-            try: parameter['indexed_values'][machine_name]
-            except:
-                keys = parameter['indexed_values']
-                value = keys[0]
-        values[machine_name] = value
-    for value in values:
-        pass
-#    number_of_blank_lines = 0;
-#    output = ''
-#    while (($line = fgets($r)) !== FALSE):
-#        if (strlen(trim($line)) <= 1) $number_of_blank_lines++;
-#        else if ($number_of_blank_lines > 2)
-#        $output .= $line;
-#    if (pclose($r) != 0)
-#    header('HTTP/1.0 500 Internal Server Error');
-#    else
-#    echo $output;
-
-@route('/ajax/dice', method='POST')
-def dice_parse():
-    #Populate variables from post
-    s = do_session(request)
-    process_vars(request.forms, s)
-
-
-
-
-@route('/foo')
-def foo():
-    s = do_session(request)
-    var = 'foo'
-    tpl = template('./path/to/foo', var=var)
-    return tpl
+    for p in all_parameters:
+        try: all_parameters[p]['disabled']
+        except (KeyError, AttributeError):
+            try: a = getattr(dice, p)
+            except AttributeError: pass
+            else:
+                print p, float(getattr(form, p))
+                setattr(dice, p, float(getattr(form, p)))
+    dice.loop()
+    return dice.format_output()
 
 app = SessionMiddleware(default_app(), session_opts)
 application = app
