@@ -317,28 +317,28 @@ parameters:
 
 measurements:
   - name: Income per Capita
-    machine_name: consumptionpercapita
+    machine_name: consumption_percapita
     unit: $ per Person per Year
     description: Global average GDP per capita
     format: "$#.##"
     location: topright
   - name: Atmospheric Temperature Increase
-    machine_name: tempAtmosphere
+    machine_name: temp_atmosphere
     unit: °C from 1900
     description: Projected increases in global average temperatures compared to pre-industrial temperatures
     location: topleft
   - name: Carbon Mass in Atmosphere
-    machine_name: massAtmosphere
+    machine_name: mass_atmosphere
     unit: Gt of Carbon
     description: The projected concentration of carbon in the atmosphere.
     location: bottomleft
   - name: Total Emissions per Year
-    machine_name: emissionsTotal
+    machine_name: emissions_total
     unit: Gt Carbon / 10 yr
     description: Projected path of annual future carbon emissions
     location: bottomright
   - name: Industrial Emissions
-    machine_name: emissionsIndustrial
+    machine_name: emissions_industrial
     unit: Gt Carbon
 
 
