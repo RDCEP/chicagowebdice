@@ -28,7 +28,7 @@
   <li id="view-source"><a href="https://www.github.com/RDCEP/chicagowebdice/" target="_blank">View Source</a></li>
 </ul>
 <div id="sidebar">
-  <form id="submission" method="post" action="/run">
+  <form id="submission" method="post" action="">
 {{! tabs_html }}
     </div>
     <div id="controls">
