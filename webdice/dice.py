@@ -121,6 +121,23 @@ class dice2007(diceParams):
                 self.pref_fac[i] = self.eq.preference_factor(self.prstp, self.pref_fac[i-1])
             self.utility_discounted[i] = self.eq.utility_discounted(self.utility[i], self.pref_fac[i], self.l[i])
 
+    def format_output(self):
+        """Output text for graphs"""
+        #TODO: This is sloppy as shit.
+        vars = [
+            'capital', 'gross_output', 'emissions_industrial',
+            'emissions_total', 'mass_atmosphere', 'mass_upper',
+            'mass_lower', 'forcing', 'temp_atmosphere',
+            'temp_lower', 'damage', 'abatement', 'output',
+            'investment', 'carbon_emitted', 'consumption',
+            'consumption_percapita', 'utility', 'utility_discounted',
+        ]
+        output = ''
+        for v in vars:
+            vv = getattr(self, v)
+            output += '%s %s\n' % (v, ' '.join(map(str, list(vv))))
+        return output
+
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(usage='%(prog)s [-h] [-e EQUATION] variables')
