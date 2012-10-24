@@ -168,7 +168,7 @@
 				if (name.length > 0)
 					fields[name] = line.slice(1);
 			}
-			
+
 			return addRun(description, color, fields, changesFromDefault);
 		}
 		
@@ -627,7 +627,7 @@
 					}
 					
 					if (!areEqual) {
-						var description = this.parentNode.firstChild.nodeValue.trim();
+						var description = $(this.parentNode).remove('.label').children('label').html().trim();
 						var heading = $(this.parentNode.parentNode.parentNode).prev('h2').first().text();
 						
 						changes.push([ heading, description, changedValue, defaultValue, deviation ]);
@@ -671,7 +671,6 @@
 					success : function(data, textStatus, xhr) {
 						var runObject = addRunFromCSV("Run #" + (getNumberOfRuns() + 1),
 							generateNextColor(), data, changes);
-					
 						numberOfRunsInProgress--;
 					
 						textNode.nodeValue = runObject.description;
@@ -680,7 +679,7 @@
 						var visibilityCheckbox = document.createElement('input');
 						visibilityCheckbox.setAttribute('type', 'checkbox');
 						visibilityCheckbox.setAttribute('checked', 'checked');
-					
+
 						visibilityCheckbox.onchange = function() {
 							runObject.visible = visibilityCheckbox.checked;
 							updateAllData();
