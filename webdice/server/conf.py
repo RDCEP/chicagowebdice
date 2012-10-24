@@ -290,7 +290,7 @@ def tabs_html():
                     tickMarkLeftWithUnit = '%i%%' % tickMarkLeft
                     html += '<span class="label">%s</span></label> <input name="%s" %s ' % (
                         default, machine_name, disabled)
-                    html += 'type="range" min="%s" max="%s" step="%s" value="%s" data-prec="%s"/></label>\n' % (
+                    html += 'type="range" min="%s" max="%s" step="%s" value="%s" data-prec="%s"/>\n' % (
                         min, max, step, default, precision)
                     html += '<div class="tick-wrap"><span class="tick" style="left:%s" %s>&bullet;</span></div></li>\n' % (
                         tickMarkLeftWithUnit, clas)
