@@ -1,15 +1,15 @@
 import numpy as np
 from params import diceParams
-from equations import excel, matlab, docs
+from equations import nordhaus, matlab, docs
 
 class dice2007(diceParams):
     def __init__(self, decade=False, eq='nordhaus', time_travel=True):
         #TODO: Sort out decade shit
-        self.eq = excel.ExcelLoop()
+        self.eq = nordhaus.Loop()
         if eq == 'matlab':
-            self.eq = matlab.MatlabLoop()
+            self.eq = matlab.Loop()
         elif eq == 'docs':
-            self.eq = docs.DocsLoop()
+            self.eq = docs.Loop()
         if decade:
             self.decade = 10
         else:

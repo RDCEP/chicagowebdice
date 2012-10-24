@@ -1,6 +1,6 @@
 import numpy as np
 
-class MatlabLoop(object):
+class Loop(object):
     """Equations from original MATLAB code"""
     def __init__(self):
         pass

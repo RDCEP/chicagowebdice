@@ -1,6 +1,6 @@
 import numpy as np
 
-class ExcelLoop(object):
+class Loop(object):
     """Equations from Nordhaus's GAMS code / Excel file"""
     def __init__(self):
         pass

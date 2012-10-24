@@ -1,6 +1,6 @@
 import numpy as np
 
-class DocsLoop(object):
+class Loop(object):
     """Equations from PDF documentation of WebDICE"""
     def __init__(self):
         pass
