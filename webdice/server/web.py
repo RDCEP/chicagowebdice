@@ -45,7 +45,8 @@ def index():
 
 @route('/run', method='POST')
 def graphs():
-    do_session(request)
+    s = do_session(request)
+    dice = s['dice']
     form = request.forms
     all_parameters = get_all_parameters()
     for p in all_parameters:

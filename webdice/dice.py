@@ -14,10 +14,6 @@ class dice2007(diceParams):
             self.decade = 10
         else:
             self.decade = 1
-        if self.eq.__module__ != 'equations.excel':
-            self.alc = 1
-#            self.alc = .95
-        else: self.alc = 1
         diceParams.__init__(self)
 #    	if time_travel:
 #            self.eq.forcing = excel.ExcelLoop.forcing
@@ -88,7 +84,7 @@ class dice2007(diceParams):
             if i > 0:
                 self.sigma[i] = self.sigma[i-1] / (1 - self.gsig[i])
                 #TODO: In Nordhaus and in optimized MATLAB, there's no .95. Ask David et al about this. This is self.alc, set in __init__, always 1 for now.
-                self.al[i] = (self.alc * self.al[i-1]) / (1 - self.ga[i-1])
+                self.al[i] = self.al[i-1] / (1 - self.ga[i-1])
                 self.capital[i] = self.eq.capital(self.capital[i-1], self.dk,
                     self.investment[i-1])
             self.gross_output[i] = self.eq.gross_output(self.al[i], self.capital[i], self._gama, self.l[i])
