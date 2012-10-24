@@ -3,7 +3,7 @@ from params import diceParams
 from equations import excel, matlab, docs
 
 class dice2007(diceParams):
-    def __init__(self, decade=False, eq='nordhaus'):
+    def __init__(self, decade=False, eq='nordhaus', time_travel=True):
         #TODO: Sort out decade shit
         self.eq = excel.ExcelLoop()
         if eq == 'matlab':
@@ -19,6 +19,8 @@ class dice2007(diceParams):
 #            self.alc = .95
         else: self.alc = 1
         diceParams.__init__(self)
+#    	if time_travel:
+#            self.eq.forcing = excel.ExcelLoop.forcing
     @property
     def aa(self):
         """temp coefficient; pi_2, temp squared coefficient; epsilon, damage exponent"""
@@ -56,6 +58,8 @@ class dice2007(diceParams):
         return 1 / ((1 + self.prstp)**(self.decade*self.t0))
     @property
     def ecap(self):
+        """Build emissions caps from treaty inputs"""
+        #TODO: Use this to build phi, partfract (below) ?
         return np.concatenate((
             np.linspace(0, 0, 5),
             np.linspace(self.e2050, self.e2050, 5),
@@ -140,9 +144,19 @@ class dice2007(diceParams):
 
 if __name__ == '__main__':
     import argparse
+    class bcolors:
+        HEADER = '\033[95m'
+        OKBLUE = '\033[94m'
+        OKGREEN = '\033[92m'
+        WARNING = '\033[93m'
+        FAIL = '\033[91m'
+        ENDC = '\033[0m'
     parser = argparse.ArgumentParser(usage='%(prog)s [-h] [-e EQUATION] variables')
     eq_help = """
-    Defaults to the equations from Norhaus's Excel. Options are 'docs', 'matlab', or 'all'.
+    Options are 'nordhaus', 'docs', or 'matlab'. You can select any pair 
+    of models by separating them with a comma: e.g. -e excel,matab.
+    You can see output from all three models with the option 'all'.
+    Default is 'nordhaus'.
     """
     var_help = """
     You can print the following: capital, gross_output, emissions_industrial,
@@ -151,19 +165,26 @@ if __name__ == '__main__':
     carbon_emitted, consumption, consumption_percapita, utility,
     utility_discounted, and welfare.
     """
-    parser.add_argument('-e', '--equation', help=eq_help)
-    parser.add_argument('variables', help=var_help, metavar='var1[,var2,...]')
+    parser.add_argument('-e', '--equation', help=eq_help, metavar='var1[,var2[,...]]')
+    parser.add_argument('variables', help=var_help, metavar='var1[,var2[,...]]')
     args = parser.parse_args()
-    if args.equation == 'matlab':
-        d = [dice2007(eq='matlab')]
-    elif args.equation == 'docs':
-        d = [dice2007(eq='docs')]
-    elif args.equation == 'all':
-        d = [
-            dice2007(),
-            dice2007(eq='matlab'),
-            dice2007(eq='docs'),
-        ]
+    if args.equation:
+        if args.equation == 'matlab':
+            d = [dice2007(eq='matlab')]
+        elif args.equation == 'docs':
+            d = [dice2007(eq='docs')]
+        elif args.equation == ('excel' or 'nordhaus'):
+            d = [dice2007()]
+        elif args.equation == 'all':
+            d = [
+                dice2007(),
+                dice2007(eq='matlab'),
+                dice2007(eq='docs'),
+            ]
+        else:
+            d = []
+            for e in args.equation.split(','):
+                d.append(dice2007(eq=e))
     else:
         d = [dice2007()]
     for m in d:
@@ -172,9 +193,11 @@ if __name__ == '__main__':
         for v in args.variables.split(','):
             try:
                 for m in d:
-                    print '%s: ' % v, getattr(m, v)
+                    print bcolors.HEADER, '%s %s:\n' % (
+                        m.eq.__module__.split('.')[1], v
+                    ), bcolors.ENDC, getattr(m, v)
             except:
-                print 'No variable named %s' % v
+                print bcolors.WARNING, 'No variable named %s' % v, bcolors.ENDC
     except:
         print 'No variables specified'
         print 'You can print the following: capital, gross_output, emissions_industrial,'
