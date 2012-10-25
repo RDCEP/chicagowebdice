@@ -285,7 +285,7 @@ def tabs_html():
                     step = parameter['step']
                     default = parameter['default']
                     precision = parameter['precision']
-                    tickMarkLeft = float((default - min)/(max - min)) * 100.
+                    tickMarkLeft = ((float(default) - min)/(max - min)) * 100.
                     tickMarkLeft = tickMarkLeft - 50
                     tickMarkLeftWithUnit = '%i%%' % tickMarkLeft
                     html += '<span class="label">%s</span></label> <input name="%s" %s ' % (
