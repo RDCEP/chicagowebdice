@@ -46,19 +46,19 @@ def index():
 @route('/run', method='POST')
 def graphs():
     s = do_session(request)
-    dice = s['dice']
+    thisdice = s['dice']
     form = request.forms
     all_parameters = get_all_parameters()
     for p in all_parameters:
         try: all_parameters[p]['disabled']
         except (KeyError, AttributeError):
-            try: a = getattr(dice, p)
-            except AttributeError: pass
+            try: a = getattr(thisdice, p)
+            except AttributeError: print p
             else:
-                print p, float(getattr(form, p))
-                setattr(dice, p, float(getattr(form, p)))
-    dice.loop()
-    return dice.format_output()
+                setattr(thisdice, p, float(getattr(form, p)))
+    thisdice.update_exos()
+    thisdice.loop()
+    return thisdice.format_output()
 
 app = SessionMiddleware(default_app(), session_opts)
 application = app

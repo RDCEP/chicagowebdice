@@ -15,6 +15,7 @@ class dice2007(diceParams):
         else:
             self.decade = 1
         diceParams.__init__(self)
+        self.update_exos()
 #    	if time_travel:
 #            self.eq.forcing = excel.ExcelLoop.forcing
     @property

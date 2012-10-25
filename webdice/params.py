@@ -61,13 +61,14 @@ class diceParams(object):
         ## Scaling and inessential selfeters
         self.scale1 = 194. # Scaling coefficient in the objective function
         self.scale2 = 381800. # Scaling coefficient in the objective function
-        self.lam = self.fco22x / self.t2xco2
         self.tmax = 60 # Time periods, in decades (60 * 10 = 600 years)
         self.numScen = 1 # Number of scenarios to run
         self.savings = .22 # Savings rate (constant)
         self.miu_2005 = .005 # emission control rate (fraction of uncontrolled emissions)
         self.t0 = np.linspace(0, self.tmax-1, self.tmax)
         self.t1 = self.t0 + 1
+    def update_exos(self):        
+        self.lam = self.fco22x / self.t2xco2
         self.sigma = np.linspace(self._sig0, self._sig0, self.tmax)
         self.al = np.linspace(self._a0, self._a0, self.tmax)
         self.capital = np.linspace(self._k0, self._k0, self.tmax)
