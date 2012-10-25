@@ -270,7 +270,7 @@ parameters:
     disabled: true
     values:
       - name: DICE
-        machine_name: dice
+        machine_name: dice_carbon
   - name: Damages model
     tab: Advanced
     machine_name: damages_model
