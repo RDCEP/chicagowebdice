@@ -17,17 +17,30 @@ session_opts = {
     'session.auto': True
 }
 
-dice = dice2007()
-
-def do_session(request):
+def do_session(request, newdice=False):
     s = request.environ.get('beaker.session')
-    if 'dice' not in s: s['dice'] = dice
+    if newdice:
+        dice = newdice
+        s['dice'] = dice
+    if 'dice' not in s: 
+        dice = dice2007()
+        s['dice'] = dice
     return s
 
 @route('/')
 def index():
 #    print tabs_html()
-    do_session(request)
+    s = do_session(request)
+    return page()
+
+@route('/<equations>')
+def matlab(equations):
+    dice = dice2007(eq=equations)
+    s = do_session(request, newdice=dice)
+    return page()
+
+
+def page():
     measurements = get_measurements()
     graph_locations = get_graph_locations()
     m = json.JSONEncoder().encode(measurements)
@@ -53,7 +66,7 @@ def graphs():
         try: all_parameters[p]['disabled']
         except (KeyError, AttributeError):
             try: a = getattr(thisdice, p)
-            except AttributeError: print p
+            except AttributeError: pass
             else:
                 setattr(thisdice, p, float(getattr(form, p)))
     thisdice.update_exos()
