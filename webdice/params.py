@@ -91,9 +91,5 @@ class diceParams(object):
         self.consumption_percapita = np.zeros(self.tmax)
         self.utility = np.zeros(self.tmax)
         self.utility_discounted = np.zeros(self.tmax)
-        self.miu = np.array([0.005, 0.004, 0.006, 0.009, 0.013, 0.018, 0.025, 0.033, 0.042, 0.053, 0.065, 0.08, 0.095,
-                             0.113, 0.132, 0.154, 0.177, 0.203, 0.231, 0.261, 0.294, 0.33, 0.368, 0.41, 0.456, 1, 1, 1,
-                             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
         self.miu = np.linspace(self.miu_2005, self.miu_2005, self.tmax)
         self.pref_fac = np.ones(self.tmax)
-
