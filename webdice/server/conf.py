@@ -273,10 +273,10 @@ def tabs_html():
                         option_machine_name = value['machine_name']
                         option_name = value['name'];
                         try: value['description']
-                        except: html += '<option name="%s">%s</option>\n' % (option_machine_name, option_name)
+                        except: html += '<option id="%s">%s</option>\n' % (option_machine_name, option_name)
                         else:
                             description = htmlp.unescape(value['description'])
-                            html += '<option name="%s" ' % option_machine_name
+                            html += '<option id="%s" ' % option_machine_name
                             html += 'title="%s">%s</option>\n' % (description, option_name)
                     html += '</select></li>\n'
                 elif is_range_control:

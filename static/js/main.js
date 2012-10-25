@@ -601,7 +601,8 @@
 		 *(This is what runs when the user clicks "run model")
 		*/
 		var form = document.getElementById('submission');
-		form.onsubmit = function() {
+		form.onsubmit = function(e) {
+            e.preventDefault();
 			/* We're putting the hackish-equivalent of a try...finally statement here! (Jermey's Safari fix that I accidentally somehow deleted)*/
 
 			setTimeout(function() {

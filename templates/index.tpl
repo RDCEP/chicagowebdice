@@ -3,7 +3,7 @@
 <head>
   <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
   <title>RDCEP :: WebDICE</title>
-  <link rel="stylesheet" href="/static/css/styles.css" type="text/css" media="screen" title="Default Stylesheet" charset="utf-8"/>
+  <link rel="stylesheet" href="/static/css/styles.css" type="text/css" media="screen" title="Default Stylesheet"/>
   <link rel="stylesheet" type="text/css" media="screen, projection" href="/static/css/fd-slider.min.css" />
   <script src="/static/js/fd-slider.min.js"></script>
   <script src="/static/js/jquery.min.js"></script>
@@ -28,7 +28,7 @@
   <li id="view-source"><a href="https://www.github.com/RDCEP/chicagowebdice/" target="_blank">View Source</a></li>
 </ul>
 <div id="sidebar">
-  <form id="submission" method="post" action="">
+  <form id="submission" method="post" action="/">
 {{! tabs_html }}
     </div>
     <div id="controls">
