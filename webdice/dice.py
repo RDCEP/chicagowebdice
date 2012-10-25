@@ -18,6 +18,16 @@ class dice2007(diceParams):
 #    	if time_travel:
 #            self.eq.forcing = excel.ExcelLoop.forcing
     @property
+    def vars(self):
+        return [
+            'capital', 'gross_output', 'emissions_industrial',
+            'emissions_total', 'mass_atmosphere', 'mass_upper',
+            'mass_lower', 'forcing', 'temp_atmosphere',
+            'temp_lower', 'damage', 'abatement', 'output',
+            'investment', 'carbon_emitted', 'consumption',
+            'consumption_percapita', 'utility', 'utility_discounted',
+        ] 
+    @property
     def aa(self):
         """temp coefficient; pi_2, temp squared coefficient; epsilon, damage exponent"""
         return np.array([self.a1, self.a2, self.a3])
@@ -124,16 +134,8 @@ class dice2007(diceParams):
     def format_output(self):
         """Output text for graphs"""
         #TODO: This is sloppy as shit.
-        vars = [
-            'capital', 'gross_output', 'emissions_industrial',
-            'emissions_total', 'mass_atmosphere', 'mass_upper',
-            'mass_lower', 'forcing', 'temp_atmosphere',
-            'temp_lower', 'damage', 'abatement', 'output',
-            'investment', 'carbon_emitted', 'consumption',
-            'consumption_percapita', 'utility', 'utility_discounted',
-        ]
         output = ''
-        for v in vars:
+        for v in self.vars:
             vv = getattr(self, v)
             output += '%s %s\n' % (v, ' '.join(map(str, list(vv))))
         return output
