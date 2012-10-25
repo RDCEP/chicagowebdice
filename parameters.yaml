@@ -314,7 +314,6 @@ parameters:
     machine_name: run-opt
     id: run-opt
 
-
 measurements:
   - name: Income per Capita
     machine_name: consumption_percapita
@@ -322,16 +321,28 @@ measurements:
     description: Global average GDP per capita
     format: "$#.##"
     location: topright
+  - name: Capital Stock
+    machine_name: capital
+    unit: Trillions $USD
   - name: Atmospheric Temperature Increase
     machine_name: temp_atmosphere
     unit: °C from 1900
     description: Projected increases in global average temperatures compared to pre-industrial temperatures
     location: topleft
+  - name: Lower Ocean Temperature Increase
+    machine_name: temp_lower
+    unit: °C from 1900
   - name: Carbon Mass in Atmosphere
     machine_name: mass_atmosphere
     unit: Gt of Carbon
     description: The projected concentration of carbon in the atmosphere.
     location: bottomleft
+  - name: Carbon Mass in Upper Oceans
+    machine_name: mass_upper
+    unit: Gt of Carbon
+  - name: Carbon Mass in Lower Oceans
+    machine_name: mass_lower
+    unit: Gt of Carbon
   - name: Total Emissions per Year
     machine_name: emissions_total
     unit: Gt Carbon / 10 yr
@@ -340,7 +351,9 @@ measurements:
   - name: Industrial Emissions
     machine_name: emissions_industrial
     unit: Gt Carbon
-
+  - name: Total Carbon Emissions
+    machine_name: carbon_emitted
+    unit: Gt Carbon
 
 questions:
   - question: What is the answer to the ultimate question, of life, the universe, and everything?
