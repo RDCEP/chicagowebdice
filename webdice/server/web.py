@@ -1,7 +1,7 @@
 import json
 from datetime import datetime
 import bottle
-from bottle import route, request, default_app, template
+from bottle import route, request, default_app, template, response
 from beaker.middleware import SessionMiddleware
 from dice import dice2007
 from server.conf import *
@@ -72,6 +72,12 @@ def graphs():
     thisdice.update_exos()
     thisdice.loop()
     return thisdice.format_output()
+
+@route('/csv', method='POST')
+def csv_output():
+    data = request.forms.data
+    response.set_header('Content-Disposition', 'attachment; filename="WebDICE-Data.csv"')
+    return data
 
 app = SessionMiddleware(default_app(), session_opts)
 application = app
