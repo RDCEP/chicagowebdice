@@ -3,6 +3,10 @@ from params import diceParams
 from equations import nordhaus, matlab, docs
 
 class dice2007(diceParams):
+    """
+    Create variables, parameters, and step function for DICE 2007.
+
+    """
     def __init__(self, decade=False, eq='nordhaus', time_travel=True):
         #TODO: Sort out decade shit
         self.eq = nordhaus.Loop()
@@ -52,29 +56,53 @@ class dice2007(diceParams):
         return (np.exp(self._gpop0 * self.t0) - 1) / (np.exp(self._gpop0 * self.t0))
     @property
     def l(self):
-        """L, Population"""
+        """
+        Return L, Population.
+        ...
+        (exp(pop(0) * t) - 1) / exp(gpop(0) * t)
+        """
         return self._pop0 * (1 - self.gfacpop) + self.gfacpop * self.popasym
     @property
     def ga(self):
-        """A_g, Growth rate of total factor productivity"""
+        """
+        Return A_g, Growth rate of total factor productivity.
+        ...
+        ga(0) * exp(-dela * 10 * t)
+        """
         return self._ga0 * np.exp(-self.dela * 10 * self.t0)
     @property
     def gsig(self):
-        """sigma_g, Rate of decline of carbon intensity"""
+        """
+        Return sigma_g, Rate of decline of carbon intensity
+        ...
+        gsigma * exp(-disg * 10 * t - disg2 * 10 * t^2)
+        """
         return self._gsigma * np.exp(-self.dsig * 10 * self.t0 - self.dsig2 * 10 * (self.t0 ** 2))
     @property
     def gcost1(self):
-        """theta_1, Growth of cost factor"""
+        """
+        Return theta_1, Growth of cost factor
+        ...
+        (pback * sigma(t) / expcost2) * ((backrat - 1 + exp(-gback * t)) / backrat
+        """
         return (self._pback * self.sigma / self.expcost2) *\
                ((self.backrat - 1 + np.exp(-self.gback * self.t0)) / self.backrat)
     @property
     def etree(self):
         #CHECKED (SCALED FOR DECADE)
-        """E_land, Emissions from deforestation"""
+        """
+        Return E_land, Emissions from deforestation
+        ...
+        Eland(0) * (1 - .1)^t
+        """
         return self.decade * self._eland0 * (1 - .1)**self.t0
     @property
     def rr(self):
-        """R, Average utility social discount rate"""
+        """
+        Return R, Average utility social discount rate
+        ...
+        1 / (1 + prstp)^t
+        """
 #        return 1 / ((1 + self.prstp)**(10*self.t0))
         return 1 / ((1 + self.prstp)**(self.decade*self.t0))
     @property
@@ -89,7 +117,7 @@ class dice2007(diceParams):
             ))
     @property
     def partfract(self):
-        """phi, Fraction of emissions in control regime"""
+        """Return phi, Fraction of emissions in control regime"""
         return np.concatenate((
             np.linspace(self.partfract1, self.partfract1, 1),
             self.partfract21 + (self.partfract2 - self.partfract21) * np.exp(-self.dpartfract * np.arange(23)),
@@ -97,7 +125,7 @@ class dice2007(diceParams):
             ))
     @property
     def forcoth(self):
-        """F_EX, Exogenous forcing for other greenhouse gases"""
+        """Return F_EX, Exogenous forcing for other greenhouse gases"""
         return np.concatenate((
             self.fex0 + .1 * (self.fex1 - self.fex0) * np.arange(11),
             self.fex0 + np.linspace(.36,.36, 49),
@@ -147,7 +175,7 @@ class dice2007(diceParams):
             self.utility_discounted[i] = self.eq.utility_discounted(self.utility[i], self.pref_fac[i], self.l[i])
 
     def format_output(self):
-        """Output text for graphs"""
+        """Output text for JavaScript graph functions."""
         #TODO: This is sloppy as shit.
         output = ''
         for v in self.vars:
