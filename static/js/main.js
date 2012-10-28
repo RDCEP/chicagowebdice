@@ -3,14 +3,15 @@
 	var niceColors = [
 		[ 204, 0, 0 ], [ 241, 194, 50 ], [106, 168, 79], [ 61, 133, 198 ], [ 103, 78, 167 ], [ 166, 77, 121 ],
 		[ 230, 155, 56 ], [ 69, 129, 142 ], [ 60, 120, 216 ]
-	]
+	];
 	
-	var numberOfStepsInSimulation = 60;
-	var startYear = 2005;
-	var endYear = 2200;
-	var colorsUsed = parseInt(Math.random() * niceColors.length);
-	var numberOfRunsInProgress = 0;
-	
+	var numberOfStepsInSimulation = 20,
+        yearsInStep = 10,
+        startYear = 2005,
+	    endYear = startYear + ((numberOfStepsInSimulation-1) * yearsInStep),
+        colorsUsed = parseInt(Math.random() * niceColors.length),
+	    numberOfRunsInProgress = 0,
+
 	var generateNextColor = function() {
 		var nextColor = niceColors[(colorsUsed++) % niceColors.length];
 		var rgb = [ nextColor[0], nextColor[1], nextColor[2] ];
@@ -158,11 +159,11 @@
 		}
 		
 		var addRunFromCSV = function(description, color, result, changesFromDefault) {
-			var fields = new Object;
+            var fields = new Object;
 			var lines = result.split('\n');
-			
+
 			for (var i = 0; i < lines.length; i++) {
-				var line = lines[i].split(" ");
+				var line = lines[i].split(" ").slice(0, numberOfStepsInSimulation+1);
 				var name = line[0].trim();
 				
 				if (name.length > 0)
@@ -201,7 +202,7 @@
 			
 			var chart = new google.visualization.LineChart(div);
 			var view = new google.visualization.DataView(data);
-			
+
 			var updateViewport = function() {
 				var colors = [ ];
 				
@@ -521,53 +522,39 @@
 		//This is how the csv file is downloded. All the data for the runs are stored in $data. (csv means comma seperated value)
 		var downloadTextarea = document.getElementById('download-textarea');
 		var updateDownloadedText = function() {
-            //window.foo = data;
-			downloadTextarea.value = 'Approximate Year';
+			downloadTextarea.value = '';
 			var downloadData = data;
-			var unselectedCols = new Array();
-
-			for (var i = 0; i < getNumberOfRuns(); i++) {
-				var run = runsBeingDisplayed[i];
-				//Only selected, or visible, runs arw downloaded. 
-				if(run.visible){
-					for (var j = 0; j < getNumberOfMeasurements(); j++) {
-							//This creates the header of the csv "table"
-							var measurement = Options.measurements[j];
-
-							var columnValue = run.description + ' / ' + measurement.name + ' (' + measurement.unit + ')';
-
-							downloadTextarea.value += ',' + columnValue;
-
-					} 
-				} else {
-					//This adds to an array of columns that the download should ignore
-					unselectedCols.push(i*Options.measurements.length + 1);
-					unselectedCols.push(i*Options.measurements.length + 2);
-					unselectedCols.push(i*Options.measurements.length + 3);
-					unselectedCols.push(i*Options.measurements.length + 4);
-					unselectedCols.push(i*Options.measurements.length + 5);
-				}
-			}
-			
-			downloadTextarea.value += '\n';
-			
-			for (var y = 0; y < numberOfStepsInSimulation; y++) {
-				downloadTextarea.value += downloadData.getValue(y, 0);
-				
-				for (var i = 1; i < downloadData.getNumberOfColumns(); i++) {
-					if(unselectedCols.indexOf(i) == -1){
-						downloadTextarea.value += ',' + downloadData.getValue(y, i);
-					}
-				}
-				
-				downloadTextarea.value += '\n';
-			}
-		}
+            var columnValue = ',Year'
+            for (var i = 0; i < downloadData.getNumberOfRows(); i++) {
+                columnValue += ','+downloadData.getValue(i, 0);
+            }
+            columnValue += '\n';
+            downloadTextarea.value += columnValue;
+            for (var i = 0; i < getNumberOfRuns(); i++) {
+                var run = runsBeingDisplayed[i];
+                //Only selected, or visible, runs arw downloaded.
+                if(run.visible){
+                    for (var j = 0; j < getNumberOfMeasurements(); j++) {
+                        var measurement = Options.measurements[j];
+                        if (j == 0) {
+                            columnValue = run.description + ',';
+                        } else {
+                            columnValue = ',';
+                        }
+                        columnValue += measurement.name + ' (' + measurement.unit + ')';
+                        for (var k = 0; k < downloadData.getNumberOfRows(); k++) {
+                            columnValue += ','+downloadData.getValue(k, (i*getNumberOfMeasurements())+j+1);
+                        }
+                        columnValue += '\n';
+                        downloadTextarea.value += columnValue;
+                    }
+                    columnValue += '\n';
+                    downloadTextarea.value += columnValue;
+                }
+            }
+        }
 		//whenever the data is changed, the above function will run
 		handlersForDataChanged.push(updateDownloadedText);
-		
-
-
 
 		buildCustomizeableChart();
 		initializeTrivialTabsUI();
