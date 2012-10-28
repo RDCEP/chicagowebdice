@@ -46,17 +46,12 @@ class dice2007(diceParams):
     format_output()
         Output text for Google Visualizer graph functions
     """
-    def __init__(self, decade=False, eq='nordhaus', time_travel=True):
-        #TODO: Sort out decade shit
+    def __init__(self, eq='nordhaus', time_travel=True):
         self.eq = nordhaus.Loop()
         if eq == 'matlab':
             self.eq = matlab.Loop()
         elif eq == 'docs':
             self.eq = docs.Loop()
-        if decade:
-            self.decade = 10
-        else:
-            self.decade = 1
         diceParams.__init__(self)
         self.update_exos()
 #    	if time_travel:
@@ -158,7 +153,7 @@ class dice2007(diceParams):
         -------
         array : Eland(0) * (1 - .1)^t
         """
-        return self.decade * self._eland0 * (1 - .1)**self.t0
+        return self._eland0 * (1 - .1)**self.t0
     @property
     def rr(self):
         """
@@ -169,7 +164,7 @@ class dice2007(diceParams):
         array : 1 / (1 + prstp)^t
         """
 #        return 1 / ((1 + self.prstp)**(10*self.t0))
-        return 1 / ((1 + self.prstp)**(self.decade*self.t0))
+        return 1 / ((1 + self.prstp)**self.t0)
     @property
     def ecap(self):
         """
@@ -225,7 +220,7 @@ class dice2007(diceParams):
                 self.capital[i] = self.eq.capital(self.capital[i-1], self.dk,
                     self.investment[i-1])
             self.gross_output[i] = self.eq.gross_output(self.al[i], self.capital[i], self._gama, self.l[i])
-            self.emissions_industrial[i] = self.decade * self.eq.emissions_industrial(self.sigma[i], self.miu[i], self.gross_output[i])
+            self.emissions_industrial[i] = self.eq.emissions_industrial(self.sigma[i], self.miu[i], self.gross_output[i])
             self.emissions_total[i] = self.eq.emissions_total(self.emissions_industrial[i], self.etree[i])
             if i > 0:
                 self.miu[i] = self.eq.miu(self.emissions_industrial[i-1], self.ecap[i-1], self._e2005, self.sigma[i], self.gross_output[i])

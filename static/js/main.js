@@ -521,10 +521,11 @@
 		//This is how the csv file is downloded. All the data for the runs are stored in $data. (csv means comma seperated value)
 		var downloadTextarea = document.getElementById('download-textarea');
 		var updateDownloadedText = function() {
+            window.foo = data;
 			downloadTextarea.value = 'Approximate Year';
 			var downloadData = data;
 			var unselectedCols = new Array();
-			
+
 			for (var i = 0; i < getNumberOfRuns(); i++) {
 				var run = runsBeingDisplayed[i];
 				//Only selected, or visible, runs arw downloaded. 
@@ -540,11 +541,11 @@
 					} 
 				} else {
 					//This adds to an array of columns that the download should ignore
-					unselectedCols.push(i*5 + 1);
-					unselectedCols.push(i*5 + 2);
-					unselectedCols.push(i*5 + 3);
-					unselectedCols.push(i*5 + 4);
-					unselectedCols.push(i*5 + 5);
+					unselectedCols.push(i*Options.measurements.length + 1);
+					unselectedCols.push(i*Options.measurements.length + 2);
+					unselectedCols.push(i*Options.measurements.length + 3);
+					unselectedCols.push(i*Options.measurements.length + 4);
+					unselectedCols.push(i*Options.measurements.length + 5);
 				}
 			}
 			
