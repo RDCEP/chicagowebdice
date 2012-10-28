@@ -521,7 +521,7 @@
 		//This is how the csv file is downloded. All the data for the runs are stored in $data. (csv means comma seperated value)
 		var downloadTextarea = document.getElementById('download-textarea');
 		var updateDownloadedText = function() {
-            window.foo = data;
+            //window.foo = data;
 			downloadTextarea.value = 'Approximate Year';
 			var downloadData = data;
 			var unselectedCols = new Array();
