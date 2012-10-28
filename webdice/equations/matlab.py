@@ -12,7 +12,6 @@ class Loop(object):
         return al * capital**gama * l**(1-gama)
     def emissions_industrial(self, sigma, miu, gross_output):
         """E_ind, Industrial emissions, GtC"""
-#        return 10 * sigma * (1 - miu) * gross_output
         return sigma * (1 - miu) * gross_output
     def emissions_total(self, emissions_industrial, etree):
         """E, Total emissions, GtC"""
