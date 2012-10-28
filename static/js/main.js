@@ -11,19 +11,20 @@
 	    endYear = startYear + ((numberOfStepsInSimulation-1) * yearsInStep),
         colorsUsed = parseInt(Math.random() * niceColors.length),
 	    numberOfRunsInProgress = 0,
+        color;
 
 	var generateNextColor = function() {
 		var nextColor = niceColors[(colorsUsed++) % niceColors.length];
 		var rgb = [ nextColor[0], nextColor[1], nextColor[2] ];
 		
-		var color = ("#" +
+		color = ("#" +
 			(0xF00 + rgb[0]).toString(16).substring(1) +
 			(0xF00 + rgb[1]).toString(16).substring(1) +
 			(0xF00 + rgb[2]).toString(16).substring(1)
 		);
 		
 		return color;
-	}
+	};
 	
 	var darkenColorSlightly = function(c) {
 		var n = parseInt(c.substring(1), 16);
@@ -38,10 +39,10 @@
 		if (rgb[2] < 0x20) rgb[2] = 0x20;
 		rgb[2] -= 0x20;
 		
-		var color = "#" + (0xFF000000 + (rgb[0] << 16) + (rgb[1] << 8) + rgb[2]).toString(16).substring(2);
+		color = "#" + (0xFF000000 + (rgb[0] << 16) + (rgb[1] << 8) + rgb[2]).toString(16).substring(2);
 		
 		return color;
-	}
+	};
 	
 	//This changes tabs when you click them by changing the css class. tab notselected is set to display:none, so only the selected tab shows.
 	var initializeTrivialTabsUI = function() {
@@ -73,7 +74,7 @@
 				
 			});	
 		});
-	}
+	};
 	
 	var initializeUI = function() {
 		var contentDiv = document.getElementById('content');
@@ -94,15 +95,15 @@
 		
 		var getNumberOfMeasurements = function() {
 			return Options.measurements.length;
-		}
+		};
 		
 		var getNumberOfRuns = function() {
 			return (data.getNumberOfColumns() - 1) / getNumberOfMeasurements();
-		}
+		};
 		
 		var mapIndexToYear = function(index) {
 			return (index / (numberOfStepsInSimulation - 1)) * (endYear - startYear) + startYear;
-		}
+		};
 		
 		var formatColumnOfDataTable = function(table, columnID, format, unit) {
 			var options = { };
@@ -116,13 +117,13 @@
 			var formatter = new google.visualization.NumberFormat(options);
 			
 			formatter.format(table, columnID);
-		}
+		};
 		
 		var formatMeasurement = function(runIndex, measurement, format, unit) {
 			var columnID = runIndex * getNumberOfMeasurements() + measurement + 1;
 			
 			return formatColumnOfDataTable(data, columnID, format, unit);
-		}
+		};
 		
 		var addRun = function(description, color, fields, changesFromDefault) {
 			var nextRun = getNumberOfRuns();
@@ -156,7 +157,7 @@
 			updateAllData();
 			
 			return runObject;
-		}
+		};
 		
 		var addRunFromCSV = function(description, color, result, changesFromDefault) {
             var fields = new Object;
@@ -171,7 +172,7 @@
 			}
 
 			return addRun(description, color, fields, changesFromDefault);
-		}
+		};
 		
 		var removeRun = function(index) {
 			data.removeColumns(index * getNumberOfMeasurements() + 1, getNumberOfMeasurements());
@@ -183,7 +184,7 @@
 			}
 			
 			updateAllData();
-		}
+		};
 		
 		var removeAllRuns = function() {
 			data.removeColumns(1, getNumberOfRuns() * getNumberOfMeasurements());
@@ -193,7 +194,7 @@
 			runsBeingDisplayed.splice(0, runsBeingDisplayed.length);
 			
 			updateAllData();
-		}
+		};
 		
 		var buildChart = function(index, measurement) {
 			var div = document.createElement("div");
@@ -222,7 +223,7 @@
 				};
 				
 				chart.draw(view, options);
-			}
+			};
 			
 			var updateData = function() {
 				var visibleColumns = [ ];
@@ -238,12 +239,12 @@
 				view.setColumns(visibleColumns);
 				
 				updateViewport();
-			}
+			};
 			
 			updateData();
 			handlersForViewportChanged.push(updateViewport);
 			handlersForDataChanged.push(updateData);
-		}
+		};
 		
 		var buildCustomizeableChart = function() {
 			var div = document.getElementById('large-graph');
@@ -288,7 +289,7 @@
 				}
 				
 				chart.draw(table, options);
-			}
+			};
 			
 			var updateData = function() {
 				var visibleColumns = [ ];
@@ -404,7 +405,7 @@
 				}
 				
 				updateViewport();
-			}
+			};
 			
 			selectXAxis.onchange = function() {
 				checkedLogarithmicX.checked = false;
@@ -415,42 +416,42 @@
 				previousXAxis = selectXAxis.value;
 				
 				updateAllData();
-			}
+			};
 			
 			selectYAxis.onchange = function() {
 				checkedLogarithmicY.checked = false;
 				
 				updateAllData();
-			}
+			};
 			
 			checkedLogarithmicX.onchange = function() {
 				updateAllViewports();
-			}
+			};
 			
 			checkedLogarithmicY.onchange = function() {
 				updateAllViewports();
-			}
+			};
 			
 			selectLabelsType.onchange = function() {
 				updateAllData();
-			}
+			};
 			
 			updateData();
 			handlersForViewportChanged.push(updateViewport);
 			handlersForDataChanged.push(updateData);
-		}
+		};
 		
 		var updateAllViewports = function() {
 			for (var i = 0; i < handlersForViewportChanged.length; i++) {
 				handlersForViewportChanged[i]();
 			}
-		}
+		};
 		
 		var updateAllData = function() {
 			for (var i = 0; i < handlersForDataChanged.length; i++) {
 				handlersForDataChanged[i]();
 			}
-		}
+		};
 		
 		var updateRunsListHeight = function() {
 			var bottomHeight = (runsBeingDisplayed.length + numberOfRunsInProgress) * 51;
@@ -462,7 +463,7 @@
 			$(runsUL).animate({ height:outerHeight, scrollTop : (bottomHeight - outerHeight) }, "slow");
 			$(sidebarDiv).animate( { height: '100%' }, "slow");
 			$(contentDiv).animate( { height: '100%' }, "fast");
-		}
+		};
 		
 		// Prepare initial contents of dataset for CSV download
 		data.addColumn('number', 'Year');
@@ -494,7 +495,7 @@
 			updateRunsListHeight();
 			
 			return false;
-		}
+		};
 
 //		var runOptimizationButton = document.getElementById('run-opt');
 //		runOptimizationButton.onclick = function() {
@@ -552,7 +553,7 @@
                     downloadTextarea.value += columnValue;
                 }
             }
-        }
+        };
 		//whenever the data is changed, the above function will run
 		handlersForDataChanged.push(updateDownloadedText);
 
@@ -575,7 +576,7 @@
 			}
 			
 			deleteAllButton.disabled = (numberVisible == 0);
-		}
+		};
 		
 		//the above function will run when the data is changed.
 		handlersForViewportChanged.push(displayConditionalHelp);
@@ -620,7 +621,7 @@
 						var heading = $(this.parentNode.parentNode.parentNode).prev('h2').first().text();
 						
 						changes.push([ heading, description, changedValue, defaultValue, deviation ]);
-					};
+					}
 				});
 			
 				changes.sort(function(a, b) { return b[4] - a[4]; });
@@ -701,7 +702,7 @@
 				});
 			
 				}, 0); return false;
-			}
+			};
 		
 		$('input[type=range]', form).change(function() {
 			/*
@@ -726,7 +727,7 @@
 		window.onresize = function() {
 			updateAllViewports();
 		}
-	}
+	};
 	
 	google.load('visualization', '1.0', {'packages' : ['corechart']});
 	google.setOnLoadCallback(initializeUI);
