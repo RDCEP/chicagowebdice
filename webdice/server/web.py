@@ -52,9 +52,10 @@ def matlab(equations):
     """
     Create dice objects with equations sets based on URL. Then return web page.
     ...
-    Arguments:
-    equation: str
-        One of 'nordhaus', 'matlab', or 'docs'
+    Args:
+        equation (str): One of 'nordhaus', 'matlab', or 'docs'
+    Returns:
+        page()
     ...
     """
     dice = dice2007(eq=equations)
@@ -63,7 +64,14 @@ def matlab(equations):
 
 
 def page():
-    """Return HTML for all pages."""
+    """
+    Return HTML for all pages.
+    ...
+    Args:
+        None
+    Returns:
+        HTML
+    """
     measurements = get_measurements()
     graph_locations = get_graph_locations()
     m = json.JSONEncoder().encode(measurements)
@@ -81,7 +89,14 @@ def page():
 
 @route('/run', method='POST')
 def graphs():
-    """Call from JavaScript. Get data from <form>, run DICE loop, return step values."""
+    """
+    Get data from <form>, run DICE loop.
+    ...
+    Args:
+        None
+    Returns:
+        Formatted step values
+    """
     s = do_session(request)
     thisdice = s['dice']
     form = request.forms

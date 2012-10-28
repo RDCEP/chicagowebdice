@@ -3,9 +3,48 @@ from params import diceParams
 from equations import nordhaus, matlab, docs
 
 class dice2007(diceParams):
-    """
-    Create variables, parameters, and step function for DICE 2007.
+    """Variables, parameters, and step function for DICE 2007.
+    ...
+    Attributes
+    ----------
+    eq : object
+        webdice.equations.<foo>.Loop object
+    Also see webdice.params.diceParams
 
+    Properties
+    ----------
+    parameters : list
+        Names of all parameters to DICE
+    vars : list
+        Names of all DICE variables
+    aa : array
+    gfacpop: array
+        Population growth factor
+    l : array
+        Labor or population
+    ga : array
+        Growth rate of productivity
+    gsig : array
+        Rate of carbon decline
+    gcost1 : array
+        Growth of cost factor
+    etree : array
+        Emission from deforestation
+    rr : array
+        Average utility discount rate
+    ecap : array
+        Emissions caps for treaty
+    partfract : array
+        Participation in treaty
+    forcoth : array
+        Forcing for GHGs
+
+    Methods
+    -------
+    loop()
+        Step function for calculating endogenous variables
+    format_output()
+        Output text for Google Visualizer graph functions
     """
     def __init__(self, decade=False, eq='nordhaus', time_travel=True):
         #TODO: Sort out decade shit
@@ -48,67 +87,98 @@ class dice2007(diceParams):
         ] 
     @property
     def aa(self):
-        """temp coefficient; pi_2, temp squared coefficient; epsilon, damage exponent"""
+        """
+        temp coefficient; pi_2, temp squared coefficient;
+        epsilon, damage exponent
+        ...
+        Returns
+        -------
+        array : [a1, a2, a3]
+        """
         return np.array([self.a1, self.a2, self.a3])
     @property
     def gfacpop(self):
-        """L_g, Population growth factor"""
-        return (np.exp(self._gpop0 * self.t0) - 1) / (np.exp(self._gpop0 * self.t0))
+        """
+        L_g, Population growth factor
+        ...
+        Returns
+        -------
+        array : exp(gpop0 * t - 1) / exp(gpop * t)
+        """
+        return (np.exp(self._gpop0 * self.t0) - 1) / (np.exp(self._gpop0 *
+                                                             self.t0))
     @property
     def l(self):
         """
-        Return L, Population.
+        L, Population.
         ...
-        (exp(pop(0) * t) - 1) / exp(gpop(0) * t)
+        Returns
+        -------
+        array : (exp(pop(0) * t) - 1) / exp(gpop(0) * t)
         """
         return self._pop0 * (1 - self.gfacpop) + self.gfacpop * self.popasym
     @property
     def ga(self):
         """
-        Return A_g, Growth rate of total factor productivity.
+        A_g, Growth rate of total factor productivity.
         ...
-        ga(0) * exp(-dela * 10 * t)
+        Returns
+        -------
+        array : ga(0) * exp(-dela * 10 * t)
         """
         return self._ga0 * np.exp(-self.dela * 10 * self.t0)
     @property
     def gsig(self):
         """
-        Return sigma_g, Rate of decline of carbon intensity
+        sigma_g, Rate of decline of carbon intensity
         ...
-        gsigma * exp(-disg * 10 * t - disg2 * 10 * t^2)
+        Returns
+        -------
+        array : gsigma * exp(-disg * 10 * t - disg2 * 10 * t^2)
         """
-        return self._gsigma * np.exp(-self.dsig * 10 * self.t0 - self.dsig2 * 10 * (self.t0 ** 2))
+        return self._gsigma * np.exp(-self.dsig * 10 * self.t0 - self.dsig2 *
+                                     10 * (self.t0 ** 2))
     @property
     def gcost1(self):
         """
-        Return theta_1, Growth of cost factor
+        theta_1, Growth of cost factor
         ...
-        (pback * sigma(t) / expcost2) * ((backrat - 1 + exp(-gback * t)) / backrat
+        Returns
+        -------
+        array : (pback * sigma(t) / expcost2) * ((backrat - 1 + exp(-gback * t)) / backrat
         """
-        return (self._pback * self.sigma / self.expcost2) *\
-               ((self.backrat - 1 + np.exp(-self.gback * self.t0)) / self.backrat)
+        return (self._pback * self.sigma / self.expcost2) * (
+            (self.backrat - 1 + np.exp(-self.gback * self.t0)) / self.backrat)
     @property
     def etree(self):
-        #CHECKED (SCALED FOR DECADE)
         """
-        Return E_land, Emissions from deforestation
+        E_land, Emissions from deforestation
         ...
-        Eland(0) * (1 - .1)^t
+        Returns
+        -------
+        array : Eland(0) * (1 - .1)^t
         """
         return self.decade * self._eland0 * (1 - .1)**self.t0
     @property
     def rr(self):
         """
-        Return R, Average utility social discount rate
+        R, Average utility social discount rate
         ...
-        1 / (1 + prstp)^t
+        Returns
+        -------
+        array : 1 / (1 + prstp)^t
         """
 #        return 1 / ((1 + self.prstp)**(10*self.t0))
         return 1 / ((1 + self.prstp)**(self.decade*self.t0))
     @property
     def ecap(self):
-        """Build emissions caps from treaty inputs"""
-        #TODO: Use this to build phi, partfract (below) ?
+        """
+        Emissions caps from treaty inputs
+        ...
+        Returns
+        -------
+        array
+        """
         return np.concatenate((
             np.linspace(0, 0, 5),
             np.linspace(self.e2050, self.e2050, 5),
@@ -117,26 +187,40 @@ class dice2007(diceParams):
             ))
     @property
     def partfract(self):
-        """Return phi, Fraction of emissions in control regime"""
+        """
+        phi, Fraction of emissions in control regime
+        ...
+        Returns
+        -------
+        array
+        """
         return np.concatenate((
             np.linspace(self.partfract1, self.partfract1, 1),
-            self.partfract21 + (self.partfract2 - self.partfract21) * np.exp(-self.dpartfract * np.arange(23)),
+            self.partfract21 + (self.partfract2 - self.partfract21) * np.exp(
+                -self.dpartfract * np.arange(23)),
             np.linspace(self.partfract21, self.partfract21, 36),
             ))
     @property
     def forcoth(self):
-        """Return F_EX, Exogenous forcing for other greenhouse gases"""
+        """
+        F_EX, Exogenous forcing for other greenhouse gases
+        ...
+        Returns
+        -------
+        array
+        """
         return np.concatenate((
             self.fex0 + .1 * (self.fex1 - self.fex0) * np.arange(11),
             self.fex0 + np.linspace(.36,.36, 49),
             ))
 
     def loop(self):
-        """Step function for calculating endogenous variables"""
+        """
+        Step function for calculating endogenous variables
+        """
         for i in range(self.tmax):
             if i > 0:
                 self.sigma[i] = self.sigma[i-1] / (1 - self.gsig[i])
-                #TODO: In Nordhaus and in optimized MATLAB, there's no .95. Ask David et al about this. This is self.alc, set in __init__, always 1 for now.
                 self.al[i] = self.al[i-1] / (1 - self.ga[i-1])
                 self.capital[i] = self.eq.capital(self.capital[i-1], self.dk,
                     self.investment[i-1])
@@ -175,7 +259,7 @@ class dice2007(diceParams):
             self.utility_discounted[i] = self.eq.utility_discounted(self.utility[i], self.pref_fac[i], self.l[i])
 
     def format_output(self):
-        """Output text for JavaScript graph functions."""
+        """Output text for Google Visualizer graph functions."""
         #TODO: This is sloppy as shit.
         output = ''
         for v in self.vars:
