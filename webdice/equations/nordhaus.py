@@ -18,7 +18,7 @@ class Loop(object):
         return emissions_industrial + etree
     def mass_atmosphere(self, emissions_total, mass_atmosphere, mass_upper, b):
         """M_AT, Carbon concentration in atmosphere, GtC"""
-        return b[0][0] * mass_atmosphere + b[1][0] * mass_upper + emissions_total
+        return b[0][0] * mass_atmosphere + b[1][0] * mass_upper + 10 * emissions_total
     def mass_upper(self, mass_atmosphere, mass_upper, mass_lower, b):
         """M_UP, Carbon concentration in shallow oceans, GtC"""
         return b[0][1] * mass_atmosphere + b[1][1] * mass_upper + b[2][1] * mass_lower

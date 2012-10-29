@@ -194,7 +194,7 @@ def tabs_html():
     Returns:
         HTML
     """
-    tabs, parameters, all_parameters, selected_tabs = build_data()
+    tabs, parameters, all_parameters, selected_tab = build_data()
     html = ''
     if len(tabs) <= 1:
         html += '<div id="parameters">\n'
