@@ -1,7 +1,7 @@
 import json
 from datetime import datetime
 import bottle
-from bottle import route, request, default_app, template
+from bottle import route, request, default_app, template, response
 from beaker.middleware import SessionMiddleware
 from dice import dice2007
 from server.conf import *
@@ -17,7 +17,21 @@ session_opts = {
     'session.auto': True
 }
 
+def validate_number(n):
+    """Currently unused. This is a stub for number validation
+    before passing values to the dice2007 object."""
+    try: float(n)
+    except ValueError: raise Exception('Input needs to be a number.')
+    else: return n
+
 def do_session(request, newdice=False):
+    """
+    Checks for existence of session data. Writes variables as necessary.
+    ...
+    Keyword Arguments:
+    newdice: obj
+        A dice2007 object.
+    """
     s = request.environ.get('beaker.session')
     if newdice:
         dice = newdice
@@ -29,18 +43,35 @@ def do_session(request, newdice=False):
 
 @route('/')
 def index():
-#    print tabs_html()
-    s = do_session(request)
+    """Returns index page."""
+    do_session(request)
     return page()
 
 @route('/<equations>')
 def matlab(equations):
+    """
+    Create dice objects with equations sets based on URL. Then return web page.
+    ...
+    Args:
+        equation (str): One of 'nordhaus', 'matlab', or 'docs'
+    Returns:
+        page()
+    ...
+    """
     dice = dice2007(eq=equations)
-    s = do_session(request, newdice=dice)
+    do_session(request, newdice=dice)
     return page()
 
 
 def page():
+    """
+    Return HTML for all pages.
+    ...
+    Args:
+        None
+    Returns:
+        HTML
+    """
     measurements = get_measurements()
     graph_locations = get_graph_locations()
     m = json.JSONEncoder().encode(measurements)
@@ -58,6 +89,14 @@ def page():
 
 @route('/run', method='POST')
 def graphs():
+    """
+    Get data from <form>, run DICE loop.
+    ...
+    Args:
+        None
+    Returns:
+        Formatted step values
+    """
     s = do_session(request)
     thisdice = s['dice']
     form = request.forms
@@ -72,6 +111,12 @@ def graphs():
     thisdice.update_exos()
     thisdice.loop()
     return thisdice.format_output()
+
+@route('/csv', method='POST')
+def csv_output():
+    data = request.forms.data
+    response.set_header('Content-Disposition', 'attachment; filename="WebDICE-Data.csv"')
+    return data
 
 app = SessionMiddleware(default_app(), session_opts)
 application = app

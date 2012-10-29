@@ -12,15 +12,14 @@ class Loop(object):
         return al * capital**gama * l**(1-gama)
     def emissions_industrial(self, sigma, miu, gross_output):
         """E_ind, Industrial emissions, GtC"""
-        return 10 * sigma * (1 - miu) * gross_output
-#        return sigma * (1 - miu) * gross_output
+#        return 10 * sigma * (1 - miu) * gross_output
+        return sigma * (1 - miu) * gross_output
     def emissions_total(self, emissions_industrial, etree):
         """E, Total emissions, GtC"""
         return emissions_industrial + etree
     def mass_atmosphere(self, emissions_total, mass_atmosphere, mass_upper, b):
         """M_AT, Carbon concentration in atmosphere, GtC"""
-        return b[0][0] * mass_atmosphere + b[1][0] * mass_upper + emissions_total
-#        return b[0][0] * mass_atmosphere + b[1][0] * mass_upper + 10 * emissions_total
+        return b[0][0] * mass_atmosphere + b[1][0] * mass_upper + 10 * emissions_total
     def mass_upper(self, mass_atmosphere, mass_upper, mass_lower, b):
         """M_UP, Carbon concentration in shallow oceans, GtC"""
         return b[0][1] * mass_atmosphere + b[1][1] * mass_upper + b[2][1] * mass_lower
@@ -29,7 +28,7 @@ class Loop(object):
         return b[1][2] * mass_upper + b[2][2] * mass_lower
     def forcing(self, fco22x, mass_atmosphere, matPI, forcoth, ma_next):
         """F, Forcing, W/m^2"""
-        return fco22x * np.log2(mass_atmosphere/matPI) + forcoth
+        return fco22x * np.log(mass_atmosphere/matPI) + forcoth
     def temp_atmosphere(self, temp_atmosphere, temp_lower, forcing, lam, c):
         """T_AT, Temperature of atmosphere, degrees C"""
         return temp_atmosphere + c[0] * (forcing - lam * temp_atmosphere - c[2] * (temp_atmosphere - temp_lower))

@@ -28,14 +28,28 @@ class diceParams(object):
         self.ml2000 = 18365. # Concentration in lower strata 2005 (GtC)
         self.matPI = 278. * 2.13 # Preindustrial concentration in atmosphere 2005 (GtC)
         # Carbon cycle transition matrix
-        self.bb = np.array([.810712, .189288, 0, .097213, .852787, .05, 0, .003119, .996881]).reshape(3,3)
+        self.b11 = .810712
+        self.b12 = .189288
+        self.b13 = 0
+        self.b21 = .097213
+        self.b22 = .852787
+        self.b23 = .05
+        self.b31 = 0
+        self.b32 = .003119
+        self.b33 = .996881
+        self.bb = np.array([self.b11, self.b12, self.b13, self.b21, self.b22, self.b23, self.b31, self.b32, self.b33]).reshape(3,3)
         ## Climate model
         self.t2xco2 = 3. # Equilibrium temp impact of CO2 doubling (degrees C)
         self.fex0 = -.06 # Estimate of 2000 forcings of non-CO2 GHG
         self.fex1 = .30 # Estimate of 2100 forcings of non-CO2 GHG
         self.tocean0 = .0068 # 2000 lower strat. temp change (C) from 1900
         self.tatm0 = .7307 # 2000 atmospheric temp change (C) from 1900
-        self.cc = np.array([.220, 0, .300, .050])
+        self.c1 = .220
+        self.c2 = 0
+        self.c3 = .300
+        self.c4 = .050
+#        self.cc = np.array([.220, 0, .300, .050])
+        self.cc = np.array([self.c1, self.c2, self.c3, self.c4])
         self.fco22x = 3.8 # Estimated forcings of equilibrium CO2 doubling
         # Climate damage selfeters, calibrated for quadratic at 2.5 C for 2105
 #        self.aa = np.array([0, 0.0028388, 2])

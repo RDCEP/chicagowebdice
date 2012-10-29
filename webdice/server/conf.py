@@ -24,36 +24,6 @@ def options(p, opts, opt):
     except KeyError: pass
     else: opts.append(opt)
 
-def foo():
-    pass
-#    #The next 100 lines or so are just checking to make sure all the data for each input is set
-#    missing_parameter = "Missing \"%s\" attribute on configuration element."
-#    too_many_items = "Configuration_element has %d extra element(s)."
-#    option_no_name = "Parameter option element has no \"name\" option and should."
-#    option_no_machine_name = "Parameter option element has no \"machine_name\" option and should."
-#    non_numeric_configuration = "The \"min,\" \"max,\" and \"step\" options are numeric."
-#    duplicate_property = "Multiple parameters with machine name \"%s\"."
-#    duplicate_option = "Multiple options with machine_name \"%s\"."
-#    invalid_default = "The default must be between the minimum and maximum."
-#    no_graph_in_location = "There is no graph set to display in location %s."
-#    tabs = {}
-#    all_parameters = {}
-#    selected_tab = None
-#    graphs = {}
-#    graph_locations = ['topleft', 'topright', 'bottomleft', 'bottomright']
-
-def get_tabs():
-    tabs, parameters, all_parameters, selected = build_data()
-    return tabs
-
-def get_selected_tab():
-    tabs, parameters, all_parameters, selected = build_data()
-    return selected
-
-def get_parameters():
-    tabs, parameters, all_parameters, selected = build_data()
-    return parameters
-
 def get_all_parameters():
     tabs, parameters, all_parameters, selected = build_data()
     return all_parameters
@@ -62,15 +32,18 @@ def get_measurements():
     measurements, graphs, graph_locations = build_measurements()
     return measurements
 
-def get_graphs():
-    measurements, graphs, graph_locations = build_measurements()
-    return graphs
-
 def get_graph_locations():
     measurements, graphs, graph_locations = build_measurements()
     return graph_locations
 
 def build_data():
+    """
+    Build objects from YAML file.
+    ...
+    Args: None
+    Returns:
+        [tabs, parameters, all_parameters, selected_tab]
+    """
     parameters = CONF_FILE['parameters']
     tabs = {}
     all_parameters = {}
@@ -166,6 +139,13 @@ def build_data():
     return tabs, parameters, all_parameters, selected_tab
 
 def build_measurements():
+    """
+    Build objects from YAML file.
+    ...
+    Args: None
+    Returns:
+        [measurements, graphs, graph_locations]
+    """
     measurements = CONF_FILE['measurements']
     graphs = {}
     graph_locations = ['topleft', 'topright', 'bottomleft', 'bottomright']
@@ -207,8 +187,14 @@ def build_questions():
             pass #trigger_error(sprintf(too_many_items, count(measurement) - size), E_USER_ERROR);
 
 def tabs_html():
-    tabs = get_tabs()
-    selected_tab = get_selected_tab()
+    """
+    Build HTML for inputs on left side of webpage.
+    ...
+    Args: None
+    Returns:
+        HTML
+    """
+    tabs, parameters, all_parameters, selected_tab = build_data()
     html = ''
     if len(tabs) <= 1:
         html += '<div id="parameters">\n'
@@ -303,6 +289,13 @@ def tabs_html():
     return html
 
 def paragraphs_html():
+    """
+    Build HTML for initial text on webpage.
+    ...
+    Args: None
+    Returns:
+        HTML
+    """
     initial_help = CONF_FILE['initial_help']
     html = ''
     paragraphs = initial_help.split('\n')
@@ -311,6 +304,13 @@ def paragraphs_html():
     return html
 
 def measurements_html():
+    """
+    Build HTML for options in select tabs, and columns in CSV.
+    ...
+    Args: None
+    Returns:
+        HTML
+    """
     measurements = get_measurements()
     html = ''
     for measurement in measurements:
@@ -319,3 +319,20 @@ def measurements_html():
         html += '<option value="%s">%s</option>\n' % (machine_name, measurement_name)
     return html
 
+def foo():
+    pass
+    #    #The next 100 lines or so are just checking to make sure all the data for each input is set
+    #    missing_parameter = "Missing \"%s\" attribute on configuration element."
+    #    too_many_items = "Configuration_element has %d extra element(s)."
+    #    option_no_name = "Parameter option element has no \"name\" option and should."
+    #    option_no_machine_name = "Parameter option element has no \"machine_name\" option and should."
+    #    non_numeric_configuration = "The \"min,\" \"max,\" and \"step\" options are numeric."
+    #    duplicate_property = "Multiple parameters with machine name \"%s\"."
+    #    duplicate_option = "Multiple options with machine_name \"%s\"."
+    #    invalid_default = "The default must be between the minimum and maximum."
+    #    no_graph_in_location = "There is no graph set to display in location %s."
+    #    tabs = {}
+    #    all_parameters = {}
+    #    selected_tab = None
+    #    graphs = {}
+    #    graph_locations = ['topleft', 'topright', 'bottomleft', 'bottomright']

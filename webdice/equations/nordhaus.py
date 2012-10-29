@@ -6,21 +6,19 @@ class Loop(object):
         pass
     def capital(self, capital, dk, investment):
         """K(t), Capital, trillions $USD"""
-        return (1 - dk)**10 * capital + 10 * investment
+        return capital * (1 - dk)**10 + 10 * investment
     def gross_output(self,al, capital, gama, l):
         """Gross output"""
         return al * capital**gama * l**(1-gama)
     def emissions_industrial(self, sigma, miu, gross_output):
         """E_ind, Industrial emissions, GtC"""
-#        return 10 * sigma * (1 - miu) * gross_output
         return sigma * (1 - miu) * gross_output
     def emissions_total(self, emissions_industrial, etree):
         """E, Total emissions, GtC"""
         return emissions_industrial + etree
     def mass_atmosphere(self, emissions_total, mass_atmosphere, mass_upper, b):
         """M_AT, Carbon concentration in atmosphere, GtC"""
-        return b[0][0] * mass_atmosphere + b[1][0] * mass_upper + emissions_total
-#        return b[0][0] * mass_atmosphere + b[1][0] * mass_upper + 10 * emissions_total
+        return b[0][0] * mass_atmosphere + b[1][0] * mass_upper + 10 * emissions_total
     def mass_upper(self, mass_atmosphere, mass_upper, mass_lower, b):
         """M_UP, Carbon concentration in shallow oceans, GtC"""
         return b[0][1] * mass_atmosphere + b[1][1] * mass_upper + b[2][1] * mass_lower
@@ -29,7 +27,7 @@ class Loop(object):
         return b[1][2] * mass_upper + b[2][2] * mass_lower
     def forcing(self, fco22x, mass_atmosphere, matPI, forcoth, ma_next):
         """F, Forcing, W/m^2"""
-        return fco22x * np.log((((mass_atmosphere + ma_next)/2)+.000001)/matPI)/np.log(2) + forcoth
+        return fco22x * (np.log((((mass_atmosphere + ma_next)/2)+.000001)/matPI)/np.log(2)) + forcoth
     def temp_atmosphere(self, temp_atmosphere, temp_lower, forcing, lam, c):
         """T_AT, Temperature of atmosphere, degrees C"""
         return temp_atmosphere + c[0] * (forcing - lam * temp_atmosphere - c[2] * (temp_atmosphere - temp_lower))
@@ -41,10 +39,9 @@ class Loop(object):
         return gross_output - gross_output / (1 + temp_atmosphere * aa[0] + aa[1] * temp_atmosphere**aa[2])
     def abatement(self, gross_output, miu, gcost1, expcost2, partfract):
         """Lambda, Abatement costs, trillions $USD"""
-        abatement = (gcost1 * miu**expcost2) * partfract**(1-expcost2)
-        return gross_output * abatement
+        return partfract**(1-expcost2) * gcost1 * (miu**expcost2)
     def output(self, gross_output, damage, abatement):
-        return (gross_output - damage) - abatement
+        return (gross_output - damage) - gross_output * abatement
     def investment(self, savings, output):
         """I, Investment, trillions $USD"""
         return savings * output

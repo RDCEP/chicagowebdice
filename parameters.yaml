@@ -324,14 +324,17 @@ measurements:
   - name: Capital Stock
     machine_name: capital
     unit: Trillions $USD
-  - name: Atmospheric Temperature Increase
-    machine_name: temp_atmosphere
-    unit: °C from 1900
-    description: Projected increases in global average temperatures compared to pre-industrial temperatures
-    location: topleft
-  - name: Lower Ocean Temperature Increase
-    machine_name: temp_lower
-    unit: °C from 1900
+  - name: Total Emissions per Year
+    machine_name: emissions_total
+    unit: Gt of Carbon / 10 yr
+    description: Projected path of annual future carbon emissions
+    location: bottomright
+  - name: Industrial Emissions
+    machine_name: emissions_industrial
+    unit: Gt of Carbon
+  - name: Total Carbon Emitted
+    machine_name: carbon_emitted
+    unit: Gt of Carbon
   - name: Carbon Mass in Atmosphere
     machine_name: mass_atmosphere
     unit: Gt of Carbon
@@ -343,17 +346,14 @@ measurements:
   - name: Carbon Mass in Lower Oceans
     machine_name: mass_lower
     unit: Gt of Carbon
-  - name: Total Emissions per Year
-    machine_name: emissions_total
-    unit: Gt Carbon / 10 yr
-    description: Projected path of annual future carbon emissions
-    location: bottomright
-  - name: Industrial Emissions
-    machine_name: emissions_industrial
-    unit: Gt Carbon
-  - name: Total Carbon Emissions
-    machine_name: carbon_emitted
-    unit: Gt Carbon
+  - name: Atmospheric Temperature Increase
+    machine_name: temp_atmosphere
+    unit: °C from 1900
+    description: Projected increases in global average temperatures compared to pre-industrial temperatures
+    location: topleft
+  - name: Lower Ocean Temperature Increase
+    machine_name: temp_lower
+    unit: °C from 1900
 
 questions:
   - question: What is the answer to the ultimate question, of life, the universe, and everything?
