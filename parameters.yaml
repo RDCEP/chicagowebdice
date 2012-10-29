@@ -131,7 +131,8 @@ parameters:
     step: 0.5
     default: 3.0
     precision: 1
-    description: Temperature increase in degrees C from doubling of atmospheric CO2 
+    description: Temperature increase in degrees C from doubling of atmospheric CO2
+    unit: °C
   - name: How large will the harms be?
     machine_name: a3
     tab: Basic
@@ -152,7 +153,8 @@ parameters:
     default: 0.0010
     precision: 4
     description: Decline in the rate of growth in productivity over time
-  - name: How much more energy efficient will we be?
+    unit: "%"
+  - name: Change in Energy intensity (higher number means more energy intensive)
     tab: Basic
     section: Your beliefs about the climate and the future
     machine_name: dsig
@@ -162,6 +164,7 @@ parameters:
     step: 0.001
     precision: 3
     description: Rate of decline in energy use per $ of GDP
+    unit: "%"
   - name: 2050
     tab: Basic
     machine_name: e2050
@@ -172,6 +175,7 @@ parameters:
     default: 0.00
     precision: 2
     description: The mandated decrease in emissions by 2050 as a share of 2005 year emissions.
+    unit: "%"
   - name: 2100
     tab: Basic
     machine_name: e2100
@@ -182,6 +186,7 @@ parameters:
     default: 0.00
     precision: 2
     description: The mandated decrease in emissions by 2100 as a share of 2005 year emissions.
+    unit: "%"
   - name: 2150
     tab: Basic
     machine_name: e2150
@@ -192,6 +197,7 @@ parameters:
     default: 0.00
     precision: 2
     description: The mandated decrease in emissions by 2150 as a share of 2005 year emissions.
+    unit: "%"
   - name: Marginal cost of abatement
     tab: Advanced
     section: Costs of emissions control
@@ -212,6 +218,7 @@ parameters:
     step: 0.05
     precision: 2
     description: Rate of decline in costs of reduction emissions
+    unit: "%"
   - name: Ratio of current to future clean energy costs
     tab: Advanced
     section: Costs of emissions control
@@ -232,6 +239,7 @@ parameters:
     default: 8600
     precision: 0
     description: Number, in millions, that the population grows asymptotically towards
+    unit: " billions"
   - name: Depreciation rate
     tab: Advanced
     section: Additional Parameters
@@ -242,6 +250,7 @@ parameters:
     step: 0.01
     precision: 2
     description: Rate of depreciation per year
+    unit: "%"
   - name: Savings rate
     tab: Advanced
     section: Additional Parameters
@@ -252,6 +261,7 @@ parameters:
     step: 0.05
     precision: 2
     description: Savings are per year
+    unit: "%"
   - name: Fossil fuel reserves
     tab: Advanced
     section: Additional Parameters
@@ -262,6 +272,7 @@ parameters:
     default: 6000
     precision: 0
     description: Fossil fuels remaining, measured in CO2 emissions
+    unit: Gt C
   - name: Carbon cycle
     tab: Advanced
     machine_name: oceanmodel

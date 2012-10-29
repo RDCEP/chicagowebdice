@@ -243,14 +243,8 @@ def tabs_html():
                         unit = parameter['unit']
                         html += '<li %s>%s (%s) ' % (clas, name, unit)
                 else:
-                    try: parameter['unit']
-                    except:
-                        description = htmlp.unescape(parameter['description'])
-                        html += '<li><label title="%s" %s>%s ' % (description, clas, name)
-                    else:
-                        unit = parameter['unit']
-                        description = htmlp.unescape(parameter['description'])
-                        html += '<li><label title="%s" %s>%s (%s) ' % (description, clas, name, unit)
+                    description = htmlp.unescape(parameter['description'])
+                    html += '<li><label title="%s" %s>%s ' % (description, clas, name)
                 if is_select_control:
                     html += '</label>\n'
                     values = parameter['values']
@@ -274,8 +268,14 @@ def tabs_html():
                     tickMarkLeft = ((float(default) - min)/(max - min)) * 100.
                     tickMarkLeft = tickMarkLeft - 50
                     tickMarkLeftWithUnit = '%i%%' % tickMarkLeft
-                    html += '<span class="label">%s</span></label> <input name="%s" %s ' % (
-                        default, machine_name, disabled)
+                    try: parameter['unit']
+                    except:
+                        html += '<span class="label">%s</span></label> <input name="%s" %s ' % (
+                            default, machine_name, disabled)
+                    else:
+                        unit = parameter['unit']
+                        html += '<span class="label">%s%s</span></label> <input name="%s" %s ' % (
+                            default, unit, machine_name, disabled)
                     html += 'type="range" min="%s" max="%s" step="%s" value="%s" data-prec="%s"/>\n' % (
                         min, max, step, default, precision)
                     html += '<div class="tick-wrap"><span class="tick" style="left:%s" %s>&bullet;</span></div></li>\n' % (

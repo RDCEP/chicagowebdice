@@ -27,7 +27,7 @@
 #submission h2{font:bold 0.8em Helvetica,sans-serif;padding:1.5em 0 0.5em;}
 #submission li{list-style-type:none;font:0.8em Helvetica,sans-serif;position:relative;padding:0 0 1em;}
 #submission #parameters input,#submission #parameters .fd-slider{width:100%;}
-#submission .label{width:4em;text-align:right;color:#666;position:absolute;right:0;bottom:0;}
+#submission .label{width:6em;text-align:right;color:#666;position:absolute;right:0;bottom:0;}
 #submission label {width:15em;display:block;padding-right:6em;position:relative;}
 #submission select{width:100%;}
 #submission sub,#submission sup{font-size:0.7em;}
