@@ -219,39 +219,79 @@ class dice2007(diceParams):
                 self.al[i] = self.al[i-1] / (1 - self.ga[i-1])
                 self.capital[i] = self.eq.capital(self.capital[i-1], self.dk,
                     self.investment[i-1])
-            self.gross_output[i] = self.eq.gross_output(self.al[i], self.capital[i], self._gama, self.l[i])
-            self.emissions_industrial[i] = self.eq.emissions_industrial(self.sigma[i], self.miu[i], self.gross_output[i])
-            self.emissions_total[i] = self.eq.emissions_total(self.emissions_industrial[i], self.etree[i])
+            self.gross_output[i] = self.eq.gross_output(
+                self.al[i], self.capital[i], self._gama, self.l[i]
+            )
+            self.emissions_industrial[i] = self.eq.emissions_industrial(
+                self.sigma[i], self.miu[i], self.gross_output[i]
+            )
+            self.emissions_total[i] = self.eq.emissions_total(
+                self.emissions_industrial[i], self.etree[i]
+            )
             if i > 0:
-                self.miu[i] = self.eq.miu(self.emissions_industrial[i-1], self.ecap[i-1], self._e2005, self.sigma[i], self.gross_output[i])
-            if i > 0:
-                self.carbon_emitted[i] = self.carbon_emitted[i-1] + self.emissions_total[i]
+                self.miu[i] = self.eq.miu(
+                    self.emissions_industrial[i-1], self.ecap[i-1], self._e2005,
+                    self.sigma[i], self.gross_output[i]
+                )
+                self.carbon_emitted[i] = (
+                    self.carbon_emitted[i-1] + self.emissions_total[i]
+                )
             if self.carbon_emitted[i] > self.fosslim:
                 self.miu[i] = 1
                 self.emissions_total[i] = 0
                 self.carbon_emitted[i] = self.fosslim
             if i > 0:
-                self.mass_atmosphere[i] = self.eq.mass_atmosphere(self.emissions_total[i-1],
-                    self.mass_atmosphere[i-1], self.mass_upper[i-1], self.bb)
-                self.mass_upper[i] = self.eq.mass_upper(self.mass_atmosphere[i-1], self.mass_upper[i-1], self.mass_lower[i-1], self.bb)
-                self.mass_lower[i] = self.eq.mass_lower(self.mass_upper[i-1], self.mass_lower[i-1], self.bb)
-            self.forcing[i] = self.fco22x * np.log((self.mass_atmosphere[i] / self.matPI)) + self.forcoth[i]
-            ma2 = self.eq.mass_atmosphere(self.emissions_total[i],self.mass_atmosphere[i], self.mass_upper[i], self.bb)
-            self.forcing[i] = self.eq.forcing(self.fco22x, self.mass_atmosphere[i], self.matPI, self.forcoth[i], ma2)
+                self.mass_atmosphere[i] = self.eq.mass_atmosphere(
+                    self.emissions_total[i-1], self.mass_atmosphere[i-1],
+                    self.mass_upper[i-1], self.bb
+                )
+                self.mass_upper[i] = self.eq.mass_upper(
+                    self.mass_atmosphere[i-1], self.mass_upper[i-1],
+                    self.mass_lower[i-1], self.bb
+                )
+                self.mass_lower[i] = self.eq.mass_lower(
+                    self.mass_upper[i-1], self.mass_lower[i-1], self.bb
+                )
+            self.forcing[i] = self.fco22x * np.log(
+                (self.mass_atmosphere[i] / self.matPI)) + self.forcoth[i]
+            ma2 = self.eq.mass_atmosphere(
+                self.emissions_total[i],self.mass_atmosphere[i],
+                self.mass_upper[i], self.bb
+            )
+            self.forcing[i] = self.eq.forcing(
+                self.fco22x, self.mass_atmosphere[i], self.matPI,
+                self.forcoth[i], ma2
+            )
             if i > 0:
-                self.temp_atmosphere[i] = self.eq.temp_atmosphere(self.temp_atmosphere[i-1], self.temp_lower[i-1],
-                    self.forcing[i], self.lam, self.cc)
-                self.temp_lower[i] = self.eq.temp_lower(self.temp_atmosphere[i-1], self.temp_lower[i-1], self.cc)
-            self.damage[i] = self.eq.damage(self.gross_output[i], self.temp_atmosphere[i], self.aa)
-            self.abatement[i] = self.eq.abatement(self.gross_output[i], self.miu[i], self.gcost1[i], self.expcost2, self.partfract[i])
-            self.output[i] = self.eq.output(self.gross_output[i], self.damage[i], self.abatement[i])
+                self.temp_atmosphere[i] = self.eq.temp_atmosphere(
+                    self.temp_atmosphere[i-1], self.temp_lower[i-1],
+                    self.forcing[i], self.lam, self.cc
+                )
+                self.temp_lower[i] = self.eq.temp_lower(
+                    self.temp_atmosphere[i-1], self.temp_lower[i-1], self.cc
+                )
+            self.damage[i] = self.eq.damage(
+                self.gross_output[i], self.temp_atmosphere[i], self.aa
+            )
+            self.abatement[i] = self.eq.abatement(
+                self.gross_output[i], self.miu[i], self.gcost1[i],
+                self.expcost2, self.partfract[i]
+            )
+            self.output[i] = self.eq.output(self.gross_output[i],
+                                            self.damage[i], self.abatement[i])
             self.investment[i] = self.eq.investment(self.savings, self.output[i])
             self.consumption[i] = self.eq.consumption(self.output[i], self.savings)
-            self.consumption_percapita[i] = self.eq.consumption_percapita(self.consumption[i], self.l[i])
-            self.utility[i] = self.eq.utility(self.consumption_percapita[i], self.elasmu, self.l[i])
+            self.consumption_percapita[i] = self.eq.consumption_percapita(
+                self.consumption[i], self.l[i]
+            )
+            self.utility[i] = self.eq.utility(self.consumption_percapita[i],
+                                              self.elasmu, self.l[i])
             if i > 0:
-                self.pref_fac[i] = self.eq.preference_factor(self.prstp, self.pref_fac[i-1])
-            self.utility_discounted[i] = self.eq.utility_discounted(self.utility[i], self.pref_fac[i], self.l[i])
+                self.pref_fac[i] = self.eq.preference_factor(self.prstp,
+                                                             self.pref_fac[i-1])
+            self.utility_discounted[i] = self.eq.utility_discounted(
+                self.utility[i], self.pref_fac[i], self.l[i]
+            )
 
     def format_output(self):
         """Output text for Google Visualizer graph functions."""
