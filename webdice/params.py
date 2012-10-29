@@ -10,7 +10,7 @@ class diceParams(object):
         self.popasym = 8600. # asymptotic population
         self._a0 = .02722 # Initial level of total factor productivity
         self._ga0 = .092 # Initial growth rate for technology per decade
-        self.dela = .001 # Decline rate of technological change per decade
+        self.dela = .1 # Decline rate of technological change per decade
         self.dk = .100 # Depreciation rate on capital per year
         self._gama = .300 # Capital elasticity in production function
         self._q0 = 61.1 # 2005 world gross output trill 2005 US dollars
@@ -18,7 +18,7 @@ class diceParams(object):
         ## Emissions
         self._sig0 = .13418 # CO2-equivalent emissions-GNP ratio 2005 (effectively intensity)
         self._gsigma = -.0730 # Initial growth of sigma per decade
-        self.dsig = .003 # Decline rate of decarbonization per decade
+        self.dsig = .3 # Decline rate of decarbonization per decade
         self.dsig2 = .000 # Quadratic term in decarbonization
         self._eland0 = 1.1000 # Carbon emissions from land 2005 (GtC per decade)
         self._e2005 = 84.1910 # Year 2005 Emissions

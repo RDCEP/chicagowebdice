@@ -121,7 +121,7 @@ class dice2007(diceParams):
         -------
         array : ga(0) * exp(-dela * 10 * t)
         """
-        return self._ga0 * np.exp(-self.dela * 10 * self.t0)
+        return self._ga0 * np.exp(-(self.dela/100.) * 10 * self.t0)
     @property
     def gsig(self):
         """
@@ -129,9 +129,9 @@ class dice2007(diceParams):
         ...
         Returns
         -------
-        array : gsigma * exp(-disg * 10 * t - disg2 * 10 * t^2)
+        array : gsigma * exp(-dsig * 10 * t - disg2 * 10 * t^2)
         """
-        return self._gsigma * np.exp(-self.dsig * 10 * self.t0 - self.dsig2 *
+        return self._gsigma * np.exp(-(self.dsig/100) * 10 * self.t0 - self.dsig2 *
                                      10 * (self.t0 ** 2))
     @property
     def gcost1(self):
