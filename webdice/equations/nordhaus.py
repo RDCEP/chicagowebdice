@@ -39,7 +39,7 @@ class Loop(object):
         return gross_output - gross_output / (1 + temp_atmosphere * aa[0] + aa[1] * temp_atmosphere**aa[2])
     def abatement(self, gross_output, miu, gcost1, expcost2, partfract):
         """Lambda, Abatement costs, trillions $USD"""
-        return partfract**(1-expcost2) * gcost1 * (miu**expcost2)
+        return partfract**(1-expcost2) * gcost1 * miu**expcost2
     def output(self, gross_output, damage, abatement):
         return (gross_output - damage) - gross_output * abatement
     def investment(self, savings, output):
@@ -50,7 +50,7 @@ class Loop(object):
         return output - (savings * output)
     def consumption_percapita(self, consumption, l):
         """c, Per capita consumption, thousands $USD"""
-        return (consumption / l) * 1000
+        return 1000 * consumption / l
     def utility(self, consumption_percapita, elasmu, l):
         """U, Period utility function"""
         return (1 / (1 - elasmu)) * consumption_percapita**(1-elasmu) + 1

@@ -37,12 +37,12 @@ class Loop(object):
         return temp_lower + c[3] * (temp_atmosphere - temp_lower)
     def damage(self, gross_output, temp_atmosphere, aa):
         """Omega, Damage, trillions $USD"""
-        return 1/( 1 + aa[0] * temp_atmosphere**aa[2])
+        return 1 / (1 + aa[0] * temp_atmosphere**aa[2])
     def abatement(self, gross_output, miu, gcost1, expcost2, partfract):
         """Lambda, Abatement costs, trillions $USD"""
-        return partfract**(1-expcost2) * gcost1 * (miu**expcost2)
+        return partfract**(1-expcost2) * gcost1 * miu**expcost2
     def output(self, gross_output, damage, abatement):
-        return gross_output * damage * (1-abatement)
+        return gross_output * damage * (1 - abatement)
     def investment(self, savings, output):
         """I, Investment, trillions $USD"""
         return savings * output
