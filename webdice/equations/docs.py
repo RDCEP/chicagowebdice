@@ -28,7 +28,7 @@ class Loop(object):
         return b[1][2] * mass_upper + b[2][2] * mass_lower
     def forcing(self, fco22x, mass_atmosphere, matPI, forcoth, ma_next):
         """F, Forcing, W/m^2"""
-        return fco22x * np.log2(mass_atmosphere/matPI) + forcoth
+        return fco22x * np.log(mass_atmosphere/matPI) + forcoth
     def temp_atmosphere(self, temp_atmosphere, temp_lower, forcing, lam, c):
         """T_AT, Temperature of atmosphere, degrees C"""
         return temp_atmosphere + c[0] * (forcing - lam * temp_atmosphere - c[2] * (temp_atmosphere - temp_lower))
