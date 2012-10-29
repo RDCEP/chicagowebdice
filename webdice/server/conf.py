@@ -274,7 +274,7 @@ def tabs_html():
                             default, machine_name, disabled)
                     else:
                         unit = parameter['unit']
-                        html += '<span class="label">%s%s</span></label> <input name="%s" %s ' % (
+                        html += '<span class="label"><span class="label-number">%s</span><span>%s</span></span></label> <input name="%s" %s ' % (
                             default, unit, machine_name, disabled)
                     html += 'type="range" min="%s" max="%s" step="%s" value="%s" data-prec="%s"/>\n' % (
                         min, max, step, default, precision)

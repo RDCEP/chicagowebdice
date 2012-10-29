@@ -707,11 +707,11 @@
 		$('input[type=range]', form).change(function() {
 			/*
 			 *Here is where we update the label next to the range slider when the user
-			 *drags it. We first round this value to a specified number of declimal places,
+			 *drags it. We first round this value to a specified number of decimal places,
 			 *then set the label to that value.
 			*/
 			var value = parseFloat(this.value).toFixed(this.getAttribute("data-prec"));
-            $(this).prevAll('label').children('span.label').text(value);
+            $(this).prevAll('label').children('span.label').children('.label-number').text(value);
 		});
 		
 		/* 
