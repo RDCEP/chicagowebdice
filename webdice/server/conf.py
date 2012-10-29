@@ -270,7 +270,7 @@ def tabs_html():
                     tickMarkLeftWithUnit = '%i%%' % tickMarkLeft
                     try: parameter['unit']
                     except:
-                        html += '<span class="label">%s</span></label> <input name="%s" %s ' % (
+                        html += '<span class="label"><span class="label-number">%s</span></span></label> <input name="%s" %s ' % (
                             default, machine_name, disabled)
                     else:
                         unit = parameter['unit']

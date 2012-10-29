@@ -176,9 +176,9 @@ class dice2007(diceParams):
         """
         return np.concatenate((
             np.linspace(0, 0, 5),
-            np.linspace(self.e2050, self.e2050, 5),
-            np.linspace(self.e2100, self.e2100, 5),
-            np.linspace(self.e2150, self.e2150, 45),
+            np.linspace(self.e2050, self.e2050, 5) / 100,
+            np.linspace(self.e2100, self.e2100, 5) / 100,
+            np.linspace(self.e2150, self.e2150, 45) / 100,
             ))
     @property
     def partfract(self):
