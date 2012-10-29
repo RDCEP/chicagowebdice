@@ -63,6 +63,6 @@ class Loop(object):
         return -np.sum(utility * rr)
     def miu(self, emissions_industrial, ecap, _e2005, sigma, gross_output):
         """mu, Emissions reduction rate"""
-        if emissions_industrial > (_e2005 * ecap):
+        if emissions_industrial < (_e2005 * ecap):
             return 0.
         else: return 1 - ((emissions_industrial * ecap) / (sigma * gross_output))
