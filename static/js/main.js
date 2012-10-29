@@ -5,10 +5,11 @@
 		[ 230, 155, 56 ], [ 69, 129, 142 ], [ 60, 120, 216 ]
 	];
 	
-	var numberOfStepsInSimulation = 20,
+	var numberOfStepsInSimulation = 60,
+        numberOfStepsInGraphs = 20,
         yearsInStep = 10,
         startYear = 2005,
-	    endYear = startYear + ((numberOfStepsInSimulation-1) * yearsInStep),
+	    endYear = startYear + ((numberOfStepsInGraphs-1) * yearsInStep),
         colorsUsed = parseInt(Math.random() * niceColors.length),
 	    numberOfRunsInProgress = 0,
         color;
@@ -102,7 +103,7 @@
 		};
 		
 		var mapIndexToYear = function(index) {
-			return (index / (numberOfStepsInSimulation - 1)) * (endYear - startYear) + startYear;
+			return (index / (numberOfStepsInGraphs - 1)) * (endYear - startYear) + startYear;
 		};
 		
 		var formatColumnOfDataTable = function(table, columnID, format, unit) {
@@ -145,7 +146,7 @@
 					
 					data.setCell(j, getNumberOfMeasurements() * nextRun + i + 1, value);
 				}
-				
+
 				formatMeasurement(nextRun, i, measurement.format, unit);
 			}
 			
@@ -155,7 +156,7 @@
 			runsBeingDisplayed.push(runObject);
 			
 			updateAllData();
-			
+
 			return runObject;
 		};
 		
@@ -237,7 +238,7 @@
 				}
 				
 				view.setColumns(visibleColumns);
-				
+				view.setRows(0,numberOfStepsInGraphs-1);
 				updateViewport();
 			};
 			
@@ -348,7 +349,7 @@
 						var columnX = i * getNumberOfMeasurements() + XMeasurementIndex + 1;
 					var columnY = i * getNumberOfMeasurements() + YMeasurementIndex + 1;
 					
-					for (var j = 0; j < numberOfStepsInSimulation; j++) {
+					for (var j = 0; j < numberOfStepsInGraphs; j++) {
 						var rows = [ ];
 						var y = parseInt(mapIndexToYear(j));
 						var isPossibleYear = (j == 0 || ((j % 20) == 0) || j == 59)
