@@ -683,7 +683,10 @@
 						colorSlab.style.borderColor = darkenColorSlightly(runObject.color);
 						colorSlab.setAttribute('class', 'slab');
 					
-						createdLABEL.appendChild(colorSlab);
+						$(createdLABEL).append(colorSlab).each(function() {
+                            $('html, body').animate({scrollTop:$(document).height()}, 'slow');
+                            return false;
+                        });
 					},
 					error : function(xhr, textStatus, errorType) {
 						textNode.nodeValue = "Model Run Failed!";
