@@ -3,7 +3,7 @@
 <head>
   <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
   <title>RDCEP :: WebDICE</title>
-  <link rel="stylesheet" href="/static/css/styles.css" type="text/css" media="screen" title="Default Stylesheet"/>
+  <link rel="stylesheet" href="/static/css/styles.css?{{ now }}" type="text/css" media="screen" title="Default Stylesheet"/>
   <link rel="stylesheet" type="text/css" media="screen, projection" href="/static/css/fd-slider.min.css" />
   <script src="/static/js/fd-slider.min.js"></script>
   <script src="/static/js/jquery.min.js"></script>
