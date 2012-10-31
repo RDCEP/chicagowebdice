@@ -326,12 +326,31 @@ parameters:
     id: run-opt
 
 measurements:
-  - name: Income per Capita
+  - name: Consumption per Capita
     machine_name: consumption_percapita
     unit: $ / Person / Year (1000 $USD)
     description: Global average GDP per capita
     format: "$#.##"
     location: topright
+  - name: Total Consumption
+    machine_name: consumption
+    unit: $ / Year (trillions $USD)
+  - name: Abatement
+    machine_name: abatement
+    unit: $ / Year (trillions $USD)
+  - name: Damages
+    machine_name: damage
+    unit: $ / Year (trillions $USD)
+  - name: Total Factor Productivity
+    machine_name: al
+  - name: Emissions Control Rate
+    machine_name: miu
+  - name: Clean Energy Costs
+    machine_name: gcost1
+    unit: $ / ton of CO2
+  - name: Carbon Intensity
+    machine_name: sigma
+    unit: tons of CO2 / 1000 $USD
   - name: Capital Stock
     machine_name: capital
     unit: Trillions $USD
