@@ -223,6 +223,11 @@ class dice2007(diceParams):
             self.gross_output[i] = self.eq.gross_output(
                 self.al[i], self.capital[i], self._gama, self.l[i]
             )
+            if i > 0:
+                self.miu[i] = self.eq.miu(
+                    self.emissions_industrial[i-1], self.ecap[i-1], self._e2005,
+                    self.sigma[i], self.gross_output[i]
+                )
             self.emissions_industrial[i] = self.eq.emissions_industrial(
                 self.sigma[i], self.miu[i], self.gross_output[i]
             )
@@ -230,10 +235,6 @@ class dice2007(diceParams):
                 self.emissions_industrial[i], self.etree[i]
             )
             if i > 0:
-                self.miu[i] = self.eq.miu(
-                    self.emissions_industrial[i-1], self.ecap[i-1], self._e2005,
-                    self.sigma[i], self.gross_output[i]
-                )
                 self.carbon_emitted[i] = (
                     self.carbon_emitted[i-1] + self.emissions_total[i]
                 )
