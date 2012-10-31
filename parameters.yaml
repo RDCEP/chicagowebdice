@@ -122,22 +122,23 @@ advanced_help: >
   ## WebDICE Documentation [Large Version]
 
 parameters:
-  - name: How much will temperatures go up?
+  - name: "Climate sensitivity: How much will temperatures go up?"
     machine_name: t2xco2
     tab: Basic
     section: Your beliefs about the climate and the future
     min: 1
-    max: 7
+    max: 5
     step: 0.5
     default: 3.0
     precision: 1
-    description: Temperature increase in degrees C from doubling of atmospheric CO2 
-  - name: How large will the harms be?
+    description: Temperature increase in degrees C from doubling of atmospheric CO2
+    unit: °C
+  - name: "Exponent of damage function: How large will the harms be?"
     machine_name: a3
     tab: Basic
     section: Your beliefs about the climate and the future
     min: 1
-    max: 3
+    max: 4
     step: 0.5
     default: 2.0
     precision: 1
@@ -146,52 +147,57 @@ parameters:
     machine_name: dela
     tab: Basic
     section: Your beliefs about the climate and the future
-    min: 0.0005
-    max: 0.015
-    step: 0.0005
-    default: 0.0010
-    precision: 4
+    min: 0.05
+    max: 1.5
+    step: 0.05
+    default: 0.10
+    precision: 2
     description: Decline in the rate of growth in productivity over time
-  - name: How much more energy efficient will we be?
+    unit: "%"
+  - name: Change in Energy intensity (higher number means more energy intensive)
     tab: Basic
     section: Your beliefs about the climate and the future
     machine_name: dsig
-    default: 0.003
-    min: 0
-    max: 0.06
-    step: 0.001
-    precision: 3
+    default: 0.3
+    min: 0.0
+    max: 6.0
+    step: 0.1
+    precision: 1
     description: Rate of decline in energy use per $ of GDP
+    unit: "%"
   - name: 2050
     tab: Basic
     machine_name: e2050
     section: "Simulated climate treaty: Choose limitations on emissions (as a percent of 2005 emissions):"
-    min: 0.00
-    max: 1.00
-    step: 0.10
-    default: 0.00
-    precision: 2
+    min: 0
+    max: 100
+    step: 10
+    default: 0
+    precision: 0
     description: The mandated decrease in emissions by 2050 as a share of 2005 year emissions.
+    unit: "%"
   - name: 2100
     tab: Basic
     machine_name: e2100
     section: "Simulated climate treaty: Choose limitations on emissions (as a percent of 2005 emissions):"
-    min: 0.00
-    max: 1.00
-    step: 0.10
-    default: 0.00
-    precision: 2
+    min: 0
+    max: 100
+    step: 10
+    default: 0
+    precision: 0
     description: The mandated decrease in emissions by 2100 as a share of 2005 year emissions.
+    unit: "%"
   - name: 2150
     tab: Basic
     machine_name: e2150
     section: "Simulated climate treaty: Choose limitations on emissions (as a percent of 2005 emissions):"
-    min: 0.00
-    max: 1.00
-    step: 0.10
-    default: 0.00
-    precision: 2
+    min: 0
+    max: 100
+    step: 10
+    default: 0
+    precision: 0
     description: The mandated decrease in emissions by 2150 as a share of 2005 year emissions.
+    unit: "%"
   - name: Marginal cost of abatement
     tab: Advanced
     section: Costs of emissions control
@@ -212,6 +218,7 @@ parameters:
     step: 0.05
     precision: 2
     description: Rate of decline in costs of reduction emissions
+    unit: "%"
   - name: Ratio of current to future clean energy costs
     tab: Advanced
     section: Costs of emissions control
@@ -232,6 +239,7 @@ parameters:
     default: 8600
     precision: 0
     description: Number, in millions, that the population grows asymptotically towards
+    unit: " billions"
   - name: Depreciation rate
     tab: Advanced
     section: Additional Parameters
@@ -242,6 +250,7 @@ parameters:
     step: 0.01
     precision: 2
     description: Rate of depreciation per year
+    unit: "%"
   - name: Savings rate
     tab: Advanced
     section: Additional Parameters
@@ -252,6 +261,7 @@ parameters:
     step: 0.05
     precision: 2
     description: Savings are per year
+    unit: "%"
   - name: Fossil fuel reserves
     tab: Advanced
     section: Additional Parameters
@@ -262,6 +272,7 @@ parameters:
     default: 6000
     precision: 0
     description: Fossil fuels remaining, measured in CO2 emissions
+    unit: " Gt&nbsp;C"
   - name: Carbon cycle
     tab: Advanced
     machine_name: oceanmodel
@@ -270,7 +281,7 @@ parameters:
     disabled: true
     values:
       - name: DICE
-        machine_name: dice
+        machine_name: dice_carbon
   - name: Damages model
     tab: Advanced
     machine_name: damages_model
@@ -314,33 +325,65 @@ parameters:
     machine_name: run-opt
     id: run-opt
 
-
 measurements:
-  - name: Income per Capita
-    machine_name: consumptionpercapita
-    unit: $ per Person per Year
+  - name: Consumption per Capita
+    machine_name: consumption_percapita
+    unit: $ / Person / Year (1000 $USD)
     description: Global average GDP per capita
     format: "$#.##"
     location: topright
-  - name: Atmospheric Temperature Increase
-    machine_name: tempAtmosphere
-    unit: °C from 1900
-    description: Projected increases in global average temperatures compared to pre-industrial temperatures
-    location: topleft
-  - name: Carbon Mass in Atmosphere
-    machine_name: massAtmosphere
-    unit: Gt of Carbon
-    description: The projected concentration of carbon in the atmosphere.
-    location: bottomleft
+  - name: Total Consumption
+    machine_name: consumption
+    unit: $ / Year (trillions $USD)
+  - name: Abatement
+    machine_name: abatement
+    unit: $ / Year (trillions $USD)
+  - name: Damages
+    machine_name: damage
+    unit: $ / Year (trillions $USD)
+  - name: Total Factor Productivity
+    machine_name: al
+  - name: Emissions Control Rate
+    machine_name: miu
+  - name: Clean Energy Costs
+    machine_name: gcost1
+    unit: $ / ton of CO2
+  - name: Carbon Intensity
+    machine_name: sigma
+    unit: tons of CO2 / 1000 $USD
+  - name: Capital Stock
+    machine_name: capital
+    unit: Trillions $USD
   - name: Total Emissions per Year
-    machine_name: emissionsTotal
-    unit: Gt Carbon / 10 yr
+    machine_name: emissions_total
+    unit: Gt of Carbon / 10 yr
     description: Projected path of annual future carbon emissions
     location: bottomright
   - name: Industrial Emissions
-    machine_name: emissionsIndustrial
-    unit: Gt Carbon
-
+    machine_name: emissions_industrial
+    unit: Gt of Carbon
+  - name: Total Carbon Emitted
+    machine_name: carbon_emitted
+    unit: Gt of Carbon
+  - name: Carbon Mass in Atmosphere
+    machine_name: mass_atmosphere
+    unit: Gt of Carbon
+    description: The projected concentration of carbon in the atmosphere.
+    location: bottomleft
+  - name: Carbon Mass in Upper Oceans
+    machine_name: mass_upper
+    unit: Gt of Carbon
+  - name: Carbon Mass in Lower Oceans
+    machine_name: mass_lower
+    unit: Gt of Carbon
+  - name: Atmospheric Temperature Increase
+    machine_name: temp_atmosphere
+    unit: °C from 1900
+    description: Projected increases in global average temperatures compared to pre-industrial temperatures
+    location: topleft
+  - name: Lower Ocean Temperature Increase
+    machine_name: temp_lower
+    unit: °C from 1900
 
 questions:
   - question: What is the answer to the ultimate question, of life, the universe, and everything?
