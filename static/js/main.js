@@ -618,33 +618,35 @@
 					}
 					
 					if (!areEqual) {
-						var description = $(this.parentNode).remove('.label').children('label').html().trim();
+//						var description = $(this.parentNode).remove('.label').children('label').html().trim();
+						var description = $(this.parentNode).children('label').attr('title').trim();
 						var heading = $(this.parentNode.parentNode.parentNode).prev('h2').first().text();
-						
-						changes.push([ heading, description, changedValue, defaultValue, deviation ]);
+
+                        changes.push([ heading, description, changedValue, defaultValue, deviation ]);
 					}
 				});
 			
 				changes.sort(function(a, b) { return b[4] - a[4]; });
-			
+
 				var runTextualDescription = "Run Parameters:"; //This is going to be the tooltip
 				
 				for (var i = 0; i < changes.length; i++) {
 					var change = changes[i];
 				
-					runTextualDescription += "\n[" + change[0] + "] " + change[1] + ": " + change[2];
+					runTextualDescription += " [" + change[0] + "] " + change[1] + ": " + change[2];
 				}
 			
-				if (changes.length == 0)
+				if (changes.length == 0) {
 					runTextualDescription += " (default parameters)";
-			
+                }
+
 				var createdLI = document.createElement('li');
 				var createdLABEL = document.createElement('label');
 				var progressIMG = document.createElement('img');
 				var textNode = document.createTextNode("Executing run...");
-			
+
 				createdLI.setAttribute('title', runTextualDescription);
-			
+
 				progressIMG.setAttribute('src', '/static/images/progress.gif');
 				createdLI.appendChild(createdLABEL);
 				createdLABEL.appendChild(textNode);
