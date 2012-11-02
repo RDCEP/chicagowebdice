@@ -1,8 +1,8 @@
 import numpy as np
-from params import diceParams
+from params import Dice2007Params
 from equations import nordhaus, matlab, docs
 
-class dice2007(diceParams):
+class Dice2007(Dice2007Params):
     """Variables, parameters, and step function for DICE 2007.
     ...
     Attributes
@@ -52,8 +52,8 @@ class dice2007(diceParams):
             self.eq = matlab.Loop()
         elif eq == 'docs':
             self.eq = docs.Loop()
-        diceParams.__init__(self)
-        self.update_exos()
+        Dice2007Params.__init__(self)
+        self.p = Dice2007Params()
 #    	if time_travel:
 #            self.eq.forcing = excel.ExcelLoop.forcing
     @property
@@ -91,7 +91,7 @@ class dice2007(diceParams):
         -------
         array : [a1, a2, a3]
         """
-        return np.array([self.a1, self.a2, self.a3])
+        return np.array([self.a1, self.a2, self.a3.value])
     @property
     def gfacpop(self):
         """
@@ -112,7 +112,7 @@ class dice2007(diceParams):
         -------
         array : (exp(pop(0) * t) - 1) / exp(gpop(0) * t)
         """
-        return self._pop0 * (1 - self.gfacpop) + self.gfacpop * self.popasym
+        return self._pop0 * (1 - self.gfacpop) + self.gfacpop * self.popasym.value
     @property
     def ga(self):
         """
@@ -122,7 +122,7 @@ class dice2007(diceParams):
         -------
         array : ga(0) * exp(-dela * 10 * t)
         """
-        return self._ga0 * np.exp(-(self.dela/100.) * 10 * self.t0)
+        return self._ga0 * np.exp(-(self.dela.value/100.) * 10 * self.t0)
     @property
     def gsig(self):
         """
@@ -132,7 +132,7 @@ class dice2007(diceParams):
         -------
         array : gsigma * exp(-dsig * 10 * t - disg2 * 10 * t^2)
         """
-        return self._gsigma * np.exp(-(self.dsig/100) * 10 * self.t0 - self.dsig2 *
+        return self._gsigma * np.exp(-(self.dsig.value/100) * 10 * self.t0 - self.dsig2 *
                                      10 * (self.t0 ** 2))
     @property
     def gcost1(self):
@@ -143,8 +143,8 @@ class dice2007(diceParams):
         -------
         array : (pback * sigma(t) / expcost2) * ((backrat - 1 + exp(-gback * t)) / backrat
         """
-        return (self._pback * self.sigma / self.expcost2) * (
-            (self.backrat - 1 + np.exp(-self.gback * self.t0)) / self.backrat)
+        return (self._pback * self.sigma / self.expcost2.value) * (
+            (self.backrat.value - 1 + np.exp(-self.gback.value * self.t0)) / self.backrat.value)
     @property
     def etree(self):
         """
@@ -165,7 +165,7 @@ class dice2007(diceParams):
         array : 1 / (1 + prstp)^t
         """
 #        return 1 / ((1 + self.prstp)**(10*self.t0))
-        return 1 / ((1 + self.prstp)**self.t0)
+        return 1 / ((1 + self.prstp.value)**self.t0)
     @property
     def ecap(self):
         """
@@ -177,9 +177,9 @@ class dice2007(diceParams):
         """
         return np.concatenate((
             np.linspace(0, 0, 5),
-            np.linspace(self.e2050, self.e2050, 5) / 100,
-            np.linspace(self.e2100, self.e2100, 5) / 100,
-            np.linspace(self.e2150, self.e2150, 45) / 100,
+            np.linspace(self.e2050.value, self.e2050.value, 5) / 100,
+            np.linspace(self.e2100.value, self.e2100.value, 5) / 100,
+            np.linspace(self.e2150.value, self.e2150.value, 45) / 100,
             ))
     @property
     def partfract(self):
@@ -209,6 +209,9 @@ class dice2007(diceParams):
             self.fex0 + .1 * (self.fex1 - self.fex0) * np.arange(11),
             self.fex0 + np.linspace(.36,.36, 49),
             ))
+    @property
+    def lam(self):
+        return self.fco22x / self.t2xco2.value
 
     def loop(self):
         """
@@ -218,7 +221,7 @@ class dice2007(diceParams):
             if i > 0:
                 self.sigma[i] = self.sigma[i-1] / (1 - self.gsig[i])
                 self.al[i] = self.al[i-1] / (1 - self.ga[i-1])
-                self.capital[i] = self.eq.capital(self.capital[i-1], self.dk,
+                self.capital[i] = self.eq.capital(self.capital[i-1], self.dk.value,
                     self.investment[i-1])
             self.gross_output[i] = self.eq.gross_output(
                 self.al[i], self.capital[i], self._gama, self.l[i]
@@ -277,19 +280,22 @@ class dice2007(diceParams):
             )
             self.abatement[i] = self.eq.abatement(
                 self.gross_output[i], self.miu[i], self.gcost1[i],
-                self.expcost2, self.partfract[i]
+                self.expcost2.value, self.partfract[i]
             )
             self.output[i] = self.eq.output(self.gross_output[i],
                                             self.damage[i], self.abatement[i])
-            self.investment[i] = self.eq.investment(self.savings, self.output[i])
-            self.consumption[i] = self.eq.consumption(self.output[i], self.savings)
+            if i == 0:
+                self.investment[i] = self.savings.value* self._q0
+            else:
+                self.investment[i] = self.eq.investment(self.savings.value, self.output[i])
+            self.consumption[i] = self.eq.consumption(self.output[i], self.savings.value)
             self.consumption_percapita[i] = self.eq.consumption_percapita(
                 self.consumption[i], self.l[i]
             )
             self.utility[i] = self.eq.utility(self.consumption_percapita[i],
-                                              self.elasmu, self.l[i])
+                                              self.elasmu.value, self.l[i])
             if i > 0:
-                self.pref_fac[i] = self.eq.preference_factor(self.prstp,
+                self.pref_fac[i] = self.eq.preference_factor(self.prstp.value,
                                                              self.pref_fac[i-1])
             self.utility_discounted[i] = self.eq.utility_discounted(
                 self.utility[i], self.pref_fac[i], self.l[i]
@@ -332,23 +338,23 @@ if __name__ == '__main__':
     args = parser.parse_args()
     if args.equation:
         if args.equation == 'matlab':
-            d = [dice2007(eq='matlab')]
+            d = [Dice2007(eq='matlab')]
         elif args.equation == 'docs':
-            d = [dice2007(eq='docs')]
+            d = [Dice2007(eq='docs')]
         elif args.equation == ('excel' or 'nordhaus'):
-            d = [dice2007()]
+            d = [Dice2007()]
         elif args.equation == 'all':
             d = [
-                dice2007(),
-                dice2007(eq='matlab'),
-                dice2007(eq='docs'),
+                Dice2007(),
+                Dice2007(eq='matlab'),
+                Dice2007(eq='docs'),
             ]
         else:
             d = []
             for e in args.equation.split(','):
-                d.append(dice2007(eq=e))
+                d.append(Dice2007(eq=e))
     else:
-        d = [dice2007()]
+        d = [Dice2007()]
     for m in d:
         m.loop()
     try:

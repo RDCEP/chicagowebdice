@@ -3,7 +3,7 @@ from datetime import datetime
 import bottle
 from bottle import route, request, default_app, template, response
 from beaker.middleware import SessionMiddleware
-from dice import dice2007
+from dice import Dice2007
 from server.conf import *
 
 bottle.TEMPLATE_PATH = ['../templates/',]
@@ -19,7 +19,7 @@ session_opts = {
 
 def validate_number(n):
     """Currently unused. This is a stub for number validation
-    before passing values to the dice2007 object."""
+    before passing values to the Dice2007 object."""
     try: float(n)
     except ValueError: raise Exception('Input needs to be a number.')
     else: return n
@@ -30,14 +30,14 @@ def do_session(request, newdice=False):
     ...
     Keyword Arguments:
     newdice: obj
-        A dice2007 object.
+        A Dice2007 object.
     """
     s = request.environ.get('beaker.session')
     if newdice:
         dice = newdice
         s['dice'] = dice
     if 'dice' not in s: 
-        dice = dice2007()
+        dice = Dice2007()
         s['dice'] = dice
     return s
 
@@ -58,7 +58,7 @@ def matlab(equations):
         page()
     ...
     """
-    dice = dice2007(eq=equations)
+    dice = Dice2007(eq=equations)
     do_session(request, newdice=dice)
     return page()
 
@@ -107,8 +107,7 @@ def graphs():
             try: a = getattr(thisdice, p)
             except AttributeError: pass
             else:
-                setattr(thisdice, p, float(getattr(form, p)))
-    thisdice.update_exos()
+                a.value = float(getattr(form, p))
     thisdice.loop()
     return thisdice.format_output()
 
