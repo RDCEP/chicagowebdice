@@ -168,7 +168,7 @@ parameters:
   - name: 2050
     tab: Basic
     machine_name: e2050
-    section: "Simulated climate treaty: Choose limitations on emissions (as a percent of 2005 emissions):"
+    section: "Simulated climate treaty <input id='treaty-switch' type='checkbox'/>: Choose limitations on emissions (as a percent of 2005 emissions):"
     min: 0
     max: 100
     step: 10
@@ -179,7 +179,7 @@ parameters:
   - name: 2100
     tab: Basic
     machine_name: e2100
-    section: "Simulated climate treaty: Choose limitations on emissions (as a percent of 2005 emissions):"
+    section: "Simulated climate treaty <input id='treaty-switch' type='checkbox'/>: Choose limitations on emissions (as a percent of 2005 emissions):"
     min: 0
     max: 100
     step: 10
@@ -190,7 +190,7 @@ parameters:
   - name: 2150
     tab: Basic
     machine_name: e2150
-    section: "Simulated climate treaty: Choose limitations on emissions (as a percent of 2005 emissions):"
+    section: "Simulated climate treaty <input id='treaty-switch' type='checkbox'/>: Choose limitations on emissions (as a percent of 2005 emissions):"
     min: 0
     max: 100
     step: 10

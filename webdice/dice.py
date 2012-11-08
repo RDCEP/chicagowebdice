@@ -176,7 +176,7 @@ class Dice2007(Dice2007Params):
         array
         """
         return np.concatenate((
-            np.linspace(0, 0, 5),
+            np.linspace(5., 5., 5),
             np.linspace(self.e2050.value, self.e2050.value, 5) / 100,
             np.linspace(self.e2100.value, self.e2100.value, 5) / 100,
             np.linspace(self.e2150.value, self.e2150.value, 45) / 100,
@@ -227,10 +227,12 @@ class Dice2007(Dice2007Params):
                 self.al[i], self.capital[i], self._gama, self.l[i]
             )
             if i > 0:
-                self.miu[i] = self.eq.miu(
-                    self.emissions_industrial[i-1], self.ecap[i-1], self._e2005,
-                    self.sigma[i], self.gross_output[i]
-                )
+                if self.treaty_switch.value:
+                    self.miu[i] = self.eq.miu(
+                        self.emissions_industrial[i-1], self.ecap[i-1], self._e2005,
+                        self.sigma[i], self.gross_output[i]
+                    )
+                else: self.miu[i] = 0.
             self.emissions_industrial[i] = self.eq.emissions_industrial(
                 self.sigma[i], self.miu[i], self.gross_output[i]
             )

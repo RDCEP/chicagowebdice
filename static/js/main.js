@@ -604,7 +604,7 @@
                  *It can be put in a tooltip display when the user hovers over the "run #" in the bottom
                  *left hand corner.
                  */
-                $(form).find('input[type!=submit][type!=reset],select').each(function() {
+                $(form).find('input[type!=submit][type!=reset][type!=checkbox],select').each(function() {
                     if (this.tagName.toLowerCase() == 'select') {
                         var defaultValue = $(this).find('option').first().val().trim()
                         var changedValue = $(this).find('option:checked').first().val().trim()
@@ -728,6 +728,15 @@
             e.preventDefault();
             form.reset();
             $('input[type=range]', form).change();
+        });
+
+        $('#treaty_switch').change(function(e) {
+            $(this).parent('h2').next('ul').children('li').toggleClass('disabled');
+            $(this).parent('h2').next('ul').children('li').children('input').each(function() {
+                var $this = $(this);
+                if ($this.attr('disabled')) $this.removeAttr('disabled');
+                else $this.attr('disabled', 'disabled');
+            });
         });
 
         window.onresize = function() {

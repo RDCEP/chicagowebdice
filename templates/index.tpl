@@ -49,14 +49,14 @@
                   <li><label title="Rate of decline in energy use per $ of GDP" >Change in Energy intensity (higher number means more energy intensive) <span class="label"><span class="label-number">0.3</span><span>%</span></span></label> <input name="dsig"  type="range" min="0.0" max="6.0" step="0.1" value="0.3" data-prec="1"/>
                       <div class="tick-wrap"><span class="tick" style="left:-45%" >&bullet;</span></div></li>
               </ul>
-              <h2>Simulated climate treaty: Choose limitations on emissions (as a percent of 2005 emissions):</h2>
+              <h2>Simulated climate treaty <input type="checkbox" id="treaty_switch" name="treaty_switch" style="width:auto"/>:<br/>Choose limitations on emissions (as a percent of 2005 emissions):</h2>
               <ul>
-                  <li><label title="The mandated decrease in emissions by 2050 as a share of 2005 year emissions." >2050 <span class="label"><span class="label-number">0</span><span>%</span></span></label> <input name="e2050"  type="range" min="0" max="100" step="10" value="0" data-prec="0"/>
-                      <div class="tick-wrap"><span class="tick" style="left:-50%" >&bullet;</span></div></li>
-                  <li><label title="The mandated decrease in emissions by 2100 as a share of 2005 year emissions." >2100 <span class="label"><span class="label-number">0</span><span>%</span></span></label> <input name="e2100"  type="range" min="0" max="100" step="10" value="0" data-prec="0"/>
-                      <div class="tick-wrap"><span class="tick" style="left:-50%" >&bullet;</span></div></li>
-                  <li><label title="The mandated decrease in emissions by 2150 as a share of 2005 year emissions." >2150 <span class="label"><span class="label-number">0</span><span>%</span></span></label> <input name="e2150"  type="range" min="0" max="100" step="10" value="0" data-prec="0"/>
-                      <div class="tick-wrap"><span class="tick" style="left:-50%" >&bullet;</span></div></li>
+                  <li class="disabled"><label title="The mandated decrease in emissions by 2050 as a share of 2005 year emissions." >2050 <span class="label"><span class="label-number">500</span><span>%</span></span></label> <input name="e2050"  type="range" min="0" max="500" step="10" value="500" data-prec="0" disabled="disabled"/>
+                      <div class="tick-wrap"><span class="tick" style="left:50%" >&bullet;</span></div></li>
+                  <li class="disabled"><label title="The mandated decrease in emissions by 2100 as a share of 2005 year emissions." >2100 <span class="label"><span class="label-number">500</span><span>%</span></span></label> <input name="e2100"  type="range" min="0" max="500" step="10" value="500" data-prec="0" disabled="disabled"/>
+                      <div class="tick-wrap"><span class="tick" style="left:50%" >&bullet;</span></div></li>
+                  <li class="disabled"><label title="The mandated decrease in emissions by 2150 as a share of 2005 year emissions." >2150 <span class="label"><span class="label-number">500</span><span>%</span></span></label> <input name="e2150"  type="range" min="0" max="500" step="10" value="500" data-prec="0" disabled="disabled"/>
+                      <div class="tick-wrap"><span class="tick" style="left:50%" >&bullet;</span></div></li>
               </ul>
           </div>
           <div id="tab-advanced" class="tab notselected">
