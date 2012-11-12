@@ -81,17 +81,17 @@ class Dice2007Params(object):
         )
         self.e2050 = DiceWebParam(
             '2050', 'The mandated decrease in emissions by 2050 as a share of 2005 year emissions',
-            treaty, 500, minimum=0, maximum=500, step=10, precision=0,
+            treaty, 100, minimum=0, maximum=100, step=5, precision=0,
             unit='%'
         )
         self.e2100 = DiceWebParam(
             '2100', 'The mandated decrease in emissions by 2100 as a share of 2005 year emissions',
-            treaty, 500, minimum=0, maximum=500, step=10, precision=0,
+            treaty, 100, minimum=0, maximum=100, step=5, precision=0,
             unit='%'
         )
         self.e2150 = DiceWebParam(
             '2150', 'The mandated decrease in emissions by 2150 as a share of 2005 year emissions',
-            treaty, 500, minimum=0, maximum=500, step=10, precision=0,
+            treaty, 100, minimum=0, maximum=100, step=5, precision=0,
             unit='%'
         )
         self.expcost2 = DiceWebParam(

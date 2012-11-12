@@ -71,6 +71,13 @@ class Dice2007(Dice2007Params):
             "tmax", "numScen", "savings", "miu_2005",
         ]
     @property
+    def user_params(self):
+        return [
+            't2xco2', 'a3', 'dela', 'dsig', 'e2050', 'e2100', 'e2150',
+            'popasym', 'dk', 'savings', 'fosslim', 'expcost2', 'gback',
+            'backrat', 'elasmu', 'prstp',
+        ]
+    @property
     def vars(self):
         return [
             'capital', 'gross_output', 'emissions_industrial',
@@ -176,10 +183,10 @@ class Dice2007(Dice2007Params):
         array
         """
         return np.concatenate((
-            np.linspace(5., 5., 5),
-            np.linspace(self.e2050.value, self.e2050.value, 5) / 100,
-            np.linspace(self.e2100.value, self.e2100.value, 5) / 100,
-            np.linspace(self.e2150.value, self.e2150.value, 45) / 100,
+            np.linspace(1., 1., 5),
+            np.linspace(100.-self.e2050.value, 100.-self.e2050.value, 5) / 100,
+            np.linspace(100.-self.e2100.value, 100.-self.e2100.value, 5) / 100,
+            np.linspace(100.-self.e2150.value, 100.-self.e2150.value, 45) / 100,
             ))
     @property
     def partfract(self):
@@ -307,6 +314,9 @@ class Dice2007(Dice2007Params):
         """Output text for Google Visualizer graph functions."""
         #TODO: This is sloppy as shit.
         output = ''
+        for v in self.user_params:
+            vv = getattr(self, v)
+            output += '%s %s\n' % (v, vv.value)
         for v in self.vars:
             vv = getattr(self, v)
             output += '%s %s\n' % (v, ' '.join(map(str, list(vv))))

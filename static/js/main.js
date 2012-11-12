@@ -717,6 +717,9 @@
              *then set the label to that value.
              */
             var value = parseFloat(this.value).toFixed(this.getAttribute("data-prec"));
+            if ($(this).hasClass('reverse')) {
+                value = Math.abs(100 - value);
+            }
             $(this).prevAll('label').children('span.label').children('.label-number').text(value);
         });
 
@@ -728,6 +731,9 @@
             e.preventDefault();
             form.reset();
             $('input[type=range]', form).change();
+            $('.init-disabled').addClass('disabled').children('input').each(function() {
+                    $(this).attr('disabled', 'disabled');
+            });
         });
 
         $('#treaty_switch').change(function(e) {
