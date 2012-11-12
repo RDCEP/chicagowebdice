@@ -106,15 +106,13 @@ def graphs():
         except (KeyError, AttributeError):
             try: a = getattr(thisdice, p)
             except AttributeError: pass
-#            except AttributeError, e: print p, e
             else:
                 try:
                     a.value = float(getattr(form, p))
-                except: print p, getattr(form, p)
+                except ValueError: pass #print p, getattr(form, p)
     if form.treaty_switch == 'on':
         thisdice.treaty_switch.value = True
     else: thisdice.treaty_switch.value = False
-    print thisdice.ecap
     thisdice.loop()
     return thisdice.format_output()
 
