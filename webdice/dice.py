@@ -1,6 +1,6 @@
 import numpy as np
 from params import Dice2007Params
-from equations import nordhaus, matlab, docs
+import equations
 
 class Dice2007(Dice2007Params):
     """Variables, parameters, and step function for DICE 2007.
@@ -46,12 +46,11 @@ class Dice2007(Dice2007Params):
     format_output()
         Output text for Google Visualizer graph functions
     """
-    def __init__(self, eq='nordhaus', time_travel=True):
-        self.eq = nordhaus.Loop()
-        if eq == 'matlab':
-            self.eq = matlab.Loop()
-        elif eq == 'docs':
-            self.eq = docs.Loop()
+    def __init__(self, eq=None, time_travel=True):
+        if eq:
+            self.eq = getattr(equations, eq).Loop()
+        else:
+            self.eq = equations.default.Loop()
         Dice2007Params.__init__(self)
         self.p = Dice2007Params()
 #    	if time_travel:
@@ -336,7 +335,7 @@ if __name__ == '__main__':
     Options are 'nordhaus', 'docs', or 'matlab'. You can select any pair 
     of models by separating them with a comma: e.g. -e excel,matab.
     You can see output from all three models with the option 'all'.
-    Default is 'nordhaus'.
+    Default is 'default'.
     """
     var_help = """
     You can print the following: capital, gross_output, emissions_industrial,
@@ -353,8 +352,8 @@ if __name__ == '__main__':
             d = [Dice2007(eq='matlab')]
         elif args.equation == 'docs':
             d = [Dice2007(eq='docs')]
-        elif args.equation == ('excel' or 'nordhaus'):
-            d = [Dice2007()]
+        elif args.equation == 'nordhaus':
+            d = [Dice2007(eq='nordhaus')]
         elif args.equation == 'all':
             d = [
                 Dice2007(),
