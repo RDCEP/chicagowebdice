@@ -60,7 +60,7 @@ class Dice2007(Dice2007Params):
         return [
             "elasmu", "prstp", "_pop0", "_gpop0", "popasym", "_a0",
             "_ga0", "dela", "dk", "_gama", "_q0", "_k0", "_sig0",
-            "_gsigma", "dsig", "dsig2", "_eland0", "_e2005", "mat2000",
+            "_gsigma", "dsig", "dsig2", "_eland0", "mat2000",
             "mu2000", "ml2000", "matPI", "t2xco2", "fex0", "fex1",
             "tocean0", "tatm0", "fco22x", "a1", "a2", "a3", "b11", "b12",
             "b21", "b22", "b23", "b32", "b33", "c1", "c2", "c3", "c4",
@@ -235,7 +235,8 @@ class Dice2007(Dice2007Params):
             if i > 0:
                 if self.treaty_switch.value:
                     self.miu[i] = self.eq.miu(
-                        self.emissions_industrial[i-1], self.ecap[i-1], self._e2005,
+                        self.emissions_industrial[i-1], self.ecap[i-1],
+                        self.emissions_industrial[0],
                         self.sigma[i], self.gross_output[i]
                     )
                 else: self.miu[i] = 0.

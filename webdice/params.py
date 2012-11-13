@@ -166,7 +166,6 @@ class Dice2007Params(object):
         self._gsigma = -.0730 # Initial growth of sigma per decade
         self.dsig2 = .000 # Quadratic term in decarbonization
         self._eland0 = 1.1000 # Carbon emissions from land 2005 (GtC per decade)
-        self._e2005 = 84.1910 # Year 2005 Emissions
         ## Carbon Cycle
         self.mat2000 = 808.9 # Concentration in atmosphere 2005 (GtC)
         self.mu2000 = 1255. # Concentration in upper strata 2005 (GtC)
