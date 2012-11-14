@@ -346,7 +346,7 @@ measurements:
   - name: Emissions Control Rate
     machine_name: miu
   - name: Clean Energy Costs
-    machine_name: gcost1
+    machine_name: backstop
     unit: $ / ton of CO2
   - name: Carbon Intensity
     machine_name: sigma

@@ -67,7 +67,7 @@ class Dice2007(Dice2007Params):
             "expcost2", "_pback", "backrat", "gback", "limmiu",
             "partfract1", "partfract2", "partfract21", "dpartfract",
             "e2050", "e2100", "e2150", "fosslim", "scale1", "scale2",
-            "tmax", "numScen", "savings", "miu_2005",
+            "tmax", "numScen", "savings", "miu_2005", 'backstop',
         ]
     @property
     def user_params(self):
@@ -85,7 +85,7 @@ class Dice2007(Dice2007Params):
             'temp_lower', 'damage', 'abatement', 'output',
             'investment', 'carbon_emitted', 'consumption',
             'consumption_percapita', 'utility', 'utility_discounted',
-            'al', 'gcost1', 'sigma', 'miu',
+            'al', 'gcost1', 'sigma', 'miu', 'backstop',
         ] 
     @property
     def aa(self):
@@ -140,6 +140,17 @@ class Dice2007(Dice2007Params):
         """
         return self._gsigma * np.exp(-(self.dsig.value/100) * 10 * self.t0 - self.dsig2 *
                                      10 * (self.t0 ** 2))
+    @property
+    def backstop(self):
+        """
+        Backstop price
+        ...
+        Returns
+        -------
+        array : pback * ((backrat - 1 + exp(-gback * t)) / backrat
+        """
+        return self._pback * (
+            (self.backrat.value - 1 + np.exp(-self.gback.value * self.t0)) / self.backrat.value)
     @property
     def gcost1(self):
         """
