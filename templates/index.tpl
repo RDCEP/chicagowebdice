@@ -139,7 +139,10 @@
   </div>
   <div id="four-graphs" class="tab selected"></div>
   <div id="custom-graph" class="tab notselected">
-    <div id="large-graph"></div>
+    <div id="large-graph">
+        <div id="large-graph-chart" style="height:90%;"></div>
+        <div id="large-graph-zoom" style="height:10%;"></div>
+    </div>
     <div id="graph-controls">
       <div>
         <h2>X-Axis</h2>
