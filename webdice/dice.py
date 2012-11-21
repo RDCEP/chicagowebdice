@@ -185,8 +185,7 @@ class Dice2007(Dice2007Params):
         -------
         array : 1 / (1 + prstp)^t
         """
-        #        return 1 / ((1 + self.prstp)**(10*self.t0))
-        return 1 / ((1 + self.prstp.value)**self.t0)
+        return 1 / ((1 + self.prstp.value)**(10*self.t0))
     @property
     def ecap(self):
         """
@@ -331,11 +330,8 @@ class Dice2007(Dice2007Params):
             )
             self.utility[i] = self.eq.utility(self.consumption_percapita[i],
                 self.elasmu.value, self.l[i])
-            if i > 0:
-                self.pref_fac[i] = self.eq.preference_factor(self.prstp.value,
-                    self.pref_fac[i-1])
             self.utility_discounted[i] = self.eq.utility_discounted(
-                self.utility[i], self.pref_fac[i], self.l[i]
+                self.utility[i], self.rr[i], self.l[i]
             )
 
     def get_opt_mu(self):
