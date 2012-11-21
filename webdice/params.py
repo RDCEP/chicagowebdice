@@ -215,15 +215,16 @@ class Dice2007Params(object):
         self.miu_2005 = .005 # emission control rate (fraction of uncontrolled emissions)
         self.t0 = np.linspace(0, self.tmax-1, self.tmax)
         self.t1 = self.t0 + 1
-        self.sigma = np.linspace(self._sig0, self._sig0, self.tmax)
-        self.al = np.linspace(self._a0, self._a0, self.tmax)
-        self.capital = np.linspace(self._k0, self._k0, self.tmax)
-        self.output = np.linspace(self._q0, self._q0, self.tmax)
-        self.mass_atmosphere = np.linspace(self.mat2000, self.mat2000, self.tmax)
-        self.mass_upper = np.linspace(self.mu2000, self.mu2000, self.tmax)
-        self.mass_lower = np.linspace(self.ml2000, self.ml2000, self.tmax)
-        self.temp_atmosphere = np.linspace(self.tatm0, self.tatm0, self.tmax)
-        self.temp_lower = np.linspace(self.tocean0, self.tocean0, self.tmax)
+        self.sigma = np.empty(self.tmax); self.sigma[:] = self._sig0
+        self.al = np.empty(self.tmax); self.al[:] = self._a0
+        self.capital = np.empty(self.tmax); self.capital[:] = self._k0
+        self.output = np.empty(self.tmax); self.output[:] = self._q0
+        self.mass_atmosphere = np.empty(self.tmax); self.mass_atmosphere[:] = self.mat2000
+        self.mass_upper = np.empty(self.tmax); self.mass_upper[:] = self.mu2000
+        self.mass_lower = np.empty(self.tmax); self.mass_lower[:] = self.ml2000
+        self.temp_atmosphere = np.empty(self.tmax); self.temp_atmosphere[:] = self.tatm0
+        self.temp_lower = np.empty(self.tmax); self.temp_lower[:] = self.tocean0
+        self.miu = np.empty(self.tmax); self.miu[:] = self.miu_2005
         self.gross_output = np.zeros(self.tmax)
         self.forcing = np.zeros(self.tmax)
         self.emissions_industrial = np.zeros(self.tmax)
@@ -238,5 +239,4 @@ class Dice2007Params(object):
         self.consumption_percapita = np.zeros(self.tmax)
         self.utility = np.zeros(self.tmax)
         self.utility_discounted = np.zeros(self.tmax)
-        self.miu = np.linspace(self.miu_2005, self.miu_2005, self.tmax)
         self.pref_fac = np.ones(self.tmax)
