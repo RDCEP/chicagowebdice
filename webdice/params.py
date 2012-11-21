@@ -213,7 +213,7 @@ class Dice2007Params(object):
         self.tmax = 60 # Time periods, in decades (60 * 10 = 600 years)
         self.numScen = 1 # Number of scenarios to run
         self.miu_2005 = .005 # emission control rate (fraction of uncontrolled emissions)
-        self.t0 = np.linspace(0, self.tmax-1, self.tmax)
+        self.t0 = np.arange(float(self.tmax))
         self.t1 = self.t0 + 1
         self.sigma = np.empty(self.tmax); self.sigma[:] = self._sig0
         self.al = np.empty(self.tmax); self.al[:] = self._a0
