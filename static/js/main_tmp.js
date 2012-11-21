@@ -256,12 +256,10 @@
             var selectLabelsType = document.getElementById('series-labels');
             var previousXAxis = selectXAxis.value;
 
-//            var chart = new google.visualization.LineChart(div);
             var table = null;
-
+            
             //ZOOM
-            var dash = document.getElementById('large-graph');
-            var dashboard = new google.visualization.Dashboard(dash);
+            var dashboard = new google.visualization.Dashboard(div);
             var control = new google.visualization.ControlWrapper({
                 'controlType': 'ChartRangeFilter',
                 'containerId': 'large-chart-zoom',
@@ -274,30 +272,18 @@
                             'chartArea': {'width': '90%'},
                             'hAxis': {'baselineColor': 'none'}
                         },
-                        // Display a single series that shows the closing value of the stock.
-                        // Thus, this view has two columns: the date (axis) and the stock value (line series).
-                        'chartView': {
-                            'columns': [0, 3]
-                        },
                         // 1 day in milliseconds = 24 * 60 * 60 * 1000 = 86,400,000
                         //'minRangeSize': 86400000
-                        'minRangeSize': 31536000000
+                        //'minRangeSize': 31536000000
                     }
                 },
                 // Initial range: 2012-02-09 to 2012-03-20.
-                'state': {'range': {'start': new Date(2005, 1, 1), 'end': new Date(2195, 12,31)}}
+                //'state': {'range': {'start': new Date(2005, 1, 1), 'end': new Date(2195, 12,31)}}
             });
-            //var chart = new google.visualization.ChartWrapper({
+            
             var chart = new google.visualization.ChartWrapper({
                 'chartType': 'LineChart',
                 'containerId': 'large-graph-chart',
-                'options': {
-                    // Use the same chart area width as the control for axis alignment.
-                    //'chartArea': {'height': '80%', 'width': '90%'},
-                    //'hAxis': {'slantedText': false},
-                    //'vAxis': {'viewWindow': {'min': 0, 'max': 2000}},
-                    //'legend': {'position': 'none'}
-                },
                 // Convert the first column from 'date' to 'string'.
                 'view': {
                     'columns': [
@@ -309,6 +295,9 @@
                         }, 1, 2, 3]
                 }
             });
+            chart.setOption('view.columns', [0,1]);
+            dashboard.bind(control, chart);
+            
             //ENDZOOM
 
 
@@ -323,8 +312,7 @@
                 var selectedXOption = $(selectXAxis).find('option:selected').text();
                 var selectedYOption = $(selectYAxis).find('option:selected').text();
 
-                //var options = {
-                chart.options = {
+                var opts = {
                     title : (selectedYOption + ' vs. ' + selectedXOption),
                     width : contentDiv.offsetWidth,
                     height : contentDiv.offsetHeight - 120,
@@ -334,20 +322,18 @@
                     hAxis : { title : selectedXOption, logScale : !!checkedLogarithmicX.checked },
                     vAxis : { title : selectedYOption, logScale : !!checkedLogarithmicY.checked }
                 };
-
+                
                 if (selectXAxis.value == 'year') {
-                    //options.hAxis.format = '####';
-                    chart.options.hAxis.format = '####';
+                    opts.hAxis.format = '####';
                     selectLabelsType.disabled = 'disabled';
                     selectLabelsType.value = 'none';
                 } else {
                     selectLabelsType.disabled = false;
                 }
-
-                //chart.draw(table, options);
-                console.log(chart);
-                dashboard.bind(control, chart);
-                dashboard.draw(table)
+                
+                chart.setOption('options', opts);
+                console.log(table);
+                dashboard.draw()
             };
 
             var updateData = function() {
@@ -462,7 +448,7 @@
                         formatColumnOfDataTable(table, k, measurement.format, measurement.unit);
                     }
                 }
-
+                dashboard.draw(table);
                 updateViewport();
             };
 
@@ -648,8 +634,12 @@
          *It determines the type of input and updates the page accordingly.
          *(This is what runs when the user clicks "run model")
          */
+        $('#run-opt').click(function(){
+            $('#optimize').val('true');
+        });
         var form = document.getElementById('submission');
         form.onsubmit = function(e) {
+            console.log(e);
             e.preventDefault();
             /* We're putting the hackish-equivalent of a try...finally statement here! (Jermey's Safari fix that I accidentally somehow deleted)*/
 
@@ -662,7 +652,7 @@
                  *It can be put in a tooltip display when the user hovers over the "run #" in the bottom
                  *left hand corner.
                  */
-                $(form).find('input[type!=submit][type!=reset][type!=checkbox],select').each(function() {
+                $(form).find('input[type!=submit][type!=reset][type!=checkbox][type!=hidden],select').each(function() {
                     if (this.tagName.toLowerCase() == 'select') {
                         var defaultValue = $(this).find('option').first().val().trim()
                         var changedValue = $(this).find('option:checked').first().val().trim()
@@ -676,8 +666,9 @@
                     }
 
                     if (!areEqual) {
-//						var description = $(this.parentNode).remove('.label').children('label').html().trim();
                         var description = $(this.parentNode).children('label').attr('title').trim();
+//						var description = $(this.parentNode).remove('.label').children('label').html().trim();
+//                        var description = $(this.parentNode).children('label').attr('title').trim();
                         var heading = $(this.parentNode.parentNode.parentNode).prev('h2').first().text();
 
                         changes.push([ heading, description, changedValue, defaultValue, deviation ]);
@@ -720,6 +711,7 @@
                     url : '/run',
                     data : data,
                     success : function(data, textStatus, xhr) {
+                        $('#optimize').val('false');
                         var runObject = addRunFromCSV("Run #" + (getNumberOfRuns() + 1),
                             generateNextColor(), data, changes);
                         numberOfRunsInProgress--;

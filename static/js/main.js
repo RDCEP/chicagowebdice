@@ -590,6 +590,9 @@
          *It determines the type of input and updates the page accordingly.
          *(This is what runs when the user clicks "run model")
          */
+        $('#run-opt').click(function(){
+            $('#optimize').val('true');
+        });
         var form = document.getElementById('submission');
         form.onsubmit = function(e) {
             e.preventDefault();
@@ -604,7 +607,7 @@
                  *It can be put in a tooltip display when the user hovers over the "run #" in the bottom
                  *left hand corner.
                  */
-                $(form).find('input[type!=submit][type!=reset][type!=checkbox],select').each(function() {
+                $(form).find('input[type!=submit][type!=reset][type!=checkbox][type!=hidden],select').each(function() {
                     if (this.tagName.toLowerCase() == 'select') {
                         var defaultValue = $(this).find('option').first().val().trim()
                         var changedValue = $(this).find('option:checked').first().val().trim()
@@ -662,6 +665,7 @@
                     url : '/run',
                     data : data,
                     success : function(data, textStatus, xhr) {
+                        $('#optimize').val('false');
                         var runObject = addRunFromCSV("Run #" + (getNumberOfRuns() + 1),
                             generateNextColor(), data, changes);
                         numberOfRunsInProgress--;

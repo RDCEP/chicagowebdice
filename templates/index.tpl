@@ -118,7 +118,8 @@
               </ul>
               <h2>Run Model</h2>
               <ul>
-                  <li><label >Run optimization </label><input type="submit" id="run-opt" value="Run"/></li>
+                  <li><label >Run optimization </label><input type="submit" id="run-opt" value="Run"/>
+                  <input type="hidden" value="false" id="optimize" name="optimize"/></li>
               </ul>
           </div>
 <!-- ENDTODO -->

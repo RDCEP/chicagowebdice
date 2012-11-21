@@ -113,7 +113,10 @@ def graphs():
     if form.treaty_switch == 'on':
         thisdice.treaty_switch.value = True
     else: thisdice.treaty_switch.value = False
+    if getattr(form, 'optimize') == 'true':
+        thisdice.optimize = True
     thisdice.loop()
+    thisdice.optimize=False
     return thisdice.format_output()
 
 @route('/csv', method='POST')
@@ -121,6 +124,24 @@ def csv_output():
     data = request.forms.data
     response.set_header('Content-Disposition', 'attachment; filename="WebDICE-Data.csv"')
     return data
+
+
+@route('/tmp')
+def tmp():
+    measurements = get_measurements()
+    graph_locations = get_graph_locations()
+    m = json.JSONEncoder().encode(measurements)
+    g = json.JSONEncoder().encode(graph_locations)
+    now = datetime.now().strftime('%Y%m%d%H%M%S')
+    tpl = template('index_tmp',
+        measurements=m,
+        graph_locations=g,
+        tabs_html=tabs_html(),
+        dropdowns=measurements_html(),
+        paragraphs_html=paragraphs_html(),
+        now=now,
+    )
+    return tpl
 
 app = SessionMiddleware(default_app(), session_opts)
 application = app

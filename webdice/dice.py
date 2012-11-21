@@ -1,6 +1,8 @@
 import numpy as np
 from params import Dice2007Params
 import equations
+from FuncDesigner import *
+from openopt import NLP
 
 class Dice2007(Dice2007Params):
     """Variables, parameters, and step function for DICE 2007.
@@ -46,15 +48,17 @@ class Dice2007(Dice2007Params):
     format_output()
         Output text for Google Visualizer graph functions
     """
-    def __init__(self, eq=None, time_travel=True):
+    def __init__(self, eq=None, time_travel=True, optimize=False):
         if eq:
             self.eq = getattr(equations, eq).Loop()
         else:
             self.eq = equations.default.Loop()
         Dice2007Params.__init__(self)
         self.p = Dice2007Params()
-#    	if time_travel:
-#            self.eq.forcing = excel.ExcelLoop.forcing
+        self.optimize = False
+        if optimize: self.optimize = True
+    #    	if time_travel:
+    #            self.eq.forcing = excel.ExcelLoop.forcing
     @property
     def parameters(self):
         return [
@@ -68,14 +72,14 @@ class Dice2007(Dice2007Params):
             "partfract1", "partfract2", "partfract21", "dpartfract",
             "e2050", "e2100", "e2150", "fosslim", "scale1", "scale2",
             "tmax", "numScen", "savings", "miu_2005", 'backstop',
-        ]
+            ]
     @property
     def user_params(self):
         return [
             't2xco2', 'a3', 'dela', 'dsig', 'e2050', 'e2100', 'e2150',
             'popasym', 'dk', 'savings', 'fosslim', 'expcost2', 'gback',
             'backrat', 'elasmu', 'prstp',
-        ]
+            ]
     @property
     def vars(self):
         return [
@@ -86,7 +90,7 @@ class Dice2007(Dice2007Params):
             'investment', 'carbon_emitted', 'consumption',
             'consumption_percapita', 'utility', 'utility_discounted',
             'al', 'gcost1', 'sigma', 'miu', 'backstop',
-        ] 
+            ]
     @property
     def aa(self):
         """
@@ -139,7 +143,7 @@ class Dice2007(Dice2007Params):
         array : gsigma * exp(-dsig * 10 * t - disg2 * 10 * t^2)
         """
         return self._gsigma * np.exp(-(self.dsig.value/100) * 10 * self.t0 - self.dsig2 *
-                                     10 * (self.t0 ** 2))
+                                                                             10 * (self.t0 ** 2))
     @property
     def backstop(self):
         """
@@ -181,7 +185,7 @@ class Dice2007(Dice2007Params):
         -------
         array : 1 / (1 + prstp)^t
         """
-#        return 1 / ((1 + self.prstp)**(10*self.t0))
+        #        return 1 / ((1 + self.prstp)**(10*self.t0))
         return 1 / ((1 + self.prstp.value)**self.t0)
     @property
     def ecap(self):
@@ -229,12 +233,21 @@ class Dice2007(Dice2007Params):
     @property
     def lam(self):
         return self.fco22x / self.t2xco2.value
+    @property
+    def welfare(self):
+        return np.sum(self.utility_discounted)
 
-    def loop(self):
+    def loop(self, miu=None, step=None):
         """
         Step function for calculating endogenous variables
         """
-        for i in range(self.tmax):
+        if step is None:
+            N = self.tmax
+        else:
+            N = step
+        if self.optimize and miu is None:
+            self.miu = self.get_opt_mu()
+        for i in range(N):
             if i > 0:
                 self.sigma[i] = self.sigma[i-1] / (1 - self.gsig[i])
                 self.al[i] = self.al[i-1] / (1 - self.ga[i-1])
@@ -243,14 +256,18 @@ class Dice2007(Dice2007Params):
             self.gross_output[i] = self.eq.gross_output(
                 self.al[i], self.capital[i], self._gama, self.l[i]
             )
-            if i > 0:
-                if self.treaty_switch.value:
-                    self.miu[i] = self.eq.miu(
-                        self.emissions_industrial[i-1], self.ecap[i-1],
-                        self.emissions_industrial[0],
-                        self.sigma[i], self.gross_output[i]
-                    )
-                else: self.miu[i] = 0.
+            if self.optimize:
+                if miu is not None:
+                    self.miu[i] = miu[i]
+            else:
+                if i > 0:
+                    if self.treaty_switch.value:
+                        self.miu[i] = self.eq.miu(
+                            self.emissions_industrial[i-1], self.ecap[i-1],
+                            self.emissions_industrial[0],
+                            self.sigma[i], self.gross_output[i]
+                        )
+                    else: self.miu[i] = 0.
             self.emissions_industrial[i] = self.eq.emissions_industrial(
                 self.sigma[i], self.miu[i], self.gross_output[i]
             )
@@ -260,7 +277,7 @@ class Dice2007(Dice2007Params):
             if i > 0:
                 self.carbon_emitted[i] = (
                     self.carbon_emitted[i-1] + self.emissions_total[i]
-                )
+                    )
             if self.carbon_emitted[i] > self.fosslim:
                 self.miu[i] = 1
                 self.emissions_total[i] = 0
@@ -303,7 +320,7 @@ class Dice2007(Dice2007Params):
                 self.expcost2.value, self.partfract[i]
             )
             self.output[i] = self.eq.output(self.gross_output[i],
-                                            self.damage[i], self.abatement[i])
+                self.damage[i], self.abatement[i])
             if i == 0:
                 self.investment[i] = self.savings.value* self._q0
             else:
@@ -313,13 +330,64 @@ class Dice2007(Dice2007Params):
                 self.consumption[i], self.l[i]
             )
             self.utility[i] = self.eq.utility(self.consumption_percapita[i],
-                                              self.elasmu.value, self.l[i])
+                self.elasmu.value, self.l[i])
             if i > 0:
                 self.pref_fac[i] = self.eq.preference_factor(self.prstp.value,
-                                                             self.pref_fac[i-1])
+                    self.pref_fac[i-1])
             self.utility_discounted[i] = self.eq.utility_discounted(
                 self.utility[i], self.pref_fac[i], self.l[i]
             )
+
+    def get_opt_mu(self):
+        MU = 1
+        mu = oovar('mu')
+        mu_tmp = np.array([.005])
+        for i in range(1, self.tmax):
+            start_point = {mu: MU,}
+            self.loop(step=i, miu=mu_tmp)
+            capital = self.capital[i-1] * (1 - self.dk.value)**10 + 10 * self.investment[i-1]
+            gross_output = self.al[i] * capital**self._gama * self.l[i]**(1-self._gama)
+            emissions = self.sigma[i] * (1 - mu) * gross_output + self.etree[i]
+            mass_at = self.bb[0][0] * self.mass_atmosphere[i-1] + self.bb[1][0] * self.mass_upper[i-1] + 10 * emissions
+#            mass_up = self.bb[0][1] * m_at + self.bb[1][1] * m_up + self.bb[2][1] * m_lo
+#            mass_lo = self.bb[1][2] * m_up + self.bb[2][2] * m_lo
+            forcing = self.fco22x * log(mass_at / self.matPI) + self.forcoth[i]
+            temp_at = self.temp_atmosphere[i-1] + self.cc[0] * (forcing - self.lam * self.temp_atmosphere[i-1] - self.cc[2] * (self.temp_atmosphere[i-1] - self.temp_lower[i-1]))
+#            temp_lo = t_lo + self.cc[3] * (t_at - t_lo)
+            damage = gross_output - gross_output / (1 + self.aa[1] * temp_at**self.aa[2])
+            abatement = self.partfract[i]**(1-self.expcost2.value) * gross_output * self.gcost1[i] * mu**self.expcost2.value
+            output = gross_output * ((1 - abatement / gross_output) / (gross_output/(gross_output - damage)))
+#            investment = self.savings * output
+            consumption = output - (output * self.savings.value)
+            consumption_percap = consumption * 1000 / self.l[i]
+            utility = (1 / (1 - self.elasmu.value)) * consumption_percap**(1-self.elasmu.value) + 1
+            utility_discount = self.rr[i] * self.l[i] * utility
+            obj_func = sum(utility_discount)
+            IPRINT = -1
+            SOLVER = 'ralg'
+            p = NLP(obj_func, start_point)
+            p.constraints = [mu>=0., mu<=1., mass_at<4000.]
+            r = p.maximize(SOLVER, iprint=IPRINT)
+            mu_tmp = np.append(mu_tmp, r(mu))
+        return mu_tmp
+
+    def opt_0(self):
+        return np.array([
+            self.tocean0,
+            self.tatm0,
+            self.ml2000,
+            self.mu2000,
+            self.mat2000,
+            self.etree[0],
+            self.sigma[0],
+            self.al[0],
+            self.l[0],
+            self.partfract1,
+            self.gcost1[0],
+            self.savings.value * self._q0,
+            self._k0,
+            self.rr[0],
+        ])
 
     def format_output(self):
         """Output text for Google Visualizer graph functions."""
@@ -371,7 +439,7 @@ if __name__ == '__main__':
                 Dice2007(),
                 Dice2007(eq='matlab'),
                 Dice2007(eq='docs'),
-            ]
+                ]
         else:
             d = []
             for e in args.equation.split(','):
@@ -386,7 +454,7 @@ if __name__ == '__main__':
                 for m in d:
                     print bcolors.HEADER, '%s %s:\n' % (
                         m.eq.__module__.split('.')[1], v
-                    ), bcolors.ENDC, getattr(m, v)
+                        ), bcolors.ENDC, getattr(m, v)
             except:
                 print bcolors.WARNING, 'No variable named %s' % v, bcolors.ENDC
     except:
