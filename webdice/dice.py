@@ -356,7 +356,7 @@ class Dice2007(Dice2007Params):
 #            investment = self.savings * output
             consumption = output - (output * self.savings.value)
             consumption_percap = consumption * 1000 / self.l[i]
-            utility = (1 / (1 - self.elasmu.value)) * consumption_percap**(1-self.elasmu.value) + 1
+            utility = (1 / (1 - self.elasmu.value + .000001)) * consumption_percap**(1-self.elasmu.value) + 1
             utility_discount = self.rr[i] * self.l[i] * utility
             obj_func = sum(utility_discount)
             IPRINT = -1
