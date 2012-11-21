@@ -54,7 +54,7 @@ class Loop(object):
         return 1000 * consumption / l
     def utility(self, consumption_percapita, elasmu, l):
         """U, Period utility function"""
-        return (1 / (1 - elasmu)) * consumption_percapita**(1-elasmu) + 1
+        return (1 / (1 - elasmu + .000001)) * consumption_percapita**(1-elasmu) + 1
     def utility_discounted(self, utility, pref_fac, l):
         """Utility"""
         return pref_fac * l * utility
