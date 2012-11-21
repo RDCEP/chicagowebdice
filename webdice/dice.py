@@ -367,24 +367,6 @@ class Dice2007(Dice2007Params):
             mu_tmp = np.append(mu_tmp, r(mu))
         return mu_tmp
 
-    def opt_0(self):
-        return np.array([
-            self.tocean0,
-            self.tatm0,
-            self.ml2000,
-            self.mu2000,
-            self.mat2000,
-            self.etree[0],
-            self.sigma[0],
-            self.al[0],
-            self.l[0],
-            self.partfract1,
-            self.gcost1[0],
-            self.savings.value * self._q0,
-            self._k0,
-            self.rr[0],
-        ])
-
     def format_output(self):
         """Output text for Google Visualizer graph functions."""
         #TODO: This is sloppy as shit.
