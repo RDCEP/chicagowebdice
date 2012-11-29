@@ -47,22 +47,6 @@ def index():
     do_session(request)
     return page()
 
-@route('/<equations>')
-def matlab(equations):
-    """
-    Create dice objects with equations sets based on URL. Then return web page.
-    ...
-    Args:
-        equation (str): One of 'nordhaus', 'matlab', or 'docs'
-    Returns:
-        page()
-    ...
-    """
-    dice = Dice2007(eq=equations)
-    do_session(request, newdice=dice)
-    return page()
-
-
 def page():
     """
     Return HTML for all pages.
