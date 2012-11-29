@@ -56,9 +56,9 @@ class Loop(object):
     def utility(self, consumption_percapita, elasmu, l):
         """U, Period utility function"""
         return (1 / (1 - elasmu + .000001)) * consumption_percapita**(1-elasmu) + 1
-    def utility_discounted(self, utility, pref_fac, l):
+    def utility_discounted(self, utility, rr, l):
         """Utility"""
-        return pref_fac * l * utility
+        return rr * l * utility
     def welfare(self, utility_discounted, rr):
         return np.sum(utility_discounted)
     def miu(self, emissions_industrial, ecap, _e2005, sigma, gross_output):
