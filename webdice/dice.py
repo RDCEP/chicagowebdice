@@ -47,11 +47,8 @@ class Dice2007(Dice2007Params):
     format_output()
         Output text for Google Visualizer graph functions
     """
-    def __init__(self, eq=None, time_travel=True, optimize=False):
-        if eq:
-            self.eq = getattr(equations, eq).Loop()
-        else:
-            self.eq = equations.default.Loop()
+    def __init__(self, time_travel=True, optimize=False):
+        self.eq = equations.default.Loop()
         Dice2007Params.__init__(self)
         self.p = Dice2007Params()
         self.optimize = False
@@ -366,11 +363,8 @@ class Dice2007(Dice2007Params):
 
 if __name__ == '__main__':
 #    d = Dice2007(optimize=True)
-#    t0 = datetime.now()
 #    d.loop()
-#    t1 = datetime.now()
 #    print d.miu
-#    print t1-t0
 #
 #if __name__ == '__foo__':
     import argparse
@@ -381,13 +375,7 @@ if __name__ == '__main__':
         WARNING = '\033[93m'
         FAIL = '\033[91m'
         ENDC = '\033[0m'
-    parser = argparse.ArgumentParser(usage='%(prog)s [-h] [-e EQUATION] variables')
-    eq_help = """
-    Options are 'nordhaus', 'docs', or 'matlab'. You can select any pair 
-    of models by separating them with a comma: e.g. -e excel,matab.
-    You can see output from all three models with the option 'all'.
-    Default is 'default'.
-    """
+    parser = argparse.ArgumentParser(usage='%(prog)s [-h] variables')
     var_help = """
     You can print the following: capital, gross_output, emissions_industrial,
     emissions_total, mass_atmosphere, mass_lower, mass_upper, forcing,
@@ -395,28 +383,9 @@ if __name__ == '__main__':
     carbon_emitted, consumption, consumption_percapita, utility,
     utility_discounted, and welfare.
     """
-    parser.add_argument('-e', '--equation', help=eq_help, metavar='var1[,var2[,...]]')
     parser.add_argument('variables', help=var_help, metavar='var1[,var2[,...]]')
     args = parser.parse_args()
-    if args.equation:
-        if args.equation == 'matlab':
-            d = [Dice2007(eq='matlab')]
-        elif args.equation == 'docs':
-            d = [Dice2007(eq='docs')]
-        elif args.equation == 'nordhaus':
-            d = [Dice2007(eq='nordhaus')]
-        elif args.equation == 'all':
-            d = [
-                Dice2007(),
-                Dice2007(eq='matlab'),
-                Dice2007(eq='docs'),
-                ]
-        else:
-            d = []
-            for e in args.equation.split(','):
-                d.append(Dice2007(eq=e))
-    else:
-        d = [Dice2007()]
+    d = [Dice2007()]
     for m in d:
         m.loop()
     try:
