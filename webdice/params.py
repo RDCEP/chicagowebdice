@@ -215,6 +215,7 @@ class Dice2007Params(object):
         self.miu_2005 = .005 # emission control rate (fraction of uncontrolled emissions)
         self.t0 = np.arange(float(self.tmax))
         self.t1 = self.t0 + 1
+        self.gcost1 = np.zeros(self.tmax)
         self.sigma = np.empty(self.tmax); self.sigma[:] = self._sig0
         self.al = np.empty(self.tmax); self.al[:] = self._a0
         self.capital = np.empty(self.tmax); self.capital[:] = self._k0
@@ -224,6 +225,7 @@ class Dice2007Params(object):
         self.mass_lower = np.empty(self.tmax); self.mass_lower[:] = self.ml2000
         self.temp_atmosphere = np.empty(self.tmax); self.temp_atmosphere[:] = self.tatm0
         self.temp_lower = np.empty(self.tmax); self.temp_lower[:] = self.tocean0
+        self.investment = np.empty(self.tmax); self.investment[:] = self.savings.value * self._q0
         self.miu = np.empty(self.tmax); self.miu[:] = self.miu_2005
         self.gross_output = np.zeros(self.tmax)
         self.forcing = np.zeros(self.tmax)

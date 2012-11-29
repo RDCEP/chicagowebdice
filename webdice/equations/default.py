@@ -1,7 +1,7 @@
 import numpy as np
 
 class Loop(object):
-    """Equations from Nordhaus's GAMS code / Excel file"""
+    """Default equation set. A combination of GAMS, Excel, and docs."""
     def __init__(self):
         pass
     def capital(self, capital, dk, investment):
@@ -27,7 +27,8 @@ class Loop(object):
         return b[1][2] * mass_upper + b[2][2] * mass_lower
     def forcing(self, fco22x, mass_atmosphere, matPI, forcoth, ma_next):
         """F, Forcing, W/m^2"""
-        return fco22x * (np.log((((mass_atmosphere + ma_next)/2)+.000001)/matPI)/np.log(2)) + forcoth
+        return fco22x * np.log(mass_atmosphere / matPI) + forcoth
+#        return fco22x * (np.log((((mass_atmosphere + ma_next)/2)+.000001)/matPI)/np.log(2)) + forcoth
     def temp_atmosphere(self, temp_atmosphere, temp_lower, forcing, lam, c):
         """T_AT, Temperature of atmosphere, degrees C"""
         return temp_atmosphere + c[0] * (forcing - lam * temp_atmosphere - c[2] * (temp_atmosphere - temp_lower))
@@ -58,10 +59,8 @@ class Loop(object):
     def utility_discounted(self, utility, pref_fac, l):
         """Utility"""
         return pref_fac * l * utility
-    def preference_factor(self, prstp, pref_fac):
-        return pref_fac / (1 + prstp)**10
-    def welfare(self, utility, rr):
-        return -np.sum(utility * rr)
+    def welfare(self, utility_discounted, rr):
+        return np.sum(utility_discounted)
     def miu(self, emissions_industrial, ecap, _e2005, sigma, gross_output):
         """mu, Emissions reduction rate"""
         if ecap == 0:
