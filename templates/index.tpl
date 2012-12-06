@@ -102,7 +102,7 @@
                       <input name="gback"  type="range" min="0" max="0.2" step="0.05" value="0.05" data-prec="2"/>
                       <div class="tick-wrap"><span class="tick" style="left:-25%" >&bullet;</span></div></li>
                   <li><label title="Cost of replacing all emissions in 2012 $ per ton of CO_{2} , relative to future cost" >Ratio of current to future clean energy costs <span class="label"><span class="label-number">2.0</span></span></label>
-                      <input name="backrat"  type="range" min="0.5" max="4" step="0.5" value="2.0" data-prec="1"/>
+                      <input name="backrat"  type="range" min="1.0" max="4" step="0.5" value="2.0" data-prec="1"/>
                       <div class="tick-wrap"><span class="tick" style="left:-7%" >&bullet;</span></div></li>
               </ul>
           </div>
@@ -113,8 +113,8 @@
                       <input name="elasmu"  type="range" min="1" max="3" step="0.1" value="2.0" data-prec="1"/>
                       <div class="tick-wrap"><span class="tick" style="left:0%" >&bullet;</span></div></li>
                   <li><label title="Discount rate applied to utility" >Pure rate of time preference <span class="label"><span class="label-number">0.015</span></span></label>
-                      <input name="prstp"  type="range" min="0" max="4" step="0.005" value="0.015" data-prec="3"/>
-                      <div class="tick-wrap"><span class="tick" style="left:-49%" >&bullet;</span></div></li>
+                      <input name="prstp" type="range" min="0" max="0.1" step="0.005" value="0.015" data-prec="3"/>
+                      <div class="tick-wrap"><span class="tick" style="left:-35%" >&bullet;</span></div></li>
               </ul>
               <h2>Run Model</h2>
               <ul>

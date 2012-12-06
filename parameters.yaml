@@ -224,7 +224,7 @@ parameters:
     section: Costs of emissions control
     machine_name: backrat
     default: 2.0
-    min: 0.5
+    min: 1.0
     max: 4
     step: 0.5
     precision: 1
@@ -314,7 +314,7 @@ parameters:
     machine_name: prstp
     min: 0
     default: 0.015
-    max: 4
+    max: .1
     step: 0.005
     precision: 3
     description: Discount rate applied to utility
