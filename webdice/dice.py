@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+# encoding: utf-8
+# filename: dice.py
+
 from datetime import datetime
 import numpy as np
 from params import Dice2007Params
@@ -367,7 +371,8 @@ class Dice2007(Dice2007Params):
             output += '%s %s\n' % (v, ' '.join(map(str, list(vv))))
         return output
 
-if __name__ == '__main__':
+#if __name__ == '__main__':
+def profile_stub():
     d = Dice2007(optimize=True)
     t0 = datetime.now()
     d.loop(opt=True, obj_mult=1., obj_tol=.01)
