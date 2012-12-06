@@ -1,3 +1,6 @@
+import nlopt
+from numpy import *
+from datetime import datetime
 import numpy as np
 from params import Dice2007Params
 import equations
@@ -138,8 +141,8 @@ class Dice2007(Dice2007Params):
         -------
         array : gsigma * exp(-dsig * 10 * t - disg2 * 10 * t^2)
         """
-        return self._gsigma * np.exp(-(self.dsig.value/100) * 10 * self.t0 - self.dsig2 *
-                                                                             10 * (self.t0 ** 2))
+        return self._gsigma * np.exp(-(
+            self.dsig.value/100) * 10 * self.t0 - self.dsig2 * 10 * (self.t0 ** 2))
     @property
     def backstop(self):
         """
@@ -151,17 +154,6 @@ class Dice2007(Dice2007Params):
         """
         return self._pback * (
             (self.backrat.value - 1 + np.exp(-self.gback.value * self.t0)) / self.backrat.value)
-#    @property
-#    def gcost1(self):
-#        """
-#        theta_1, Growth of cost factor
-#        ...
-#        Returns
-#        -------
-#        array : (pback * sigma(t) / expcost2) * ((backrat - 1 + exp(-gback * t)) / backrat
-#        """
-#        return (self._pback * self.sigma / self.expcost2.value) * (
-#            (self.backrat.value - 1 + np.exp(-self.gback.value * self.t0)) / self.backrat.value)
     @property
     def etree(self):
         """
@@ -232,12 +224,13 @@ class Dice2007(Dice2007Params):
     def welfare(self):
         return np.sum(self.utility_discounted)
 
-    def loop(self, miu=None, opt=False):
+    def loop(self, miu=None, opt=True, obj_mult=100., obj_tol=.1):
         """
         Step function for calculating endogenous variables
         """
         if self.optimize and miu is None:
-            self.miu = self.get_opt_mu()
+            self.miu = self.get_opt_mu(obj_tol)
+            self.miu[0] = self.miu_2005
         for i in range(self.tmax):
             if i > 0:
                 self.sigma[i] = self.sigma[i-1] / (1 - self.gsig[i])
@@ -251,7 +244,10 @@ class Dice2007(Dice2007Params):
             )
             if self.optimize:
                 if miu is not None:
-                    self.miu[i] = miu[i]
+                    if i > 0:
+                        self.miu[i] = miu[i]
+                    else:
+                        self.miu[i] = self.miu_2005
             else:
                 if i > 0:
                     if self.treaty_switch.value:
@@ -327,27 +323,38 @@ class Dice2007(Dice2007Params):
             self.utility_discounted[i] = self.eq.utility_discounted(
                 self.utility[i], self.rr[i], self.l[i]
             )
-        if opt: return 0 - self.utility_discounted.sum()
+        if self.optimize and miu is not None:
+            return obj_mult * (0 - self.utility_discounted.sum())
 
-    def get_opt_mu(self):
-        x1 = np.empty(40)
-        x1.fill(1.)
+    def get_opt_mu(self, ftol):
+        RAMP = 30
         x0 = np.concatenate((
-            np.linspace(.1, 1, 20), x1
+            np.linspace(0,1,RAMP),
+            np.ones(self.tmax-RAMP),
         ))
+        SOLVER='SLSQP'
+        ARGS = (True,1.,)
+        OPTS = {
+            'disp': False,
+            'ftol': ftol,
+            'maxiter': 10,
+            'eps': 1e-3,
+        }
         xl = 1e-6
         xu = 1.
         BOUNDS = [(xl,xu)] * self.tmax
-        SOLVER='SLSQP'
-        ARGS = (True,)
-        OPTS = {
-            'maxiter': 20,
-            'disp': False,
-        }
-        r = minimize(self.loop, x0, args=ARGS, method=SOLVER,
-            bounds=BOUNDS, options=OPTS, tol=.1,
-        )
-        return r.x
+        def step(x0, tol=.1):
+            OPTS['ftol'] = tol
+            r = minimize(self.loop, x0, args=ARGS, method=SOLVER,
+                bounds=BOUNDS, options=OPTS,
+            )
+#            print r.fun
+            return r.x
+        for i in range(5):
+            if i < 3: tol=1./10**i
+            else: tol = .01
+            x0 = step(x0, tol=tol)
+        return x0
 
     def format_output(self):
         """Output text for Google Visualizer graph functions."""
@@ -362,11 +369,13 @@ class Dice2007(Dice2007Params):
         return output
 
 if __name__ == '__main__':
-#    d = Dice2007(optimize=True)
-#    d.loop()
-#    print d.miu
-#
-#if __name__ == '__foo__':
+    d = Dice2007(optimize=True)
+    t0 = datetime.now()
+    d.loop(opt=True, obj_mult=1., obj_tol=.01)
+    t1 = datetime.now()
+    print t1-t0
+
+if __name__ == '__foo__':
     import argparse
     class bcolors:
         HEADER = '\033[95m'
