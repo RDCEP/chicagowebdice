@@ -348,12 +348,13 @@ class Dice2007(Dice2007Params):
             r = minimize(self.loop, x0, args=ARGS, method=SOLVER,
                 bounds=BOUNDS, options=OPTS,
             )
-#            print r.fun
+            if __name__ == '__main__': print r.fun
             return r.x
         for i in range(5):
             if i < 3: tol=1./10**i
             else: tol = .01
             x0 = step(x0, tol=tol)
+        if __name__ == '__main__': print x0
         return x0
 
     def format_output(self):
