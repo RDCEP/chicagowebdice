@@ -1,5 +1,3 @@
-import nlopt
-from numpy import *
 from datetime import datetime
 import numpy as np
 from params import Dice2007Params
