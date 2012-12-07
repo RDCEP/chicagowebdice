@@ -283,8 +283,7 @@ class Dice2007(Dice2007Params):
                 self.mass_lower[i] = self.eq.mass_lower(
                     self.mass_upper[i-1], self.mass_lower[i-1], self.bb
                 )
-            self.forcing[i] = self.fco22x * np.log(
-                (self.mass_atmosphere[i] / self.matPI)) + self.forcoth[i]
+
             ma2 = self.eq.mass_atmosphere(
                 self.emissions_total[i],self.mass_atmosphere[i],
                 self.mass_upper[i], self.bb
@@ -324,7 +323,10 @@ class Dice2007(Dice2007Params):
                 self.utility[i], self.rr[i], self.l[i]
             )
         if self.optimize and miu is not None:
-            return obj_mult * (0 - self.utility_discounted.sum())
+            return [
+                obj_mult * (0 - self.utility_discounted.sum()),
+                np.gradient(self.utility_discounted),
+            ]
 
     def get_opt_mu(self, ftol):
         RAMP = 30
@@ -338,7 +340,7 @@ class Dice2007(Dice2007Params):
             'disp': False,
             'ftol': ftol,
             'maxiter': 10,
-            'eps': 1e-3,
+            'eps': 1e-1,
         }
         xl = 1e-6
         xu = 1.
@@ -346,7 +348,7 @@ class Dice2007(Dice2007Params):
         def step(x0, tol=.1):
             OPTS['ftol'] = tol
             r = minimize(self.loop, x0, args=ARGS, method=SOLVER,
-                bounds=BOUNDS, options=OPTS,
+                bounds=BOUNDS, options=OPTS, jac=True
             )
             if __name__ == '__main__': print r.fun
             return r.x
