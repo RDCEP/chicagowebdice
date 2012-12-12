@@ -1,7 +1,3 @@
-#!/usr/bin/env python
-# encoding: utf-8
-# filename: dice.py
-
 from datetime import datetime
 import numpy as np
 from params import Dice2007Params
@@ -285,8 +281,7 @@ class Dice2007(Dice2007Params):
                 self.mass_lower[i] = self.eq.mass_lower(
                     self.mass_upper[i-1], self.mass_lower[i-1], self.bb
                 )
-            self.forcing[i] = self.fco22x * np.log(
-                (self.mass_atmosphere[i] / self.matPI)) + self.forcoth[i]
+
             ma2 = self.eq.mass_atmosphere(
                 self.emissions_total[i],self.mass_atmosphere[i],
                 self.mass_upper[i], self.bb
@@ -340,22 +335,29 @@ class Dice2007(Dice2007Params):
             'disp': False,
             'ftol': ftol,
             'maxiter': 10,
-            'eps': 1e-3,
+            'eps': 1e-1,
         }
         xl = 1e-6
         xu = 1.
         BOUNDS = [(xl,xu)] * self.tmax
-        def step(x0, tol=.1):
+        def step(x0, tol=.1, grad=False):
             OPTS['ftol'] = tol
-            r = minimize(self.loop, x0, args=ARGS, method=SOLVER,
-                bounds=BOUNDS, options=OPTS,
-            )
+            if grad:
+                r = minimize(self.loop, x0, args=ARGS, method=SOLVER,
+                    bounds=BOUNDS, options=OPTS, jac=self.opt_gradient
+                )
+            else:
+                r = minimize(self.loop, x0, args=ARGS, method=SOLVER,
+                    bounds=BOUNDS, options=OPTS
+                )
             if __name__ == '__main__': print r.fun
             return r.x
         for i in range(5):
             if i < 3: tol=1./10**i
             else: tol = .01
-            x0 = step(x0, tol=tol)
+            if i > 2: grad = True
+            else: grad = False
+            x0 = step(x0, tol=tol, grad=grad)
         if __name__ == '__main__': print x0
         return x0
 
@@ -371,11 +373,16 @@ class Dice2007(Dice2007Params):
             output += '%s %s\n' % (v, ' '.join(map(str, list(vv))))
         return output
 
+    def opt_gradient(self, x0, *args, **kwargs):
+        return np.gradient(x0)
+
+
 #if __name__ == '__main__':
 def profile_stub():
     d = Dice2007(optimize=True)
     t0 = datetime.now()
     d.loop(opt=True, obj_mult=1., obj_tol=.01)
+    print d.miu
     t1 = datetime.now()
     print t1-t0
 
