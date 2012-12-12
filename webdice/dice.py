@@ -359,6 +359,19 @@ class Dice2007(Dice2007Params):
         if __name__ == '__main__': print x0
         return x0
 
+    def get_openopt_mu(self, ftol):
+        from openopt import NLP
+        RAMP = 30
+        x0 = np.concatenate((
+            np.linspace(0,1,RAMP),
+            np.ones(self.tmax-RAMP),
+            ))
+        x0 = x0 * x0
+        xl = np.zeros(self.tmax)
+        xu = np.ones(self.tmax)
+        p = NLP(self.loop, x0, )
+        return x0
+
     def format_output(self):
         """Output text for Google Visualizer graph functions."""
         #TODO: This is sloppy as shit.
