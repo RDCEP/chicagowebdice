@@ -224,12 +224,13 @@ class Dice2007(Dice2007Params):
     def welfare(self):
         return np.sum(self.utility_discounted)
 
-    def loop(self, miu=None, opt=True, obj_mult=100., obj_tol=.1):
+    def loop(self, miu=None, obj_tol=.1):
         """
         Step function for calculating endogenous variables
         """
         if self.optimize and miu is None:
-            self.miu = self.get_opt_mu(obj_tol)
+#            self.miu = self.get_opt_mu(obj_tol)
+            self.miu = self.get_openopt_mu(obj_tol)
             self.miu[0] = self.miu_2005
         for i in range(self.tmax):
             if i > 0:
@@ -323,10 +324,7 @@ class Dice2007(Dice2007Params):
                 self.utility[i], self.rr[i], self.l[i]
             )
         if self.optimize and miu is not None:
-            return [
-                obj_mult * (0 - self.utility_discounted.sum()),
-                np.gradient(self.utility_discounted),
-            ]
+            return 0 - self.utility_discounted.sum()
 
     def get_opt_mu(self, ftol):
         RAMP = 30
@@ -340,7 +338,7 @@ class Dice2007(Dice2007Params):
             'disp': False,
             'ftol': ftol,
             'maxiter': 10,
-            'eps': 1e-1,
+            'eps': 1e-3,
         }
         xl = 1e-6
         xu = 1.
@@ -348,7 +346,7 @@ class Dice2007(Dice2007Params):
         def step(x0, tol=.1):
             OPTS['ftol'] = tol
             r = minimize(self.loop, x0, args=ARGS, method=SOLVER,
-                bounds=BOUNDS, options=OPTS, jac=True
+                bounds=BOUNDS, options=OPTS
             )
             if __name__ == '__main__': print r.fun
             return r.x
@@ -369,8 +367,10 @@ class Dice2007(Dice2007Params):
         x0 = x0 * x0
         xl = np.zeros(self.tmax)
         xu = np.ones(self.tmax)
-        p = NLP(self.loop, x0, )
-        return x0
+        p = NLP(self.loop, x0, lb=xl, ub=xu, )
+        r = p.solve('ipopt')
+
+        return r.xf
 
     def format_output(self):
         """Output text for Google Visualizer graph functions."""
@@ -384,11 +384,12 @@ class Dice2007(Dice2007Params):
             output += '%s %s\n' % (v, ' '.join(map(str, list(vv))))
         return output
 
-#if __name__ == '__main__':
-def profile_stub():
+if __name__ == '__main__':
+#def profile_stub():
     d = Dice2007(optimize=True)
     t0 = datetime.now()
-    d.loop(opt=True, obj_mult=1., obj_tol=.01)
+    d.loop(obj_tol=.01)
+    print d.miu
     t1 = datetime.now()
     print t1-t0
 
