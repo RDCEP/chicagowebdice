@@ -12,6 +12,8 @@ class Loop(object):
         return al * capital**gama * l**(1-gama)
     def emissions_industrial(self, sigma, miu, gross_output):
         """E_ind, Industrial emissions, GtC"""
+        if miu > 1: miu = 1.
+        if miu < 0: miu = 0.
         return sigma * (1 - miu) * gross_output
     def emissions_total(self, emissions_industrial, etree):
         """E, Total emissions, GtC"""
@@ -40,6 +42,8 @@ class Loop(object):
         return gross_output - gross_output / (1 + aa[0] * temp_atmosphere + aa[1] * temp_atmosphere**aa[2])
     def abatement(self, gross_output, miu, gcost1, expcost2, partfract):
         """Lambda, Abatement costs, trillions $USD"""
+        if miu > 1: miu = 1.
+        if miu < 0: miu = 0.
         return partfract**(1-expcost2) * gross_output * gcost1 * miu**expcost2
     def output(self, gross_output, damage, abatement):
         return gross_output * ((1 - abatement / gross_output) /

@@ -222,11 +222,12 @@ class Dice2007(Dice2007Params):
     def welfare(self):
         return np.sum(self.utility_discounted)
 
-    def loop(self, miu=None, opt=True, obj_mult=100., obj_tol=.1):
+    def loop(self, miu=None, obj_tol=.1):
         """
         Step function for calculating endogenous variables
         """
         if self.optimize and miu is None:
+#            self.miu = self.get_openopt_mu(obj_tol)
             self.miu = self.get_opt_mu(obj_tol)
             self.miu[0] = self.miu_2005
         for i in range(self.tmax):
@@ -321,7 +322,8 @@ class Dice2007(Dice2007Params):
                 self.utility[i], self.rr[i], self.l[i]
             )
         if self.optimize and miu is not None:
-            return obj_mult * (0 - self.utility_discounted.sum())
+            return miu.sum()
+#            return 0 - self.utility_discounted.sum()
 
     def get_opt_mu(self, ftol):
         RAMP = 30
@@ -330,12 +332,12 @@ class Dice2007(Dice2007Params):
             np.ones(self.tmax-RAMP),
         ))
         SOLVER='SLSQP'
-        ARGS = (True,1.,)
+        ARGS = ()
         OPTS = {
             'disp': False,
             'ftol': ftol,
             'maxiter': 10,
-            'eps': 1e-1,
+            'eps': 1e-3,
         }
         xl = 1e-6
         xu = 1.
@@ -361,6 +363,68 @@ class Dice2007(Dice2007Params):
         if __name__ == '__main__': print x0
         return x0
 
+    def get_openopt_mu(self, ftol):
+        from openopt import GLP, NLP
+        RAMP = 30
+        x0 = np.concatenate((
+            np.linspace(0,1,RAMP),
+            np.ones(self.tmax-RAMP),
+            ))
+        x0 = np.ones(self.tmax)
+        ub = np.ones(self.tmax)
+#        ub = np.empty(self.tmax)
+#        ub[:] = .99
+        lb = np.zeros(self.tmax)
+        fun = self.loop
+        p = NLP(fun, x0, lb=lb, ub=ub, iprint=1, ) #df=self.opt_gradient,
+        r = p.solve('ipopt', gtol=.0001, maxIter=10, optFile='./ipopt.opt',)
+        print r.isFeasible
+        return r.xf
+
+    def ipopt_mu(self):
+        import pyipopt
+        x0 = np.concatenate((
+            np.linspace(0,1,30),
+            np.ones(30),
+        ))
+        N = 60
+        M = 0
+        xl = np.zeros(N)
+        xu = np.ones(N)
+        gl = np.zeros(M)
+        gu = np.ones(M)
+        def eval_f(x):
+            return self.loop(x)
+        def eval_grad_f(x):
+            return np.gradient(x)
+        def eval_g(x):
+#            return np.zeros(M)
+            return None
+        def eval_jac_g(x, flag):
+            if flag:
+                return (
+                    np.arange(N),
+                    np.array([]),
+                )
+            else:
+                return np.arange(N)
+#            if flag:
+#                return (None, None)
+#            else:
+#                return None
+        nnzj = 0
+        nnzh = 0
+        r = pyipopt.create(N, xl, xu, M, gl, gu, nnzj, nnzh, eval_f, eval_grad_f, eval_g, eval_jac_g)
+        r.num_option('max_cpu_time', 7.)
+        r.str_option('start_with_resto', 'no')
+#        r.str_option('warm_start_init_point', 'yes')
+        r.int_option('print_level', 12)
+        x, zl, zu, obj, status = r.solve(x0)
+        print x
+        print obj
+        print status
+
+
     def format_output(self):
         """Output text for Google Visualizer graph functions."""
         #TODO: This is sloppy as shit.
@@ -377,12 +441,14 @@ class Dice2007(Dice2007Params):
         return np.gradient(x0)
 
 
-#if __name__ == '__main__':
-def profile_stub():
+if __name__ == '__main__':
+#def profile_stub():
     d = Dice2007(optimize=True)
     t0 = datetime.now()
-    d.loop(opt=True, obj_mult=1., obj_tol=.01)
+#    d.loop(obj_tol=.01)
+    d.ipopt_mu()
     print d.miu
+#    d.ipopt_mu()
     t1 = datetime.now()
     print t1-t0
 
