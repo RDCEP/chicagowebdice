@@ -1,8 +1,9 @@
 import numpy as np
+import pandas as pd
 
 class DiceWebParam(object):
     def __init__(self, name, description, section, default,
-                 minimum=None, maximum=None, precision=None, step=None, 
+                 minimum=None, maximum=None, precision=None, step=None,
                  submit=None, select=None, unit=None, value=None,
                  disabled=False):
         self.name = name
@@ -57,7 +58,7 @@ class Dice2007Params(object):
             'Run Model', optimize
         )
         self.t2xco2 = DiceWebParam(
-            'Climate sensitivity: How much will temperatures go up?', 
+            'Climate sensitivity: How much will temperatures go up?',
             'Temperature increase in degrees C from doubling of atmospheric CO2',
             beliefs, 3, minimum=1, maximum=5, step=.5, precision=1,
             unit='C'
@@ -65,18 +66,18 @@ class Dice2007Params(object):
         self.a3 = DiceWebParam(
             'Exponent of damage function: How large will the harms be?',
             'Increase in harms from climate change due to an increase in temperatures',
-            beliefs, 2, minimum=1, maximum=4, step=.5, precision=1, 
-        )    
+            beliefs, 2, minimum=1, maximum=4, step=.5, precision=1,
+        )
         self.dela = DiceWebParam(
             'How much will growth slow down in the future?',
             'Decline in the rate of growth in productivity over time',
-            beliefs, .1, minimum=.05, maximum=1.5, step=.05, precision=2, 
+            beliefs, .1, minimum=.05, maximum=1.5, step=.05, precision=2,
             unit='%'
         )
         self.dsig = DiceWebParam(
             'Change in Energy intensity (higher number means more energy intensive)',
             'Rate of decline in energy use per $ of GDP',
-            beliefs, .3, minimum=0, maximum=6, step=.1, precision=1, 
+            beliefs, .3, minimum=0, maximum=6, step=.1, precision=1,
             unit='%'
         )
         self.e2050 = DiceWebParam(
@@ -96,36 +97,36 @@ class Dice2007Params(object):
         )
         self.expcost2 = DiceWebParam(
             'Marginal cost of abatement', 'Additional cost from more abatement',
-            emissions, 2.8, minimum=2, maximum=4, step=.1, precision=1, 
+            emissions, 2.8, minimum=2, maximum=4, step=.1, precision=1,
         )
         self.gback = DiceWebParam(
             'Rate of decline of clean energy costs', 'Rate of decline in costs of reduction emissions',
-            emissions, .05, minimum=0, maximum=.2, step=.05, precision=2, 
+            emissions, .05, minimum=0, maximum=.2, step=.05, precision=2,
             unit='%'
         )
         self.backrat = DiceWebParam(
             'Ratio of current to future clean energy costs',
             'Cost of replacing all emissions in 2012 $ per ton of CO_{2} , relative to future cost',
-            emissions, 2, minimum=.5, maximum=4, step=.5, precision=1, 
+            emissions, 2, minimum=.5, maximum=4, step=.5, precision=1,
         )
         self.popasym = DiceWebParam(
             'Max population', 'Number, in billions, that the population grows asymptotically towards',
-            additional, 8600, minimum=8000, maximum=12000, step=200, precision=0, 
+            additional, 8600, minimum=8000, maximum=12000, step=200, precision=0,
             unit='billions',
         )
         self.dk = DiceWebParam(
             'Depreciation rate', 'Rate of depreciation per year',
-            additional, .1, minimum=.08, maximum=.2, step=.02, precision=2, 
+            additional, .1, minimum=.08, maximum=.2, step=.02, precision=2,
             unit='%',
         )
         self.savings = DiceWebParam(
             'Savings rate', 'Savings are per year',
-            additional, .2, minimum=.15, maximum=.25, step=.05, precision=2, 
+            additional, .2, minimum=.15, maximum=.25, step=.05, precision=2,
             unit='%',
         )
         self.fosslim = DiceWebParam(
             'Fossil fuel reserves', 'Fossil fuels remaining, measured in CO2 emissions',
-            additional, 6000, minimum=6000, maximum=9000, step=500, precision=0, 
+            additional, 6000, minimum=6000, maximum=9000, step=500, precision=0,
             unit=' Gt&nbsp;C',
         )
         self.oceanmodel = DiceWebParam(
@@ -135,8 +136,8 @@ class Dice2007Params(object):
         self.damages_model = DiceWebParam(
             'Damages model', 'Way that climate change harms enter the economy',
             model, 'dice', disabled=True, select=[{'name': 'DICE Damages to Gross Output',
-                                           'machine_name': 'dice',
-                                           'description': 'Climate change destroys a certain percentage of global output'}]
+                                                   'machine_name': 'dice',
+                                                   'description': 'Climate change destroys a certain percentage of global output'}]
         )
         self.elasmu = DiceWebParam(
             'Elasticity of marg. consump.', 'Exponent of consumption in utility function',
@@ -191,11 +192,11 @@ class Dice2007Params(object):
         self.c2 = 0
         self.c3 = .300
         self.c4 = .050
-#        self.cc = np.array([.220, 0, .300, .050])
+        #        self.cc = np.array([.220, 0, .300, .050])
         self.cc = np.array([self.c1, self.c2, self.c3, self.c4])
         self.fco22x = 3.8 # Estimated forcings of equilibrium CO2 doubling
         # Climate damage selfeters, calibrated for quadratic at 2.5 C for 2105
-#        self.aa = np.array([0, 0.0028388, 2])
+        #        self.aa = np.array([0, 0.0028388, 2])
         self.a1 = 0
         self.a2 = 0.0028388
         ## Abatement cost
@@ -227,18 +228,36 @@ class Dice2007Params(object):
         self.temp_lower = np.empty(self.tmax); self.temp_lower[:] = self.tocean0
         self.investment = np.empty(self.tmax); self.investment[:] = self.savings.value * self._q0
         self.miu = np.empty(self.tmax); self.miu[:] = self.miu_2005
-        self.gross_output = np.zeros(self.tmax)
-        self.forcing = np.zeros(self.tmax)
-        self.emissions_industrial = np.zeros(self.tmax)
-        self.emissions_total = np.zeros(self.tmax)
-        self.carbon_emitted = np.zeros(self.tmax)
-        self.participation = np.zeros(self.tmax)
-        self.participation_markup = np.zeros(self.tmax)
-        self.damage = np.zeros(self.tmax)
-        self.abatement = np.zeros(self.tmax)
-        self.investment = np.zeros(self.tmax)
-        self.consumption = np.zeros(self.tmax)
-        self.consumption_percapita = np.zeros(self.tmax)
-        self.utility = np.zeros(self.tmax)
-        self.utility_discounted = np.zeros(self.tmax)
-        self.pref_fac = np.ones(self.tmax)
+        self.jacobian = np.empty(self.tmax)
+        data = pd.DataFrame({
+            'miu': self.miu,
+            'sigma': self.sigma,
+            'al': self.al,
+            'gcost1': self.gcost1,
+            'capital': self.capital,
+            'output': self.output,
+            'mass_atmosphere': self.mass_atmosphere,
+            'mass_upper': self.mass_upper,
+            'mass_lower': self.mass_lower,
+            'temp_atmosphere': self.temp_atmosphere,
+            'temp_lower': self.temp_lower,
+            'investment': self.investment,
+            'gross_output': np.zeros(self.tmax),
+            'forcing': np.zeros(self.tmax),
+            'emissions_industrial': np.zeros(self.tmax),
+            'emissions_total': np.zeros(self.tmax),
+            'carbon_emitted': np.zeros(self.tmax),
+            'participation': np.zeros(self.tmax),
+            'participation_markup': np.zeros(self.tmax),
+            'damage': np.zeros(self.tmax),
+            'abatement': np.zeros(self.tmax),
+            'consumption': np.zeros(self.tmax),
+            'consumption_percapita': np.zeros(self.tmax),
+            'utility': np.zeros(self.tmax),
+            'utility_discounted': np.zeros(self.tmax),
+            'pref_fac': np.ones(self.tmax),
+        })
+        self.data = pd.Panel({
+            'vars': data,
+            'jac': data,
+        })
