@@ -3,6 +3,7 @@ import numpy as np
 from params import Dice2007Params
 import equations
 from scipy.optimize import minimize
+import pyipopt
 
 class Dice2007(Dice2007Params):
     """Variables, parameters, and step function for DICE 2007.
@@ -220,147 +221,171 @@ class Dice2007(Dice2007Params):
         return self.fco22x / self.t2xco2.value
     @property
     def welfare(self):
-        return np.sum(self.utility_discounted)
+        return np.sum(self.data['vars']['utility_discounted'])
 
-    def loop(self, miu=None, obj_tol=.1):
+    def step(self, i, D, miu=None, jac=False, epsilon=1e-3, f0=0.0):
+        if i > 0:
+            D['sigma'][i] = D['sigma'][i-1] / (1 - self.gsig[i])
+            D['al'][i] = D['al'][i-1] / (1 - self.ga[i-1])
+            D['capital'][i] = self.eq.capital(D['capital'][i-1], self.dk.value,
+                D['investment'][i-1])
+        D['gcost1'][i] = (self._pback * D['sigma'][i] / self.expcost2.value) * (
+            (self.backrat.value - 1 + np.exp(-self.gback.value * i)) / self.backrat.value)
+        D['gross_output'][i] = self.eq.gross_output(
+            D['al'][i], D['capital'][i], self._gama, self.l[i]
+        )
+        if self.optimize:
+            if miu is not None:
+                if i > 0:
+                    if jac: eps = epsilon
+                    else: eps = 0.
+                    D['miu'][i] = miu[i] + eps
+                else:
+                    D['miu'][i] = self.miu_2005
+        else:
+            if i > 0:
+                if self.treaty_switch.value:
+                    D['miu'][i] = self.eq.miu(
+                        D['emissions_industrial'][i-1], self.ecap[i-1],
+                        D['emissions_industrial'][0],
+                        D['sigma'][i], D['gross_output'][i]
+                    )
+                else: D['miu'][i] = 0.
+        D['emissions_industrial'][i] = self.eq.emissions_industrial(
+            D['sigma'][i], D['miu'][i], D['gross_output'][i]
+        )
+        D['emissions_total'][i] = self.eq.emissions_total(
+            D['emissions_industrial'][i], self.etree[i]
+        )
+        if i > 0:
+            D['carbon_emitted'][i] = (
+                D['carbon_emitted'][i-1] + D['emissions_total'][i]
+                )
+        if D['carbon_emitted'][i] > self.fosslim:
+            D['miu'][i] = 1
+            D['emissions_total'][i] = 0
+            D['carbon_emitted'][i] = self.fosslim
+        if i > 0:
+            D['mass_atmosphere'][i] = self.eq.mass_atmosphere(
+                D['emissions_total'][i-1], D['mass_atmosphere'][i-1],
+                D['mass_upper'][i-1], self.bb
+            )
+            D['mass_upper'][i] = self.eq.mass_upper(
+                D['mass_atmosphere'][i-1], D['mass_upper'][i-1],
+                D['mass_lower'][i-1], self.bb
+            )
+            D['mass_lower'][i] = self.eq.mass_lower(
+                D['mass_upper'][i-1], D['mass_lower'][i-1], self.bb
+            )
+        D['forcing'][i] = self.eq.forcing(
+            self.fco22x, D['mass_atmosphere'][i], self.matPI,
+            self.forcoth[i]
+        )
+        if i > 0:
+            D['temp_atmosphere'][i] = self.eq.temp_atmosphere(
+                D['temp_atmosphere'][i-1], D['temp_lower'][i-1],
+                D['forcing'][i], self.lam, self.cc
+            )
+            D['temp_lower'][i] = self.eq.temp_lower(
+                D['temp_atmosphere'][i-1], D['temp_lower'][i-1], self.cc
+            )
+        D['damage'][i] = self.eq.damage(
+            D['gross_output'][i], D['temp_atmosphere'][i], self.aa
+        )
+        D['abatement'][i] = self.eq.abatement(
+            D['gross_output'][i], D['miu'][i], D['gcost1'][i],
+            self.expcost2.value, self.partfract[i]
+        )
+        D['output'][i] = self.eq.output(D['gross_output'][i],
+            D['damage'][i], D['abatement'][i])
+        if i == 0:
+            D['investment'][i] = self.savings.value * self._q0
+        else:
+            D['investment'][i] = self.eq.investment(self.savings.value, D['output'][i])
+        D['consumption'][i] = self.eq.consumption(D['output'][i], self.savings.value)
+        D['consumption_percapita'][i] = self.eq.consumption_percapita(
+            D['consumption'][i], self.l[i]
+        )
+        D['utility'][i] = self.eq.utility(D['consumption_percapita'][i],
+            self.elasmu.value, self.l[i])
+        D['utility_discounted'][i] = self.eq.utility_discounted(
+            D['utility'][i], self.rr[i], self.l[i]
+        )
+        if jac:
+            self.jacobian[i] = (D['utility_discounted'][i] - f0) / epsilon
+        if self.optimize and miu is not None and jac:
+                if i > 0:
+                    D['miu'][i] = miu[i]
+
+    def loop(self, miu=None, slsqp=(False, False), jac=False):
         """
         Step function for calculating endogenous variables
         """
+        D = self.data['vars']
+        if miu is not None: N = len(miu)
+        else: N = self.tmax
+        if len(self.jacobian) != N:
+            self.jacobian = np.zeros(N)
         if self.optimize and miu is None:
-#            self.miu = self.get_openopt_mu(obj_tol)
-            self.miu = self.get_opt_mu(obj_tol)
-            self.miu[0] = self.miu_2005
-        for i in range(self.tmax):
-            if i > 0:
-                self.sigma[i] = self.sigma[i-1] / (1 - self.gsig[i])
-                self.al[i] = self.al[i-1] / (1 - self.ga[i-1])
-                self.capital[i] = self.eq.capital(self.capital[i-1], self.dk.value,
-                    self.investment[i-1])
-            self.gcost1[i] = (self._pback * self.sigma[i] / self.expcost2.value) * (
-                (self.backrat.value - 1 + np.exp(-self.gback.value * i)) / self.backrat.value)
-            self.gross_output[i] = self.eq.gross_output(
-                self.al[i], self.capital[i], self._gama, self.l[i]
-            )
-            if self.optimize:
-                if miu is not None:
-                    if i > 0:
-                        self.miu[i] = miu[i]
-                    else:
-                        self.miu[i] = self.miu_2005
-            else:
-                if i > 0:
-                    if self.treaty_switch.value:
-                        self.miu[i] = self.eq.miu(
-                            self.emissions_industrial[i-1], self.ecap[i-1],
-                            self.emissions_industrial[0],
-                            self.sigma[i], self.gross_output[i]
-                        )
-                    else: self.miu[i] = 0.
-            self.emissions_industrial[i] = self.eq.emissions_industrial(
-                self.sigma[i], self.miu[i], self.gross_output[i]
-            )
-            self.emissions_total[i] = self.eq.emissions_total(
-                self.emissions_industrial[i], self.etree[i]
-            )
-            if i > 0:
-                self.carbon_emitted[i] = (
-                    self.carbon_emitted[i-1] + self.emissions_total[i]
-                    )
-            if self.carbon_emitted[i] > self.fosslim:
-                self.miu[i] = 1
-                self.emissions_total[i] = 0
-                self.carbon_emitted[i] = self.fosslim
-            if i > 0:
-                self.mass_atmosphere[i] = self.eq.mass_atmosphere(
-                    self.emissions_total[i-1], self.mass_atmosphere[i-1],
-                    self.mass_upper[i-1], self.bb
-                )
-                self.mass_upper[i] = self.eq.mass_upper(
-                    self.mass_atmosphere[i-1], self.mass_upper[i-1],
-                    self.mass_lower[i-1], self.bb
-                )
-                self.mass_lower[i] = self.eq.mass_lower(
-                    self.mass_upper[i-1], self.mass_lower[i-1], self.bb
-                )
-
-            ma2 = self.eq.mass_atmosphere(
-                self.emissions_total[i],self.mass_atmosphere[i],
-                self.mass_upper[i], self.bb
-            )
-            self.forcing[i] = self.eq.forcing(
-                self.fco22x, self.mass_atmosphere[i], self.matPI,
-                self.forcoth[i], ma2
-            )
-            if i > 0:
-                self.temp_atmosphere[i] = self.eq.temp_atmosphere(
-                    self.temp_atmosphere[i-1], self.temp_lower[i-1],
-                    self.forcing[i], self.lam, self.cc
-                )
-                self.temp_lower[i] = self.eq.temp_lower(
-                    self.temp_atmosphere[i-1], self.temp_lower[i-1], self.cc
-                )
-            self.damage[i] = self.eq.damage(
-                self.gross_output[i], self.temp_atmosphere[i], self.aa
-            )
-            self.abatement[i] = self.eq.abatement(
-                self.gross_output[i], self.miu[i], self.gcost1[i],
-                self.expcost2.value, self.partfract[i]
-            )
-            self.output[i] = self.eq.output(self.gross_output[i],
-                self.damage[i], self.abatement[i])
-            if i == 0:
-                self.investment[i] = self.savings.value * self._q0
-            else:
-                self.investment[i] = self.eq.investment(self.savings.value, self.output[i])
-            self.consumption[i] = self.eq.consumption(self.output[i], self.savings.value)
-            self.consumption_percapita[i] = self.eq.consumption_percapita(
-                self.consumption[i], self.l[i]
-            )
-            self.utility[i] = self.eq.utility(self.consumption_percapita[i],
-                self.elasmu.value, self.l[i])
-            self.utility_discounted[i] = self.eq.utility_discounted(
-                self.utility[i], self.rr[i], self.l[i]
-            )
+            D['miu'] = self.get_opt_mu(N)
+            D['miu'][0] = self.miu_2005
+        for i in range(N):
+            self.step(i, self.data['vars'], miu)
+            if self.optimize and (jac or slsqp[1]):
+                self.step(i, self.data['jac'], miu=miu, epsilon=1e-5,
+                    jac=True, f0=D['utility_discounted'][i])
         if self.optimize and miu is not None:
-            return miu.sum()
-#            return 0 - self.utility_discounted.sum()
+            if jac:
+                return self.jacobian
+            elif slsqp[1]:
+                return [
+                    -self.data['vars']['utility_discounted'].sum(),
+                    -self.jacobian,
+                ]
+            else:
+                if slsqp[0]:
+                    return -self.data['vars']['utility_discounted'].sum()
+                else:
+                    return self.data['vars']['utility_discounted'].sum()
 
-    def get_opt_mu(self, ftol):
-        RAMP = 30
+    def get_opt_mu(self, N):
         x0 = np.concatenate((
-            np.linspace(0,1,RAMP),
-            np.ones(self.tmax-RAMP),
+            np.linspace(.1,1,30),
+            np.ones(N-30)
         ))
-        SOLVER='SLSQP'
-        ARGS = ()
+        x0 = np.ones(N)
+        obj_tol = 1e-3
+#        x0 = self.get_slsqp_mu(x0, N, obj_tol, 3)
+        x0 = self.get_ipopt_mu(x0, N)
+        x0 = np.concatenate((
+            x0,
+            np.ones(self.tmax-N)
+        ))
+        return x0
+
+    def get_slsqp_mu(self, x, N, ftol, rounds):
+        t0 = datetime.now()
+        JAC = (True, False)
+        ARGS = (JAC, )
         OPTS = {
             'disp': False,
-            'ftol': ftol,
             'maxiter': 10,
-            'eps': 1e-3,
         }
         xl = 1e-6
         xu = 1.
-        BOUNDS = [(xl,xu)] * self.tmax
-        def step(x0, tol=.1, grad=False):
-            OPTS['ftol'] = tol
-            if grad:
-                r = minimize(self.loop, x0, args=ARGS, method=SOLVER,
-                    bounds=BOUNDS, options=OPTS, jac=self.opt_gradient
-                )
-            else:
-                r = minimize(self.loop, x0, args=ARGS, method=SOLVER,
-                    bounds=BOUNDS, options=OPTS
-                )
-            if __name__ == '__main__': print r.fun
-            return r.x
-        for i in range(5):
-            if i < 3: tol=1./10**i
+        x0 = x.copy()
+        BOUNDS = [(xl,xu)] * 30 + [(xu,xu)] * 30
+        for i in range(rounds):
+            if i < 3: tol = 1.0/10.0**(i)
             else: tol = .01
-            if i > 2: grad = True
-            else: grad = False
-            x0 = step(x0, tol=tol, grad=grad)
-        if __name__ == '__main__': print x0
+            OPTS['ftol'] = tol
+            r = minimize(self.loop, x0, args=ARGS, method='SLSQP',
+                bounds=BOUNDS, options=OPTS, jac=JAC[1]
+            )
+            print i, tol, r.fun
+            x0 = r.x
+        t1 = datetime.now()
+        print t1 - t0
         return x0
 
     def get_openopt_mu(self, ftol):
@@ -372,58 +397,44 @@ class Dice2007(Dice2007Params):
             ))
         x0 = np.ones(self.tmax)
         ub = np.ones(self.tmax)
-#        ub = np.empty(self.tmax)
-#        ub[:] = .99
         lb = np.zeros(self.tmax)
         fun = self.loop
-        p = NLP(fun, x0, lb=lb, ub=ub, iprint=1, ) #df=self.opt_gradient,
+        def grad(x):
+            return self.loop(x, jac=True)
+        p = NLP(fun, x0, lb=lb, ub=ub, iprint=1, df=grad) #df=self.opt_gradient,
         r = p.solve('ipopt', gtol=.0001, maxIter=10, optFile='./ipopt.opt',)
-        print r.isFeasible
         return r.xf
 
-    def ipopt_mu(self):
-        import pyipopt
-        x0 = np.concatenate((
-            np.linspace(0,1,30),
-            np.ones(30),
-        ))
-        N = 60
+    def get_ipopt_mu(self, x0, N, *args, **kwargs):
         M = 0
         xl = np.zeros(N)
+        xl[30:] = 1.
         xu = np.ones(N)
         gl = np.zeros(M)
         gu = np.ones(M)
         def eval_f(x):
             return self.loop(x)
         def eval_grad_f(x):
-            return np.gradient(x)
+            return self.loop(x, jac=True)
         def eval_g(x):
-#            return np.zeros(M)
-            return None
+            return np.zeros(M)
         def eval_jac_g(x, flag):
-            if flag:
-                return (
-                    np.arange(N),
-                    np.array([]),
-                )
-            else:
-                return np.arange(N)
-#            if flag:
-#                return (None, None)
-#            else:
-#                return None
+            if flag: return ([],[])
+            else: return []
+        def eval_h(x):
+            return np.array([])
         nnzj = 0
         nnzh = 0
-        r = pyipopt.create(N, xl, xu, M, gl, gu, nnzj, nnzh, eval_f, eval_grad_f, eval_g, eval_jac_g)
-        r.num_option('max_cpu_time', 7.)
-        r.str_option('start_with_resto', 'no')
-#        r.str_option('warm_start_init_point', 'yes')
-        r.int_option('print_level', 12)
+        r = pyipopt.create(N, xl, xu, M, gl, gu, nnzj, nnzh, eval_f,
+            eval_grad_f, eval_g, eval_jac_g)
+        r.num_option('tol', 1e-5)
+        r.num_option('acceptable_tol', 1e-4)
+        r.int_option('acceptable_iter', 9)
+        r.int_option('print_level', 5)
+        r.num_option('obj_scaling_factor', -1e-04)
         x, zl, zu, obj, status = r.solve(x0)
-        print x
-        print obj
-        print status
-
+        print 'Objective function: ', obj, '; Status: ', status
+        return x
 
     def format_output(self):
         """Output text for Google Visualizer graph functions."""
@@ -433,24 +444,26 @@ class Dice2007(Dice2007Params):
             vv = getattr(self, v)
             output += '%s %s\n' % (v, vv.value)
         for v in self.vars:
-            vv = getattr(self, v)
+            try:
+                vv = getattr(self, v)
+            except:
+                vv = getattr(self.data['vars'], v)
             output += '%s %s\n' % (v, ' '.join(map(str, list(vv))))
         return output
 
-    def opt_gradient(self, x0, *args, **kwargs):
-        return np.gradient(x0)
-
-
 if __name__ == '__main__':
-#def profile_stub():
+    import matplotlib.pyplot as plt
+    fig1 = plt.figure(figsize=(5, 2), dpi=200)
     d = Dice2007(optimize=True)
     t0 = datetime.now()
-#    d.loop(obj_tol=.01)
-    d.ipopt_mu()
-    print d.miu
-#    d.ipopt_mu()
+    d.loop()
     t1 = datetime.now()
+    plt.plot(d.data['vars']['miu'])
+#    plt.plot(d.data['vars']['abatement'])
+#    plt.plot(d.data['vars']['utility_discounted'])
+    plt.show()
     print t1-t0
+#    print d.data['vars']['utility_discounted']
 
 if __name__ == '__foo__':
     import argparse
@@ -480,7 +493,7 @@ if __name__ == '__foo__':
                 for m in d:
                     print bcolors.HEADER, '%s %s:\n' % (
                         m.eq.__module__.split('.')[1], v
-                        ), bcolors.ENDC, getattr(m, v)
+                        ), bcolors.ENDC, getattr(m.data['vars'], v)
             except:
                 print bcolors.WARNING, 'No variable named %s' % v, bcolors.ENDC
     except:
