@@ -27,7 +27,7 @@ class Loop(object):
     def mass_lower(self, mass_upper, mass_lower, b):
         """M_LO, Carbon concentration in lower oceans, GtC"""
         return b[1][2] * mass_upper + b[2][2] * mass_lower
-    def forcing(self, fco22x, mass_atmosphere, matPI, forcoth, ma_next):
+    def forcing(self, fco22x, mass_atmosphere, matPI, forcoth):
         """F, Forcing, W/m^2"""
         return fco22x * np.log(mass_atmosphere / matPI) + forcoth
 #        return fco22x * (np.log((((mass_atmosphere + ma_next)/2)+.000001)/matPI)/np.log(2)) + forcoth
