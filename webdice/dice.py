@@ -369,7 +369,7 @@ class Dice2007(Dice2007Params):
         obj_tol = 1e-6
         x0 = self.get_slsqp_mu(x0, obj_tol, 4)
 #        x0 = self.get_lbfgsb_mu(x0)
-        x0 = self.get_ipopt_mu(x0)
+#        x0 = self.get_ipopt_mu(x0)
         return x0
 
     def get_lbfgsb_mu(self, x):
