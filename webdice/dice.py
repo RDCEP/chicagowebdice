@@ -2,8 +2,11 @@ from datetime import datetime
 import numpy as np
 from params import Dice2007Params
 import equations
-from scipy.optimize import minimize
+from scipy.optimize import minimize, fmin_l_bfgs_b, fmin_slsqp
 import pyipopt
+try:
+    import matplotlib.pyplot as plt
+except: pass
 
 class Dice2007(Dice2007Params):
     """Variables, parameters, and step function for DICE 2007.
@@ -141,7 +144,8 @@ class Dice2007(Dice2007Params):
         array : gsigma * exp(-dsig * 10 * t - disg2 * 10 * t^2)
         """
         return self._gsigma * np.exp(-(
-            self.dsig.value/100) * 10 * self.t0 - self.dsig2 * 10 * (self.t0 ** 2))
+            0/100) * 10 * self.t0 - self.dsig2 * 10 * (self.t0 ** 2))
+#            self.dsig.value/100) * 10 * self.t0 - self.dsig2 * 10 * (self.t0 ** 2))
     @property
     def backstop(self):
         """
@@ -152,7 +156,8 @@ class Dice2007(Dice2007Params):
         array : pback * ((backrat - 1 + exp(-gback * t)) / backrat
         """
         return self._pback * (
-            (self.backrat.value - 1 + np.exp(-self.gback.value * self.t0)) / self.backrat.value)
+            (self.backrat.value - 1 + np.exp(-0 * self.t0)) / self.backrat.value)
+#            (self.backrat.value - 1 + np.exp(-self.gback.value * self.t0)) / self.backrat.value)
     @property
     def etree(self):
         """
@@ -223,7 +228,7 @@ class Dice2007(Dice2007Params):
     def welfare(self):
         return np.sum(self.data['vars']['utility_discounted'])
 
-    def step(self, i, D, miu=None, jac=False, epsilon=1e-3, f0=0.0):
+    def step(self, i, D, miu=None, jac=False, epsilon=1e-3, f0=0.0, slsqp=False):
         if i > 0:
             D['sigma'][i] = D['sigma'][i-1] / (1 - self.gsig[i])
             D['al'][i] = D['al'][i-1] / (1 - self.ga[i-1])
@@ -236,12 +241,14 @@ class Dice2007(Dice2007Params):
         )
         if self.optimize:
             if miu is not None:
-                if i > 0:
-                    if jac: eps = epsilon
-                    else: eps = 0.
-                    D['miu'][i] = miu[i] + eps
+#                if i > 0:
+                if jac:
+                    D['miu'] = miu
+                    D['miu'][i] = miu[i] + epsilon
                 else:
-                    D['miu'][i] = self.miu_2005
+                    D['miu'][i] = miu[i]
+#                else:
+#                    D['miu'][i] = self.miu_2005
         else:
             if i > 0:
                 if self.treaty_switch.value:
@@ -312,35 +319,37 @@ class Dice2007(Dice2007Params):
             D['utility'][i], self.rr[i], self.l[i]
         )
         if jac:
-            self.jacobian[i] = (D['utility_discounted'][i] - f0) / epsilon
-        if self.optimize and miu is not None and jac:
-                if i > 0:
-                    D['miu'][i] = miu[i]
+            if miu[i] == 1.: self.jacobian[i] = 0.0
+            else:
+                if slsqp:
+                    self.jacobian[i] = (-D['utility_discounted'][i] + f0) / epsilon
+                else: self.jacobian[i] = (D['utility_discounted'][i] - f0) / epsilon
 
     def loop(self, miu=None, slsqp=(False, False), jac=False):
         """
         Step function for calculating endogenous variables
         """
         D = self.data['vars']
-        if miu is not None: N = len(miu)
-        else: N = self.tmax
-        if len(self.jacobian) != N:
-            self.jacobian = np.zeros(N)
         if self.optimize and miu is None:
-            D['miu'] = self.get_opt_mu(N)
+            D['miu'] = self.get_opt_mu()
             D['miu'][0] = self.miu_2005
+        if slsqp[1] or jac:
+            self.jacobian = np.zeros([len(miu), 1])
         for i in range(N):
             self.step(i, self.data['vars'], miu)
             if self.optimize and (jac or slsqp[1]):
-                self.step(i, self.data['jac'], miu=miu, epsilon=1e-5,
-                    jac=True, f0=D['utility_discounted'][i])
+                f0 = np.atleast_1d(D['utility_discounted'][i])
+                self.step(i, self.data['jac'], miu=miu, epsilon=1e-8,
+                    jac=True, slsqp=slsqp[0], f0=f0)
         if self.optimize and miu is not None:
             if jac:
-                return self.jacobian
+#                print self.jacobian
+                return self.jacobian.transpose()
             elif slsqp[1]:
+#                print self.jacobian
                 return [
                     -self.data['vars']['utility_discounted'].sum(),
-                    -self.jacobian,
+                    self.jacobian.transpose(),
                 ]
             else:
                 if slsqp[0]:
@@ -348,44 +357,60 @@ class Dice2007(Dice2007Params):
                 else:
                     return self.data['vars']['utility_discounted'].sum()
 
-    def get_opt_mu(self, N):
+
+    def get_opt_mu(self):
+        RAMP = 30
         x0 = np.concatenate((
-            np.linspace(.1,1,30),
-            np.ones(N-30)
+            np.linspace(.1,1,RAMP),
+            np.ones(self.tmax-RAMP)
         ))
-        x0 = np.ones(N)
-        obj_tol = 1e-3
-#        x0 = self.get_slsqp_mu(x0, N, obj_tol, 3)
-        x0 = self.get_ipopt_mu(x0, N)
-        x0 = np.concatenate((
-            x0,
-            np.ones(self.tmax-N)
-        ))
+        x0 = np.power(x0, .73)
+#        x0 = np.ones(N)
+        obj_tol = 1e-6
+        x0 = self.get_slsqp_mu(x0, obj_tol, 4)
+#        x0 = self.get_lbfgsb_mu(x0)
+#        x0 = self.get_ipopt_mu(x0, N)
         return x0
 
-    def get_slsqp_mu(self, x, N, ftol, rounds):
+    def get_lbfgsb_mu(self, x):
+        xl = 1e-6
+        xu = 1.
+        BOUNDS = [(xl,xu)] * 60
+        def f(x, slsqp):
+            return self.loop(x, slsqp=slsqp, jac=False)
+        def g(x):
+            return self.loop(x, slsqp=(True, True), jac=False)[1]
+        r = fmin_l_bfgs_b(f, x, fprime=None, args=((True, False),), approx_grad=True,
+            bounds=BOUNDS, m=4, factr=1e-10, pgtol=1e-4, disp=2, maxfun=4,
+            epsilon=1e-8)
+        return r[0]
+
+    def get_slsqp_mu(self, x, ftol, rounds):
         t0 = datetime.now()
-        JAC = (True, False)
+#        JAC = (True, False)
+        JAC = (True, True)
         ARGS = (JAC, )
         OPTS = {
-            'disp': False,
+            'disp': True,
             'maxiter': 10,
+            'eps': 1e-4,
         }
         xl = 1e-6
         xu = 1.
         x0 = x.copy()
         BOUNDS = [(xl,xu)] * 30 + [(xu,xu)] * 30
+        def cons(x):
+            return None
         for i in range(rounds):
             if i < 3: tol = 1.0/10.0**(i)
-            else: tol = .01
+            else: tol = ftol
             OPTS['ftol'] = tol
             r = minimize(self.loop, x0, args=ARGS, method='SLSQP',
                 bounds=BOUNDS, options=OPTS, jac=JAC[1]
             )
-            print i, tol, r.fun
             x0 = r.x
         t1 = datetime.now()
-        print t1 - t0
+#        print t1 - t0
         return x0
 
     def get_openopt_mu(self, ftol):
@@ -401,7 +426,7 @@ class Dice2007(Dice2007Params):
         fun = self.loop
         def grad(x):
             return self.loop(x, jac=True)
-        p = NLP(fun, x0, lb=lb, ub=ub, iprint=1, df=grad) #df=self.opt_gradient,
+        p = NLP(fun, x0, lb=lb, ub=ub, iprint=1, df=grad)
         r = p.solve('ipopt', gtol=.0001, maxIter=10, optFile='./ipopt.opt',)
         return r.xf
 
@@ -452,18 +477,19 @@ class Dice2007(Dice2007Params):
         return output
 
 if __name__ == '__main__':
-    import matplotlib.pyplot as plt
-    fig1 = plt.figure(figsize=(5, 2), dpi=200)
     d = Dice2007(optimize=True)
     t0 = datetime.now()
     d.loop()
     t1 = datetime.now()
-    plt.plot(d.data['vars']['miu'])
-#    plt.plot(d.data['vars']['abatement'])
-#    plt.plot(d.data['vars']['utility_discounted'])
-    plt.show()
+    try:
+        fig1 = plt.figure(figsize=(5, 2), dpi=200)
+        plt.plot(d.data['vars']['miu'])
+#        plt.plot(d.data['vars']['abatement'])
+#        plt.plot(d.data['vars']['utility_discounted'])
+        plt.show()
+    except:
+        pass
     print t1-t0
-#    print d.data['vars']['utility_discounted']
 
 if __name__ == '__foo__':
     import argparse
