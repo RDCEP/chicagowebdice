@@ -369,7 +369,7 @@ class Dice2007(Dice2007Params):
         obj_tol = 1e-6
         x0 = self.get_slsqp_mu(x0, obj_tol, 4)
 #        x0 = self.get_lbfgsb_mu(x0)
-#        x0 = self.get_ipopt_mu(x0, N)
+        x0 = self.get_ipopt_mu(x0)
         return x0
 
     def get_lbfgsb_mu(self, x):
@@ -430,11 +430,11 @@ class Dice2007(Dice2007Params):
         r = p.solve('ipopt', gtol=.0001, maxIter=10, optFile='./ipopt.opt',)
         return r.xf
 
-    def get_ipopt_mu(self, x0, N, *args, **kwargs):
+    def get_ipopt_mu(self, x0, *args, **kwargs):
         M = 0
-        xl = np.zeros(N)
+        xl = np.zeros(self.tmax)
         xl[30:] = 1.
-        xu = np.ones(N)
+        xu = np.ones(self.tmax)
         gl = np.zeros(M)
         gu = np.ones(M)
         def eval_f(x):
@@ -450,7 +450,7 @@ class Dice2007(Dice2007Params):
             return np.array([])
         nnzj = 0
         nnzh = 0
-        r = pyipopt.create(N, xl, xu, M, gl, gu, nnzj, nnzh, eval_f,
+        r = pyipopt.create(self.tmax, xl, xu, M, gl, gu, nnzj, nnzh, eval_f,
             eval_grad_f, eval_g, eval_jac_g)
         r.num_option('tol', 1e-5)
         r.num_option('acceptable_tol', 1e-4)
