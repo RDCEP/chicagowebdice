@@ -335,7 +335,7 @@ class Dice2007(Dice2007Params):
             D['miu'][0] = self.miu_2005
         if slsqp[1] or jac:
             self.jacobian = np.zeros([len(miu), 1])
-        for i in range(N):
+        for i in range(self.tmax):
             self.step(i, self.data['vars'], miu)
             if self.optimize and (jac or slsqp[1]):
                 f0 = np.atleast_1d(D['utility_discounted'][i])
@@ -391,7 +391,7 @@ class Dice2007(Dice2007Params):
         JAC = (True, True)
         ARGS = (JAC, )
         OPTS = {
-            'disp': True,
+            'disp': False,
             'maxiter': 10,
             'eps': 1e-4,
         }
