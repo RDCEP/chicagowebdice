@@ -216,32 +216,32 @@ class Dice2007Params(object):
         self.miu_2005 = .005 # emission control rate (fraction of uncontrolled emissions)
         self.t0 = np.arange(float(self.tmax))
         self.t1 = self.t0 + 1
-        self.gcost1 = np.zeros(self.tmax)
-        self.sigma = np.empty(self.tmax); self.sigma[:] = self._sig0
-        self.al = np.empty(self.tmax); self.al[:] = self._a0
-        self.capital = np.empty(self.tmax); self.capital[:] = self._k0
-        self.output = np.empty(self.tmax); self.output[:] = self._q0
-        self.mass_atmosphere = np.empty(self.tmax); self.mass_atmosphere[:] = self.mat2000
-        self.mass_upper = np.empty(self.tmax); self.mass_upper[:] = self.mu2000
-        self.mass_lower = np.empty(self.tmax); self.mass_lower[:] = self.ml2000
-        self.temp_atmosphere = np.empty(self.tmax); self.temp_atmosphere[:] = self.tatm0
-        self.temp_lower = np.empty(self.tmax); self.temp_lower[:] = self.tocean0
-        self.investment = np.empty(self.tmax); self.investment[:] = self.savings.value * self._q0
-        self.miu = np.empty(self.tmax); self.miu[:] = self.miu_2005
-        self.jacobian = np.empty(self.tmax)
+        gcost1 = np.zeros(self.tmax)
+        sigma = np.empty(self.tmax); sigma[:] = self._sig0
+        al = np.empty(self.tmax); al[:] = self._a0
+        capital = np.empty(self.tmax); capital[:] = self._k0
+        output = np.empty(self.tmax); output[:] = self._q0
+        mass_atmosphere = np.empty(self.tmax); mass_atmosphere[:] = self.mat2000
+        mass_upper = np.empty(self.tmax); mass_upper[:] = self.mu2000
+        mass_lower = np.empty(self.tmax); mass_lower[:] = self.ml2000
+        temp_atmosphere = np.empty(self.tmax); temp_atmosphere[:] = self.tatm0
+        temp_lower = np.empty(self.tmax); temp_lower[:] = self.tocean0
+        investment = np.empty(self.tmax); investment[:] = self.savings.value * self._q0
+        miu = np.empty(self.tmax); miu[:] = self.miu_2005
+        self.derivative = np.empty(self.tmax)
         data = pd.DataFrame({
-            'miu': self.miu,
-            'sigma': self.sigma,
-            'al': self.al,
-            'gcost1': self.gcost1,
-            'capital': self.capital,
-            'output': self.output,
-            'mass_atmosphere': self.mass_atmosphere,
-            'mass_upper': self.mass_upper,
-            'mass_lower': self.mass_lower,
-            'temp_atmosphere': self.temp_atmosphere,
-            'temp_lower': self.temp_lower,
-            'investment': self.investment,
+            'miu': miu,
+            'sigma': sigma,
+            'al': al,
+            'gcost1': gcost1,
+            'capital': capital,
+            'output': output,
+            'mass_atmosphere': mass_atmosphere,
+            'mass_upper': mass_upper,
+            'mass_lower': mass_lower,
+            'temp_atmosphere': temp_atmosphere,
+            'temp_lower': temp_lower,
+            'investment': investment,
             'gross_output': np.zeros(self.tmax),
             'forcing': np.zeros(self.tmax),
             'emissions_industrial': np.zeros(self.tmax),
