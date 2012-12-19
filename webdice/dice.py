@@ -58,6 +58,8 @@ class Dice2007(Dice2007Params):
         self.p = Dice2007Params()
         self.optimize = False
         if optimize: self.optimize = True
+        self.POW = 1.0
+        self.RAMP = 23
     #    , if time_travel:
     #            self.eq.forcing = excel.ExcelLoop.forcing
     @property
@@ -144,8 +146,8 @@ class Dice2007(Dice2007Params):
         array : gsigma * exp(-dsig * 10 * t - disg2 * 10 * t^2)
         """
         return self._gsigma * np.exp(-(
-            0/100) * 10 * self.t0 - self.dsig2 * 10 * (self.t0 ** 2))
-#            self.dsig.value/100) * 10 * self.t0 - self.dsig2 * 10 * (self.t0 ** 2))
+#            0/100) * 10 * self.t0 - self.dsig2 * 10 * (self.t0 ** 2))
+            self.dsig.value/100) * 10 * self.t0 - self.dsig2 * 10 * (self.t0 ** 2))
     @property
     def backstop(self):
         """
@@ -156,8 +158,8 @@ class Dice2007(Dice2007Params):
         array : pback * ((backrat - 1 + exp(-gback * t)) / backrat
         """
         return self._pback * (
-            (self.backrat.value - 1 + np.exp(-0 * self.t0)) / self.backrat.value)
-#            (self.backrat.value - 1 + np.exp(-self.gback.value * self.t0)) / self.backrat.value)
+#            (self.backrat.value - 1 + np.exp(-0 * self.t0)) / self.backrat.value)
+            (self.backrat.value - 1 + np.exp(-self.gback.value * self.t0)) / self.backrat.value)
     @property
     def etree(self):
         """
@@ -241,14 +243,11 @@ class Dice2007(Dice2007Params):
         )
         if self.optimize:
             if miu is not None:
-#                if i > 0:
                 if jac:
                     D['miu'] = miu
                     D['miu'][i] = miu[i] + epsilon
                 else:
                     D['miu'][i] = miu[i]
-#                else:
-#                    D['miu'][i] = self.miu_2005
         else:
             if i > 0:
                 if self.treaty_switch.value:
@@ -319,13 +318,13 @@ class Dice2007(Dice2007Params):
             D['utility'][i], self.rr[i], self.l[i]
         )
         if jac:
-            if miu[i] == 1.: self.jacobian[i] = 0.0
+            if miu[i] == 1.: self.derivative[i] = 0.0
             else:
                 if slsqp:
-                    self.jacobian[i] = (-D['utility_discounted'][i] + f0) / epsilon
-                else: self.jacobian[i] = (D['utility_discounted'][i] - f0) / epsilon
+                    self.derivative[i] = (-D['utility_discounted'][i] + f0) / epsilon
+                else: self.derivative[i] = (D['utility_discounted'][i] - f0) / epsilon
 
-    def loop(self, miu=None, slsqp=(False, False), jac=False):
+    def loop(self, miu=None, slsqp=(False, False), deriv=False):
         """
         Step function for calculating endogenous variables
         """
@@ -333,23 +332,21 @@ class Dice2007(Dice2007Params):
         if self.optimize and miu is None:
             D['miu'] = self.get_opt_mu()
             D['miu'][0] = self.miu_2005
-        if slsqp[1] or jac:
-            self.jacobian = np.zeros([len(miu), 1])
+        if slsqp[1] or deriv:
+            self.derivative = np.zeros([len(miu), 1])
         for i in range(self.tmax):
             self.step(i, self.data['vars'], miu)
-            if self.optimize and (jac or slsqp[1]):
+            if self.optimize and (deriv or slsqp[1]):
                 f0 = np.atleast_1d(D['utility_discounted'][i])
                 self.step(i, self.data['jac'], miu=miu, epsilon=1e-8,
                     jac=True, slsqp=slsqp[0], f0=f0)
         if self.optimize and miu is not None:
-            if jac:
-#                print self.jacobian
-                return self.jacobian.transpose()
+            if deriv:
+                return self.derivative.transpose()
             elif slsqp[1]:
-#                print self.jacobian
                 return [
                     -self.data['vars']['utility_discounted'].sum(),
-                    self.jacobian.transpose(),
+                    self.derivative.transpose(),
                 ]
             else:
                 if slsqp[0]:
@@ -357,50 +354,35 @@ class Dice2007(Dice2007Params):
                 else:
                     return self.data['vars']['utility_discounted'].sum()
 
-
     def get_opt_mu(self):
-        RAMP = 30
         x0 = np.concatenate((
-            np.linspace(.1,1,RAMP),
-            np.ones(self.tmax-RAMP)
+            np.linspace(.1,1,self.RAMP),
+            np.ones(self.tmax-self.RAMP)
         ))
-        x0 = np.power(x0, .73)
+        x0 = np.power(x0, self.POW)
 #        x0 = np.ones(N)
         obj_tol = 1e-6
-        x0 = self.get_slsqp_mu(x0, obj_tol, 4)
-#        x0 = self.get_lbfgsb_mu(x0)
-#        x0 = self.get_ipopt_mu(x0)
+#        x0 = self.get_slsqp_mu(x0, obj_tol, 4)
+        x0 = self.get_ipopt_mu(x0, self.RAMP)
         return x0
 
     def get_lbfgsb_mu(self, x):
-        xl = 1e-6
-        xu = 1.
-        BOUNDS = [(xl,xu)] * 60
+        BOUNDS = [(1e-8, 1.0)] * 60
         def f(x, slsqp):
-            return self.loop(x, slsqp=slsqp, jac=False)
+            return self.loop(x, slsqp=slsqp, deriv=False)
         def g(x):
-            return self.loop(x, slsqp=(True, True), jac=False)[1]
+            return self.loop(x, slsqp=(True, True), deriv=False)[1]
         r = fmin_l_bfgs_b(f, x, fprime=None, args=((True, False),), approx_grad=True,
             bounds=BOUNDS, m=4, factr=1e-10, pgtol=1e-4, disp=2, maxfun=4,
             epsilon=1e-8)
         return r[0]
 
-    def get_slsqp_mu(self, x, ftol, rounds):
-        t0 = datetime.now()
+    def get_slsqp_mu(self, x0, ftol, rounds):
 #        JAC = (True, False)
         JAC = (True, True)
         ARGS = (JAC, )
-        OPTS = {
-            'disp': False,
-            'maxiter': 10,
-            'eps': 1e-4,
-        }
-        xl = 1e-6
-        xu = 1.
-        x0 = x.copy()
-        BOUNDS = [(xl,xu)] * 30 + [(xu,xu)] * 30
-        def cons(x):
-            return None
+        OPTS = {'disp': False, 'maxiter': 10, 'eps': 1e-4,}
+        BOUNDS = [(0.0, 1.0)] * 30 + [(1.0, 1.0)] * 30
         for i in range(rounds):
             if i < 3: tol = 1.0/10.0**(i)
             else: tol = ftol
@@ -409,8 +391,6 @@ class Dice2007(Dice2007Params):
                 bounds=BOUNDS, options=OPTS, jac=JAC[1]
             )
             x0 = r.x
-        t1 = datetime.now()
-#        print t1 - t0
         return x0
 
     def get_openopt_mu(self, ftol):
@@ -425,22 +405,22 @@ class Dice2007(Dice2007Params):
         lb = np.zeros(self.tmax)
         fun = self.loop
         def grad(x):
-            return self.loop(x, jac=True)
+            return self.loop(x, deriv=True)
         p = NLP(fun, x0, lb=lb, ub=ub, iprint=1, df=grad)
         r = p.solve('ipopt', gtol=.0001, maxIter=10, optFile='./ipopt.opt',)
         return r.xf
 
-    def get_ipopt_mu(self, x0, *args, **kwargs):
+    def get_ipopt_mu(self, x0, RAMP, *args, **kwargs):
         M = 0
         xl = np.zeros(self.tmax)
-        xl[30:] = 1.
+#        xl[RAMP:] = 1.
         xu = np.ones(self.tmax)
         gl = np.zeros(M)
         gu = np.ones(M)
         def eval_f(x):
             return self.loop(x)
         def eval_grad_f(x):
-            return self.loop(x, jac=True)
+            return self.loop(x, deriv=True)
         def eval_g(x):
             return np.zeros(M)
         def eval_jac_g(x, flag):
@@ -452,11 +432,13 @@ class Dice2007(Dice2007Params):
         nnzh = 0
         r = pyipopt.create(self.tmax, xl, xu, M, gl, gu, nnzj, nnzh, eval_f,
             eval_grad_f, eval_g, eval_jac_g)
-        r.num_option('tol', 1e-5)
-        r.num_option('acceptable_tol', 1e-4)
-        r.int_option('acceptable_iter', 9)
-        r.int_option('print_level', 5)
+        r.num_option('tol', 1e-4)
         r.num_option('obj_scaling_factor', -1e-04)
+#        r.num_option('acceptable_tol', 1e-4)
+#        r.int_option('acceptable_iter', 9)
+        r.int_option('print_level', 0)
+        r.str_option('start_with_resto', 'no')
+        r.str_option('check_derivatives_for_naninf', 'no')
         x, zl, zu, obj, status = r.solve(x0)
         print 'Objective function: ', obj, '; Status: ', status
         return x
@@ -476,7 +458,7 @@ class Dice2007(Dice2007Params):
             output += '%s %s\n' % (v, ' '.join(map(str, list(vv))))
         return output
 
-if __name__ == '__main__':
+def profile_stub():
     d = Dice2007(optimize=True)
     t0 = datetime.now()
     d.loop()
@@ -484,12 +466,13 @@ if __name__ == '__main__':
     try:
         fig1 = plt.figure(figsize=(5, 2), dpi=200)
         plt.plot(d.data['vars']['miu'])
-#        plt.plot(d.data['vars']['abatement'])
-#        plt.plot(d.data['vars']['utility_discounted'])
         plt.show()
     except:
         pass
     print t1-t0
+
+if __name__ == '__main__':
+    profile_stub()
 
 if __name__ == '__foo__':
     import argparse
