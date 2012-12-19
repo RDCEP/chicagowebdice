@@ -92,7 +92,7 @@ class Dice2007(Dice2007Params):
             'temp_lower', 'damage', 'abatement', 'output',
             'investment', 'carbon_emitted', 'consumption',
             'consumption_percapita', 'utility', 'utility_discounted',
-            'al', 'gcost1', 'sigma', 'miu', 'backstop',
+            'al', 'gcost1', 'sigma', 'miu', 'backstop', 'l',
             ]
     @property
     def aa(self):

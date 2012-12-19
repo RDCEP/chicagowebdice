@@ -385,8 +385,13 @@ measurements:
   - name: Lower Ocean Temperature Increase
     machine_name: temp_lower
     unit: °C from 1900
-  - name: Utility
+  - name: Utility Discounted
     machine_name: utility_discounted
+  - name: Utility
+    machine_name: utility
+  - name: Labor Supply
+    machine_name: l
+    unit: Millions
 
 questions:
   - question: What is the answer to the ultimate question, of life, the universe, and everything?
