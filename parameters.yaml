@@ -392,6 +392,10 @@ measurements:
   - name: Labor Supply
     machine_name: l
     unit: Millions
+  - name: Tax Rate
+    machine_name: tax_rate
+  - name: Abatement Cost as a Percentage of Output
+    machine_name: output_abate
 
 questions:
   - question: What is the answer to the ultimate question, of life, the universe, and everything?

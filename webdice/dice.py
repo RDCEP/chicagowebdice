@@ -89,11 +89,11 @@ class Dice2007(Dice2007Params):
             'capital', 'gross_output', 'emissions_industrial',
             'emissions_total', 'mass_atmosphere', 'mass_upper',
             'mass_lower', 'forcing', 'temp_atmosphere',
-            'temp_lower', 'damage', 'abatement', 'output',
+            'temp_lower', 'damage', 'abatement', 'output', 'output_abate',
             'investment', 'carbon_emitted', 'consumption',
             'consumption_percapita', 'utility', 'utility_discounted',
-            'al', 'gcost1', 'sigma', 'miu', 'backstop', 'l',
-            ]
+            'al', 'gcost1', 'sigma', 'miu', 'backstop', 'l', 'tax_rate',
+        ]
     @property
     def aa(self):
         """
@@ -226,6 +226,12 @@ class Dice2007(Dice2007Params):
     @property
     def lam(self):
         return self.fco22x / self.t2xco2.value
+    @property
+    def tax_rate(self):
+        return self.backstop * 1000 * self.data['vars']['miu'] ** (self.expcost2.value-1)
+    @property
+    def output_abate(self):
+        return self.data['vars']['gcost1'] * self.data['vars']['miu']**self.expcost2.value
     @property
     def welfare(self):
         return np.sum(self.data['vars']['utility_discounted'])
