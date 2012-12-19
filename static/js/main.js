@@ -270,6 +270,16 @@
                 var selectedXOption = $(selectXAxis).find('option:selected').text();
                 var selectedYOption = $(selectYAxis).find('option:selected').text();
 
+                var selectedXIndex = $(selectXAxis).find('option:selected').index();
+                if (selectedXIndex > 0) {
+                    var selectedXUnit = '('+Options.measurements[selectedXIndex-1]['unit']+')';
+                } else {
+                    selectedXUnit = '';
+                }
+
+                var selectedYIndex = $(selectYAxis).find('option:selected').index();
+                var selectedYUnit = '('+Options.measurements[selectedYIndex]['unit']+')';
+
                 var options = {
                     title : (selectedYOption + ' vs. ' + selectedXOption),
                     width : contentDiv.offsetWidth,
@@ -277,8 +287,8 @@
                     legend : {'position' : 'none' },
                     colors : colors,
                     pointSize : 2,
-                    hAxis : { title : selectedXOption, logScale : !!checkedLogarithmicX.checked },
-                    vAxis : { title : selectedYOption, logScale : !!checkedLogarithmicY.checked }
+                    hAxis : { title : selectedXOption + ' ' + selectedXUnit, logScale : !!checkedLogarithmicX.checked },
+                    vAxis : { title : selectedYOption + ' ' + selectedYUnit, logScale : !!checkedLogarithmicY.checked }
                 };
 
                 if (selectXAxis.value == 'year') {
