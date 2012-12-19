@@ -270,15 +270,30 @@
                 var selectedXOption = $(selectXAxis).find('option:selected').text();
                 var selectedYOption = $(selectYAxis).find('option:selected').text();
 
-                var selectedXIndex = $(selectXAxis).find('option:selected').index();
-                if (selectedXIndex > 0) {
-                    var selectedXUnit = '('+Options.measurements[selectedXIndex-1]['unit']+')';
-                } else {
-                    selectedXUnit = '';
-                }
-
-                var selectedYIndex = $(selectYAxis).find('option:selected').index();
-                var selectedYUnit = '('+Options.measurements[selectedYIndex]['unit']+')';
+                var selectedXUnit = function() {
+                    var selectedXIndex = $(selectXAxis).find('option:selected').index();
+                    if (selectedXIndex > 0) {
+                        var Unit = Options.measurements[selectedXIndex-1]['unit'];
+                        if (typeof Unit === 'undefined') {
+                            Unit = '';
+                        } else {
+                            Unit = '('+Unit+')';
+                        }
+                    } else {
+                        Unit = '';
+                    }
+                    return Unit;
+                };
+                var selectedYUnit = function() {
+                    var selectedYIndex = $(selectYAxis).find('option:selected').index();
+                    var Unit = Options.measurements[selectedYIndex]['unit'];
+                    if (typeof Unit === 'undefined') {
+                        Unit = '';
+                    } else {
+                        Unit = '('+Unit+')';
+                    }
+                    return Unit;
+                };
 
                 var options = {
                     title : (selectedYOption + ' vs. ' + selectedXOption),
@@ -287,8 +302,8 @@
                     legend : {'position' : 'none' },
                     colors : colors,
                     pointSize : 2,
-                    hAxis : { title : selectedXOption + ' ' + selectedXUnit, logScale : !!checkedLogarithmicX.checked },
-                    vAxis : { title : selectedYOption + ' ' + selectedYUnit, logScale : !!checkedLogarithmicY.checked }
+                    hAxis : { title : selectedXOption + ' ' + selectedXUnit(), logScale : !!checkedLogarithmicX.checked },
+                    vAxis : { title : selectedYOption + ' ' + selectedYUnit(), logScale : !!checkedLogarithmicY.checked }
                 };
 
                 if (selectXAxis.value == 'year') {
