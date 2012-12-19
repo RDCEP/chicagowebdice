@@ -57,8 +57,12 @@ def page():
         HTML
     """
     measurements = get_measurements()
+    without_sections = []
+    for s in measurements:
+        for m in s['values']:
+            without_sections.append(m)
     graph_locations = get_graph_locations()
-    m = json.JSONEncoder().encode(measurements)
+    m = json.JSONEncoder().encode(without_sections)
     g = json.JSONEncoder().encode(graph_locations)
     now = datetime.now().strftime('%Y%m%d%H%M%S')
     tpl = template('index',

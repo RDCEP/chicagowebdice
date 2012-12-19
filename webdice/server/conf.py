@@ -313,10 +313,12 @@ def measurements_html():
     """
     measurements = get_measurements()
     html = ''
-    for measurement in measurements:
-        machine_name = htmlp.unescape(measurement['machine_name'])
-        measurement_name = htmlp.unescape(measurement['name'])
-        html += '<option value="%s">%s</option>\n' % (machine_name, measurement_name)
+    for section in measurements:
+        html += '<optgroup label="-- %s --"></optgroup>\n' % htmlp.unescape(section['name'])
+        for measurement in section['values']:
+            machine_name = htmlp.unescape(measurement['machine_name'])
+            measurement_name = htmlp.unescape(measurement['name'])
+            html += '<option value="%s">%s</option>\n' % (machine_name, measurement_name)
     return html
 
 def foo():

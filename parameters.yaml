@@ -326,76 +326,83 @@ parameters:
     id: run-opt
 
 measurements:
-  - name: Consumption per Capita
-    machine_name: consumption_percapita
-    unit: Thousands $USD / Person / Year
-    description: Global average GDP per capita
-    format: "$#.##"
-    location: topright
-  - name: Total Consumption
-    machine_name: consumption
-    unit: Trillions $USD / Year
-  - name: Abatement
-    machine_name: abatement
-    unit: Trillions $USD / Year
-  - name: Damages
-    machine_name: damage
-    unit: Trillions $USD / Year
-  - name: Total Factor Productivity
-    machine_name: al
-  - name: Emissions Control Rate
-    machine_name: miu
-  - name: Clean Energy Costs
-    machine_name: backstop
-    unit: Thousands $USD / ton of CO2
-  - name: Carbon Intensity
-    machine_name: sigma
-    unit: tons of CO2 / 1000 $USD
-  - name: Capital Stock
-    machine_name: capital
-    machine_name: capital
-    unit: Trillions $USD
-  - name: Total Emissions per Year
-    machine_name: emissions_total
-    unit: Gt of Carbon / 10 yr
-    description: Projected path of annual future carbon emissions
-    location: bottomright
-  - name: Industrial Emissions
-    machine_name: emissions_industrial
-    unit: Gt of Carbon
-  - name: Total Carbon Emitted
-    machine_name: carbon_emitted
-    unit: Gt of Carbon
-  - name: Carbon Mass in Atmosphere
-    machine_name: mass_atmosphere
-    unit: Gt of Carbon
-    description: The projected concentration of carbon in the atmosphere.
-    location: bottomleft
-  - name: Carbon Mass in Upper Oceans
-    machine_name: mass_upper
-    unit: Gt of Carbon
-  - name: Carbon Mass in Lower Oceans
-    machine_name: mass_lower
-    unit: Gt of Carbon
-  - name: Atmospheric Temperature Increase
-    machine_name: temp_atmosphere
-    unit: °C from 1900
-    description: Projected increases in global average temperatures compared to pre-industrial temperatures
-    location: topleft
-  - name: Lower Ocean Temperature Increase
-    machine_name: temp_lower
-    unit: °C from 1900
-  - name: Utility Discounted
-    machine_name: utility_discounted
-  - name: Utility
-    machine_name: utility
-  - name: Labor Supply
-    machine_name: l
-    unit: Millions
-  - name: Tax Rate
-    machine_name: tax_rate
-  - name: Abatement Cost as a Percentage of Output
-    machine_name: output_abate
+  - name: User-controlled Inputs
+    values:
+      - name: Total Factor Productivity
+        machine_name: al
+      - name: Clean Energy Costs
+        machine_name: backstop
+        unit: Thousands $USD / ton of CO2
+      - name: Carbon Intensity
+        machine_name: sigma
+        unit: tons of CO2 / 1000 $USD
+      - name: Labor Supply
+        machine_name: l
+        unit: Millions
+  - name: Economic Results
+    values:
+      - name: Consumption per Capita
+        machine_name: consumption_percapita
+        unit: Thousands $USD / Person / Year
+        description: Global average GDP per capita
+        format: "$#.##"
+        location: topright
+      - name: Total Consumption
+        machine_name: consumption
+        unit: Trillions $USD / Year
+      - name: Damages
+        machine_name: damage
+        unit: Trillions $USD / Year
+      - name: Total Emissions per Year
+        machine_name: emissions_total
+        unit: Gt of Carbon / 10 yr
+        description: Projected path of annual future carbon emissions
+        location: bottomright
+      - name: Industrial Emissions
+        machine_name: emissions_industrial
+        unit: Gt of Carbon
+      - name: Total Carbon Emitted
+        machine_name: carbon_emitted
+        unit: Gt of Carbon
+      - name: Capital Stock
+        machine_name: capital
+        unit: Trillions $USD
+      - name: Utility Discounted
+        machine_name: utility_discounted
+      - name: Utility
+        machine_name: utility
+  - name: Emissions Controls
+    values:
+      - name: Abatement
+        machine_name: abatement
+        unit: Trillions $USD / Year
+      - name: Emissions Control Rate
+        machine_name: miu
+      - name: Abatement Cost as a Percentage of Output
+        machine_name: output_abate
+      - name: Tax Rate
+        machine_name: tax_rate
+  - name: Carbon Cycle
+    values:
+      - name: Carbon Mass in Atmosphere
+        machine_name: mass_atmosphere
+        unit: Gt of Carbon
+        description: The projected concentration of carbon in the atmosphere.
+        location: bottomleft
+      - name: Carbon Mass in Upper Oceans
+        machine_name: mass_upper
+        unit: Gt of Carbon
+      - name: Carbon Mass in Lower Oceans
+        machine_name: mass_lower
+        unit: Gt of Carbon
+      - name: Atmospheric Temperature Increase
+        machine_name: temp_atmosphere
+        unit: °C from 1900
+        description: Projected increases in global average temperatures compared to pre-industrial temperatures
+        location: topleft
+      - name: Lower Ocean Temperature Increase
+        machine_name: temp_lower
+        unit: °C from 1900
 
 questions:
   - question: What is the answer to the ultimate question, of life, the universe, and everything?

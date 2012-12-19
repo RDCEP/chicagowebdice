@@ -271,7 +271,7 @@
                 var selectedYOption = $(selectYAxis).find('option:selected').text();
 
                 var selectedXUnit = function() {
-                    var selectedXIndex = $(selectXAxis).find('option:selected').index();
+                    var selectedXIndex = $(selectXAxis).find('option:selected').index('#select-x-axis option');
                     if (selectedXIndex > 0) {
                         var Unit = Options.measurements[selectedXIndex-1]['unit'];
                         if (typeof Unit === 'undefined') {
@@ -285,7 +285,7 @@
                     return Unit;
                 };
                 var selectedYUnit = function() {
-                    var selectedYIndex = $(selectYAxis).find('option:selected').index();
+                    var selectedYIndex = $(selectYAxis).find('option:selected').index('#select-y-axis option');
                     var Unit = Options.measurements[selectedYIndex]['unit'];
                     if (typeof Unit === 'undefined') {
                         Unit = '';
