@@ -59,7 +59,7 @@ class Dice2007(Dice2007Params):
         self.optimize = False
         if optimize: self.optimize = True
         self.POW = 1.0
-        self.RAMP = 23
+        self.RAMP = 21
     #    , if time_travel:
     #            self.eq.forcing = excel.ExcelLoop.forcing
     @property
@@ -360,16 +360,25 @@ class Dice2007(Dice2007Params):
                 else:
                     return self.data['vars']['utility_discounted'].sum()
 
+    def get_ramp(self):
+        self.optimize = False
+        self.loop()
+        ramp = np.abs(
+            (self.data['vars']['damage'] /
+             self.data['vars']['consumption_percapita'])-.5
+        ).argmin()
+        if self.gback.value > .05:
+            ramp = int(round(ramp * .9))
+        self.optimize = True
+        return ramp
+
     def get_opt_mu(self):
+        ramp = self.get_ramp()
         x0 = np.concatenate((
-            np.linspace(.1,1,self.RAMP),
-            np.ones(self.tmax-self.RAMP)
+            np.linspace(.1, 1, ramp),
+            np.ones(self.tmax-ramp)
         ))
-        x0 = np.power(x0, self.POW)
-#        x0 = np.ones(N)
-        obj_tol = 1e-6
-#        x0 = self.get_slsqp_mu(x0, obj_tol, 4)
-        x0 = self.get_ipopt_mu(x0, self.RAMP)
+        x0 = self.get_ipopt_mu(x0, ramp)
         return x0
 
     def get_lbfgsb_mu(self, x):
@@ -419,7 +428,7 @@ class Dice2007(Dice2007Params):
     def get_ipopt_mu(self, x0, RAMP, *args, **kwargs):
         M = 0
         xl = np.zeros(self.tmax)
-#        xl[RAMP:] = 1.
+        xl[RAMP:] = 1.
         xu = np.ones(self.tmax)
         gl = np.zeros(M)
         gu = np.ones(M)
@@ -438,13 +447,6 @@ class Dice2007(Dice2007Params):
         nnzh = 0
         r = pyipopt.create(self.tmax, xl, xu, M, gl, gu, nnzj, nnzh, eval_f,
             eval_grad_f, eval_g, eval_jac_g)
-        r.num_option('tol', 1e-4)
-        r.num_option('obj_scaling_factor', -1e-04)
-#        r.num_option('acceptable_tol', 1e-4)
-#        r.int_option('acceptable_iter', 9)
-        r.int_option('print_level', 0)
-        r.str_option('start_with_resto', 'no')
-        r.str_option('check_derivatives_for_naninf', 'no')
         x, zl, zu, obj, status = r.solve(x0)
         print 'Objective function: ', obj, '; Status: ', status
         return x
@@ -466,16 +468,13 @@ class Dice2007(Dice2007Params):
 
 def profile_stub():
     d = Dice2007(optimize=True)
-    t0 = datetime.now()
     d.loop()
-    t1 = datetime.now()
     try:
         fig1 = plt.figure(figsize=(5, 2), dpi=200)
         plt.plot(d.data['vars']['miu'])
         plt.show()
     except:
         pass
-    print t1-t0
 
 if __name__ == '__main__':
     profile_stub()
