@@ -1,11 +1,12 @@
-from datetime import datetime
 import numpy as np
+import pandas as pd
 from params import Dice2007Params
 import equations
-from scipy.optimize import minimize, fmin_l_bfgs_b, fmin_slsqp
+from scipy.optimize import minimize, fmin_l_bfgs_b
 import pyipopt
 try:
     import matplotlib.pyplot as plt
+    from matplotlib import rcParams
 except: pass
 
 class Dice2007(Dice2007Params):
@@ -52,16 +53,15 @@ class Dice2007(Dice2007Params):
     format_output()
         Output text for Google Visualizer graph functions
     """
-    def __init__(self, time_travel=True, optimize=False):
+    def __init__(self, optimize=False):
         self.eq = equations.default.Loop()
         Dice2007Params.__init__(self)
         self.p = Dice2007Params()
         self.optimize = False
         if optimize: self.optimize = True
         self.POW = 1.0
-        self.RAMP = 21
-    #    , if time_travel:
-    #            self.eq.forcing = excel.ExcelLoop.forcing
+        self.RAMP = False
+        self.CLAMP = False
     @property
     def parameters(self):
         return [
@@ -236,7 +236,7 @@ class Dice2007(Dice2007Params):
     def welfare(self):
         return np.sum(self.data['vars']['utility_discounted'])
 
-    def step(self, i, D, miu=None, jac=False, epsilon=1e-3, f0=0.0, slsqp=False):
+    def step(self, i, D, miu=None, deriv=False, epsilon=1e-3, f0=0.0, slsqp=False):
         if i > 0:
             D['sigma'][i] = D['sigma'][i-1] / (1 - self.gsig[i])
             D['al'][i] = D['al'][i-1] / (1 - self.ga[i-1])
@@ -249,9 +249,9 @@ class Dice2007(Dice2007Params):
         )
         if self.optimize:
             if miu is not None:
-                if jac:
+                if deriv:
                     D['miu'] = miu
-                    D['miu'][i] = miu[i] + epsilon
+                    D['miu'][i] = D['miu'][i] + epsilon
                 else:
                     D['miu'][i] = miu[i]
         else:
@@ -323,18 +323,17 @@ class Dice2007(Dice2007Params):
         D['utility_discounted'][i] = self.eq.utility_discounted(
             D['utility'][i], self.rr[i], self.l[i]
         )
-        if jac:
-            if miu[i] == 1.: self.derivative[i] = 0.0
-            else:
-                if slsqp:
-                    self.derivative[i] = (-D['utility_discounted'][i] + f0) / epsilon
-                else: self.derivative[i] = (D['utility_discounted'][i] - f0) / epsilon
+        if deriv:
+            if slsqp:
+                self.derivative[i] = (-D['utility_discounted'][i] + f0) / epsilon
+            else: self.derivative[i] = (D['utility_discounted'][i] - f0) / epsilon
 
     def loop(self, miu=None, slsqp=(False, False), deriv=False):
         """
         Step function for calculating endogenous variables
         """
         D = self.data['vars']
+        _epsilon = 1e-8
         if self.optimize and miu is None:
             D['miu'] = self.get_opt_mu()
             D['miu'][0] = self.miu_2005
@@ -344,8 +343,8 @@ class Dice2007(Dice2007Params):
             self.step(i, self.data['vars'], miu)
             if self.optimize and (deriv or slsqp[1]):
                 f0 = np.atleast_1d(D['utility_discounted'][i])
-                self.step(i, self.data['jac'], miu=miu, epsilon=1e-8,
-                    jac=True, slsqp=slsqp[0], f0=f0)
+                self.step(i, self.data['deriv'], miu=miu, epsilon=_epsilon,
+                    deriv=True, slsqp=slsqp[0], f0=f0)
         if self.optimize and miu is not None:
             if deriv:
                 return self.derivative.transpose()
@@ -367,21 +366,27 @@ class Dice2007(Dice2007Params):
             (self.data['vars']['damage'] /
              self.data['vars']['consumption_percapita'])-.5
         ).argmin()
-        if self.gback.value > .05:
+        if self.gback.value >= .1:
             ramp = int(round(ramp * .9))
         self.optimize = True
         return ramp
 
     def get_opt_mu(self):
-        ramp = self.get_ramp()
-        x0 = np.concatenate((
-            np.linspace(.1, 1, ramp),
-            np.ones(self.tmax-ramp)
-        ))
+        if self.RAMP:
+            ramp = self.get_ramp()
+            x0 = np.concatenate((
+                np.linspace(.1, 1, ramp),
+                np.ones(self.tmax-ramp)
+            ))
+        else:
+            ramp = self.tmax - 1
+            x0 = np.ones(self.tmax) * .9
+#        x0 = self.get_slsqp_mu(x0, 1e-4, 2)
         x0 = self.get_ipopt_mu(x0, ramp)
         return x0
 
     def get_lbfgsb_mu(self, x):
+        from scipy.optimize import fmin_l_bfgs_b
         BOUNDS = [(1e-8, 1.0)] * 60
         def f(x, slsqp):
             return self.loop(x, slsqp=slsqp, deriv=False)
@@ -393,17 +398,16 @@ class Dice2007(Dice2007Params):
         return r[0]
 
     def get_slsqp_mu(self, x0, ftol, rounds):
-#        JAC = (True, False)
-        JAC = (True, True)
-        ARGS = (JAC, )
-        OPTS = {'disp': False, 'maxiter': 10, 'eps': 1e-4,}
+        DERIV = (True, False)
+        ARGS = (DERIV, )
+        OPTS = {'disp': False, 'maxiter': 10, }
         BOUNDS = [(0.0, 1.0)] * 30 + [(1.0, 1.0)] * 30
         for i in range(rounds):
             if i < 3: tol = 1.0/10.0**(i)
             else: tol = ftol
             OPTS['ftol'] = tol
             r = minimize(self.loop, x0, args=ARGS, method='SLSQP',
-                bounds=BOUNDS, options=OPTS, jac=JAC[1]
+                bounds=BOUNDS, options=OPTS, jac=DERIV[1]
             )
             x0 = r.x
         return x0
@@ -428,7 +432,8 @@ class Dice2007(Dice2007Params):
     def get_ipopt_mu(self, x0, RAMP, *args, **kwargs):
         M = 0
         xl = np.zeros(self.tmax)
-        xl[RAMP:] = 1.
+        if self.CLAMP:
+            xl[RAMP:] = 1.
         xu = np.ones(self.tmax)
         gl = np.zeros(M)
         gu = np.ones(M)
@@ -436,7 +441,9 @@ class Dice2007(Dice2007Params):
             return self.loop(x)
         def eval_grad_f(x):
             return self.loop(x, deriv=True)
-        def eval_g(x):
+        def eval_g(x, user_data=None):
+            print user_data
+#            print user_data
             return np.zeros(M)
         def eval_jac_g(x, flag):
             if flag: return ([],[])
@@ -468,52 +475,59 @@ class Dice2007(Dice2007Params):
 
 def profile_stub():
     d = Dice2007(optimize=True)
-    d.loop()
     try:
-        fig1 = plt.figure(figsize=(5, 2), dpi=200)
-        plt.plot(d.data['vars']['miu'])
+        VAR = 'utility_discounted'
+        a = None
+        b = None
+        rcParams.update({'font.size': 6})
+        fig1 = plt.figure(figsize=(5, 3.5), dpi=200)
+        one = False
+        two = True
+        three = False
+        four = True
+
+        # RAMPED, UNCLAMPED
+        if one:
+            d.ONES = False; d.CLAMP = False
+            d.loop()
+            plt.subplot(211)
+            plt.plot(d.data['vars']['miu'])
+            plt.subplot(212)
+            plt.plot(d.data['vars'][VAR][a:b])
+
+        # ONES, UNCLAMPED
+        if two:
+            d.ONES = True; d.CLAMP = False
+#            d.dsig.value = 0.
+#            d.expcost2.value = .5
+            d.loop()
+            plt.subplot(211)
+            plt.plot(d.data['vars']['miu'])
+            plt.subplot(212)
+            plt.plot(d.data['vars'][VAR][a:b])
+            print d.data['vars']['miu'][59]
+
+        # RAMPED, CLAMPED
+        if three:
+            d.ONES = False; d.CLAMP = True
+            d.loop()
+            plt.subplot(211)
+            plt.plot(d.data['vars']['miu'])
+            plt.subplot(212)
+            plt.plot(d.data['vars'][VAR][a:b])
+
+        # UNOPTIMIZED
+        if four:
+            d.optimize = False
+            d.loop()
+            plt.subplot(211)
+            plt.plot(d.data['vars']['miu'])
+            plt.subplot(212)
+            plt.plot(d.data['vars'][VAR][a:b])
+            print d.welfare
         plt.show()
     except:
         pass
 
 if __name__ == '__main__':
     profile_stub()
-
-if __name__ == '__foo__':
-    import argparse
-    class bcolors:
-        HEADER = '\033[95m'
-        OKBLUE = '\033[94m'
-        OKGREEN = '\033[92m'
-        WARNING = '\033[93m'
-        FAIL = '\033[91m'
-        ENDC = '\033[0m'
-    parser = argparse.ArgumentParser(usage='%(prog)s [-h] variables')
-    var_help = """
-    You can print the following: capital, gross_output, emissions_industrial,
-    emissions_total, mass_atmosphere, mass_lower, mass_upper, forcing,
-    temp_atmosphere, temp_lower, damage, abatement, output, investment,
-    carbon_emitted, consumption, consumption_percapita, utility,
-    utility_discounted, and welfare.
-    """
-    parser.add_argument('variables', help=var_help, metavar='var1[,var2[,...]]')
-    args = parser.parse_args()
-    d = [Dice2007()]
-    for m in d:
-        m.loop()
-    try:
-        for v in args.variables.split(','):
-            try:
-                for m in d:
-                    print bcolors.HEADER, '%s %s:\n' % (
-                        m.eq.__module__.split('.')[1], v
-                        ), bcolors.ENDC, getattr(m.data['vars'], v)
-            except:
-                print bcolors.WARNING, 'No variable named %s' % v, bcolors.ENDC
-    except:
-        print 'No variables specified'
-        print 'You can print the following: capital, gross_output, emissions_industrial,'
-        print 'emissions_total, mass_atmosphere, mass_lower, mass_upper, forcing,'
-        print 'temp_atmosphere, temp_lower, damage, abatement, output, investment,'
-        print 'carbon_emitted, consumption, consumption_percapita, utility,'
-        print 'utility_discounted, and welfare'
