@@ -228,7 +228,7 @@ class Dice2007Params(object):
         temp_lower = np.empty(self.tmax); temp_lower[:] = self.tocean0
         investment = np.empty(self.tmax); investment[:] = self.savings.value * self._q0
         miu = np.empty(self.tmax); miu[:] = self.miu_2005
-        self.derivative = np.empty(self.tmax)
+        self.derivative = pd.Series(np.empty(self.tmax))
         data = pd.DataFrame({
             'miu': miu,
             'sigma': sigma,
@@ -259,5 +259,5 @@ class Dice2007Params(object):
         })
         self.data = pd.Panel({
             'vars': data,
-            'jac': data,
+            'deriv': data,
         })
