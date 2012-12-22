@@ -684,7 +684,7 @@
                 numberOfRunsInProgress++;
 
                 updateRunsListHeight();
-
+                $('html, body').animate({scrollTop:$(document).height()}, 'slow');
                 $.ajax({ //Now we are going to actually execute the run
                     type : 'POST',
                     url : '/run',
@@ -715,7 +715,6 @@
                         colorSlab.setAttribute('class', 'slab');
 
                         $(createdLABEL).append(colorSlab).each(function() {
-                            $('html, body').animate({scrollTop:$(document).height()}, 'slow');
                             return false;
                         });
                     },
