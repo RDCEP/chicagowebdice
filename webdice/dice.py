@@ -145,7 +145,6 @@ class Dice2007(Dice2007Params):
         array : gsigma * exp(-dsig * 10 * t - disg2 * 10 * t^2)
         """
         return self._gsigma * np.exp(-(
-#            0/100) * 10 * self.t0 - self.dsig2 * 10 * (self.t0 ** 2))
             self.dsig.value/100) * 10 * self.t0 - self.dsig2 * 10 * (self.t0 ** 2))
     @property
     def backstop(self):
@@ -157,7 +156,6 @@ class Dice2007(Dice2007Params):
         array : pback * ((backrat - 1 + exp(-gback * t)) / backrat
         """
         return self._pback * (
-#            (self.backrat.value - 1 + np.exp(-0 * self.t0)) / self.backrat.value)
             (self.backrat.value - 1 + np.exp(-self.gback.value * self.t0)) / self.backrat.value)
     @property
     def etree(self):
