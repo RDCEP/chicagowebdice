@@ -1,8 +1,7 @@
 import numpy as np
-import pandas as pd
 from params import Dice2007Params
 import equations
-from scipy.optimize import minimize, fmin_l_bfgs_b
+from scipy.optimize import minimize
 import pyipopt
 try:
     import matplotlib.pyplot as plt
@@ -237,6 +236,23 @@ class Dice2007(Dice2007Params):
         return np.sum(self.data['vars']['utility_discounted'])
 
     def step(self, i, D, miu=None, deriv=False, epsilon=1e-3, f0=0.0, slsqp=False):
+        """
+        Single step for calculating endogenous variables
+        ...
+        Accepts
+        -------
+        i : int, index of current step
+        D : object, pandas DataFrame of variables
+        miu : array, values for miu
+        deriv : boolean
+        epsilon : float
+        f0 : float
+        slsqp : boolean
+        ...
+        Returns
+        -------
+        None
+        """
         if i > 0:
             D['sigma'][i] = D['sigma'][i-1] / (1 - self.gsig[i])
             D['al'][i] = D['al'][i-1] / (1 - self.ga[i-1])
@@ -326,16 +342,26 @@ class Dice2007(Dice2007Params):
         if deriv:
             if slsqp:
                 self.derivative[i] = (-D['utility_discounted'][i] + f0) / epsilon
-            else: self.derivative[i] = (D['utility_discounted'][i] - f0) / epsilon
+            else:
+#                self.derivative[i] = (D['utility_discounted'][:i+1].sum() - f0) / epsilon
+                self.derivative[i] = (D['utility_discounted'][i] - f0) / epsilon
+#            I = D['temp_lower'][i]
+#            self.data['deriv'] = self.data['vars']
+#            print I, D['temp_lower'][i]
 
     def loop(self, miu=None, slsqp=(False, False), deriv=False):
         """
-        Step function for calculating endogenous variables
+        Loop through step function for calculating endogenous variables
         """
         D = self.data['vars']
-        _epsilon = 1e-8
+        _epsilon = 1e-4
         if self.optimize and miu is None:
             D['miu'] = self.get_opt_mu()
+#            D['miu'] = np.concatenate((
+#                np.array([.005, .158, .184, .211, .240, .270, .302, .335, .370,
+#                .407, .446, .486, .531, .577, .626, .678, .735, .795, .860, .931]),
+#                np.ones(40)
+#            ))
             D['miu'][0] = self.miu_2005
         if slsqp[1] or deriv:
             self.derivative = np.zeros([len(miu), 1])
@@ -343,10 +369,12 @@ class Dice2007(Dice2007Params):
             self.step(i, self.data['vars'], miu)
             if self.optimize and (deriv or slsqp[1]):
                 f0 = np.atleast_1d(D['utility_discounted'][i])
+#                f0 = np.atleast_1d(D['utility_discounted'][:i+1].sum())
                 self.step(i, self.data['deriv'], miu=miu, epsilon=_epsilon,
                     deriv=True, slsqp=slsqp[0], f0=f0)
         if self.optimize and miu is not None:
             if deriv:
+#                print self.derivative.transpose()
                 return self.derivative.transpose()
             elif slsqp[1]:
                 return [
@@ -380,8 +408,7 @@ class Dice2007(Dice2007Params):
             ))
         else:
             ramp = self.tmax - 1
-            x0 = np.ones(self.tmax) * .9
-#        x0 = self.get_slsqp_mu(x0, 1e-4, 2)
+            x0 = np.ones(self.tmax)
         x0 = self.get_ipopt_mu(x0, ramp)
         return x0
 
@@ -477,8 +504,8 @@ def profile_stub():
     d = Dice2007(optimize=True)
     try:
         VAR = 'utility_discounted'
-        a = None
-        b = None
+        a = 58
+        b = 60
         rcParams.update({'font.size': 6})
         fig1 = plt.figure(figsize=(5, 3.5), dpi=200)
         one = False
@@ -498,14 +525,11 @@ def profile_stub():
         # ONES, UNCLAMPED
         if two:
             d.ONES = True; d.CLAMP = False
-#            d.dsig.value = 0.
-#            d.expcost2.value = .5
             d.loop()
             plt.subplot(211)
             plt.plot(d.data['vars']['miu'])
             plt.subplot(212)
             plt.plot(d.data['vars'][VAR][a:b])
-            print d.data['vars']['miu'][59]
 
         # RAMPED, CLAMPED
         if three:
@@ -526,6 +550,7 @@ def profile_stub():
             plt.plot(d.data['vars'][VAR][a:b])
             print d.welfare
         plt.show()
+#        print d.data['vars']['temp_lower'] - d.data['deriv']['temp_lower']
     except:
         pass
 
