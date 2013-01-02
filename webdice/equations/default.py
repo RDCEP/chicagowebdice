@@ -10,14 +10,12 @@ class Loop(object):
     def gross_output(self,al, capital, gama, l):
         """Gross output"""
         return al * capital**gama * l**(1-gama)
-    def emissions_industrial(self, sigma, miu, gross_output):
+    def emissions_ind(self, sigma, miu, gross_output):
         """E_ind, Industrial emissions, GtC"""
-        if miu > 1: miu = 1.
-        if miu < 0: miu = 0.
-        return sigma * (1 - miu) * gross_output
-    def emissions_total(self, emissions_industrial, etree):
+        return sigma * (1. - miu) * gross_output
+    def emissions_total(self, emissions_ind, etree):
         """E, Total emissions, GtC"""
-        return emissions_industrial + etree
+        return emissions_ind + etree
     def mass_atmosphere(self, emissions_total, mass_atmosphere, mass_upper, b):
         """M_AT, Carbon concentration in atmosphere, GtC"""
         return b[0][0] * mass_atmosphere + b[1][0] * mass_upper + 10 * emissions_total
@@ -42,8 +40,6 @@ class Loop(object):
         return gross_output - gross_output / (1 + aa[0] * temp_atmosphere + aa[1] * temp_atmosphere**aa[2])
     def abatement(self, gross_output, miu, gcost1, expcost2, partfract):
         """Lambda, Abatement costs, trillions $USD"""
-        if miu > 1: miu = 1.
-        if miu < 0: miu = 0.
         return partfract**(1-expcost2) * gross_output * gcost1 * miu**expcost2
     def output(self, gross_output, damage, abatement):
         return gross_output * ((1 - abatement / gross_output) /
@@ -54,21 +50,21 @@ class Loop(object):
     def consumption(self, output, savings):
         """C, Consumption, trillions $USD"""
         return output - (savings * output)
-    def consumption_percapita(self, consumption, l):
+    def consumption_pc(self, consumption, l):
         """c, Per capita consumption, thousands $USD"""
         return 1000 * consumption / l
-    def utility(self, consumption_percapita, elasmu, l):
+    def utility(self, consumption_pc, elasmu, l):
         """U, Period utility function"""
-        return (1 / (1 - elasmu + .000001)) * consumption_percapita**(1-elasmu) + 1
-    def utility_discounted(self, utility, rr, l):
+        return (1 / (1 - elasmu + .000001)) * consumption_pc**(1-elasmu) + 1
+    def utility_d(self, utility, rr, l):
         """Utility"""
         return rr * l * utility
-    def welfare(self, utility_discounted, rr):
-        return np.sum(utility_discounted)
-    def miu(self, emissions_industrial, ecap, _e2005, sigma, gross_output):
+    def welfare(self, utility_d, rr):
+        return np.sum(utility_d)
+    def miu(self, emissions_ind, ecap, _e2005, sigma, gross_output):
         """mu, Emissions reduction rate"""
         if ecap == 0:
             return 1.
-        elif round(emissions_industrial, 2) < round((_e2005 * ecap), 2):
+        elif round(emissions_ind, 2) < round((_e2005 * ecap), 2):
             return 0.
         else: return 1 - ((_e2005 * ecap) / (sigma * gross_output))

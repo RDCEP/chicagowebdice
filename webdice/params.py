@@ -129,7 +129,7 @@ class Dice2007Params(object):
             additional, 6000, minimum=6000, maximum=9000, step=500, precision=0,
             unit=' Gt&nbsp;C',
         )
-        self.oceanmodel = DiceWebParam(
+        self.carbon_model = DiceWebParam(
             'Carbon cycle', 'Oceanic model of carbon transfer',
             model, 'dice_carbon', disabled=True, select=[{'name': 'DICE', 'machine_name': 'dice_carbon'}]
         )
@@ -154,6 +154,7 @@ class Dice2007Params(object):
         self.treaty_switch = DiceWebParam(
             '', '', treaty, False
         )
+
         ## Population and technology
         self._pop0 = 6514. # 2005 world population millions
         self._gpop0 = .35 # growth rate of population per decade
@@ -161,12 +162,15 @@ class Dice2007Params(object):
         self._ga0 = .092 # Initial growth rate for technology per decade
         self._gama = .300 # Capital elasticity in production function
         self._q0 = 61.1 # 2005 world gross output trill 2005 US dollars
+        self._q0 = 55.667 # 2005 world gross output trill 2005 US dollars
         self._k0 = 137. # 2005 value capital trill 2005 US dollars
+
         ## Emissions
         self._sig0 = .13418 # CO2-equivalent emissions-GNP ratio 2005 (effectively intensity)
         self._gsigma = -.0730 # Initial growth of sigma per decade
         self.dsig2 = .000 # Quadratic term in decarbonization
-        self._eland0 = 1.1000 # Carbon emissions from land 2005 (GtC per decade)
+        self._eland0 = 1.1 # Carbon emissions from land 2005 (GtC per decade)
+
         ## Carbon Cycle
         self.mat2000 = 808.9 # Concentration in atmosphere 2005 (GtC)
         self.mu2000 = 1255. # Concentration in upper strata 2005 (GtC)
@@ -183,6 +187,7 @@ class Dice2007Params(object):
         self.b32 = .003119
         self.b33 = .996881
         self.bb = np.array([self.b11, self.b12, self.b13, self.b21, self.b22, self.b23, self.b31, self.b32, self.b33]).reshape(3,3)
+
         ## Climate model
         self.fex0 = -.06 # Estimate of 2000 forcings of non-CO2 GHG
         self.fex1 = .30 # Estimate of 2100 forcings of non-CO2 GHG
@@ -192,21 +197,22 @@ class Dice2007Params(object):
         self.c2 = 0
         self.c3 = .300
         self.c4 = .050
-        #        self.cc = np.array([.220, 0, .300, .050])
         self.cc = np.array([self.c1, self.c2, self.c3, self.c4])
         self.fco22x = 3.8 # Estimated forcings of equilibrium CO2 doubling
         # Climate damage selfeters, calibrated for quadratic at 2.5 C for 2105
-        #        self.aa = np.array([0, 0.0028388, 2])
         self.a1 = 0
         self.a2 = 0.0028388
+
         ## Abatement cost
         self._pback = 1.17 # Cost of backstop 2005, thousands of $ per tC 2005
         self.limmiu = 1. # Upper limit on control rate
+
         ## Participation
         self.partfract1 = 1. # Fraction of emissions under control regime 2005
         self.partfract2 = 1. # Fraction of emissions under control regime 2015
         self.partfract21 = 1. # Fraction of emissions under control regime 2205
         self.dpartfract = 0. # Decline rate of participation
+
         ## Availability of fossil fuels
         ## Scaling and inessential selfeters
         self.scale1 = 194. # Scaling coefficient in the objective function
@@ -216,6 +222,8 @@ class Dice2007Params(object):
         self.miu_2005 = .005 # emission control rate (fraction of uncontrolled emissions)
         self.t0 = np.arange(float(self.tmax))
         self.t1 = self.t0 + 1
+
+        # Variables for initiating pandas array
         gcost1 = np.zeros(self.tmax)
         sigma = np.empty(self.tmax); sigma[:] = self._sig0
         al = np.empty(self.tmax); al[:] = self._a0
@@ -228,8 +236,6 @@ class Dice2007Params(object):
         temp_lower = np.empty(self.tmax); temp_lower[:] = self.tocean0
         investment = np.empty(self.tmax); investment[:] = self.savings.value * self._q0
         miu = np.empty(self.tmax); miu[:] = self.miu_2005
-        self.derivative = pd.Series(np.empty(self.tmax))
-        self.hessian = pd.Series(np.empty(self.tmax))
         data = pd.DataFrame({
             'miu': miu,
             'sigma': sigma,
@@ -245,7 +251,7 @@ class Dice2007Params(object):
             'investment': investment,
             'gross_output': np.zeros(self.tmax),
             'forcing': np.zeros(self.tmax),
-            'emissions_industrial': np.zeros(self.tmax),
+            'emissions_ind': np.zeros(self.tmax),
             'emissions_total': np.zeros(self.tmax),
             'carbon_emitted': np.zeros(self.tmax),
             'participation': np.zeros(self.tmax),
@@ -253,12 +259,19 @@ class Dice2007Params(object):
             'damage': np.zeros(self.tmax),
             'abatement': np.zeros(self.tmax),
             'consumption': np.zeros(self.tmax),
-            'consumption_percapita': np.zeros(self.tmax),
+            'consumption_pc': np.zeros(self.tmax),
             'utility': np.zeros(self.tmax),
-            'utility_discounted': np.zeros(self.tmax),
+            'utility_d': np.zeros(self.tmax),
             'pref_fac': np.ones(self.tmax),
         })
+
         self.data = pd.Panel({
             'vars': data,
             'deriv': data,
         })
+#        self.derivative = pd.Series(np.empty(self.tmax))
+        self.derivative = pd.DataFrame({
+            'fprime' : np.empty(self.tmax),
+        })
+
+        self.hessian = pd.Series(np.empty(self.tmax))

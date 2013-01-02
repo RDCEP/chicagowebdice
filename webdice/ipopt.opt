@@ -1,10 +1,10 @@
-# generated automatically by OpenOpt
-print_level 5
+print_level 0
 tol 1e-4
-#acceptable_tol 1e-04
-#acceptable_iter 4
+acceptable_tol 1e-03
+acceptable_iter 6
 obj_scaling_factor -1e-4
 constr_viol_tol 8e-07
 #max_iter 100
-max_cpu_time 10
+max_cpu_time 20
 start_with_resto no
+check_derivatives_for_naninf no

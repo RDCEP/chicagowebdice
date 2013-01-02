@@ -85,7 +85,7 @@
               <h2>Model Design</h2>
               <ul>
                   <li><label title="Oceanic model of carbon transfer" class="disabled">Carbon cycle </label>
-                      <select name="oceanmodel" disabled="disabled">
+                      <select name="carbon_model" disabled="disabled">
                           <option id="dice_carbon">DICE</option>
                       </select></li>
                   <li><label title="Way that climate change harms enter the economy" class="disabled">Damages model </label>

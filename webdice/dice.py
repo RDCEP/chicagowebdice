@@ -1,12 +1,13 @@
 import numpy as np
-from params import Dice2007Params
-import equations
-from scipy.optimize import minimize
 import pyipopt
+import pandas as pd
 try:
     import matplotlib.pyplot as plt
     from matplotlib import rcParams
-except: pass
+except ImportError:
+    pass
+from params import Dice2007Params
+import equations
 
 class Dice2007(Dice2007Params):
     """Variables, parameters, and step function for DICE 2007.
@@ -62,6 +63,9 @@ class Dice2007(Dice2007Params):
         self.RAMP = False
         self.CLAMP = False
     @property
+    def varscale(self):
+        return {'mass_atmosphere': 1000.,}
+    @property
     def parameters(self):
         return [
             "elasmu", "prstp", "_pop0", "_gpop0", "popasym", "_a0",
@@ -85,12 +89,12 @@ class Dice2007(Dice2007Params):
     @property
     def vars(self):
         return [
-            'capital', 'gross_output', 'emissions_industrial',
+            'capital', 'gross_output', 'emissions_ind',
             'emissions_total', 'mass_atmosphere', 'mass_upper',
             'mass_lower', 'forcing', 'temp_atmosphere',
             'temp_lower', 'damage', 'abatement', 'output', 'output_abate',
             'investment', 'carbon_emitted', 'consumption',
-            'consumption_percapita', 'utility', 'utility_discounted',
+            'consumption_pc', 'utility', 'utility_d',
             'al', 'gcost1', 'sigma', 'miu', 'backstop', 'l', 'tax_rate',
         ]
     @property
@@ -225,15 +229,29 @@ class Dice2007(Dice2007Params):
         return self.fco22x / self.t2xco2.value
     @property
     def tax_rate(self):
+        """
+        Carbon tax rate
+        ...
+        Returns
+        -------
+        float : backstop * 1000 * miu**(expcost2-1)
+        """
         return self.backstop * 1000 * self.data['vars']['miu'] ** (self.expcost2.value-1)
     @property
     def output_abate(self):
+        """
+        Abatement as a percentage of output
+        ...
+        Returns
+        -------
+        float : gcost1 * miu**expcost2
+        """
         return self.data['vars']['gcost1'] * self.data['vars']['miu']**self.expcost2.value
     @property
     def welfare(self):
-        return np.sum(self.data['vars']['utility_discounted'])
+        return np.sum(self.data['vars']['utility_d'])
 
-    def step(self, i, D, miu=None, deriv=False, epsilon=1e-3, f0=0.0, slsqp=False):
+    def step(self, i, D, miu=None, deriv=False, epsilon=1e-3, f0=0.0):
         """
         Single step for calculating endogenous variables
         ...
@@ -245,7 +263,6 @@ class Dice2007(Dice2007Params):
         deriv : boolean
         epsilon : float
         f0 : float
-        slsqp : boolean
         ...
         Returns
         -------
@@ -272,25 +289,27 @@ class Dice2007(Dice2007Params):
             if i > 0:
                 if self.treaty_switch.value:
                     D['miu'][i] = self.eq.miu(
-                        D['emissions_industrial'][i-1], self.ecap[i-1],
-                        D['emissions_industrial'][0],
+                        D['emissions_ind'][i-1], self.ecap[i-1],
+                        D['emissions_ind'][0],
                         D['sigma'][i], D['gross_output'][i]
                     )
                 else: D['miu'][i] = 0.
-        D['emissions_industrial'][i] = self.eq.emissions_industrial(
+        D['emissions_ind'][i] = self.eq.emissions_ind(
             D['sigma'][i], D['miu'][i], D['gross_output'][i]
         )
         D['emissions_total'][i] = self.eq.emissions_total(
-            D['emissions_industrial'][i], self.etree[i]
+            D['emissions_ind'][i], self.etree[i]
         )
         if i > 0:
             D['carbon_emitted'][i] = (
-                D['carbon_emitted'][i-1] + D['emissions_total'][i]
-                )
-        if D['carbon_emitted'][i] > self.fosslim:
+                D['carbon_emitted'][i-1] + D['emissions_total'][i]*10
+            )
+        else:
+            D['carbon_emitted'][i] = 10 * D['emissions_total'][i]
+        if D['carbon_emitted'][i] > self.fosslim.value:
             D['miu'][i] = 1
             D['emissions_total'][i] = 0
-            D['carbon_emitted'][i] = self.fosslim
+            D['carbon_emitted'][i] = self.fosslim.value
         if i > 0:
             D['mass_atmosphere'][i] = self.eq.mass_atmosphere(
                 D['emissions_total'][i-1], D['mass_atmosphere'][i-1],
@@ -329,25 +348,19 @@ class Dice2007(Dice2007Params):
         else:
             D['investment'][i] = self.eq.investment(self.savings.value, D['output'][i])
         D['consumption'][i] = self.eq.consumption(D['output'][i], self.savings.value)
-        D['consumption_percapita'][i] = self.eq.consumption_percapita(
+        D['consumption_pc'][i] = self.eq.consumption_pc(
             D['consumption'][i], self.l[i]
         )
-        D['utility'][i] = self.eq.utility(D['consumption_percapita'][i],
+        D['utility'][i] = self.eq.utility(D['consumption_pc'][i],
             self.elasmu.value, self.l[i])
-        D['utility_discounted'][i] = self.eq.utility_discounted(
+        D['utility_d'][i] = self.eq.utility_d(
             D['utility'][i], self.rr[i], self.l[i]
         )
         if deriv:
-            if slsqp:
-                self.derivative[i] = (-D['utility_discounted'][i] + f0) / epsilon
-            else:
-#                self.derivative[i] = (D['utility_discounted'][:i+1].sum() - f0) / epsilon
-                self.derivative[i] = (D['utility_discounted'][i] - f0) / epsilon
-#            I = D['temp_lower'][i]
-#            self.data['deriv'] = self.data['vars']
-#            print I, D['temp_lower'][i]
+            self.derivative['fprime'][i] = (D['utility_d'][i] - f0) / epsilon
+            D['miu'] = self.data['vars']['miu']
 
-    def loop(self, miu=None, slsqp=(False, False), deriv=False):
+    def loop(self, miu=None, deriv=False):
         """
         Loop through step function for calculating endogenous variables
         """
@@ -355,42 +368,32 @@ class Dice2007(Dice2007Params):
         _epsilon = 1e-4
         if self.optimize and miu is None:
             D['miu'] = self.get_opt_mu()
+            D['miu'][0] = self.miu_2005
 #            D['miu'] = np.concatenate((
 #                np.array([.005, .158, .184, .211, .240, .270, .302, .335, .370,
-#                .407, .446, .486, .531, .577, .626, .678, .735, .795, .860, .931]),
+#                          .407, .446, .486, .531, .577, .626, .678, .735, .795, .860, .931]),
 #                np.ones(40)
 #            ))
-            D['miu'][0] = self.miu_2005
-        if slsqp[1] or deriv:
-            self.derivative = np.zeros([len(miu), 1])
+#        if deriv:
+#            self.derivative = np.zeros([len(miu), 1])
         for i in range(self.tmax):
             self.step(i, self.data['vars'], miu)
-            if self.optimize and (deriv or slsqp[1]):
-                f0 = np.atleast_1d(D['utility_discounted'][i])
-#                f0 = np.atleast_1d(D['utility_discounted'][:i+1].sum())
+            if self.optimize and deriv:
+                f0 = np.atleast_1d(D['utility_d'][i])
                 self.step(i, self.data['deriv'], miu=miu, epsilon=_epsilon,
-                    deriv=True, slsqp=slsqp[0], f0=f0)
+                    deriv=True, f0=f0)
         if self.optimize and miu is not None:
             if deriv:
-#                print self.derivative.transpose()
-                return self.derivative.transpose()
-            elif slsqp[1]:
-                return [
-                    -self.data['vars']['utility_discounted'].sum(),
-                    self.derivative.transpose(),
-                ]
+                return self.derivative['fprime'].transpose()
             else:
-                if slsqp[0]:
-                    return -self.data['vars']['utility_discounted'].sum()
-                else:
-                    return self.data['vars']['utility_discounted'].sum()
+                return self.data['vars']['utility_d'].sum()
 
     def get_ramp(self):
         self.optimize = False
         self.loop()
         ramp = np.abs(
             (self.data['vars']['damage'] /
-             self.data['vars']['consumption_percapita'])-.5
+             self.data['vars']['consumption_pc'])-.5
         ).argmin()
         if self.gback.value >= .1:
             ramp = int(round(ramp * .9))
@@ -400,6 +403,7 @@ class Dice2007(Dice2007Params):
     def get_opt_mu(self):
         if self.RAMP:
             ramp = self.get_ramp()
+            print ramp
             x0 = np.concatenate((
                 np.linspace(.1, 1, ramp),
                 np.ones(self.tmax-ramp)
@@ -410,77 +414,30 @@ class Dice2007(Dice2007Params):
         x0 = self.get_ipopt_mu(x0, ramp)
         return x0
 
-    def get_lbfgsb_mu(self, x):
-        from scipy.optimize import fmin_l_bfgs_b
-        BOUNDS = [(1e-8, 1.0)] * 60
-        def f(x, slsqp):
-            return self.loop(x, slsqp=slsqp, deriv=False)
-        def g(x):
-            return self.loop(x, slsqp=(True, True), deriv=False)[1]
-        r = fmin_l_bfgs_b(f, x, fprime=None, args=((True, False),), approx_grad=True,
-            bounds=BOUNDS, m=4, factr=1e-10, pgtol=1e-4, disp=2, maxfun=4,
-            epsilon=1e-8)
-        return r[0]
-
-    def get_slsqp_mu(self, x0, ftol, rounds):
-        DERIV = (True, False)
-        ARGS = (DERIV, )
-        OPTS = {'disp': False, 'maxiter': 10, }
-        BOUNDS = [(0.0, 1.0)] * 30 + [(1.0, 1.0)] * 30
-        for i in range(rounds):
-            if i < 3: tol = 1.0/10.0**(i)
-            else: tol = ftol
-            OPTS['ftol'] = tol
-            r = minimize(self.loop, x0, args=ARGS, method='SLSQP',
-                bounds=BOUNDS, options=OPTS, jac=DERIV[1]
-            )
-            x0 = r.x
-        return x0
-
-    def get_openopt_mu(self, ftol):
-        from openopt import GLP, NLP
-        RAMP = 30
-        x0 = np.concatenate((
-            np.linspace(0,1,RAMP),
-            np.ones(self.tmax-RAMP),
-            ))
-        x0 = np.ones(self.tmax)
-        ub = np.ones(self.tmax)
-        lb = np.zeros(self.tmax)
-        fun = self.loop
-        def grad(x):
-            return self.loop(x, deriv=True)
-        p = NLP(fun, x0, lb=lb, ub=ub, iprint=1, df=grad)
-        r = p.solve('ipopt', gtol=.0001, maxIter=10, optFile='./ipopt.opt',)
-        return r.xf
-
     def get_ipopt_mu(self, x0, RAMP, *args, **kwargs):
         M = 0
+        nnzj = 0
+        nnzh = 0
         xl = np.zeros(self.tmax)
         if self.CLAMP:
             xl[RAMP:] = 1.
         xu = np.ones(self.tmax)
         gl = np.zeros(M)
-        gu = np.ones(M)
+        gu = np.ones(M) * 4.0
         def eval_f(x):
             return self.loop(x)
         def eval_grad_f(x):
             return self.loop(x, deriv=True)
-        def eval_g(x, user_data=None):
-            print user_data
-#            print user_data
+        def eval_g(x):
             return np.zeros(M)
         def eval_jac_g(x, flag):
-            if flag: return ([],[])
-            else: return []
-        def eval_h(x):
-            return np.array([])
-        nnzj = 0
-        nnzh = 0
+            if flag:
+                return ([], [])
+            else:
+                return np.empty(M)
         r = pyipopt.create(self.tmax, xl, xu, M, gl, gu, nnzj, nnzh, eval_f,
             eval_grad_f, eval_g, eval_jac_g)
         x, zl, zu, obj, status = r.solve(x0)
-        print 'Objective function: ', obj, '; Status: ', status
         return x
 
     def format_output(self):
@@ -501,9 +458,14 @@ class Dice2007(Dice2007Params):
 def profile_stub():
     d = Dice2007(optimize=True)
     try:
-        VAR = 'utility_discounted'
-        a = 58
-        b = 60
+        VAR = 'mass_atmosphere'
+#        VAR = 'mass_upper'
+#        VAR = 'mass_lower'
+#        VAR = 'emissions_total'
+#        VAR = 'emissions_ind'
+#        VAR = 'carbon_emitted'
+        a = None
+        b = None
         rcParams.update({'font.size': 6})
         fig1 = plt.figure(figsize=(5, 3.5), dpi=200)
         one = False
@@ -511,9 +473,13 @@ def profile_stub():
         three = False
         four = True
 
+#        d.gback.value = .15
+#        d.t2xco2.value = 4.
+#        d.a3.value = 4.
+
         # RAMPED, UNCLAMPED
         if one:
-            d.ONES = False; d.CLAMP = False
+            d.RAMP = True; d.CLAMP = False
             d.loop()
             plt.subplot(211)
             plt.plot(d.data['vars']['miu'])
@@ -522,21 +488,23 @@ def profile_stub():
 
         # ONES, UNCLAMPED
         if two:
-            d.ONES = True; d.CLAMP = False
+            d.RAMP = False; d.CLAMP = False
             d.loop()
             plt.subplot(211)
             plt.plot(d.data['vars']['miu'])
             plt.subplot(212)
             plt.plot(d.data['vars'][VAR][a:b])
+            print d.welfare
 
         # RAMPED, CLAMPED
         if three:
-            d.ONES = False; d.CLAMP = True
+            d.RAMP = True; d.CLAMP = True
             d.loop()
             plt.subplot(211)
             plt.plot(d.data['vars']['miu'])
             plt.subplot(212)
             plt.plot(d.data['vars'][VAR][a:b])
+            print d.welfare
 
         # UNOPTIMIZED
         if four:
@@ -548,9 +516,15 @@ def profile_stub():
             plt.plot(d.data['vars'][VAR][a:b])
             print d.welfare
         plt.show()
-#        print d.data['vars']['temp_lower'] - d.data['deriv']['temp_lower']
     except:
         pass
+#    print d.data['vars'][VAR]
+#    VAR = 'damage'
+#    VAR = 'capital'
+#    print d.data['vars'][VAR][:5]
+#    print d.data['vars'][VAR][55:]
+#    print d.data['vars'][VAR].sum()
+#    print d.data['vars'][['carbon_emitted', 'emissions_ind', 'emissions_total']]
 
 if __name__ == '__main__':
     profile_stub()
