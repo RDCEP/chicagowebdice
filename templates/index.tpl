@@ -43,13 +43,13 @@
                   <li><label title="Temperature increase in degrees C from doubling of atmospheric CO2" >Climate sensitivity: How much will temperatures go up? <span class="label"><span class="label-number">3.0</span><span>°C</span></span></label>
                       <input name="t2xco2"  type="range" min="1" max="5" step="0.5" value="3.0" data-prec="1"/>
                       <div class="tick-wrap"><span class="tick" style="left:0%" >&bullet;</span></div></li>
-                  <li><label title="Increase in harms from climate change due to an increase in temperatures" >Exponent of damage function: How large will the harms be? <span class="label"><span class="label-number">2.0</span></span></label>
+                  <li><label title="Increase in harms from climate change due to an increase in temperatures" >How large will the harms be? <span class="label"><span class="label-number">2.0</span></span></label>
                       <input name="a3"  type="range" min="1" max="4" step="0.5" value="2.0" data-prec="1"/>
                       <div class="tick-wrap"><span class="tick" style="left:-16%" >&bullet;</span></div></li>
-                  <li><label title="Decline in the rate of growth in productivity over time" >How much will growth slow down in the future? <span class="label"><span class="label-number">0.1</span><span>%</span></span></label>
-                      <input name="dela"  type="range" min="0.05" max="1.5" step="0.05" value="0.1" data-prec="2"/>
-                      <div class="tick-wrap"><span class="tick" style="left:-46%" >&bullet;</span></div></li>
-                  <li><label title="Rate of decline in energy use per $ of GDP" >Change in Energy intensity (higher number means more energy intensive) <span class="label"><span class="label-number">0.3</span><span>%</span></span></label>
+                  <li><label title="Decline in the rate of growth in productivity over time" >Decline in rate of growth of productivity <span class="label"><span class="label-number">0.1</span><span>%</span></span></label>
+                      <input name="dela"  type="range" min="0.0" max="1.5" step="0.05" value="0.1" data-prec="2"/>
+                      <div class="tick-wrap"><span class="tick" style="left:-44%" >&bullet;</span></div></li>
+                  <li><label title="Rate of decline in energy use per $ of GDP" >Change in energy intensity <span class="label"><span class="label-number">0.3</span><span>%</span></span></label>
                       <input name="dsig"  type="range" min="0.0" max="6.0" step="0.1" value="0.3" data-prec="1"/>
                       <div class="tick-wrap"><span class="tick" style="left:-45%" >&bullet;</span></div></li>
               </ul>
@@ -69,18 +69,18 @@
           <div id="tab-advanced" class="tab notselected">
               <h2>Additional Parameters</h2>
               <ul>
-                  <li><label title="Number, in millions, that the population grows asymptotically towards" >Max population <span class="label"><span class="label-number">8600</span><span> billions</span></span></label>
+                  <li><label title="Number, in millions, that the population grows asymptotically towards" >Max population <span class="label"><span class="label-number">8600</span><span> millions</span></span></label>
                       <input name="popasym"  type="range" min="8000" max="12000" step="200" value="8600" data-prec="0"/>
                       <div class="tick-wrap"><span class="tick" style="left:-35%" >&bullet;</span></div></li>
-                  <li><label title="Rate of depreciation per year" >Depreciation rate <span class="label"><span class="label-number">0.1</span><span>%</span></span></label>
-                      <input name="dk"  type="range" min="0.08" max="0.2" step="0.01" value="0.1" data-prec="2"/>
+                  <li><label title="Rate of depreciation per year" >Depreciation rate <span class="label"><span class="label-number">10</span><span>%</span></span></label>
+                      <input name="dk"  class="percent" type="range" min="0.08" max="0.2" step="0.01" value="0.1" data-prec="2"/>
                       <div class="tick-wrap"><span class="tick" style="left:-33%" >&bullet;</span></div></li>
-                  <li><label title="Savings are per year" >Savings rate <span class="label"><span class="label-number">0.2</span><span>%</span></span></label>
-                      <input name="savings"  type="range" min="0.15" max="0.25" step="0.05" value="0.2" data-prec="2"/>
-                      <div class="tick-wrap"><span class="tick" style="left:0%" >&bullet;</span></div></li>
+                  <li><label title="Savings are per year" >Savings rate <span class="label"><span class="label-number">20</span><span>%</span></span></label>
+                      <input name="savings"  class="percent" type="range" min="0.10" max="0.25" step="0.01" value="0.22" data-prec="2"/>
+                      <div class="tick-wrap"><span class="tick" style="left:30%" >&bullet;</span></div></li>
                   <li><label title="Fossil fuels remaining, measured in CO2 emissions" >Fossil fuel reserves <span class="label"><span class="label-number">6000</span><span> Gt&nbsp;C</span></span></label>
-                      <input name="fosslim"  type="range" min="6000" max="9000" step="500" value="6000" data-prec="0"/>
-                      <div class="tick-wrap"><span class="tick" style="left:-50%" >&bullet;</span></div></li>
+                      <input name="fosslim"  type="range" min="5000" max="9000" step="500" value="6000" data-prec="0"/>
+                      <div class="tick-wrap"><span class="tick" style="left:-25%" >&bullet;</span></div></li>
               </ul>
               <h2>Model Design</h2>
               <ul>
@@ -93,17 +93,17 @@
                           <option id="dice" title="Climate change destroys a certain percentage of global output">DICE Damages to Gross Output</option>
                       </select></li>
               </ul>
-              <h2>Costs of emissions control</h2>
+              <h2>Cost of reducing emissions</h2>
               <ul>
-                  <li><label title="Additional cost from more abatement" >Marginal cost of abatement <span class="label"><span class="label-number">2.8</span></span></label>
+                  <li><label title="Additional cost from more abatement" >Marginal cost of reducing emissions <span class="label"><span class="label-number">2.8</span></span></label>
                       <input name="expcost2"  type="range" min="2" max="4" step="0.1" value="2.8" data-prec="1"/>
                       <div class="tick-wrap"><span class="tick" style="left:-10%" >&bullet;</span></div></li>
-                  <li><label title="Rate of decline in costs of reduction emissions" >Rate of decline of clean energy costs <span class="label"><span class="label-number">0.05</span><span>%</span></span></label>
+                  <li><label title="Rate of decline in costs of reduction emissions" >How fast will the costs of renewable energy decline? <span class="label"><span class="label-number">0.05</span><span>%</span></span></label>
                       <input name="gback"  type="range" min="0" max="0.2" step="0.05" value="0.05" data-prec="2"/>
                       <div class="tick-wrap"><span class="tick" style="left:-25%" >&bullet;</span></div></li>
-                  <li><label title="Cost of replacing all emissions in 2012 $ per ton of CO_{2} , relative to future cost" >Ratio of current to future clean energy costs <span class="label"><span class="label-number">2.0</span></span></label>
+                  <li><label title="Cost of replacing all emissions in 2012 $ per ton of CO_{2} , relative to future cost" >How low will the costs of renewables go? <span class="label"><span class="label-number">2.0</span></span></label>
                       <input name="backrat"  type="range" min="1.0" max="4" step="0.5" value="2.0" data-prec="1"/>
-                      <div class="tick-wrap"><span class="tick" style="left:-7%" >&bullet;</span></div></li>
+                      <div class="tick-wrap"><span class="tick" style="left:-16.6%" >&bullet;</span></div></li>
               </ul>
           </div>
           <div id="tab-optimization" class="tab notselected">
