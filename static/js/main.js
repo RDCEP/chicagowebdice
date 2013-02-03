@@ -615,9 +615,9 @@
          *It determines the type of input and updates the page accordingly.
          *(This is what runs when the user clicks "run model")
          */
-        $('#run-opt').click(function(){
-            $('#optimize').val('true');
-        });
+//        $('#run-opt').click(function(){
+//            $('#optimize').val('true');
+//        });
         var form = document.getElementById('submission');
         form.onsubmit = function(e) {
             e.preventDefault();
@@ -644,13 +644,13 @@
                         var areEqual = (parseFloat(defaultValue) == parseFloat(changedValue));
                         var deviation = Math.abs(Math.log(parseFloat(changedValue) / parseFloat(defaultValue)));
                     }
-
+                    //TODO: Thus assumes that there won't we any radio inputs other than the policy ones
+                    if ($(this).attr('name') != 'policy_type') {
                     if (!areEqual) {
-//						var description = $(this.parentNode).remove('.label').children('label').html().trim();
                         var description = $(this.parentNode).children('label').attr('title').trim();
                         var heading = $(this.parentNode.parentNode.parentNode).prev('h2').first().text();
-
                         changes.push([ heading, description, changedValue, defaultValue, deviation ]);
+                    }
                     }
                 });
 
@@ -748,6 +748,9 @@
             /* This is a hack for the treaty sliders, so that they can move
              *'backwards' from 100 to 0.
              */
+            if ($(this).hasClass('percent')) {
+                Math.round(value = value * 100, 0);
+            }
             if ($(this).hasClass('reverse')) {
                 value = Math.abs(100 - value);
             }
@@ -767,12 +770,25 @@
             });
         });
 
-        $('#treaty_switch').change(function(e) {
-            $(this).parent('h2').next('ul').children('li').toggleClass('disabled');
-            $(this).parent('h2').next('ul').children('li').children('input').each(function() {
-                var $this = $(this);
-                if ($this.attr('disabled')) $this.removeAttr('disabled');
-                else $this.attr('disabled', 'disabled');
+//        $('#treaty_switch').change(function(e) {
+//            $(this).parent('h2').next('ul').children('li').toggleClass('disabled');
+//            $(this).parent('h2').next('ul').children('li').children('input').each(function() {
+//                var $this = $(this);
+//                if ($this.attr('disabled')) $this.removeAttr('disabled');
+//                else $this.attr('disabled', 'disabled');
+//            });
+//        });
+        $('input[name=policy_type]').change(function(e) {
+            $('input[name=policy_type]').each(function() {
+                var $this = $(this).parent('h2').next('ul').children('li');
+                if ($(this).is(':checked')) {
+                    $this.children('input').removeAttr('disabled');
+                    $this.removeClass('disabled');
+                }
+                else {
+                    $this.children('input').attr('disabled', 'disabled');
+                    $this.addClass('disabled');
+                }
             });
         });
 
