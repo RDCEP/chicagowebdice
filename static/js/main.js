@@ -769,12 +769,12 @@
              *then set the label to that value.
              */
             var value = parseFloat(this.value).toFixed(this.getAttribute("data-prec"));
-            /* This is a hack for the treaty sliders, so that they can move
-             *'backwards' from 100 to 0.
-             */
             if ($(this).hasClass('percent')) {
                 Math.round(value = value * 100, 0);
             }
+            /* This is a hack for the treaty sliders, so that they can move
+             *'backwards' from 100 to 0.
+             */
             if ($(this).hasClass('reverse')) {
                 value = Math.abs(100 - value);
             }
