@@ -17,7 +17,9 @@
 #help-menu ul {display:none;position:absolute;top:100%;left:0;list-style-type:none;
     padding:0 0 .4em;background-color:inherit;width:100%}
 #help-menu li:hover ul {display:block;}
-#sidebar{position:absolute;top:9.5em;left:0;width:19em;background-color:#eee;bottom:0;border-right:1px solid #aaa;}
+#sidebar{position:absolute;top:9.5em;left:0;background-color:#eee;
+    bottom:0;border-right:1px solid #aaa;
+    /*width:19em;*/width:25em;}
 #back-to-rdcep{position:absolute;height:2.5em;top:7em;left:0;right:0;background-color:#596D26;}
 #back-to-rdcep{border-top:1px solid #697E33;border-bottom:1px solid #697E33;margin-top:-2px;padding-left:18.5em;}
 #back-to-rdcep a{color:#eee;font:0.9em/2.8em Helvetica,sans-serif;text-decoration:none;}
@@ -25,7 +27,7 @@
 #submission{position:absolute;top:0;left:0;right:0;bottom:0px;}
 #parameters{position:absolute;top:0;left:0;right:0;bottom:1.8em;overflow:auto;border-bottom:1px solid #ddd;}
 #parameters.has-tabs{padding-top:2em;}
-#parameters .tab {padding:0 1em;}
+#parameters .tab {padding:0 3em;/*padding:0 1em;*/}
 #submission h2{font:bold 0.8em Helvetica,sans-serif;padding:1.5em 0 0.5em;}
 #submission li{list-style-type:none;font:0.8em Helvetica,sans-serif;position:relative;padding:0 0 1em;}
 #submission #parameters input,#submission #parameters .fd-slider{width:100%;}
@@ -43,7 +45,8 @@
 #runs li img{position:absolute;top:1.5em;right:1em;}
 #runs li .slab{position:absolute;top:1.5em;left:1em;width:0.8em;height:0.8em;border:1px solid #000;}
 #runs li input{position:absolute;right:15px;top:20px;}
-#content{position:absolute;top:9.5em;left:19em;right:0;bottom:0;overflow:auto;}
+#content{position:absolute;top:9.5em;right:0;bottom:0;overflow:auto;
+    left:25em;/*left:19em;*/}
 #content .graph{float:left;}
 #content .initial{position:absolute;background-color:#eee;font:1em/1.5em Helvetica,sans-serif;}
 #content .initial{top:3em;left:4em;bottom:1em;right:4em;border-radius:1em;padding:2em;}
@@ -57,7 +60,7 @@
 #content .tabs .selected{background-color:#fff;}-
 #content>div>div>div{display:none !important;}
 #download-data{position:absolute;right:1em;bottom:0;}
-#download-data input{display:block;border:0px solid red;background-color:#eee;border:1px solid #ccc;}
+#download-data input{display:block;/*border:0px solid red;*/background-color:#eee;border:1px solid #ccc;}
 #download-data input{font:0.7em Helvetica,sans-serif;padding:0.5em;border-bottom:none;}
 #download-data input{cursor:pointer;}
 #download-data textarea{display:none;}
@@ -99,3 +102,11 @@
 .tab.notselected{display:none;}
 
 .disabled,.disabled .label {color:#999999!important;}
+#runs li .clickable-run-input {position:relative;right:auto;top:auto;}
+
+.help-button {position:absolute;right:-4em;top:1em;padding:.5em 1em .5em;
+    background-color:#fff;color:#999;cursor:pointer;font-weight:bold;
+    font-size:.9em;}
+#help-wrapper {position:absolute;left:26em;}
+.help-text {padding:.5em 1em;background-color:#fff;border:1px solid #ccc;
+    font-family:Helvetica,sans-serif;font-size:.9em;width:25em;display:none;}
