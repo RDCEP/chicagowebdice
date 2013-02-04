@@ -42,7 +42,9 @@
               <ul>
                   <li><label title="Temperature increase in degrees C from doubling of atmospheric CO2" >Climate sensitivity: How much will temperatures go up? <span class="label"><span class="label-number">3.0</span><span>°C</span></span></label>
                       <input name="t2xco2"  type="range" min="1" max="5" step="0.5" value="3.0" data-prec="1"/>
-                      <div class="tick-wrap"><span class="tick" style="left:0%" >&bullet;</span></div></li>
+                      <div class="tick-wrap"><span class="tick" style="left:0%" >&bullet;</span></div>
+                      <span class="help-button">?</span>
+                  </li>
                   <li><label title="Increase in harms from climate change due to an increase in temperatures" >How large will the harms be? <span class="label"><span class="label-number">2.0</span></span></label>
                       <input name="a3"  type="range" min="1" max="4" step="0.5" value="2.0" data-prec="1"/>
                       <div class="tick-wrap"><span class="tick" style="left:-16%" >&bullet;</span></div></li>
@@ -174,5 +176,11 @@
     <input type="submit" value="Download Selected Runs as CSV"/>
   </form>
 </div>
+<div id="help-wrapper">
+    <div class="help-text" id="t2xco2-help">
+        <p>TKTK</p></div>
+
+</div>
+<script src="/static/js/webdice_help.js"></script>
 </body>
 </html>
