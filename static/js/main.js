@@ -695,7 +695,31 @@
                             generateNextColor(), data, changes);
                         numberOfRunsInProgress--;
 
+                        //textNode.nodeValue = runObject.description;
+
+                        textNode.nodeValue = null;
+                        var clickableRunLabel = document.createElement('span');
+                        clickableRunLabel.setAttribute('class', 'clickable-run-label');
+                        clickableRunLabel.appendChild(textNode);
+                        clickableRunLabel.onclick = function() {
+                            if ($(this).children('input').length == 0) {
+                                var clickableRunInput = document.createElement('input');
+                                clickableRunInput.setAttribute('type', 'text');
+                                clickableRunInput.setAttribute('class', 'clickable-run-input');
+                                clickableRunInput.setAttribute('value', $(this).text());
+                                $(this).html(clickableRunInput);
+                                $(this).children('.clickable-run-input').focus();
+                                $(this).children('.clickable-run-input').blur(function() {
+                                    var value = $(this).val();
+                                    $(this).parent().html(value);
+                                    runObject.description = value;
+                                    updateAllData();
+                                });
+                            }
+                        }
                         textNode.nodeValue = runObject.description;
+                        createdLABEL.appendChild(clickableRunLabel);
+
                         createdLABEL.removeChild(progressIMG);
 
                         var visibilityCheckbox = document.createElement('input');
