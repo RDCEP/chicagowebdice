@@ -80,24 +80,34 @@
                     </li>
                     <li><label title="Increase in harms from climate change due to an increase in temperatures" >How large will the harms be? <span class="label"><span class="label-number">2.0</span></span></label>
                         <input name="a3"  type="range" min="1" max="4" step="0.5" value="2.0" data-prec="1"/>
-                        <div class="tick-wrap"><span class="tick" style="left:-16%" >&bullet;</span></div></li>
+                        <div class="tick-wrap"><span class="tick" style="left:-16%" >&bullet;</span></div>
+                        <span class="help-button">?</span>
+                    </li>
                     <li><label title="Decline in the rate of growth in productivity over time" >Decline in rate of growth of productivity <span class="label"><span class="label-number">0.1</span><span>%</span></span></label>
                         <input name="dela"  type="range" min="0.0" max="1.5" step="0.05" value="0.1" data-prec="2"/>
-                        <div class="tick-wrap"><span class="tick" style="left:-44%" >&bullet;</span></div></li>
+                        <div class="tick-wrap"><span class="tick" style="left:-44%" >&bullet;</span></div>
+                        <span class="help-button">?</span>
+                    </li>
                     <li><label title="Rate of decline in energy use per $ of GDP" >Change in energy intensity <span class="label"><span class="label-number">0.3</span><span>%</span></span></label>
                         <input name="dsig"  type="range" min="0.0" max="6.0" step="0.1" value="0.3" data-prec="1"/>
-                        <div class="tick-wrap"><span class="tick" style="left:-45%" >&bullet;</span></div></li>
+                        <div class="tick-wrap"><span class="tick" style="left:-45%" >&bullet;</span></div>
+                        <span class="help-button">?</span>
+                    </li>
                 </ul>
                 <h2>Model Design</h2>
                 <ul>
                     <li><label title="Oceanic model of carbon transfer" class="disabled">Carbon cycle </label>
                         <select name="carbon_model" disabled="disabled">
                             <option id="dice_carbon">DICE</option>
-                        </select></li>
+                        </select>
+                        <span class="help-button">?</span>
+                    </li>
                     <li><label title="Way that climate change harms enter the economy" class="disabled">Damages model </label>
                         <select name="damages_model" disabled="disabled">
                             <option id="dice" title="Climate change destroys a certain percentage of global output">DICE Damages to Gross Output</option>
-                        </select></li>
+                        </select>
+                        <span class="help-button">?</span>
+                    </li>
                 </ul>
             </div>
             <div id="tab-economy" class="tab notselected">
@@ -105,37 +115,55 @@
                 <ul>
                     <li><label title="Additional cost from more abatement" >Marginal cost of reducing emissions <span class="label"><span class="label-number">2.8</span></span></label>
                         <input name="expcost2"  type="range" min="2" max="4" step="0.1" value="2.8" data-prec="1"/>
-                        <div class="tick-wrap"><span class="tick" style="left:-10%" >&bullet;</span></div></li>
+                        <div class="tick-wrap"><span class="tick" style="left:-10%" >&bullet;</span></div>
+                        <span class="help-button">?</span>
+                    </li>
                     <li><label title="Rate of decline in costs of reduction emissions" >How fast will the costs of renewable energy decline? <span class="label"><span class="label-number">0.05</span><span>%</span></span></label>
                         <input name="gback"  type="range" min="0" max="0.2" step="0.05" value="0.05" data-prec="2"/>
-                        <div class="tick-wrap"><span class="tick" style="left:-25%" >&bullet;</span></div></li>
+                        <div class="tick-wrap"><span class="tick" style="left:-25%" >&bullet;</span></div>
+                        <span class="help-button">?</span>
+                    </li>
                     <li><label title="Cost of replacing all emissions in 2012 $ per ton of CO_{2} , relative to future cost" >How low will the costs of renewables go? <span class="label"><span class="label-number">2.0</span></span></label>
                         <input name="backrat"  type="range" min="1.0" max="4" step="0.5" value="2.0" data-prec="1"/>
-                        <div class="tick-wrap"><span class="tick" style="left:-16.6%" >&bullet;</span></div></li>
+                        <div class="tick-wrap"><span class="tick" style="left:-16.6%" >&bullet;</span></div>
+                        <span class="help-button">?</span>
+                    </li>
                 </ul>
                 <h2>Additional Parameters</h2>
                 <ul>
                     <li><label title="Number, in millions, that the population grows asymptotically towards" >Max population <span class="label"><span class="label-number">8600</span><span> millions</span></span></label>
                         <input name="popasym"  type="range" min="8000" max="12000" step="200" value="8600" data-prec="0"/>
-                        <div class="tick-wrap"><span class="tick" style="left:-35%" >&bullet;</span></div></li>
+                        <div class="tick-wrap"><span class="tick" style="left:-35%" >&bullet;</span></div>
+                        <span class="help-button">?</span>
+                    </li>
                     <li><label title="Rate of depreciation per year" >Depreciation rate <span class="label"><span class="label-number">10</span><span>%</span></span></label>
                         <input name="dk"  class="percent" type="range" min="0.08" max="0.2" step="0.01" value="0.1" data-prec="2"/>
-                        <div class="tick-wrap"><span class="tick" style="left:-33%" >&bullet;</span></div></li>
+                        <div class="tick-wrap"><span class="tick" style="left:-33%" >&bullet;</span></div>
+                        <span class="help-button">?</span>
+                    </li>
                     <li><label title="Savings are per year" >Savings rate <span class="label"><span class="label-number">20</span><span>%</span></span></label>
                         <input name="savings"  class="percent" type="range" min="0.10" max="0.25" step="0.01" value="0.22" data-prec="2"/>
-                        <div class="tick-wrap"><span class="tick" style="left:30%" >&bullet;</span></div></li>
+                        <div class="tick-wrap"><span class="tick" style="left:30%" >&bullet;</span></div>
+                        <span class="help-button">?</span>
+                    </li>
                     <li><label title="Fossil fuels remaining, measured in CO2 emissions" >Fossil fuel reserves <span class="label"><span class="label-number">6000</span><span> Gt&nbsp;C</span></span></label>
                         <input name="fosslim"  type="range" min="5000" max="9000" step="500" value="6000" data-prec="0"/>
-                        <div class="tick-wrap"><span class="tick" style="left:-25%" >&bullet;</span></div></li>
+                        <div class="tick-wrap"><span class="tick" style="left:-25%" >&bullet;</span></div>
+                        <span class="help-button">?</span>
+                    </li>
                     <!--</ul>-->
                     <!--<h2>Additional Parameters</h2>-->
                     <!--<ul>-->
                     <li><label title="Exponent of consumption in utility function" >Elasticity of marg. consump. <span class="label"><span class="label-number">2.0</span></span></label>
                         <input name="elasmu"  type="range" min="1" max="3" step="0.1" value="2.0" data-prec="1"/>
-                        <div class="tick-wrap"><span class="tick" style="left:0%" >&bullet;</span></div></li>
+                        <div class="tick-wrap"><span class="tick" style="left:0%" >&bullet;</span></div>
+                        <span class="help-button">?</span>
+                    </li>
                     <li><label title="Discount rate applied to utility" >Pure rate of time preference <span class="label"><span class="label-number">0.015</span></span></label>
                         <input name="prstp" type="range" min="0" max="0.1" step="0.005" value="0.015" data-prec="3"/>
-                        <div class="tick-wrap"><span class="tick" style="left:-35%" >&bullet;</span></div></li>
+                        <div class="tick-wrap"><span class="tick" style="left:-35%" >&bullet;</span></div>
+                        <span class="help-button">?</span>
+                    </li>
                 </ul>
             </div>
             <!-- ENDTODO -->
@@ -192,8 +220,50 @@
 </div>
 <div id="help-wrapper">
     <div class="help-text" id="t2xco2-help">
-        <p>TKTK</p></div>
-
+        <p>TKTK</p>
+    </div>
+    <div class="help-text" id="a3-help">
+        <p>TKTK</p>
+    </div>
+    <div class="help-text" id="dela-help">
+        <p>TKTK</p>
+    </div>
+    <div class="help-text" id="dsig-help">
+        <p>TKTK</p>
+    </div>
+    <div class="help-text" id="carbon_model-help">
+        <p>TKTK</p>
+    </div>
+    <div class="help-text" id="damages_model-help">
+        <p>TKTK</p>
+    </div>
+    <div class="help-text" id="expcost2-help">
+        <p>TKTK</p>
+    </div>
+    <div class="help-text" id="gback-help">
+        <p>TKTK</p>
+    </div>
+    <div class="help-text" id="backrat-help">
+        <p>TKTK</p>
+    </div>
+    <div class="help-text" id="popasym-help">
+        <p>TKTK</p>
+    </div>
+    <div class="help-text" id="dk-help">
+        <p>TKTK</p>
+    </div>
+    <div class="help-text" id="savings-help">
+        <p>TKTK</p>
+    </div>
+    <div class="help-text" id="fosslim-help">
+        <p>TKTK</p>
+    </div>
+    <div class="help-text" id="elasmu-help">
+        <p>TKTK</p>
+    </div>
+    <div class="help-text" id="prstp-help">
+        <p>TKTK</p>
+    </div>
 </div>
 <script src="/static/js/webdice_help.js"></script>
 </body>
