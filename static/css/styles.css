@@ -104,9 +104,9 @@
 .disabled,.disabled .label {color:#999999!important;}
 #runs li .clickable-run-input {position:relative;right:auto;top:auto;}
 
-.help-button {position:absolute;right:-4em;top:1em;padding:.5em 1em .5em;
+.help-button {position:absolute;right:-4.5em;top:1em;padding:.5em 1em .5em;
     background-color:#fff;color:#999;cursor:pointer;font-weight:bold;
-    font-size:.9em;}
+    font-size:.9em;text-align:right;}
 #help-wrapper {position:absolute;left:26em;}
 .help-text {padding:.5em 1em;background-color:#fff;border:1px solid #ccc;
     font-family:Helvetica,sans-serif;font-size:.9em;width:25em;display:none;}
