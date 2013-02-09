@@ -20,7 +20,7 @@ class diceParams(object):
         self._gsigma = -.0730 # Initial growth of sigma per decade
         self.dsig = .3 # Decline rate of decarbonization per decade
         self.dsig2 = .000 # Quadratic term in decarbonization
-        self._eland0 = 1.1000 # Carbon emissions from land 2005 (GtC per decade)
+        self._eland0 = 11.000 # Carbon emissions from land 2005 (GtC per decade)
         self._e2005 = 84.1910 # Year 2005 Emissions
         ## Carbon Cycle
         self.mat2000 = 808.9 # Concentration in atmosphere 2005 (GtC)
