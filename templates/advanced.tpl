@@ -29,7 +29,7 @@
 </ul>
 <div id="sidebar">
     <form id="submission" method="post" action="/">
-        <!--TODO: replace this with {{! tabs_html }} -->
+        <!--TODO: replace this with tabs_html() -->
         <div id="parameters" class="has-tabs">
             <div id="sidebar-tabs" class="tabs">
                 <a href="" class="selected" id="link-to-tab-policy">Policy</a>
@@ -83,16 +83,6 @@
                         <div class="tick-wrap"><span class="tick" style="left:-16%" >&bullet;</span></div>
                         <span class="help-button">?</span>
                     </li>
-                    <li><label title="Decline in the rate of growth in productivity over time" >Decline in rate of growth of productivity <span class="label"><span class="label-number">0.1</span><span>%</span></span></label>
-                        <input name="dela"  type="range" min="0.0" max="1.5" step="0.05" value="0.1" data-prec="2"/>
-                        <div class="tick-wrap"><span class="tick" style="left:-44%" >&bullet;</span></div>
-                        <span class="help-button">?</span>
-                    </li>
-                    <li><label title="Rate of decline in energy use per $ of GDP" >Change in energy intensity <span class="label"><span class="label-number">0.3</span><span>%</span></span></label>
-                        <input name="dsig"  type="range" min="0.0" max="6.0" step="0.1" value="0.3" data-prec="1"/>
-                        <div class="tick-wrap"><span class="tick" style="left:-45%" >&bullet;</span></div>
-                        <span class="help-button">?</span>
-                    </li>
                 </ul>
                 <h2>Model Design</h2>
                 <ul>
@@ -129,11 +119,11 @@
                         <span class="help-button">?</span>
                     </li>
                 </ul>
-                <h2>Additional Parameters</h2>
+                <h2>Economic Performance</h2>
                 <ul>
-                    <li><label title="Number, in millions, that the population grows asymptotically towards" >Max population <span class="label"><span class="label-number">8600</span><span> millions</span></span></label>
-                        <input name="popasym"  type="range" min="8000" max="12000" step="200" value="8600" data-prec="0"/>
-                        <div class="tick-wrap"><span class="tick" style="left:-35%" >&bullet;</span></div>
+                    <li><label title="Decline in the rate of growth in productivity over time" >Decline in rate of growth of productivity <span class="label"><span class="label-number">0.1</span><span>%</span></span></label>
+                        <input name="dela"  type="range" min="0.0" max="1.5" step="0.05" value="0.1" data-prec="2"/>
+                        <div class="tick-wrap"><span class="tick" style="left:-44%" >&bullet;</span></div>
                         <span class="help-button">?</span>
                     </li>
                     <li><label title="Rate of depreciation per year" >Depreciation rate <span class="label"><span class="label-number">10</span><span>%</span></span></label>
@@ -146,14 +136,27 @@
                         <div class="tick-wrap"><span class="tick" style="left:30%" >&bullet;</span></div>
                         <span class="help-button">?</span>
                     </li>
+                    <li><label title="Number, in millions, that the population grows asymptotically towards" >Max population <span class="label"><span class="label-number">8600</span><span> millions</span></span></label>
+                        <input name="popasym"  type="range" min="8000" max="12000" step="200" value="8600" data-prec="0"/>
+                        <div class="tick-wrap"><span class="tick" style="left:-35%" >&bullet;</span></div>
+                        <span class="help-button">?</span>
+                    </li>
+                </ul>
+                <h2>Energy Parameters</h2>
+                <ul>
+                    <li><label title="Rate of decline in energy use per $ of GDP" >Change in energy intensity <span class="label"><span class="label-number">0.3</span><span>%</span></span></label>
+                        <input name="dsig"  type="range" min="0.0" max="6.0" step="0.1" value="0.3" data-prec="1"/>
+                        <div class="tick-wrap"><span class="tick" style="left:-45%" >&bullet;</span></div>
+                        <span class="help-button">?</span>
+                    </li>
                     <li><label title="Fossil fuels remaining, measured in CO2 emissions" >Fossil fuel reserves <span class="label"><span class="label-number">6000</span><span> Gt&nbsp;C</span></span></label>
                         <input name="fosslim"  type="range" min="5000" max="9000" step="500" value="6000" data-prec="0"/>
                         <div class="tick-wrap"><span class="tick" style="left:-25%" >&bullet;</span></div>
                         <span class="help-button">?</span>
                     </li>
-                    <!--</ul>-->
-                    <!--<h2>Additional Parameters</h2>-->
-                    <!--<ul>-->
+                </ul>
+                <h2>Utility Parameters</h2>
+                <ul>
                     <li><label title="Exponent of consumption in utility function" >Elasticity of marg. consump. <span class="label"><span class="label-number">2.0</span></span></label>
                         <input name="elasmu"  type="range" min="1" max="3" step="0.1" value="2.0" data-prec="1"/>
                         <div class="tick-wrap"><span class="tick" style="left:0%" >&bullet;</span></div>
