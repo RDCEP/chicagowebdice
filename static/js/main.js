@@ -626,7 +626,6 @@
             setTimeout(function() {
                 var data = $(form).serialize();
                 var changes = [ ];
-
                 /*
                  *All of this is just to find the changes in values for a submitted run so that
                  *It can be put in a tooltip display when the user hovers over the "run #" in the bottom
@@ -684,6 +683,35 @@
                 numberOfRunsInProgress++;
 
                 updateRunsListHeight();
+
+                /*
+                This maps the values form the basic inputs to actual values,
+                and then writes the query string -- rather than using jQuery
+                serialize()
+                 */
+                if ($(form).hasClass('basic')) {
+                    var new_values = {
+                            't2xco2': [1,2,3,4,5],
+                            'a3': [1, 1.4, 2.0, 2.8, 4.0],
+                            'dela': [0.0, 0.03, 0.1, 0.38, 1.5],
+                            'dsig': [0.0, 0.06, 0.3, 1.3, 6.0],
+                            'backrat': [1, 1.4, 2.0, 2.8, 4.0]
+                        },
+                        data = ''
+                    ;
+                    data += 'policy_type=' + $('input[name=policy_type]').val();
+                    data += '&optimize=' + $('input[name=optimize]').val();
+                    $('#tab-beliefs').find('input').each(function() {
+                        $(this).val(function(i, v) {
+                            data += '&' + $(this).attr('name') + '=';
+                            data += new_values[$(this).attr('name')][v-1];
+                            return v;
+                        });
+                    });
+                }
+                /*
+                End value mapping for basic form
+                 */
                 $('html, body').animate({scrollTop:$(document).height()}, 'slow');
                 $.ajax({ //Now we are going to actually execute the run
                     type : 'POST',

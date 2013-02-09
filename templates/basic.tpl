@@ -28,7 +28,7 @@
     <li id="view-source"><a href="https://www.github.com/RDCEP/chicagowebdice/" target="_blank">View Source</a></li>
 </ul>
 <div id="sidebar">
-    <form id="submission" method="post" action="/">
+    <form id="submission" method="post" action="/" class="basic">
         <div id="parameters" class="has-tabs">
             <div id="sidebar-tabs" class="tabs">
                 <a href="" class="selected" id="link-to-tab-policy">Policy</a>
@@ -71,26 +71,36 @@
             <div id="tab-beliefs" class="tab notselected">
                 <h2>Your beliefs about the climate and the future</h2>
                 <ul>
-                    <li><label title="Temperature increase in degrees C from doubling of atmospheric CO2" >Climate sensitivity: How much will temperatures go up?</label>
-                        <input name="t2xco2"  type="range" min="1" max="5" step="0.5" value="3.0" data-prec="1"/>
+                    <li><label title="Temperature increase in degrees C from doubling of atmospheric CO2" >
+                            Climate sensitivity: How much will temperatures go up?
+                        </label>
+                        <input name="t2xco2"  type="range" min="1" max="5" step="1" value="3" data-prec="0"/>
                         <div class="minimum-range-value">less than expected</div>
                         <div class="maximum-range-value">more than expected</div>
                         <span class="help-button">?</span>
                     </li>
-                    <li><label title="Increase in harms from climate change due to an increase in temperatures" >How large will the harms be?</label>
-                        <input name="a3"  type="range" min="1" max="4" step="0.5" value="2.0" data-prec="1"/>
+                    <li><label title="Increase in harms from climate change due to an increase in temperatures" >
+                            How large will the harms be?
+                        </label>
+                        <input name="a3"  type="range" min="1" max="5" step="1" value="3" data-prec="0"/>
                         <span class="help-button">?</span>
                     </li>
-                    <li><label title="Decline in the rate of growth in productivity over time" >Decline in rate of growth of productivity</label>
-                        <input name="dela"  type="range" min="0.0" max="1.5" step="0.05" value="0.1" data-prec="2"/>
+                    <li><label title="Decline in the rate of growth in productivity over time" >
+                            Decline in rate of growth of productivity
+                        </label>
+                        <input name="dela"  type="range" min="1" max="5" step="1" value="3" data-prec="0"/>
                         <span class="help-button">?</span>
                     </li>
-                    <li><label title="Rate of decline in energy use per $ of GDP" >Change in energy intensity</label>
-                        <input name="dsig"  type="range" min="0.0" max="6.0" step="0.1" value="0.3" data-prec="1"/>
+                    <li><label title="Rate of decline in energy use per $ of GDP" >
+                            Change in energy intensity
+                        </label>
+                        <input name="dsig"  type="range" min="1" max="5" step="1" value="3" data-prec="0"/>
                         <span class="help-button">?</span>
                     </li>
-                    <li><label title="Cost of replacing all emissions in 2012 $ per ton of CO_{2} , relative to future cost" >How low will the costs of renewables go?</label>
-                        <input name="backrat"  type="range" min="1.0" max="4" step="0.5" value="2.0" data-prec="1"/>
+                    <li><label title="Cost of replacing all emissions in 2012 $ per ton of CO_{2} , relative to future cost" >
+                            How low will the costs of renewables go?
+                        </label>
+                        <input name="backrat"  type="range" min="1" max="5" step="1" value="3" data-prec="0"/>
                         <div class="minimum-range-value">very inexpensive</div>
                         <div class="maximum-range-value">very expensive</div>
                         <span class="help-button">?</span>
