@@ -169,7 +169,7 @@ class Dice2007Params(object):
         self._sig0 = .13418 # CO2-equivalent emissions-GNP ratio 2005 (effectively intensity)
         self._gsigma = -.0730 # Initial growth of sigma per decade
         self.dsig2 = .000 # Quadratic term in decarbonization
-        self._eland0 = 1.1 # Carbon emissions from land 2005 (GtC per decade)
+        self._eland0 = 11.0 # Carbon emissions from land 2005 (GtC per decade)
 
         ## Carbon Cycle
         self.mat2000 = 808.9 # Concentration in atmosphere 2005 (GtC)
