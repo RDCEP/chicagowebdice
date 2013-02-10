@@ -699,8 +699,8 @@
                         },
                         data = ''
                     ;
-                    data += 'policy_type=' + $('input[name=policy_type]').val();
-                    data += '&optimize=' + $('input[name=optimize]').val();
+                    data += 'policy_type=' + $('input[name=policy_type]:checked').val();
+                    data += '&optimize=false'
                     $('#tab-beliefs').find('input').each(function() {
                         $(this).val(function(i, v) {
                             data += '&' + $(this).attr('name') + '=';

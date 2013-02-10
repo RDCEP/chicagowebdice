@@ -26,7 +26,7 @@ class Dice2007(Dice2007Params):
         Names of all DICE variables
     aa : array
     gfacpop: array
-        Population growth factor
+        Popula-ion growth factor
     l : array
         Labor or population
     ga : array
@@ -58,13 +58,16 @@ class Dice2007(Dice2007Params):
         Dice2007Params.__init__(self)
         self.p = Dice2007Params()
         self.optimize = False
-        if optimize: self.optimize = True
+        if optimize:
+            self.optimize = True
         self.POW = 1.0
         self.RAMP = False
         self.CLAMP = False
+
     @property
     def varscale(self):
-        return {'mass_atmosphere': 1000.,}
+        return {'mass_atmosphere': 1000., }
+
     @property
     def parameters(self):
         return [
@@ -78,14 +81,16 @@ class Dice2007(Dice2007Params):
             "partfract1", "partfract2", "partfract21", "dpartfract",
             "e2050", "e2100", "e2150", "fosslim", "scale1", "scale2",
             "tmax", "numScen", "savings", "miu_2005", 'backstop',
-            ]
+        ]
+
     @property
     def user_params(self):
         return [
             't2xco2', 'a3', 'dela', 'dsig', 'e2050', 'e2100', 'e2150',
             'popasym', 'dk', 'savings', 'fosslim', 'expcost2', 'gback',
             'backrat', 'elasmu', 'prstp',
-            ]
+        ]
+
     @property
     def vars(self):
         return [
@@ -97,6 +102,7 @@ class Dice2007(Dice2007Params):
             'consumption_pc', 'utility', 'utility_d',
             'al', 'gcost1', 'sigma', 'miu', 'backstop', 'l', 'tax_rate',
         ]
+
     @property
     def aa(self):
         """
@@ -108,6 +114,7 @@ class Dice2007(Dice2007Params):
         array : [a1, a2, a3]
         """
         return np.array([self.a1, self.a2, self.a3.value])
+
     @property
     def gfacpop(self):
         """
@@ -119,6 +126,7 @@ class Dice2007(Dice2007Params):
         """
         return (np.exp(self._gpop0 * self.t0) - 1) / (np.exp(self._gpop0 *
                                                              self.t0))
+
     @property
     def l(self):
         """
@@ -128,7 +136,9 @@ class Dice2007(Dice2007Params):
         -------
         array : (exp(pop(0) * t) - 1) / exp(gpop(0) * t)
         """
-        return self._pop0 * (1 - self.gfacpop) + self.gfacpop * self.popasym.value
+        return self._pop0 * (1 - self.gfacpop) + self.gfacpop * \
+            self.popasym.value
+
     @property
     def ga(self):
         """
@@ -138,7 +148,8 @@ class Dice2007(Dice2007Params):
         -------
         array : ga(0) * exp(-dela * 10 * t)
         """
-        return self._ga0 * np.exp(-(self.dela.value/100.) * 10 * self.t0)
+        return self._ga0 * np.exp(-(self.dela.value / 100.) * 10 * self.t0)
+
     @property
     def gsig(self):
         """
@@ -149,7 +160,10 @@ class Dice2007(Dice2007Params):
         array : gsigma * exp(-dsig * 10 * t - disg2 * 10 * t^2)
         """
         return self._gsigma * np.exp(-(
-            self.dsig.value/100) * 10 * self.t0 - self.dsig2 * 10 * (self.t0 ** 2))
+            self.dsig.value / 100) * 10 * self.t0 - self.dsig2 * 10 *
+            (self.t0 ** 2)
+        )
+
     @property
     def backstop(self):
         """
@@ -160,7 +174,9 @@ class Dice2007(Dice2007Params):
         array : pback * ((backrat - 1 + exp(-gback * t)) / backrat
         """
         return self._pback * (
-            (self.backrat.value - 1 + np.exp(-self.gback.value * self.t0)) / self.backrat.value)
+            (self.backrat.value - 1 + np.exp(-self.gback.value * self.t0)) /
+            self.backrat.value)
+
     @property
     def etree(self):
         """
@@ -170,7 +186,8 @@ class Dice2007(Dice2007Params):
         -------
         array : Eland(0) * (1 - .1)^t
         """
-        return self._eland0 * (1 - .1)**self.t0
+        return self._eland0 * (1 - .1) ** self.t0
+
     @property
     def rr(self):
         """
@@ -180,7 +197,8 @@ class Dice2007(Dice2007Params):
         -------
         array : 1 / (1 + prstp)^t
         """
-        return 1 / ((1 + self.prstp.value)**(10*self.t0))
+        return 1 / ((1 + self.prstp.value) ** (10 * self.t0))
+
     @property
     def ecap(self):
         """
@@ -192,10 +210,11 @@ class Dice2007(Dice2007Params):
         """
         return np.concatenate((
             np.ones(5),
-            (np.ones(5) * (100.-self.e2050.value)) / 100.,
-            (np.ones(5) * (100.-self.e2100.value)) / 100.,
-            (np.ones(45) * (100.-self.e2150.value)) / 100.,
+            (np.ones(5) * (100. - self.e2050.value)) / 100.,
+            (np.ones(5) * (100. - self.e2100.value)) / 100.,
+            (np.ones(45) * (100. - self.e2150.value)) / 100.,
         ))
+
     @property
     def partfract(self):
         """
@@ -210,7 +229,8 @@ class Dice2007(Dice2007Params):
             self.partfract21 + (self.partfract2 - self.partfract21) * np.exp(
                 -self.dpartfract * np.arange(23)),
             np.linspace(self.partfract21, self.partfract21, 36),
-            ))
+        ))
+
     @property
     def forcoth(self):
         """
@@ -222,11 +242,13 @@ class Dice2007(Dice2007Params):
         """
         return np.concatenate((
             self.fex0 + .1 * (self.fex1 - self.fex0) * np.arange(11),
-            self.fex0 + (np.ones(49)*.36),
-            ))
+            self.fex0 + (np.ones(49) * .36),
+        ))
+
     @property
     def lam(self):
         return self.fco22x / self.t2xco2.value
+
     @property
     def tax_rate(self):
         """
@@ -236,7 +258,9 @@ class Dice2007(Dice2007Params):
         -------
         float : backstop * 1000 * miu**(expcost2-1)
         """
-        return self.backstop * 1000 * self.data['vars']['miu'] ** (self.expcost2.value-1)
+        return self.backstop * 1000 * self.data['vars']['miu'] ** (
+            self.expcost2.value - 1)
+
     @property
     def output_abate(self):
         """
@@ -246,12 +270,15 @@ class Dice2007(Dice2007Params):
         -------
         float : gcost1 * miu**expcost2
         """
-        return self.data['vars']['gcost1'] * self.data['vars']['miu']**self.expcost2.value
+        return self.data['vars']['gcost1'] * self.data['vars']['miu'] ** \
+            self.expcost2.value
+
     @property
     def welfare(self):
         return np.sum(self.data['vars']['utility_d'])
 
-    def step(self, i, D, miu=None, deriv=False, epsilon=1e-3, f0=0.0):
+    def step(self, i, D, miu=None, deriv=False, epsilon=1e-3, f0=0.0,
+             scc=False):
         """
         Single step for calculating endogenous variables
         ...
@@ -268,13 +295,17 @@ class Dice2007(Dice2007Params):
         -------
         None
         """
+        ii = i - 1
         if i > 0:
-            D['sigma'][i] = D['sigma'][i-1] / (1 - self.gsig[i])
-            D['al'][i] = D['al'][i-1] / (1 - self.ga[i-1])
-            D['capital'][i] = self.eq.capital(D['capital'][i-1], self.dk.value,
-                D['investment'][i-1])
+            D['sigma'][i] = D['sigma'][ii] / (1 - self.gsig[i])
+            D['al'][i] = D['al'][ii] / (1 - self.ga[ii])
+            D['capital'][i] = self.eq.capital(
+                D['capital'][ii], self.dk.value, D['investment'][ii]
+            )
         D['gcost1'][i] = (self._pback * D['sigma'][i] / self.expcost2.value) * (
-            (self.backrat.value - 1 + np.exp(-self.gback.value * i)) / self.backrat.value)
+            (self.backrat.value - 1 + np.exp(-self.gback.value * i)) /
+            self.backrat.value
+        )
         D['gross_output'][i] = self.eq.gross_output(
             D['al'][i], D['capital'][i], self._gama, self.l[i]
         )
@@ -289,20 +320,23 @@ class Dice2007(Dice2007Params):
             if i > 0:
                 if self.treaty_switch.value:
                     D['miu'][i] = self.eq.miu(
-                        D['emissions_ind'][i-1], self.ecap[i-1],
+                        D['emissions_ind'][ii], self.ecap[ii],
                         D['emissions_ind'][0],
                         D['sigma'][i], D['gross_output'][i]
                     )
-                else: D['miu'][i] = 0.
+                else:
+                    D['miu'][i] = 0.
         D['emissions_ind'][i] = self.eq.emissions_ind(
             D['sigma'][i], D['miu'][i], D['gross_output'][i]
         )
         D['emissions_total'][i] = self.eq.emissions_total(
             D['emissions_ind'][i], self.etree[i]
         )
+        if scc and scc is not True:
+            D['emissions_total'][i] += scc
         if i > 0:
             D['carbon_emitted'][i] = (
-                D['carbon_emitted'][i-1] + D['emissions_total'][i]*10
+                D['carbon_emitted'][ii] + D['emissions_total'][i] * 10
             )
         else:
             D['carbon_emitted'][i] = 10 * D['emissions_total'][i]
@@ -312,15 +346,15 @@ class Dice2007(Dice2007Params):
             D['carbon_emitted'][i] = self.fosslim.value
         if i > 0:
             D['mass_atmosphere'][i] = self.eq.mass_atmosphere(
-                D['emissions_total'][i-1], D['mass_atmosphere'][i-1],
-                D['mass_upper'][i-1], self.bb
+                D['emissions_total'][ii], D['mass_atmosphere'][ii],
+                D['mass_upper'][ii], self.bb
             )
             D['mass_upper'][i] = self.eq.mass_upper(
-                D['mass_atmosphere'][i-1], D['mass_upper'][i-1],
-                D['mass_lower'][i-1], self.bb
+                D['mass_atmosphere'][ii], D['mass_upper'][ii],
+                D['mass_lower'][ii], self.bb
             )
             D['mass_lower'][i] = self.eq.mass_lower(
-                D['mass_upper'][i-1], D['mass_lower'][i-1], self.bb
+                D['mass_upper'][ii], D['mass_lower'][ii], self.bb
             )
         D['forcing'][i] = self.eq.forcing(
             self.fco22x, D['mass_atmosphere'][i], self.matPI,
@@ -328,11 +362,11 @@ class Dice2007(Dice2007Params):
         )
         if i > 0:
             D['temp_atmosphere'][i] = self.eq.temp_atmosphere(
-                D['temp_atmosphere'][i-1], D['temp_lower'][i-1],
+                D['temp_atmosphere'][ii], D['temp_lower'][ii],
                 D['forcing'][i], self.lam, self.cc
             )
             D['temp_lower'][i] = self.eq.temp_lower(
-                D['temp_atmosphere'][i-1], D['temp_lower'][i-1], self.cc
+                D['temp_atmosphere'][ii], D['temp_lower'][ii], self.cc
             )
         D['damage'][i] = self.eq.damage(
             D['gross_output'][i], D['temp_atmosphere'][i], self.aa
@@ -341,24 +375,35 @@ class Dice2007(Dice2007Params):
             D['gross_output'][i], D['miu'][i], D['gcost1'][i],
             self.expcost2.value, self.partfract[i]
         )
-        D['output'][i] = self.eq.output(D['gross_output'][i],
-            D['damage'][i], D['abatement'][i])
+        D['output'][i] = self.eq.output(
+            D['gross_output'][i], D['damage'][i], D['abatement'][i]
+        )
         if i == 0:
             D['investment'][i] = self.savings.value * self._q0
         else:
-            D['investment'][i] = self.eq.investment(self.savings.value, D['output'][i])
-        D['consumption'][i] = self.eq.consumption(D['output'][i], self.savings.value)
+            D['investment'][i] = self.eq.investment(
+                self.savings.value, D['output'][i]
+            )
+        D['consumption'][i] = self.eq.consumption(
+            D['output'][i], self.savings.value
+        )
         D['consumption_pc'][i] = self.eq.consumption_pc(
             D['consumption'][i], self.l[i]
         )
-        D['utility'][i] = self.eq.utility(D['consumption_pc'][i],
-            self.elasmu.value, self.l[i])
+        D['utility'][i] = self.eq.utility(
+            D['consumption_pc'][i], self.elasmu.value, self.l[i]
+        )
         D['utility_d'][i] = self.eq.utility_d(
             D['utility'][i], self.rr[i], self.l[i]
         )
         if deriv:
             self.derivative['fprime'][i] = (D['utility_d'][i] - f0) / epsilon
             D['miu'] = self.data['vars']['miu']
+        if scc is True:
+            self.step(i, self.data['scc'], scc=1.0)
+            D['scc'][i] = self.data['scc']['consumption_pc'][i] - \
+                D['consumption_pc'][i]
+        #     print D['scc']
 
     def loop(self, miu=None, deriv=False):
         """
@@ -367,60 +412,29 @@ class Dice2007(Dice2007Params):
         D = self.data['vars']
         _epsilon = 1e-4
         if self.optimize and miu is None:
-            D['miu'] = self.get_opt_mu()
+            D['miu'] = self.get_ipopt_mu()
             D['miu'][0] = self.miu_2005
-#            D['miu'] = np.concatenate((
-#                np.array([.005, .158, .184, .211, .240, .270, .302, .335, .370,
-#                          .407, .446, .486, .531, .577, .626, .678, .735, .795, .860, .931]),
-#                np.ones(40)
-#            ))
-#        if deriv:
-#            self.derivative = np.zeros([len(miu), 1])
         for i in range(self.tmax):
-            self.step(i, self.data['vars'], miu)
+            self.step(i, self.data['vars'], miu, scc=True)
             if self.optimize and deriv:
                 f0 = np.atleast_1d(D['utility_d'][i])
-                self.step(i, self.data['deriv'], miu=miu, epsilon=_epsilon,
-                    deriv=True, f0=f0)
+                self.step(
+                    i, self.data['deriv'], miu=miu, epsilon=_epsilon,
+                    deriv=True, f0=f0
+                )
         if self.optimize and miu is not None:
             if deriv:
                 return self.derivative['fprime'].transpose()
             else:
                 return self.data['vars']['utility_d'].sum()
+        print D['scc']
 
-    def get_ramp(self):
-        self.optimize = False
-        self.loop()
-        ramp = np.abs(
-            (self.data['vars']['damage'] /
-             self.data['vars']['consumption_pc'])-.5
-        ).argmin()
-        if self.gback.value >= .1:
-            ramp = int(round(ramp * .9))
-        self.optimize = True
-        return ramp
-
-    def get_opt_mu(self):
-        if self.RAMP:
-            ramp = self.get_ramp()
-            print ramp
-            x0 = np.concatenate((
-                np.linspace(.1, 1, ramp),
-                np.ones(self.tmax-ramp)
-            ))
-        else:
-            ramp = self.tmax - 1
-            x0 = np.ones(self.tmax)
-        x0 = self.get_ipopt_mu(x0, ramp)
-        return x0
-
-    def get_ipopt_mu(self, x0, RAMP, *args, **kwargs):
+    def get_ipopt_mu(self):
+        x0 = np.ones(self.tmax)
         M = 0
         nnzj = 0
         nnzh = 0
         xl = np.zeros(self.tmax)
-        if self.CLAMP:
-            xl[RAMP:] = 1.
         xu = np.ones(self.tmax)
         gl = np.zeros(M)
         gu = np.ones(M) * 4.0
@@ -454,146 +468,3 @@ class Dice2007(Dice2007Params):
                 vv = getattr(self.data['vars'], v)
             output += '%s %s\n' % (v, ' '.join(map(str, list(vv))))
         return output
-
-def profile_stub():
-    d = Dice2007(optimize=True)
-    try:
-        VAR = 'mass_atmosphere'
-#        VAR = 'mass_upper'
-#        VAR = 'mass_lower'
-#        VAR = 'emissions_total'
-#        VAR = 'emissions_ind'
-#        VAR = 'carbon_emitted'
-        a = None
-        b = None
-        rcParams.update({'font.size': 6})
-        fig1 = plt.figure(figsize=(5, 3.5), dpi=200)
-        one = False
-        two = True
-        three = False
-        four = True
-
-#        d.gback.value = .15
-#        d.t2xco2.value = 4.
-#        d.a3.value = 4.
-
-        # RAMPED, UNCLAMPED
-        if one:
-            d.RAMP = True; d.CLAMP = False
-            d.loop()
-            plt.subplot(211)
-            plt.plot(d.data['vars']['miu'])
-            plt.subplot(212)
-            plt.plot(d.data['vars'][VAR][a:b])
-
-        # ONES, UNCLAMPED
-        if two:
-            d.RAMP = False; d.CLAMP = False
-            d.loop()
-            plt.subplot(211)
-            plt.plot(d.data['vars']['miu'])
-            plt.subplot(212)
-            plt.plot(d.data['vars'][VAR][a:b])
-            print d.welfare
-
-        # RAMPED, CLAMPED
-        if three:
-            d.RAMP = True; d.CLAMP = True
-            d.loop()
-            plt.subplot(211)
-            plt.plot(d.data['vars']['miu'])
-            plt.subplot(212)
-            plt.plot(d.data['vars'][VAR][a:b])
-            print d.welfare
-
-        # UNOPTIMIZED
-        if four:
-            d.optimize = False
-            d.loop()
-            plt.subplot(211)
-            plt.plot(d.data['vars']['miu'])
-            plt.subplot(212)
-            plt.plot(d.data['vars'][VAR][a:b])
-            print d.welfare
-        plt.show()
-    except:
-        pass
-#    print d.data['vars'][VAR]
-#    VAR = 'damage'
-#    VAR = 'capital'
-#    print d.data['vars'][VAR][:5]
-#    print d.data['vars'][VAR][55:]
-#    print d.data['vars'][VAR].sum()
-#    print d.data['vars'][['carbon_emitted', 'emissions_ind', 'emissions_total']]
-
-def gams_out(param=None, value=None):
-    d = Dice2007()
-    if param is not None:
-        x = getattr(d, param)
-        x.value = getattr(x, value)
-    d.loop()
-    filename = './gams_%s_%s.csv' % (param, value)
-    with open(filename, 'a') as f:
-        for i in range(d.tmax):
-            f.write(str(round(d.data['vars']['miu'][i], 2))+',')
-            f.write(str(round(d.data['vars']['sigma'][i], 2))+',')
-            f.write(str(round(d.data['vars']['al'][i], 2))+',')
-            f.write(str(round(d.data['vars']['gcost1'][i], 2))+',')
-            f.write(str(round(d.data['vars']['capital'][i], 2))+',')
-            f.write(str(round(d.data['vars']['output'][i], 2))+',')
-            f.write(str(round(d.data['vars']['mass_atmosphere'][i], 2))+',')
-            f.write(str(round(d.data['vars']['mass_upper'][i], 2))+',')
-            f.write(str(round(d.data['vars']['mass_lower'][i], 2))+',')
-            f.write(str(round(d.data['vars']['temp_atmosphere'][i], 2))+',')
-            f.write(str(round(d.data['vars']['temp_lower'][i], 2))+',')
-            f.write(str(round(d.data['vars']['investment'][i], 2))+',')
-            f.write(str(round(d.data['vars']['gross_output'][i], 2))+',')
-            f.write(str(round(d.data['vars']['forcing'][i], 2))+',')
-            f.write(str(round(d.data['vars']['emissions_ind'][i], 2))+',')
-            f.write(str(round(d.data['vars']['emissions_total'][i], 2))+',')
-            f.write(str(round(d.data['vars']['carbon_emitted'][i], 2))+',')
-            f.write(str(round(d.data['vars']['participation'][i], 2))+',')
-            f.write(str(round(d.data['vars']['participation_markup'][i], 2))+',')
-            f.write(str(round(d.data['vars']['damage'][i], 2))+',')
-            f.write(str(round(d.data['vars']['abatement'][i], 2))+',')
-            f.write(str(round(d.data['vars']['consumption'][i], 2))+',')
-            f.write(str(round(d.data['vars']['consumption_pc'][i], 2))+',')
-            f.write(str(round(d.data['vars']['utility'][i], 2))+',')
-            f.write(str(round(d.data['vars']['utility_d'][i], 2))+',')
-            f.write(str(round(d.data['vars']['pref_fac'][i], 2))+'\n')
-
-def foo_run():
-    d = Dice2007()
-    d.loop()
-
-
-if __name__ == '__main__':
-#    profile_stub()
-#    foo_run()
-    gams_out()
-    gams_out('t2xco2', 'minimum')
-    gams_out('t2xco2', 'maximum')
-    gams_out('a3', 'minimum')
-    gams_out('a3', 'maximum')
-    gams_out('dela', 'minimum')
-    gams_out('dela', 'maximum')
-    gams_out('dsig', 'minimum')
-    gams_out('dsig', 'maximum')
-    gams_out('expcost2', 'minimum')
-    gams_out('expcost2', 'maximum')
-    gams_out('gback', 'minimum')
-    gams_out('gback', 'maximum')
-    gams_out('backrat', 'minimum')
-    gams_out('backrat', 'maximum')
-    gams_out('popasym', 'minimum')
-    gams_out('popasym', 'maximum')
-    gams_out('dk', 'minimum')
-    gams_out('dk', 'maximum')
-    gams_out('savings', 'minimum')
-    gams_out('savings', 'maximum')
-    gams_out('fosslim', 'minimum')
-    gams_out('fosslim', 'maximum')
-    gams_out('elasmu', 'minimum')
-    gams_out('elasmu', 'maximum')
-    gams_out('prstp', 'minimum')
-    gams_out('prstp', 'maximum')
