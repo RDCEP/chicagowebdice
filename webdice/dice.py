@@ -61,8 +61,7 @@ class Dice2007(Dice2007Params):
         if optimize:
             self.optimize = True
         self.POW = 1.0
-        self.RAMP = False
-        self.CLAMP = False
+        self.SCC = True
 
     @property
     def varscale(self):
@@ -332,8 +331,9 @@ class Dice2007(Dice2007Params):
         D['emissions_total'][i] = self.eq.emissions_total(
             D['emissions_ind'][i], self.etree[i]
         )
-        if scc and scc is not True:
-            D['emissions_total'][i] += scc
+        if scc:
+            if scc is not True:
+                D['emissions_total'][i] = self.data['vars']['emissions_total'][i] + scc
         if i > 0:
             D['carbon_emitted'][i] = (
                 D['carbon_emitted'][ii] + D['emissions_total'][i] * 10
@@ -400,9 +400,16 @@ class Dice2007(Dice2007Params):
             self.derivative['fprime'][i] = (D['utility_d'][i] - f0) / epsilon
             D['miu'] = self.data['vars']['miu']
         if scc is True:
+            _p = 'consumption_pc'
+            # _p = 'utility_d'
             self.step(i, self.data['scc'], scc=1.0)
-            D['scc'][i] = self.data['scc']['consumption_pc'][i] - \
-                D['consumption_pc'][i]
+
+            D['scc'][i] = self.data['scc'][_p][i] - D[_p][i]
+            if i < 3 or (i < 20 and i > 16):
+                print i, 'scc', self.data['scc'][_p][i], self.data['scc']['emissions_total'][i]
+                print i, 'var', D[_p][i], D['emissions_total'][i]
+                # print i, 'scc', self.data['scc'].ix[i]
+                # print i, 'var', D.ix[i]
         #     print D['scc']
 
     def loop(self, miu=None, deriv=False):
@@ -427,7 +434,8 @@ class Dice2007(Dice2007Params):
                 return self.derivative['fprime'].transpose()
             else:
                 return self.data['vars']['utility_d'].sum()
-        print D['scc']
+        print D['scc'].head(3)
+        print D['scc'].tail(3)
 
     def get_ipopt_mu(self):
         x0 = np.ones(self.tmax)
