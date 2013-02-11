@@ -492,27 +492,31 @@ def verify_out(d, param=None, value=None):
         x.value = getattr(x, value)
     d.loop()
     filename = '../verify/gams_%s_%s.csv' % (param, value)
-    exclude = [
-        'output_abate',
-        'tax_rate',
-        'backstop', 'l'
-    ]
     with open(filename, 'a') as f:
+        _vars = [
+            'miu', 'sigma', 'al', 'gcost1', 'capital', 'output',
+            'mass_atmosphere', 'mass_upper', 'mass_lower', 'temp_atmosphere',
+            'temp_lower', 'investment', 'gross_output', 'forcing',
+            'emissions_ind', 'emissions_total', 'carbon_emitted',
+            'participation', 'participation_markup', 'damage',
+            'abatement', 'consumption', 'consumption_pc', 'utility',
+            'utility_d', 'pref_fac',
+        ]
         for i in range(d.tmax):
-            for v in range(len(d.vars)):
-                if d.vars[v] not in exclude:
-                    f.write(str(round(d.data['vars'][d.vars[v]][i], 2)))
-                    if v == (len(d.vars) - 1):
-                        f.write('\n')
-                    else:
-                        f.write(',')
+            for v in range(len(_vars)):
+                if v + 1 == len(_vars):
+                    t = '\n'
+                else:
+                    t = ','
+                f.write(str(round(d.data['vars'][_vars[v]][i], 2)) + t)
 
 if __name__ == '__main__':
-    exclude = ['e2050', 'e2100', 'e2150', ]
-    # d = Dice2007(optimize=True)
     d = Dice2007()
+    _params = [
+        't2xco2', 'a3', 'dela', 'dsig', 'expcost2', 'gback',
+        'backrat', 'popasym','dk', 'savings', 'fosslim', 'elasmu', 'prstp', 
+    ]
     verify_out(d)
-    for p in d.user_params:
-        if p not in exclude:
-            verify_out(d, p, 'minimum')
-            verify_out(d, p, 'maximum')
+    for p in _params:
+        verify_out(d, p, 'minimum')
+        verify_out(d, p, 'maximum')
