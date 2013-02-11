@@ -75,34 +75,40 @@
                             Climate sensitivity: How much will temperatures go up?
                         </label>
                         <input name="t2xco2"  type="range" min="1" max="5" step="1" value="3" data-prec="0"/>
-                        <div class="minimum-range-value">less than expected</div>
-                        <div class="maximum-range-value">more than expected</div>
+                        <div class="minimum-range-value">Less than expected</div>
+                        <div class="maximum-range-value">More than expected</div>
                         <span class="help-button">?</span>
                     </li>
                     <li><label title="Increase in harms from climate change due to an increase in temperatures" >
                             How large will the harms be?
                         </label>
                         <input name="a3"  type="range" min="1" max="5" step="1" value="3" data-prec="0"/>
+                        <div class="minimum-range-value">Less harm</div>
+                        <div class="maximum-range-value">More harm</div>
                         <span class="help-button">?</span>
                     </li>
                     <li><label title="Decline in the rate of growth in productivity over time" >
                             Decline in rate of growth of productivity
                         </label>
                         <input name="dela"  type="range" min="1" max="5" step="1" value="3" data-prec="0"/>
+                        <div class="minimum-range-value">Slower growth</div>
+                        <div class="maximum-range-value">Faster growth</div>
                         <span class="help-button">?</span>
                     </li>
                     <li><label title="Rate of decline in energy use per $ of GDP" >
                             Change in energy intensity
                         </label>
                         <input name="dsig"  type="range" min="1" max="5" step="1" value="3" data-prec="0"/>
+                        <div class="minimum-range-value">Less energy intense</div>
+                        <div class="maximum-range-value">More energy intense</div>
                         <span class="help-button">?</span>
                     </li>
                     <li><label title="Cost of replacing all emissions in 2012 $ per ton of CO_{2} , relative to future cost" >
                             How low will the costs of renewables go?
                         </label>
                         <input name="backrat"  type="range" min="1" max="5" step="1" value="3" data-prec="0"/>
-                        <div class="minimum-range-value">very inexpensive</div>
-                        <div class="maximum-range-value">very expensive</div>
+                        <div class="minimum-range-value">Less expensive</div>
+                        <div class="maximum-range-value">More expensive</div>
                         <span class="help-button">?</span>
                     </li>
                 </ul>
