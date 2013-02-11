@@ -47,7 +47,18 @@ def index():
     do_session(request)
     return page()
 
-def page():
+@route('/advanced')
+def advanced():
+    do_session(request)
+    return page('advanced')
+
+@route('/basic')
+def advanced():
+    do_session(request)
+    return page('basic')
+
+
+def page(t='index'):
     """
     Return HTML for all pages.
     ...
@@ -65,7 +76,7 @@ def page():
     m = json.JSONEncoder().encode(without_sections)
     g = json.JSONEncoder().encode(graph_locations)
     now = datetime.now().strftime('%Y%m%d%H%M%S')
-    tpl = template('index',
+    tpl = template(t,
         measurements=m,
         graph_locations=g,
         tabs_html=tabs_html(),
@@ -101,10 +112,13 @@ def graphs():
     if form.treaty_switch == 'on':
         thisdice.treaty_switch.value = True
     else: thisdice.treaty_switch.value = False
-    if getattr(form, 'optimize') == 'true':
+    # if getattr(form, 'optimize') == 'true':
+    if getattr(form, 'policy_type') == 'optimized':
         thisdice.optimize = True
     thisdice.loop()
     thisdice.optimize=False
+    # else:
+    #     thisdice.loop(scc=True)
     return thisdice.format_output()
 
 @route('/csv', method='POST')
