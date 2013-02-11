@@ -299,15 +299,12 @@ class Dice2007Params(object):
             'pref_fac': np.ones(self.tmax),
             'scc': np.ones(self.tmax),
         })
-
         self.data = pd.Panel({
             'vars': data,
             'deriv': data,
             'scc': data,
         })
-#        self.derivative = pd.Series(np.empty(self.tmax))
         self.derivative = pd.DataFrame({
             'fprime': np.empty(self.tmax),
         })
-
         self.hessian = pd.Series(np.empty(self.tmax))
