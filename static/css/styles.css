@@ -1,4 +1,5 @@
 *{margin:0;padding:0;}
+h1 span a {color:#fff;text-decoration:none;}
 #heading{background:url(../images/header.png);}
 #heading{position:absolute;top:0;left:0;right:0;padding:0 1em;font:bold 2em/3.5em Helvetica,sans-serif;}
 #heading{color:white;text-shadow:0 0 5px #444;border-bottom:1px solid #262;margin-top:-1px;}

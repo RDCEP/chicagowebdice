@@ -17,8 +17,8 @@
     <script type="text/javascript" src="/static/js/main.js?{{ now }}"></script>
 </head>
 <body>
-<h1 id="heading"> <span>RDCEP</span> :: WebDICE</h1>
-<div id="back-to-rdcep"><a href="http://www.rdcep.org/">Back to RDCEP</a></div>
+<h1 id="heading"> <span><a href="http://rdcep.org">RDCEP</a></span> :: WebDICE</h1>
+<div id="back-to-rdcep"><a href="/advanced">Switch to Advanced</a></div>
 <ul id="help-menu">
     <li id="display-help">Documentation<ul>
         <li><a target="_blank" href="/static/docs/webdice_basic_help.pdf">Basic</a></li>
