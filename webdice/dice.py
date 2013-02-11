@@ -332,7 +332,9 @@ class Dice2007(Dice2007Params):
         #     D['emissions_ind'][i], self.etree[i]
         # )
         if scc is True:
-            D['emissions_total'][i] = self.data['vars']['emissions_total'][i] + 1.0
+            D['emissions_total'][i] = (
+                self.data['vars']['emissions_total'][i] + 1.0
+            )
         else:
             D['emissions_total'][i] = self.eq.emissions_total(
                 D['emissions_ind'][i], self.etree[i]
@@ -459,11 +461,13 @@ class Dice2007(Dice2007Params):
             return np.zeros(M)
         def eval_jac_g(x, flag):
             if flag:
-                return ([], [])
+                return [], []
             else:
                 return np.empty(M)
-        r = pyipopt.create(self.tmax, xl, xu, M, gl, gu, nnzj, nnzh, eval_f,
-            eval_grad_f, eval_g, eval_jac_g)
+        r = pyipopt.create(
+            self.tmax, xl, xu, M, gl, gu, nnzj, nnzh, eval_f,
+            eval_grad_f, eval_g, eval_jac_g
+        )
         x, zl, zu, obj, status = r.solve(x0)
         return x
 
