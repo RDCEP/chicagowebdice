@@ -61,7 +61,6 @@ class Dice2007(Dice2007Params):
         if optimize:
             self.optimize = True
         self.POW = 1.0
-        self.SCC = True
 
     @property
     def varscale(self):
@@ -100,6 +99,7 @@ class Dice2007(Dice2007Params):
             'investment', 'carbon_emitted', 'consumption',
             'consumption_pc', 'utility', 'utility_d',
             'al', 'gcost1', 'sigma', 'miu', 'backstop', 'l', 'tax_rate',
+            'scc',
         ]
 
     @property
@@ -328,12 +328,15 @@ class Dice2007(Dice2007Params):
         D['emissions_ind'][i] = self.eq.emissions_ind(
             D['sigma'][i], D['miu'][i], D['gross_output'][i]
         )
-        D['emissions_total'][i] = self.eq.emissions_total(
-            D['emissions_ind'][i], self.etree[i]
-        )
-        if scc:
-            if scc is not True:
-                D['emissions_total'][i] = self.data['vars']['emissions_total'][i] + scc
+        # D['emissions_total'][i] = self.eq.emissions_total(
+        #     D['emissions_ind'][i], self.etree[i]
+        # )
+        if scc is True:
+            D['emissions_total'][i] = self.data['vars']['emissions_total'][i] + 1.0
+        else:
+            D['emissions_total'][i] = self.eq.emissions_total(
+                D['emissions_ind'][i], self.etree[i]
+            )
         if i > 0:
             D['carbon_emitted'][i] = (
                 D['carbon_emitted'][ii] + D['emissions_total'][i] * 10
@@ -399,20 +402,8 @@ class Dice2007(Dice2007Params):
         if deriv:
             self.derivative['fprime'][i] = (D['utility_d'][i] - f0) / epsilon
             D['miu'] = self.data['vars']['miu']
-        if scc is True:
-            _p = 'consumption_pc'
-            # _p = 'utility_d'
-            self.step(i, self.data['scc'], scc=1.0)
 
-            D['scc'][i] = self.data['scc'][_p][i] - D[_p][i]
-            if i < 3 or (i < 20 and i > 16):
-                print i, 'scc', self.data['scc'][_p][i], self.data['scc']['emissions_total'][i]
-                print i, 'var', D[_p][i], D['emissions_total'][i]
-                # print i, 'scc', self.data['scc'].ix[i]
-                # print i, 'var', D.ix[i]
-        #     print D['scc']
-
-    def loop(self, miu=None, deriv=False):
+    def loop(self, miu=None, deriv=False, scc=True):
         """
         Loop through step function for calculating endogenous variables
         """
@@ -422,7 +413,7 @@ class Dice2007(Dice2007Params):
             D['miu'] = self.get_ipopt_mu()
             D['miu'][0] = self.miu_2005
         for i in range(self.tmax):
-            self.step(i, self.data['vars'], miu, scc=True)
+            self.step(i, D, miu)
             if self.optimize and deriv:
                 f0 = np.atleast_1d(D['utility_d'][i])
                 self.step(
@@ -434,8 +425,19 @@ class Dice2007(Dice2007Params):
                 return self.derivative['fprime'].transpose()
             else:
                 return self.data['vars']['utility_d'].sum()
-        print D['scc'].head(3)
-        print D['scc'].tail(3)
+        if scc:
+            for i in range(20):
+                S = self.data['vars'].copy()
+                for j in range(self.tmax):
+                    if j >= i:
+                        shock = False
+                        if j == i:
+                            shock = True
+                        self.step(j, S, miu=miu, scc=shock)
+                D['scc'][i] = np.sum(
+                    ((self.data['vars']['consumption_pc'][i:i+20] -
+                        S['consumption_pc'][i:i+20]) * self.rr[:20])
+                ) * 10000. * (12./44.)
 
     def get_ipopt_mu(self):
         x0 = np.ones(self.tmax)
@@ -447,9 +449,9 @@ class Dice2007(Dice2007Params):
         gl = np.zeros(M)
         gu = np.ones(M) * 4.0
         def eval_f(x):
-            return self.loop(x)
+            return self.loop(x, scc=False)
         def eval_grad_f(x):
-            return self.loop(x, deriv=True)
+            return self.loop(x, deriv=True, scc=False)
         def eval_g(x):
             return np.zeros(M)
         def eval_jac_g(x, flag):
@@ -476,3 +478,34 @@ class Dice2007(Dice2007Params):
                 vv = getattr(self.data['vars'], v)
             output += '%s %s\n' % (v, ' '.join(map(str, list(vv))))
         return output
+
+def verify_out(d, param=None, value=None):
+    if param is not None:
+        x = getattr(d, param)
+        x.value = getattr(x, value)
+    d.loop()
+    filename = '../verify/gams_%s_%s.csv' % (param, value)
+    exclude = [
+        'output_abate',
+        'tax_rate',
+        'backstop', 'l'
+    ]
+    with open(filename, 'a') as f:
+        for i in range(d.tmax):
+            for v in range(len(d.vars)):
+                if d.vars[v] not in exclude:
+                    f.write(str(round(d.data['vars'][d.vars[v]][i], 2)))
+                    if v == (len(d.vars) - 1):
+                        f.write('\n')
+                    else:
+                        f.write(',')
+
+if __name__ == '__main__':
+    exclude = ['e2050', 'e2100', 'e2150', ]
+    # d = Dice2007(optimize=True)
+    d = Dice2007()
+    verify_out(d)
+    for p in d.user_params:
+        if p not in exclude:
+            verify_out(d, p, 'minimum')
+            verify_out(d, p, 'maximum')
