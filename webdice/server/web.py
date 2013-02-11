@@ -81,7 +81,7 @@ def page(t='index'):
         graph_locations=g,
         tabs_html=tabs_html(),
         dropdowns=measurements_html(),
-        paragraphs_html=paragraphs_html(),
+        paragraphs_html=paragraphs_html(t),
         now=now,
     )
     return tpl

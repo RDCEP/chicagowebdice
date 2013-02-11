@@ -288,7 +288,7 @@ def tabs_html():
         html += '</div>'
     return html
 
-def paragraphs_html():
+def paragraphs_html(t):
     """
     Build HTML for initial text on webpage.
     ...
@@ -296,7 +296,7 @@ def paragraphs_html():
     Returns:
         HTML
     """
-    initial_help = CONF_FILE['initial_help']
+    initial_help = CONF_FILE['initial_help'][t]
     html = ''
     paragraphs = initial_help.split('\n')
     for paragraph in paragraphs:

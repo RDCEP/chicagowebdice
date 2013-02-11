@@ -29,30 +29,62 @@
   something new. 
 
 
-initial_help: >
-  webDICE is a simulation tool designed to show how climate change might affect
-  people living today and in the future. It is based in the most widely used
-  model of the economy and the climate, the DICE model, developed by Professor
-  William Nordhaus, of Yale University. webDICE allows you to run the DICE
-  model quickly with an easy to use interface. You can change the key variables
-  in the model to reflect your views about the economy and about climate change
-  and run the model with these choices.
+initial_help:
+  old: >
+    webDICE is a simulation tool designed to show how climate change might affect
+    people living today and in the future. It is based in the most widely used
+    model of the economy and the climate, the DICE model, developed by Professor
+    William Nordhaus, of Yale University. webDICE allows you to run the DICE
+    model quickly with an easy to use interface. You can change the key variables
+    in the model to reflect your views about the economy and about climate change
+    and run the model with these choices.
 
-  To run a simulation click on the “Run Model” button at the bottom of the
-  page. The variables are set to the defaults based on our best guess of the
-  correct values. You can change the variables to reflect your views by moving
-  the sliders. Running a simulation will let you see how the outcomes change.
-  The most important variables can be found on the “Basic” tab and additional
-  variables are on the “Advanced” tab. The “Optimization” tab allows you to
-  compute a carbon tax which will reduce emissions so as to balance the costs
-  of reducing emissions with the benefits of reducing the harms from climate
-  change, all based on the beliefs you have the future and about climate change.
+    To run a simulation click on the “Run Model” button at the bottom of the
+    page. The variables are set to the defaults based on our best guess of the
+    correct values. You can change the variables to reflect your views by moving
+    the sliders. Running a simulation will let you see how the outcomes change.
+    The most important variables can be found on the “Basic” tab and additional
+    variables are on the “Advanced” tab. The “Optimization” tab allows you to
+    compute a carbon tax which will reduce emissions so as to balance the costs
+    of reducing emissions with the benefits of reducing the harms from climate
+    change, all based on the beliefs you have the future and about climate change.
 
-  The model has been developed by researchers at the University of Chicago
-  supported by RDCEP. We are continually working to improve the model and the
-  interface. If you have suggestions, contact us at
-  <a href="mailto:info-rdcep@ci.uchicago.edu" target="_blank">info-rdcep@ci.uchicago.edu</a>.
+    The model has been developed by researchers at the University of Chicago
+    supported by RDCEP. We are continually working to improve the model and the
+    interface. If you have suggestions, contact us at
+    <a href="mailto:info-rdcep@ci.uchicago.edu" target="_blank">info-rdcep@ci.uchicago.edu</a>.
 
+
+  index: >
+      webDICE is a simulation tool designed to show how climate change might affect
+      people living today and in the future. It is based in the most widely used
+      model of the economy and the climate, the DICE model, developed by Professor
+      William Nordhaus, of Yale University. webDICE allows you to run the DICE
+      model quickly with an easy to use interface. You can change the key variables
+      in the model to reflect your views about the economy and about climate change
+      and run the model with these choices.
+
+      The complete set of DICE variables can be found in the “Advanced” version.
+      An abbreviated set of variables is available in the “Basic” version.
+
+      The model has been developed by researchers at the University of Chicago
+      supported by RDCEP. We are continually working to improve the model and the
+      interface. If you have suggestions, contact us at
+      <a href="mailto:info-rdcep@ci.uchicago.edu" target="_blank">info-rdcep@ci.uchicago.edu</a>.
+
+
+  advanced: >
+      To run a simulation click on the “Run Model” button at the bottom of the
+      page. The variables are set to the defaults based on our best guess of the
+      correct values. You can change the variables to reflect your views by moving
+      the sliders. Running a simulation will let you see how the outcomes change.
+
+
+  basic: >
+      To run a simulation click on the “Run Model” button at the bottom of the
+      page. The variables are set to the defaults based on our best guess of the
+      correct values. You can change the variables to reflect your views by moving
+      the sliders. Running a simulation will let you see how the outcomes change.
 
 basic_help: >
   ## WebDICE Documentation [Small Version]

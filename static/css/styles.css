@@ -115,3 +115,10 @@ h1 span a {color:#fff;text-decoration:none;}
 .maximum-range-value,.minimum-range-value {font-size:.6em;}
 .maximum-range-value {text-align:right;}
 .minimum-range-value {float:left;}
+
+#input-select{padding:3em;}
+#input-select li {background-color:#fff;color:#666;font-weight:bold;
+font-family:Helveltica,Arial,Calibri,sans-serif;padding:.1em .5em;
+    margin-bottom:.5em;font-size:1.5em;}
+#input-select li a {color:#666;text-decoration:none;}
+#input-select li a:hover {color:#000;}
