@@ -428,7 +428,8 @@ class Dice2007(Dice2007Params):
         if scc:
             periods = 20
             for i in range(periods):
-                last = i + (self.tmax - periods)
+                tail = self.tmax - periods
+                last = i + tail
                 S = self.data['vars'].copy()
                 for j in range(self.tmax):
                     if j >= i:
@@ -438,7 +439,7 @@ class Dice2007(Dice2007Params):
                         self.step(j, S, miu=miu, scc=shock)
                 D['scc'][i] = np.sum(
                     ((self.data['vars']['consumption_pc'][i:last] -
-                        S['consumption_pc'][i:last]) * self.rr[:periods])
+                        S['consumption_pc'][i:last]) * self.rr[:tail])
                 ) * 10000. * (12./44.)
 
     def get_ipopt_mu(self):
