@@ -40,7 +40,7 @@
             <div id="tab-policy" class="tab selected">
                 <h2>
                     <input type="radio" value="default" name="policy_type" style="width:auto" checked="checked"/>
-                    Default policy
+                    Business as Usual
                 </h2>
                 <h2 class="disabled">
                     <input type="radio" value="carbon_tax" name="policy_type" style="width:auto" disabled="disabled"/>
