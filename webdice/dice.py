@@ -404,6 +404,16 @@ class Dice2007(Dice2007Params):
         if deriv:
             self.derivative['fprime'][i] = (D['utility_d'][i] - f0) / epsilon
             D['miu'] = self.data['vars']['miu']
+        if scc:
+            c_steps = 20
+            c_tail = 20
+            if i < c_steps:
+                S = self.data['vars'].copy()
+                for c_i in range(c_steps + c_tail):
+                    shock = False
+                    if i == 0:
+                        shock = True
+
 
     def loop(self, miu=None, deriv=False, scc=True):
         """
@@ -428,21 +438,43 @@ class Dice2007(Dice2007Params):
             else:
                 return self.data['vars']['utility_d'].sum()
         if scc:
-            periods = 20
-            for i in range(periods):
-                tail = self.tmax - periods
-                last = i + tail
-                S = self.data['vars'].copy()
-                for j in range(self.tmax):
-                    if j >= i:
-                        shock = False
-                        if j == i:
-                            shock = True
-                        self.step(j, S, miu=miu, scc=shock)
-                D['scc'][i] = np.sum(
-                    ((self.data['vars']['consumption_pc'][i:last] -
-                        S['consumption_pc'][i:last]) * self.rr[:tail])
-                ) * 10000. * (12./44.)
+            self.get_scc(D, miu)
+
+    def get_scc(self, D, miu):
+        """
+        Calculate social cost of carbon
+        ...
+        Accepts
+        -------
+        D : pandas, models variables
+        i : integer, index of step in loop method
+        ...
+        Returns
+        -------
+        None
+        ...
+        Internal Variables
+        ------------------
+        x_range : integer, number of periods in output graph
+        fi : integer, (future indices) number of periods to calculate future consumption
+        fy : integer, (final year) last period of to calculate consumption
+        shock : boolean, whether to 'shock' the emissions of the current period
+        """
+        x_range = 20
+        for i in range(x_range):
+            fi = self.tmax - x_range
+            fy = i + fi
+            S = self.data['vars'].copy()
+            for j in range(self.tmax):
+                if j >= i:
+                    shock = False
+                    if j == i:
+                        shock = True
+                    self.step(j, S, miu=miu, scc=shock)
+            D['scc'][i] = np.sum(
+                ((self.data['vars']['consumption_pc'][i:fy] -
+                  S['consumption_pc'][i:fy]) * self.rr[:fi])
+            ) * 10000. * (12./44.)
 
     def get_ipopt_mu(self):
         x0 = np.ones(self.tmax)
