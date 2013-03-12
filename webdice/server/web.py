@@ -104,21 +104,19 @@ def graphs():
         try: all_parameters[p]['disabled']
         except (KeyError, AttributeError):
             try: a = getattr(thisdice, p)
-            except AttributeError: pass
+            except AttributeError: pass  #print a, p
             else:
                 try:
                     a.value = float(getattr(form, p))
-                except ValueError: pass #print p, getattr(form, p)
-    if form.treaty_switch == 'on':
+                except (ValueError, AttributeError): pass  #print p, getattr(form, p)
+    if getattr(form, 'policy_type') == 'treaty':
         thisdice.treaty_switch.value = True
-    else: thisdice.treaty_switch.value = False
-    # if getattr(form, 'optimize') == 'true':
+    else:
+        thisdice.treaty_switch.value = False
     if getattr(form, 'policy_type') == 'optimized':
         thisdice.optimize = True
     thisdice.loop()
     thisdice.optimize=False
-    # else:
-    #     thisdice.loop(scc=True)
     return thisdice.format_output()
 
 @route('/csv', method='POST')
