@@ -174,6 +174,18 @@ class Dice2007Params(object):
         self.treaty_switch = DiceWebParam(
             '', '', treaty, False
         )
+        self.p2050 = DiceWebParam(
+            'Treaty participation in 2050', 'Treaty participation in 2050',
+            treaty, 100, minimum=0, maximum=100, step=5, precision=0
+        )
+        self.p2100 = DiceWebParam(
+            'Treaty participation in 2100', 'Treaty participation in 2100',
+            treaty, 100, minimum=0, maximum=100, step=5, precision=0
+        )
+        self.p2150 = DiceWebParam(
+            'Treaty participation in 2150', 'Treaty participation in 2150',
+            treaty, 100, minimum=0, maximum=100, step=5, precision=0
+        )
 
         ## Population and technology
         self._pop0 = 6514.  # 2005 world population millions

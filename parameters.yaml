@@ -230,6 +230,39 @@ parameters:
     precision: 0
     description: The mandated decrease in emissions by 2150 as a share of 2005 year emissions.
     unit: "%"
+  - name: 2050
+    tab: Basic
+    machine_name: p2050
+    section: "Simulated climate treaty <input id='treaty-switch' type='checkbox'/>: Choose limitations on emissions (as a percent of 2005 emissions):"
+    min: 0
+    max: 100
+    step: 5
+    default: 100
+    precision: 0
+    description: The mandated decrease in emissions by 2050 as a share of 2005 year emissions.
+    unit: "%"
+  - name: 2100
+    tab: Basic
+    machine_name: p2100
+    section: "Simulated climate treaty <input id='treaty-switch' type='checkbox'/>: Choose limitations on emissions (as a percent of 2005 emissions):"
+    min: 0
+    max: 100
+    step: 10
+    default: 0
+    precision: 0
+    description: The mandated decrease in emissions by 2100 as a share of 2005 year emissions.
+    unit: "%"
+  - name: 2150
+    tab: Basic
+    machine_name: p2150
+    section: "Simulated climate treaty <input id='treaty-switch' type='checkbox'/>: Choose limitations on emissions (as a percent of 2005 emissions):"
+    min: 0
+    max: 100
+    step: 10
+    default: 0
+    precision: 0
+    description: The mandated decrease in emissions by 2150 as a share of 2005 year emissions.
+    unit: "%"
   - name: Marginal cost of abatement
     tab: Advanced
     section: Costs of emissions control

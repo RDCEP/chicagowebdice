@@ -77,7 +77,8 @@ class Dice2007(Dice2007Params):
             "b21", "b22", "b23", "b32", "b33", "c1", "c2", "c3", "c4",
             "expcost2", "_pback", "backrat", "gback", "limmiu",
             "partfract1", "partfract2", "partfract21", "dpartfract",
-            "e2050", "e2100", "e2150", "fosslim", "scale1", "scale2",
+            "e2050", "e2100", "e2150", "p2050", "p2100", "p2150",
+            "fosslim", "scale1", "scale2",
             "tmax", "numScen", "savings", "miu_2005", 'backstop',
         ]
 
@@ -85,6 +86,7 @@ class Dice2007(Dice2007Params):
     def user_params(self):
         return [
             't2xco2', 'a3', 'dela', 'dsig', 'e2050', 'e2100', 'e2150',
+            "p2050", "p2100", "p2150",
             'popasym', 'dk', 'savings', 'fosslim', 'expcost2', 'gback',
             'backrat', 'elasmu', 'prstp',
         ]
@@ -223,11 +225,18 @@ class Dice2007(Dice2007Params):
         -------
         array
         """
+        if not self.treaty_switch.value:
+            return np.concatenate((
+                np.linspace(self.partfract1, self.partfract1, 1),
+                self.partfract21 + (self.partfract2 - self.partfract21) * np.exp(
+                    -self.dpartfract * np.arange(23)),
+                np.linspace(self.partfract21, self.partfract21, 36),
+            ))
         return np.concatenate((
-            np.linspace(self.partfract1, self.partfract1, 1),
-            self.partfract21 + (self.partfract2 - self.partfract21) * np.exp(
-                -self.dpartfract * np.arange(23)),
-            np.linspace(self.partfract21, self.partfract21, 36),
+            np.ones(5),
+            (np.ones(5) * self.p2050.value) / 100.,
+            (np.ones(5) * self.p2100.value) / 100.,
+            (np.ones(45) * self.p2150.value) / 100.,
         ))
 
     @property
