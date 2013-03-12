@@ -834,7 +834,7 @@
 //        });
         $('input[name=policy_type]').change(function(e) {
             $('input[name=policy_type]').each(function() {
-                var $this = $(this).parent('h2').next('ul').children('li');
+                var $this = $(this).parent('h2').nextAll('ul').children('li');
                 if ($(this).is(':checked')) {
                     $this.children('input').removeAttr('disabled');
                     $this.removeClass('disabled');
