@@ -75,6 +75,9 @@
       </div>
     </div>
   </div>
+  <div id="scc-graph" class="tab notselected">
+
+  </div>
   <form method="post" id="download-data" action="/csv" target="_blank">
     <textarea name="data" id="download-textarea"></textarea>
     <input type="submit" value="Download Selected Runs as CSV"/>
