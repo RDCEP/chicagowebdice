@@ -61,6 +61,8 @@ class Dice2007(Dice2007Params):
         if optimize:
             self.optimize = True
         self.POW = 1.0
+        self.damages_models = equations.damages.DamagesModel()
+        self.damages = self.damages_models.dice
 
     @property
     def varscale(self):
