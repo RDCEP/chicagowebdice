@@ -66,13 +66,13 @@
         </ul>
         <h2>Choose participation in treaty:</h2>
         <ul>
-          <li class="disabled init-disabled"><label title="Treaty participation in 2050." >2005 <span class="label"><span class="label-number">100</span><span>%</span></span></label>
+          <li class="disabled init-disabled"><label title="Treaty participation in 2050." >2050 <span class="label"><span class="label-number">100</span><span>%</span></span></label>
             <input name="p2050" class="" type="range" min="0" max="100" step="5" value="100" data-prec="0" disabled="disabled"/>
             <div class="tick-wrap"><span class="tick" style="left:50%" >&bullet;</span></div></li>
-          <li class="disabled init-disabled"><label title="Treaty participation by 2100." >2015 <span class="label"><span class="label-number">100</span><span>%</span></span></label>
+          <li class="disabled init-disabled"><label title="Treaty participation by 2100." >2100 <span class="label"><span class="label-number">100</span><span>%</span></span></label>
             <input name="p2100" class="" type="range" min="0" max="100" step="5" value="100" data-prec="0" disabled="disabled"/>
             <div class="tick-wrap"><span class="tick" style="left:50%" >&bullet;</span></div></li>
-          <li class="disabled init-disabled"><label title="Treaty participation by 2150." >2205 <span class="label"><span class="label-number">100</span><span>%</span></span></label>
+          <li class="disabled init-disabled"><label title="Treaty participation by 2150." >2150 <span class="label"><span class="label-number">100</span><span>%</span></span></label>
             <input name="p2150" class="" type="range" min="0" max="100" step="5" value="100" data-prec="0" disabled="disabled"/>
             <div class="tick-wrap"><span class="tick" style="left:50%" >&bullet;</span></div></li>
         </ul>
