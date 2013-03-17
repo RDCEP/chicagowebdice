@@ -339,9 +339,6 @@ class Dice2007(Dice2007Params):
         D['emissions_ind'][i] = self.eq.emissions_ind(
             D['sigma'][i], D['miu'][i], D['gross_output'][i]
         )
-        # D['emissions_total'][i] = self.eq.emissions_total(
-        #     D['emissions_ind'][i], self.etree[i]
-        # )
         if scc is True:
             D['emissions_total'][i] = (
                 self.data['vars']['emissions_total'][i] + 1.0
@@ -415,15 +412,6 @@ class Dice2007(Dice2007Params):
         if deriv:
             self.derivative['fprime'][i] = (D['utility_d'][i] - f0) / epsilon
             D['miu'] = self.data['vars']['miu']
-        if scc:
-            c_steps = 20
-            c_tail = 20
-            if i < c_steps:
-                S = self.data['vars'].copy()
-                for c_i in range(c_steps + c_tail):
-                    shock = False
-                    if i == 0:
-                        shock = True
 
 
     def loop(self, miu=None, deriv=False, scc=True):
