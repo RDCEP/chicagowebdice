@@ -60,9 +60,11 @@ class Dice2007(Dice2007Params):
         self.optimize = False
         if optimize:
             self.optimize = True
+        self.treaty = False
+        self.carbon_tax = False
         self.POW = 1.0
-        self.damages_models = equations.damages.DamagesModel()
-        self.damages = self.damages_models.dice
+        # self.damages_models = equations.damages.DamagesModel()
+        # self.damages = self.damages_models.dice
 
     @property
     def varscale(self):
@@ -227,18 +229,20 @@ class Dice2007(Dice2007Params):
         -------
         array
         """
-        if not self.treaty_switch.value:
+        if not self.treaty:
             return np.concatenate((
                 np.linspace(self.partfract1, self.partfract1, 1),
                 self.partfract21 + (self.partfract2 - self.partfract21) * np.exp(
                     -self.dpartfract * np.arange(23)),
                 np.linspace(self.partfract21, self.partfract21, 36),
             ))
+        p = [self.p2050.value, self.p2050.value, self.p2100.value,
+             self.p2150.value, self.p2150.maximum]
         return np.concatenate((
-            np.ones(5),
-            (np.ones(5) * self.p2050.value) / 100.,
-            (np.ones(5) * self.p2100.value) / 100.,
-            (np.ones(45) * self.p2150.value) / 100.,
+            (p[1] + (p[0] - p[1]) * np.exp(np.arange(5) * -.25)) / 100.,
+            (p[2] + (p[1] - p[2]) * np.exp(np.arange(5) * -.25)) / 100.,
+            (p[3] + (p[2] - p[3]) * np.exp(np.arange(5) * -.25)) / 100.,
+            (p[4] + (p[3] - p[4]) * np.exp(np.arange(45) * -.25)) / 100.,
         ))
 
     @property
@@ -268,6 +272,15 @@ class Dice2007(Dice2007Params):
         -------
         float : backstop * 1000 * miu**(expcost2-1)
         """
+        if self.carbon_tax:
+            c = [0, self.c2050.value, self.c2100.value,
+                 self.c2150.value, self.c2150.maximum]
+            return np.concatenate((
+                c[0] + ((c[1] - c[0]) / 5 * np.arange(5)),
+                c[1] + ((c[2] - c[1]) / 5 * np.arange(5)),
+                c[2] + ((c[3] - c[2]) / 5 * np.arange(5)),
+                c[3] + ((c[3] - c[2]) / 5 * np.arange(45)),
+            ))
         return self.backstop * 1000 * self.data['vars']['miu'] ** (
             self.expcost2.value - 1)
 
@@ -328,11 +341,16 @@ class Dice2007(Dice2007Params):
                     D['miu'][i] = miu[i]
         else:
             if i > 0:
-                if self.treaty_switch.value:
+                if self.treaty:
                     D['miu'][i] = self.eq.miu(
                         D['emissions_ind'][ii], self.ecap[ii],
                         D['emissions_ind'][0],
                         D['sigma'][i], D['gross_output'][i]
+                    )
+                elif self.carbon_tax:
+                    D['miu'][i] = np.power(
+                        self.tax_rate[i] / (self.backstop[i] * 1000),
+                        1. / (self.expcost2.value - 1)
                     )
                 else:
                     D['miu'][i] = 0.

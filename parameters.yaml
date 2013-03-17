@@ -263,6 +263,36 @@ parameters:
     precision: 0
     description: The mandated decrease in emissions by 2150 as a share of 2005 year emissions.
     unit: "%"
+  - name: 2050
+    tab: Basic
+    machine_name: c2050
+    section: "Simulated carbon tax:"
+    min: 0
+    max: 500
+    step: 10
+    default: 0
+    precision: 0
+    unit: "$/t"
+  - name: 2100
+    tab: Basic
+    machine_name: c2100
+    section: "Simulated carbon tax:"
+    min: 0
+    max: 500
+    step: 10
+    default: 0
+    precision: 0
+    unit: "$/t"
+  - name: 2150
+    tab: Basic
+    machine_name: c2150
+    section: "Simulated carbon tax:"
+    min: 0
+    max: 500
+    step: 10
+    default: 0
+    precision: 0
+    unit: "$/t"
   - name: Marginal cost of abatement
     tab: Advanced
     section: Costs of emissions control

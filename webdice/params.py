@@ -186,6 +186,18 @@ class Dice2007Params(object):
             'Treaty participation in 2150', 'Treaty participation in 2150',
             treaty, 100, minimum=0, maximum=100, step=5, precision=0
         )
+        self.c2050 = DiceWebParam(
+            'Carbon tax in 2050', 'Carbon tax in 2050',
+            treaty, 0, minimum=0, maximum=500, step=10, precision=0
+        )
+        self.c2100 = DiceWebParam(
+            'Carbon tax in 2100', 'Carbon tax in 2100',
+            treaty, 0, minimum=0, maximum=500, step=10, precision=0
+        )
+        self.c2150 = DiceWebParam(
+            'Carbon tax in 2150', 'Carbon tax in 2150',
+            treaty, 0, minimum=0, maximum=500, step=10, precision=0
+        )
 
         ## Population and technology
         self._pop0 = 6514.  # 2005 world population millions

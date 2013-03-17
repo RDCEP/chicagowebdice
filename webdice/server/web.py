@@ -109,14 +109,17 @@ def graphs():
                 try:
                     a.value = float(getattr(form, p))
                 except (ValueError, AttributeError): pass  #print p, getattr(form, p)
-    if getattr(form, 'policy_type') == 'treaty':
-        thisdice.treaty_switch.value = True
-    else:
-        thisdice.treaty_switch.value = False
-    if getattr(form, 'policy_type') == 'optimized':
+    policy = getattr(form, 'policy_type')
+    thisdice.treaty = False
+    thisdice.carbon_tax = False
+    if policy == 'treaty':
+        thisdice.treaty = True
+    elif policy == 'optimized':
         thisdice.optimize = True
+    elif policy == 'carbon_tax':
+        thisdice.carbon_tax = True
     thisdice.loop()
-    thisdice.optimize=False
+    thisdice.optimize = False
     return thisdice.format_output()
 
 @route('/csv', method='POST')

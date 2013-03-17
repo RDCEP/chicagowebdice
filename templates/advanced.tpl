@@ -42,12 +42,18 @@
           <input type="radio" value="default" name="policy_type" style="width:auto" checked="checked"/>
           Business as Usual
         </h2>
-        <h2 class="disabled">
-          <input type="radio" value="carbon_tax" name="policy_type" style="width:auto" disabled="disabled"/>
+        <h2>
+          <input type="radio" value="carbon_tax" name="policy_type" style="width:auto"/>
           Simulated carbon tax</h2>
         <ul>
-          <li class="disabled init-disabled"><label title="Simulated carbon tax" >Tax rate <span class="label"><span class="label-number">0</span><span>%</span></span></label>
-            <input name="carbon_tax" class="percent" type="range" min="0" max="1" step=".01" value="0" data-prec="2" disabled="disabled"/>
+          <li class="disabled init-disabled"><label title="Carbon tax in 2050" >2050 <span class="label"><span class="label-number">0</span><span>$/t</span></span></label>
+            <input name="c2050" type="range" min="0" max="500" step="10" value="0" data-prec="0" disabled="disabled"/>
+            <div class="tick-wrap"><span class="tick" style="left:-50%" >&bullet;</span></div></li>
+          <li class="disabled init-disabled"><label title="Carbon tax in 2100" >2100 <span class="label"><span class="label-number">0</span><span>$/t</span></span></label>
+            <input name="c2100" type="range" min="0" max="500" step="10" value="0" data-prec="0" disabled="disabled"/>
+            <div class="tick-wrap"><span class="tick" style="left:-50%" >&bullet;</span></div></li>
+          <li class="disabled init-disabled"><label title="Carbon tax in 2150" >2150 <span class="label"><span class="label-number">0</span><span>$/t</span></span></label>
+            <input name="c2150" type="range" min="0" max="500" step="10" value="0" data-prec="0" disabled="disabled"/>
             <div class="tick-wrap"><span class="tick" style="left:-50%" >&bullet;</span></div></li>
         </ul>
         <h2>
