@@ -387,6 +387,18 @@ parameters:
       - name: DICE Damages to Gross Output
         machine_name: dice
         description: Climate change destroys a certain percentage of global output
+      - name: Exponential mapping to output
+        machine_name: exponential
+        description: Climate change destroys a certain percentage of global output
+      - name: Additive to output
+        machine_name: additive
+        description: Climate change destroys a certain percentage of global output
+      - name: Weitzman tipping point
+        machine_name: tipping_point
+        description: Climate change destroys a certain percentage of global output
+      - name: Fraction of productivity
+        machine_name: productivity
+        description: Climate change destroys a certain percentage of global output
 #      - name: Kopp Damages to Capital
 #        machine_name: kopp
 #        description: Climate change destroys a certain percentage of global input

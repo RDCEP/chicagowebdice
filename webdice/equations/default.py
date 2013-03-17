@@ -99,4 +99,4 @@ class Loop(object):
             return 1.
         elif round(emissions_ind, 2) < round((_e2005 * ecap), 2):
             return 0.
-        else: return 1 - ((_e2005 * ecap) / (sigma * gross_output))
+        else: return 1 - ((_e2005 * ecap) / (sigma * gross_output))ß

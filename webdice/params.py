@@ -150,13 +150,16 @@ class Dice2007Params(object):
                 'name': 'DICE', 'machine_name': 'dice_carbon'
             }]
         )
+        # self.damages_model = DiceWebParam(
+        #     'Damages model', 'Way that climate change harms enter the economy',
+        #     model, 'dice', disabled=True, select=[{
+        #         'name': 'DICE Damages to Gross Output', 'machine_name': 'dice',
+        #         'description': '''Climate change destroys a certain percentage
+        #         of global output'''
+        #     }]
+        # )
         self.damages_model = DiceWebParam(
-            'Damages model', 'Way that climate change harms enter the economy',
-            model, 'dice', disabled=True, select=[{
-                'name': 'DICE Damages to Gross Output', 'machine_name': 'dice',
-                'description': '''Climate change destroys a certain percentage
-                of global output'''
-            }]
+            '', '', None, 'dice_output'
         )
         self.elasmu = DiceWebParam(
             'Elasticity of marg. consump.',

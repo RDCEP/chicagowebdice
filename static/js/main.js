@@ -644,7 +644,8 @@
                         var deviation = Math.abs(Math.log(parseFloat(changedValue) / parseFloat(defaultValue)));
                     }
                     //TODO: Thus assumes that there won't we any radio inputs other than the policy ones
-                    if ($(this).attr('name') != 'policy_type') {
+                    if (($(this).attr('name') != 'policy_type') && ($(this).attr('name') != 'damages_model')) {
+                      console.log($(this).attr('name'));
                     if (!areEqual) {
                         var description = $(this.parentNode).children('label').attr('title').trim();
                         var heading = $(this.parentNode.parentNode.parentNode).prev('h2').first().text();

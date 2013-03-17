@@ -1,32 +1,40 @@
 import numpy as np
 
-class DamagesModel(object):
-    """
-    Various damages models, all return trillions $USD
-    """
-    def __init__(self):
-        pass
+# class DamagesModel(object):
+#     """
+#     Various damages models, all return trillions $USD
+#     """
+#     def __init__(self):
+#         pass
 
-    def dice(self, gross_output, temp_atmosphere, aa):
-        return aa[0] * temp_atmosphere + aa[1] * temp_atmosphere ** aa[2]
+def after_damages(gross_output, fraction):
+    # return (1 - fraction) * gross_output
+    return gross_output - gross_output / (1 + fraction)
 
-    def exponential_map(self, gross_output, temp_atmosphere, aa):
-        return 1 - np.exp(
-            -(aa[0] * temp_atmosphere + aa[1] * temp_atmosphere ** aa[2])
-        )
+def dice_output(self, gross_output, temp_atmosphere, aa, damage_to_prod):
+    return after_damages(gross_output, (
+        aa[0] * temp_atmosphere + aa[1] * temp_atmosphere ** aa[2]
+    ))
 
-    def tipping_point(self, gross_output, temp_atmosphere, aa):
-        return (
-            (temp_atmosphere / 20.46) ** 2 + (temp_atmosphere / 6.081) ** 6.754
-        )
+def exponential_map(self, gross_output, temp_atmosphere, aa, damage_to_prod):
+    return after_damages(gross_output, 1 - np.exp(
+        -(aa[0] * temp_atmosphere + aa[1] * temp_atmosphere ** aa[2])
+    ))
 
-    def additive(self, gross_output, temp_atmosphere, aa):
-        return  (
-            gross_output * 6.3745e-5 * temp_atmosphere ** aa[2]
-        )
+def tipping_point(self, gross_output, temp_atmosphere, aa, damage_to_prod):
+    return after_damages(gross_output, (
+        (temp_atmosphere / 20.46) ** 2 + (temp_atmosphere / 6.081) ** 6.754
+    ))
 
-    def fractional_tfp(self, gross_output, temp_atmosphere, aa):
-        pass
+def additive_output(self, gross_output, temp_atmosphere, aa, damage_to_prod):
+    return  after_damages(gross_output, (
+        gross_output * 6.3745e-5 * temp_atmosphere ** aa[2]
+    ))
 
-    def damages(self, gross_output, fraction):
-        return (1 - fraction) * gross_output
+def productivity_fraction(self, gross_output, temp_atmosphere, aa, damage_to_prod):
+    return after_damages(gross_output, damage_to_prod)
+
+# def dice_output(self, gross_output, temp_atmosphere, aa, damage_to_prod):
+#     return gross_output - gross_output / (
+#         1 + aa[0] * temp_atmosphere + aa[1] * temp_atmosphere ** aa[2]
+#     )

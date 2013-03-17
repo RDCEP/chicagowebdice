@@ -8,6 +8,7 @@ except ImportError:
     pass
 from params import Dice2007Params
 import equations
+from equations.damages import *
 
 class Dice2007(Dice2007Params):
     """Variables, parameters, and step function for DICE 2007.
@@ -62,9 +63,6 @@ class Dice2007(Dice2007Params):
             self.optimize = True
         self.treaty = False
         self.carbon_tax = False
-        self.POW = 1.0
-        # self.damages_models = equations.damages.DamagesModel()
-        # self.damages = self.damages_models.dice
 
     @property
     def varscale(self):
@@ -319,9 +317,13 @@ class Dice2007(Dice2007Params):
         None
         """
         ii = i - 1
+        damage_to_prod = 0.
         if i > 0:
             D['sigma'][i] = D['sigma'][ii] / (1 - self.gsig[i])
             D['al'][i] = D['al'][ii] / (1 - self.ga[ii])
+            if self.damages_model.value == 'productivity_fraction':
+                D['al'][i] *= .9
+                damage_to_prod = .1
             D['capital'][i] = self.eq.capital(
                 D['capital'][ii], self.dk.value, D['investment'][ii]
             )
@@ -399,8 +401,13 @@ class Dice2007(Dice2007Params):
             D['temp_lower'][i] = self.eq.temp_lower(
                 D['temp_atmosphere'][ii], D['temp_lower'][ii], self.cc
             )
-        D['damage'][i] = self.eq.damage(
-            D['gross_output'][i], D['temp_atmosphere'][i], self.aa
+
+        # D['damage'][i] = self.eq.damage(
+        #     D['gross_output'][i], D['temp_atmosphere'][i], self.aa
+        # )
+        D['damage'][i] = self.damage_eq(self,
+            D['gross_output'][i], D['temp_atmosphere'][i], self.aa,
+            damage_to_prod
         )
         D['abatement'][i] = self.eq.abatement(
             D['gross_output'][i], D['miu'][i], D['gcost1'][i],
@@ -437,6 +444,16 @@ class Dice2007(Dice2007Params):
         Loop through step function for calculating endogenous variables
         """
         D = self.data['vars']
+        if self.damages_model.value == 'exponential_map':
+            self.damage_eq = exponential_map
+        elif self.damages_model.value == 'tipping_point':
+            self.damage_eq = tipping_point
+        elif self.damages_model.value == 'additive_output':
+            self.damage_eq = additive_output
+        elif self.damages_model.value == 'productivity_fraction':
+            self.damage_eq = productivity_fraction
+        else:
+            self.damage_eq = dice_output
         _epsilon = 1e-4
         if self.optimize and miu is None:
             D['miu'] = self.get_ipopt_mu()

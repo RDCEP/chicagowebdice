@@ -111,8 +111,12 @@
             <span class="help-button">?</span>
           </li>
           <li><label title="Way that climate change harms enter the economy" class="disabled">Damages model </label>
-            <select name="damages_model" disabled="disabled">
-              <option id="dice" title="Climate change destroys a certain percentage of global output">DICE Damages to Gross Output</option>
+            <select name="damages_model">
+              <option value="dice_output" selected="selected"  title="Climate change destroys a certain percentage of global output">DICE Damages to output</option>
+              <option value="exponential_map">Exponential mapping to output</option>
+              <option value="additive_ouput">Additive to output</option>
+              <option value="tipping_point">Weitzman tipping point</option>
+              <option value="productivity_fraction">As a fraction of Productivity</option>
             </select>
             <span class="help-button">?</span>
           </li>

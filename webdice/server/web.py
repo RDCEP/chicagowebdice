@@ -109,6 +109,7 @@ def graphs():
                 try:
                     a.value = float(getattr(form, p))
                 except (ValueError, AttributeError): pass  #print p, getattr(form, p)
+    thisdice.damages_model.value = getattr(form, 'damages_model')
     policy = getattr(form, 'policy_type')
     thisdice.treaty = False
     thisdice.carbon_tax = False
