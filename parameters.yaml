@@ -2,14 +2,14 @@
   This file describes all the numeric parameters for the model. All values
   are assumed to be floats unless otherwise specified, and have the given
   range and precision values.
-  
+
   The order of sections in the interface is the same as the order that they
   are first listed here.
 
   This is a file that allows the programmer to change what is on the interface of the website
   without having to edit the actual code. It works by having a heirarchy of arrays that
-  are passed to index.php. The order is configuration:header:entry:attribute(data about attribute). 
-  For example, configuration['parameters'] would contain everything under "parameters:" 
+  are passed to index.php. The order is configuration:header:entry:attribute(data about attribute).
+  For example, configuration['parameters'] would contain everything under "parameters:"
   in the yaml file. parameters is itself an array of entries. Each new entry begins with a " -  "
   Each attribute below the entry (in the form attrbute:data) is stored together with the other
   entry data. This allows you to iterate through each parameter and take its data, such as "min",
@@ -19,42 +19,17 @@
 
   This file is set up to make it easy to add new things. Some just need text, like the intital_help below.
   Some need entries, subentries, and data. All you have to do is type in what you need, and it will
-  Be findable in index.php under configuration['header'] and any subarrays beneath that. 
+  Be findable in index.php under configuration['header'] and any subarrays beneath that.
 
   Sorry if that explanation was too convoluted. Basically, all this file does is store data. What happens
   to that data is completely determined by the index.php file.
 
   Indentation is extremely important in this yaml file. Anything indented by two spaces is assumed
   to be "under" whatever is above it. Not indenting by two spaces makes the yaml reader think it is
-  something new. 
+  something new.
 
 
 initial_help:
-  old: >
-    webDICE is a simulation tool designed to show how climate change might affect
-    people living today and in the future. It is based in the most widely used
-    model of the economy and the climate, the DICE model, developed by Professor
-    William Nordhaus, of Yale University. webDICE allows you to run the DICE
-    model quickly with an easy to use interface. You can change the key variables
-    in the model to reflect your views about the economy and about climate change
-    and run the model with these choices.
-
-    To run a simulation click on the “Run Model” button at the bottom of the
-    page. The variables are set to the defaults based on our best guess of the
-    correct values. You can change the variables to reflect your views by moving
-    the sliders. Running a simulation will let you see how the outcomes change.
-    The most important variables can be found on the “Basic” tab and additional
-    variables are on the “Advanced” tab. The “Optimization” tab allows you to
-    compute a carbon tax which will reduce emissions so as to balance the costs
-    of reducing emissions with the benefits of reducing the harms from climate
-    change, all based on the beliefs you have the future and about climate change.
-
-    The model has been developed by researchers at the University of Chicago
-    supported by RDCEP. We are continually working to improve the model and the
-    interface. If you have suggestions, contact us at
-    <a href="mailto:info-rdcep@ci.uchicago.edu" target="_blank">info-rdcep@ci.uchicago.edu</a>.
-
-
   index: >
       webDICE is a simulation tool designed to show how climate change might affect
       people living today and in the future. It is based in the most widely used
@@ -86,351 +61,230 @@ initial_help:
       correct values. You can change the variables to reflect your views by moving
       the sliders. Running a simulation will let you see how the outcomes change.
 
-basic_help: >
-  ## WebDICE Documentation [Small Version]
 
-  This block of text is primarily to explain the rationale behind all
-  the various parameters in WebDICE as well as explain more about the
-  internal processes of the model.
+tabs:
+  - name: Policy
+    sections:
+      - name: Business as usual
+        machine_name: default
+        radio: true
+      - name: Simulated carbon tax
+        machine_name: carbon_tax
+        radio: true
+        min: 0
+        max: 500
+        default: 0
+        step: 10
+        precision: 0
+        unit: '$/t'
+        parameters:
+          - name: 2050
+            machine_name: c2050
+          - name: 2100
+            machine_name: c2100
+          - name: 2150
+            machine_name: c2150
+      - name: Simulated climate treaty
+        machine_name: treaty
+        radio: true
+      - name: 'Limitations on emissions (as a percent of 2005 emissions)'
+        min: 0
+        max: 100
+        step: 5
+        defaut: 0
+        precision: 0
+        unit: '%'
+        parameters:
+          - name: 2050
+            machine_name: e2050
+            section:
+            description: The mandated decrease in emissions by 2050 as a share of 2005 year emissions.
+          - name: 2100
+            machine_name: e2100
+            description: The mandated decrease in emissions by 2100 as a share of 2005 year emissions.
+          - name: 2150
+            machine_name: e2150
+            description: The mandated decrease in emissions by 2150 as a share of 2005 year emissions.
+      - name: Participation
+        min: 0
+        max: 100
+        step: 10
+        defaut: 100
+        precision: 0
+        unit: '%'
+        parameters:
+          - name: 2050
+            machine_name: p2050
+            description: Participation in the climate treaty by 2050.
+          - name: 2100
+            machine_name: p2100
+            description: Participation in the climate treaty by 2100.
+          - name: 2150
+            machine_name: p2150
+            description: Participation in the climate treaty by 2150.
+      - name: Optimized policy
+        machine_name: optimized
+        radio: true
+  - name: Climate
+    sections:
+      - name: Your beliefs about the climate and the future
+        parameters:
+          - name: 'Climate sensitivity: How much will temperatures go up?'
+            machine_name: t2xco2
+            min: 1
+            max: 5
+            step: 0.5
+            default: 3.0
+            precision: 1
+            description: Temperature increase in degrees C from doubling of atmospheric CO2
+            unit: °C
+          - name: How large will the harms be?
+            machine_name: a3
+            min: 1
+            max: 4
+            step: 0.5
+            default: 2.0
+            precision: 1
+            description: Increase in harms from climate change due to an increase in temperatures
+      - name: Model design
+        parameters:
+          - name: Carbon cycle
+            machine_name: carbon_model
+            description: Oceanic model of carbon transfer
+            disabled: true
+            values:
+              - name: DICE
+                machine_name: dice_carbon
+          - name: Damages model
+            machine_name: damages_model
+            description: Way that climate change harms enter the economy
+            values:
+              - name: DICE Damages to Gross Output
+                machine_name: dice
+              - name: Exponential mapping to output
+                machine_name: exponential
+              - name: Additive to output
+                machine_name: additive
+              - name: Weitzman tipping point
+                machine_name: tipping_point
+              - name: Fraction of productivity
+                machine_name: productivity
+        #      - name: Kopp Damages to Capital
+        #        machine_name: kopp
+        #        description: Climate change destroys a certain percentage of global input
+        #      - name: Damages to Productivity
+        #        machine_name: productivity
+        #        description: Climate change reduces the rate of growth in global productivity
+  - name: Economy
+    sections:
+      - name: Cost of reducing emissions
+        parameters:
+          - name: Marginal cost of abatement
+            machine_name: expcost2
+            default: 2.8
+            min: 2
+            max: 4
+            step: 0.1
+            precision: 1
+            description: Additional cost from more abatement
+          - name: Rate of decline of clean energy costs
+            machine_name: gback
+            default: 0.05
+            min: 0
+            max: 0.2
+            step: 0.05
+            precision: 2
+            description: Rate of decline in costs of reduction emissions
+            unit: "%"
+          - name: Ratio of current to future clean energy costs
+            machine_name: backrat
+            default: 2.0
+            min: 1.0
+            max: 4
+            step: 0.5
+            precision: 1
+            description: Cost of replacing all emissions in 2012 $ per ton of CO_{2} , relative to future cost
+      - name: Econommic performance
+        parameters:
+          - name: How much will growth slow down in the future?
+            machine_name: dela
+            min: 0.05
+            max: 1.5
+            step: 0.05
+            default: 0.10
+            precision: 2
+            description: Decline in the rate of growth in productivity over time
+            unit: '%'
+          - name: Depreciation rate
+            machine_name: dk
+            default: 0.10
+            min: 0.08
+            max: 0.2
+            step: 0.01
+            precision: 2
+            description: Rate of depreciation per year
+            unit: '%'
+          - name: Savings rate
+            machine_name: savings
+            default: 0.2
+            min: 0.15
+            max: 0.25
+            step: 0.05
+            precision: 2
+            description: Savings are per year
+            unit: '%'
+          - name: Max population
+            tab: Advanced
+            section: Additional Parameters
+            machine_name: popasym
+            min: 8000
+            max: 12000
+            step: 200
+            default: 8600
+            precision: 0
+            description: Number, in millions, that the population grows asymptotically towards
+            unit: ' billions'
+      - name: Energy parameters
+        parameters:
+          - name: Change in Energy intensity (higher number means more energy intensive)
+            machine_name: dsig
+            default: 0.3
+            min: 0.0
+            max: 6.0
+            step: 0.1
+            precision: 1
+            description: Rate of decline in energy use per $ of GDP
+            unit: '%'
+          - name: Fossil fuel reserves
+            tab: Advanced
+            section: Additional Parameters
+            machine_name: fosslim
+            min: 6000
+            max: 9000
+            step: 500
+            default: 6000
+            precision: 0
+            description: Fossil fuels remaining, measured in CO2 emissions
+            unit: ' Gt&nbsp;C'
+      - name: Utility parameters
+        parameters:
+          - name: Elasticity of marg. consump.
+            machine_name: elasmu
+            min: 1
+            default: 2.0
+            max: 3
+            step: 0.1
+            precision: 1
+            description: Exponent of consumption in utility function
+          - name: Pure rate of time preference
+            machine_name: prstp
+            min: 0
+            default: 0.015
+            max: .1
+            step: 0.005
+            precision: 3
+            description: Discount rate applied to utility
 
-  Here is the quadratic formula:
-
-  <p>$$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$</p>
-  <!-- The <p></p> tags are necessary for Markdown -->
-
-  And here is the equation for the identity matrix:
-
-  <p>$$I_{x,y} = \delta_{xy}$$</p>
-
-  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-  veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
-  ea commodo consequat. Duis aute irure dolor in reprehenderit in
-  voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
-  Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
-  deserunt mollit anim id est laborum.
-
-  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-  veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-  commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-  velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-  occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
-  anim id est laborum.
-
-intermediate_help: >
-  ## WebDICE Documentation [Medium Version]
-
-  This block of text is primarily to explain the rationale behind all
-  the various parameters in WebDICE as well as explain more about the
-  internal processes of the model.
-
-  Here is the quadratic formula:
-
-  <p>$$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$</p>
-  <!-- The <p></p> tags are necessary for Markdown -->
-
-  And here is the equation for the identity matrix:
-
-  <p>$$I_{x,y} = \delta_{xy}$$</p>
-
-  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-  veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
-  ea commodo consequat. Duis aute irure dolor in reprehenderit in
-  voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
-  Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
-  deserunt mollit anim id est laborum.
-
-  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-  veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-  commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-  velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-  occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
-  anim id est laborum.
-
-advanced_help: >
-  ## WebDICE Documentation [Large Version]
-
-parameters:
-  - name: "Climate sensitivity: How much will temperatures go up?"
-    machine_name: t2xco2
-    tab: Basic
-    section: Your beliefs about the climate and the future
-    min: 1
-    max: 5
-    step: 0.5
-    default: 3.0
-    precision: 1
-    description: Temperature increase in degrees C from doubling of atmospheric CO2
-    unit: °C
-  - name: "Exponent of damage function: How large will the harms be?"
-    machine_name: a3
-    tab: Basic
-    section: Your beliefs about the climate and the future
-    min: 1
-    max: 4
-    step: 0.5
-    default: 2.0
-    precision: 1
-    description: Increase in harms from climate change due to an increase in temperatures
-  - name: How much will growth slow down in the future?
-    machine_name: dela
-    tab: Basic
-    section: Your beliefs about the climate and the future
-    min: 0.05
-    max: 1.5
-    step: 0.05
-    default: 0.10
-    precision: 2
-    description: Decline in the rate of growth in productivity over time
-    unit: "%"
-  - name: Change in Energy intensity (higher number means more energy intensive)
-    tab: Basic
-    section: Your beliefs about the climate and the future
-    machine_name: dsig
-    default: 0.3
-    min: 0.0
-    max: 6.0
-    step: 0.1
-    precision: 1
-    description: Rate of decline in energy use per $ of GDP
-    unit: "%"
-  - name: 2050
-    tab: Basic
-    machine_name: e2050
-    section: "Simulated climate treaty <input id='treaty-switch' type='checkbox'/>: Choose limitations on emissions (as a percent of 2005 emissions):"
-    min: 0
-    max: 100
-    step: 10
-    default: 0
-    precision: 0
-    description: The mandated decrease in emissions by 2050 as a share of 2005 year emissions.
-    unit: "%"
-  - name: 2100
-    tab: Basic
-    machine_name: e2100
-    section: "Simulated climate treaty <input id='treaty-switch' type='checkbox'/>: Choose limitations on emissions (as a percent of 2005 emissions):"
-    min: 0
-    max: 100
-    step: 10
-    default: 0
-    precision: 0
-    description: The mandated decrease in emissions by 2100 as a share of 2005 year emissions.
-    unit: "%"
-  - name: 2150
-    tab: Basic
-    machine_name: e2150
-    section: "Simulated climate treaty <input id='treaty-switch' type='checkbox'/>: Choose limitations on emissions (as a percent of 2005 emissions):"
-    min: 0
-    max: 100
-    step: 10
-    default: 0
-    precision: 0
-    description: The mandated decrease in emissions by 2150 as a share of 2005 year emissions.
-    unit: "%"
-  - name: 2050
-    tab: Basic
-    machine_name: p2050
-    section: "Simulated climate treaty <input id='treaty-switch' type='checkbox'/>: Choose limitations on emissions (as a percent of 2005 emissions):"
-    min: 0
-    max: 100
-    step: 5
-    default: 100
-    precision: 0
-    description: The mandated decrease in emissions by 2050 as a share of 2005 year emissions.
-    unit: "%"
-  - name: 2100
-    tab: Basic
-    machine_name: p2100
-    section: "Simulated climate treaty <input id='treaty-switch' type='checkbox'/>: Choose limitations on emissions (as a percent of 2005 emissions):"
-    min: 0
-    max: 100
-    step: 10
-    default: 0
-    precision: 0
-    description: The mandated decrease in emissions by 2100 as a share of 2005 year emissions.
-    unit: "%"
-  - name: 2150
-    tab: Basic
-    machine_name: p2150
-    section: "Simulated climate treaty <input id='treaty-switch' type='checkbox'/>: Choose limitations on emissions (as a percent of 2005 emissions):"
-    min: 0
-    max: 100
-    step: 10
-    default: 0
-    precision: 0
-    description: The mandated decrease in emissions by 2150 as a share of 2005 year emissions.
-    unit: "%"
-  - name: 2050
-    tab: Basic
-    machine_name: c2050
-    section: "Simulated carbon tax:"
-    min: 0
-    max: 500
-    step: 10
-    default: 0
-    precision: 0
-    unit: "$/t"
-  - name: 2100
-    tab: Basic
-    machine_name: c2100
-    section: "Simulated carbon tax:"
-    min: 0
-    max: 500
-    step: 10
-    default: 0
-    precision: 0
-    unit: "$/t"
-  - name: 2150
-    tab: Basic
-    machine_name: c2150
-    section: "Simulated carbon tax:"
-    min: 0
-    max: 500
-    step: 10
-    default: 0
-    precision: 0
-    unit: "$/t"
-  - name: Marginal cost of abatement
-    tab: Advanced
-    section: Costs of emissions control
-    machine_name: expcost2
-    default: 2.8
-    min: 2
-    max: 4
-    step: 0.1
-    precision: 1
-    description: Additional cost from more abatement
-  - name: Rate of decline of clean energy costs
-    tab: Advanced
-    section: Costs of emissions control
-    machine_name: gback
-    default: 0.05
-    min: 0
-    max: 0.2
-    step: 0.05
-    precision: 2
-    description: Rate of decline in costs of reduction emissions
-    unit: "%"
-  - name: Ratio of current to future clean energy costs
-    tab: Advanced
-    section: Costs of emissions control
-    machine_name: backrat
-    default: 2.0
-    min: 1.0
-    max: 4
-    step: 0.5
-    precision: 1
-    description: Cost of replacing all emissions in 2012 $ per ton of CO_{2} , relative to future cost
-  - name: Max population
-    tab: Advanced
-    section: Additional Parameters
-    machine_name: popasym
-    min: 8000
-    max: 12000
-    step: 200
-    default: 8600
-    precision: 0
-    description: Number, in millions, that the population grows asymptotically towards
-    unit: " billions"
-  - name: Depreciation rate
-    tab: Advanced
-    section: Additional Parameters
-    machine_name: dk
-    default: 0.10
-    min: 0.08
-    max: 0.2
-    step: 0.01
-    precision: 2
-    description: Rate of depreciation per year
-    unit: "%"
-  - name: Savings rate
-    tab: Advanced
-    section: Additional Parameters
-    machine_name: savings
-    default: 0.2
-    min: 0.15
-    max: 0.25
-    step: 0.05
-    precision: 2
-    description: Savings are per year
-    unit: "%"
-  - name: Fossil fuel reserves
-    tab: Advanced
-    section: Additional Parameters
-    machine_name: fosslim
-    min: 6000
-    max: 9000
-    step: 500
-    default: 6000
-    precision: 0
-    description: Fossil fuels remaining, measured in CO2 emissions
-    unit: " Gt&nbsp;C"
-  - name: Carbon cycle
-    tab: Advanced
-    machine_name: carbon_model
-    section: Model Design 
-    description: Oceanic model of carbon transfer
-    disabled: true
-    values:
-      - name: DICE
-        machine_name: dice_carbon
-  - name: Damages model
-    tab: Advanced
-    machine_name: damages_model
-    section: Model Design
-    description: Way that climate change harms enter the economy
-    disabled: true
-    values:
-      - name: DICE Damages to Gross Output
-        machine_name: dice
-        description: Climate change destroys a certain percentage of global output
-      - name: Exponential mapping to output
-        machine_name: exponential
-        description: Climate change destroys a certain percentage of global output
-      - name: Additive to output
-        machine_name: additive
-        description: Climate change destroys a certain percentage of global output
-      - name: Weitzman tipping point
-        machine_name: tipping_point
-        description: Climate change destroys a certain percentage of global output
-      - name: Fraction of productivity
-        machine_name: productivity
-        description: Climate change destroys a certain percentage of global output
-#      - name: Kopp Damages to Capital
-#        machine_name: kopp
-#        description: Climate change destroys a certain percentage of global input
-#      - name: Damages to Productivity
-#        machine_name: productivity
-#        description: Climate change reduces the rate of growth in global productivity
-  - name: Elasticity of marg. consump.
-    tab: Optimization
-    section: Additional Parameters
-    machine_name: elasmu
-    min: 1
-    default: 2.0
-    max: 3
-    step: 0.1
-    precision: 1
-    description: Exponent of consumption in utility function
-  - name: Pure rate of time preference
-    tab: Optimization
-    section: Additional Parameters
-    machine_name: prstp
-    min: 0
-    default: 0.015
-    max: .1
-    step: 0.005
-    precision: 3
-    description: Discount rate applied to utility
-  - name: Run optimization
-    button_name: Run
-    tab: Optimization
-    section: Run Model
-    machine_name: run-opt
-    id: run-opt
 
 measurements:
   - name: User-controlled Inputs
