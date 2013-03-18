@@ -317,13 +317,20 @@ class Dice2007(Dice2007Params):
         None
         """
         ii = i - 1
-        damage_to_prod = 0.
+        damage_to_prod = False
         if i > 0:
-            D['sigma'][i] = D['sigma'][ii] / (1 - self.gsig[i])
-            D['al'][i] = D['al'][ii] / (1 - self.ga[ii])
+            productivity_frac = 1.
             if self.damages_model.value == 'productivity_fraction':
-                D['al'][i] *= .9
-                damage_to_prod = .1
+                dmg = D['damage'][ii] / D['gross_output'][ii]
+                productivity_frac = 1. - (dmg * .1)
+                damage_to_prod = 1. - (
+                    (1. - dmg) / (1. - .1 * dmg)
+                )
+                if i < 10: print dmg, productivity_frac, damage_to_prod
+            D['sigma'][i] = D['sigma'][ii] / (1 - self.gsig[i])
+            D['al'][i] = productivity_frac * (
+                D['al'][ii] / (1 - self.ga[ii])
+            )
             D['capital'][i] = self.eq.capital(
                 D['capital'][ii], self.dk.value, D['investment'][ii]
             )
@@ -405,7 +412,7 @@ class Dice2007(Dice2007Params):
         # D['damage'][i] = self.eq.damage(
         #     D['gross_output'][i], D['temp_atmosphere'][i], self.aa
         # )
-        D['damage'][i] = self.damage_eq(self,
+        D['damage'][i] = self.damage_eq(
             D['gross_output'][i], D['temp_atmosphere'][i], self.aa,
             damage_to_prod
         )
