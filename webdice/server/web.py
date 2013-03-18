@@ -1,12 +1,10 @@
 import json
 from datetime import datetime
-import bottle
-from bottle import route, request, default_app, template, response
-from beaker.middleware import SessionMiddleware
+from flask import Flask
+from flask import render_template, request
+from flask_beaker import BeakerSession
 from dice import Dice2007
-from server.conf import *
-
-bottle.TEMPLATE_PATH = ['../templates/',]
+from conf import *
 
 session_opts = {
     'session.type': 'ext:memcached',
@@ -16,6 +14,11 @@ session_opts = {
     'session.memcache_module': 'pylibmc',
     'session.auto': True
 }
+
+app = Flask(__name__)
+app.config['DEBUG'] = True
+app.config['SECRET_KEY'] = 'Ad78gii#$3979oklaklf'
+BeakerSession(app)
 
 def validate_number(n):
     """Currently unused. This is a stub for number validation
@@ -41,19 +44,19 @@ def do_session(request, newdice=False):
         s['dice'] = dice
     return s
 
-@route('/')
+@app.route('/')
 def index():
     """Returns index page."""
     do_session(request)
     return page()
 
-@route('/advanced')
+@app.route('/advanced')
 def advanced():
     do_session(request)
     return page('advanced')
 
-@route('/basic')
-def advanced():
+@app.route('/basic')
+def basic():
     do_session(request)
     return page('basic')
 
@@ -70,23 +73,25 @@ def page(t='index'):
     measurements = get_measurements()
     without_sections = []
     for s in measurements:
-        for m in s['values']:
+        for m in s['options']:
             without_sections.append(m)
-    graph_locations = get_graph_locations()
+    graph_locations = ['topleft', 'topright', 'bottomleft', 'bottomright']
     m = json.JSONEncoder().encode(without_sections)
     g = json.JSONEncoder().encode(graph_locations)
     now = datetime.now().strftime('%Y%m%d%H%M%S')
-    tpl = template(t,
-        measurements=m,
+    tpl = render_template(
+        t + '.html',
+        measurements=get_measurements(),
         graph_locations=g,
-        tabs_html=tabs_html(),
-        dropdowns=measurements_html(),
+        tabs=get_tabs(),
+        dropdowns=measurements,
         paragraphs_html=paragraphs_html(t),
+        all_parameters=get_all_parameters(),
         now=now,
     )
     return tpl
 
-@route('/run', method='POST')
+@app.route('/run', methods=['POST',])
 def graphs():
     """
     Get data from <form>, run DICE loop.
@@ -98,7 +103,8 @@ def graphs():
     """
     s = do_session(request)
     thisdice = s['dice']
-    form = request.forms
+    form = request.form
+    print form['dela']
     all_parameters = get_all_parameters()
     for p in all_parameters:
         try: all_parameters[p]['disabled']
@@ -123,21 +129,21 @@ def graphs():
     thisdice.optimize = False
     return thisdice.format_output()
 
-@route('/csv', method='POST')
+@app.route('/csv', methods=['POST',])
 def csv_output():
-    data = request.forms.data
+    data = request.form.data
     response.set_header('Content-Disposition', 'attachment; filename="WebDICE-Data.csv"')
     return data
 
 
-@route('/tmp')
+@app.route('/tmp')
 def tmp():
     measurements = get_measurements()
     graph_locations = get_graph_locations()
     m = json.JSONEncoder().encode(measurements)
     g = json.JSONEncoder().encode(graph_locations)
     now = datetime.now().strftime('%Y%m%d%H%M%S')
-    tpl = template('index_tmp',
+    tpl = render_template('index_tmp',
         measurements=m,
         graph_locations=g,
         tabs_html=tabs_html(),
@@ -147,5 +153,5 @@ def tmp():
     )
     return tpl
 
-app = SessionMiddleware(default_app(), session_opts)
-application = app
+if __name__ == '__main__':
+    app.run()

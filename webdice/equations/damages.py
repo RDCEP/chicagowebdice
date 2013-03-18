@@ -1,7 +1,7 @@
 import numpy as np
 
 
- def dice_output(gross_output, temp_atmosphere, aa, damage_to_prod):
+def dice_output(gross_output, temp_atmosphere, aa, damage_to_prod):
     return gross_output * (1 - 1 / (
         1 + aa[0] * temp_atmosphere + aa[1] * temp_atmosphere ** aa[2]
     ))

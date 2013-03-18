@@ -4,13 +4,16 @@ import re
 import pprint
 
 
-pp = pprint.PrettyPrinter(indent=4)
+pp = pprint.PrettyPrinter(indent=0)
 htmlp = HTMLParser.HTMLParser()
-YAML = file('../parameters2.yaml', 'r')
+YAML = file('../parameters.yaml', 'r')
 CONF_FILE = yaml.load(YAML)
 YAML.close()
 
 def format_for_web(text):
+    """
+    Replace ^(N) with superscript and _(N) with subscript
+    """
     return re.sub(
         r'/^\(([^)]+)\)/', '<sup>$1</sup>',
         re.sub(
@@ -20,6 +23,9 @@ def format_for_web(text):
     )
 
 def get_defaults(section):
+    """
+    Return default input attribute values for range inputs in section
+    """
     defaults = {}
     for var in ['min', 'max', 'step', 'default', 'precision']:
         try:
@@ -29,24 +35,33 @@ def get_defaults(section):
     return defaults
 
 def set_from_defaults(parameter, defaults):
+    """
+    Set values of parameter based on section defaults
+    """
     for key, val in defaults.iteritems():
         if val is not False:
             try:
                 parameter[key]
             except KeyError:
                 parameter[key] = val
-    print parameter
     return parameter
 
-def set_input_type(parameter, key, type):
+def set_input_type(parameter, key, input_type):
+    """
+    Discern input type from parameter key
+    """
     try:
         parameter[key]
     except KeyError:
-        parameter[type] = False
+        pass
     else:
-        parameter[type] = True
+        parameter['type'] = input_type
+    return parameter
 
 def set_tick(parameter):
+    """
+    Calculate position of slider tick mark
+    """
     try:
         parameter['unit']
     except KeyError:
@@ -57,8 +72,12 @@ def set_tick(parameter):
     parameter['tick'] = '%i%%' % (
         (((float(default) - minimum)/(maximum - minimum)) * 100.) - 50.
     )
+    return parameter
 
 def get_parameters(section):
+    """
+    Select parameters based on section
+    """
     try:
         parameters = section['parameters']
     except KeyError:
@@ -66,6 +85,9 @@ def get_parameters(section):
     return parameters
 
 def get_sections(tab):
+    """
+    Select sections based on tab
+    """
     try:
         sections = tab['sections']
     except:
@@ -73,6 +95,9 @@ def get_sections(tab):
     return sections
 
 def get_radio(section):
+    """
+    Determine if section should be preceded by a radio button
+    """
     try:
         radio = section['radio']
         return True
@@ -80,17 +105,26 @@ def get_radio(section):
         return False
 
 def get_tabs():
-    tabs = CONF_FILE['tabs']
-    for tab in [tabs[0]]:
-        print tab
+    tabs, parameters = parse_conf()
+    return tabs
+
+def get_all_parameters():
+    tabs, parameters = parse_conf()
+    return parameters
+
+def parse_conf():
+    tabs = CONF_FILE.copy()['tabs']
+    all_parameters = {}
+    for tab in tabs:
         policy = False
         if tab['name'] == 'Policy':
             policy = True
         for section in get_sections(tab):
-            print section['name']
             defaults = get_defaults(section)
             if policy and get_radio(section):
-                button = '<input type="radio" value="treaty" name="policy_type" style="width:auto"'
+                button = '<input type="radio" value="'
+                button += section['machine_name']
+                button += '" name="policy_type" style="width:auto"'
                 if section['machine_name'] == 'default':
                     button += ' checked="checked"'
                 button += '/>'
@@ -99,8 +133,58 @@ def get_tabs():
             for parameter in parameters:
                 parameter = set_from_defaults(parameter, defaults)
                 parameter = set_input_type(parameter, 'min', 'range')
-                parameter = set_input_type(parameter, 'values', 'select')
-                parameter = set_tick(parameter)
+                parameter = set_input_type(parameter, 'options', 'select')
+                if parameter['type'] == 'range':
+                    parameter = set_tick(parameter)
+                parameter = get_parameter_help(parameter)
+                all_parameters[parameter['machine_name']] = parameter
+    return tabs, all_parameters
+
+def set_options(p, opts, opt):
+    try:
+        p[opt]
+    except KeyError:
+        pass
+    else:
+        opts.append(opt)
+
+def get_measurements():
+    measurements = CONF_FILE['measurements']
+    return measurements
+
+def paragraphs_html(t):
+    """
+    Build HTML for initial text on webpage.
+    ...
+    Args: None
+    Returns:
+        HTML
+    """
+    initial_help = CONF_FILE['initial_help'][t]
+    html = ''
+    paragraphs = initial_help.split('\n')
+    for paragraph in paragraphs:
+        html += '<p>%s</p>\n' % paragraph
+    return html
+
+def get_parameter_help(parameter):
+    parameters_help = CONF_FILE['parameter_help']
+    try:
+        parameter_help = parameters_help[parameter['machine_name']]
+        html = ''
+        paragraphs = parameter_help.split('\n')
+        for paragraph in paragraphs:
+            html += '<p>%s</p>\n' % paragraph
+        parameter['help'] = html
+    except:
+        pass
+    return parameter
+
+if __name__ == '__main__':
+    pp.pprint(get_tabs())
+    # print get_measurements()
+    # pp.pprint(get_all_parameters())
+    # pp.pprint(get_parameter_help())
 
 
 

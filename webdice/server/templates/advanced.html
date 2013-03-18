@@ -29,7 +29,6 @@
 </ul>
 <div id="sidebar">
   <form id="submission" method="post" action="/">
-    <!--TODO: replace this with tabs_html() -->
     <div id="parameters" class="has-tabs">
       <div id="sidebar-tabs" class="tabs">
         <a href="" class="selected" id="link-to-tab-policy">Policy</a>
@@ -37,55 +36,22 @@
         <a href="" id="link-to-tab-economy">Economy</a>
       </div>
       <input type="hidden" value="false" id="optimize" name="optimize"/>
-      {% for tab in tabs %}
-      <div id="tab-{{ tab.name|lower }}" class="tab {% if tab.name|lower != 'policy' %}not{% endif %}selected">
-        {% for section in tab.sections %}
-        <h2>{{ section.name }}</h2>
-        {% if section.parameters %}
-        <ul>
-          {% for parameter in section.parameters %}
-          <li{% if parameter.disabled %} disabled="disabled init-disabled" {% endif %}>
-            <label title="{{ parameter.description }}">{{ parameter.name }}&nbsp;<span class="label">
-            {% if parameter.type == 'range' %}
-              <span class="label-number">{{ parameter.default }}</span><span>{{ parameter.unit }}</span></span></label>
+      {% for tab in tabs %}<div id="tab-{{ tab.name|lower }}" class="tab {% if tab.name|lower != 'policy' %}not{% endif %}selected">
+        {% for section in tab.sections %}<h2>{{ section.name|safe }}</h2>
+        {% if section.parameters %}<ul>
+          {% for parameter in section.parameters %}<li{% if parameter.disabled %} disabled="disabled init-disabled" {% endif %}>
+            {% if parameter.type == 'range' %}<label title="{{ parameter.description }}">{{ parameter.name }}<span class="label">
+            <span class="label-number">{{ parameter.default }}</span><span>{{ parameter.unit }}</span></span></label>
               <input name="{{ parameter.machine_name }}" type="range" min="{{ parameter.min }}" max="{{ parameter.max }}" value="{{ parameter.default }}" step="{{ parameter.step }}" data-prec="{{ parameter.precision }}" {% if parameter.disabled %}disabled="disabled"{% endif %}/>
-              <div class="tick-wrap"><span class="tick" style="left:{{ parameter.tick }}" >&bullet;</span></div></li>
-
-            {% endif %}
-{#             {% if parameter.type == 'select' %}
-            <select name="{{ parameter.machine_name }}">
-              {% for value in parameter.values %}
-              <option value="{{ value.machine_name }}" title="{{ value.description }}">{{ value.name }}</option>
-              {% endfor %}
-            </select>
-            {% endif %}#}
-            {% if parameter.help %}
-            <span class="help-button">?</span>
-            {% endif %}
-
-          </li>
-          {% endfor %}
-        </ul>
-        {% endif %}
-        {% endfor %}
+              <div class="tick-wrap"><span class="tick" style="left:{{ parameter.tick }}" >&bullet;</span></div></li>{% endif %}
+            {% if parameter.type == 'select' %}<label title="{{ parameter.description }}">{{ parameter.name }}</label>
+              <select name="{{ parameter.machine_name }}">
+              {% for option in parameter.options %}<option value="{{ option.machine_name }}" title="{{ option.description }}">{{ option.name }}</option>{% endfor %}
+            </select>{% endif %}
+            {% if parameter.help %}<span class="help-button">?</span>{% endif %}
+          </li>{% endfor %}</ul>{% endif %}{% endfor %}
       </div>
       {% endfor %}
-
-      <div id="tab-climate" class="tab notselected">
-        <h2>Model Design</h2>
-        <ul>
-          <li><label title="Way that climate change harms enter the economy" class="disabled">Damages model </label>
-            <select name="damages_model">
-              <option value="dice_output" selected="selected"  title="Climate change destroys a certain percentage of global output">DICE Damages to output</option>
-              <option value="exponential_map">Exponential mapping to output</option>
-              <option value="additive_ouput">Additive to output</option>
-              <option value="tipping_point">Weitzman tipping point</option>
-              <option value="productivity_fraction">As a fraction of Productivity</option>
-            </select>
-            <span class="help-button">?</span>
-          </li>
-        </ul>
-      <!-- ENDTODO -->
     </div>
     <div id="controls">
       <input type="reset" id="reset-inputs" value="Reset Inputs"/>
@@ -102,6 +68,7 @@
     <a href="#" id="link-to-scc-graph">SCC Graph</a>
   </div>
   <div class="initial">
+    {{ tabs.0 }}
 {#    {{ paragraphs_html }}#}
   </div>
   <div id="four-graphs" class="tab selected"></div>
@@ -115,14 +82,18 @@
         <h2>X-Axis</h2>
         <select id="select-x-axis">
           <option value="year">Year</option>
-          {{ dropdowns|safe }}
+          {% for group in measurements %}<optgroup label="-- {{ group.name }} --"></optgroup>
+          {% for option in group.options %}<option value="{{ option.machine_name }}">{{ option.name }}</option>
+          {% endfor %}{% endfor %}
         </select>
         <label><input type="checkbox" id="logarithmic-x"/> Logarithmic</label>
       </div>
       <div>
         <h2>Y-Axis</h2>
         <select id="select-y-axis">
-          {{ dropdowns|safe }}
+          {% for group in measurements %}<optgroup label="-- {{ group.name }} --"></optgroup>
+            {% for option in group.options %}<option value="{{ option.machine_name }}">{{ option.name }}</option>
+            {% endfor %}{% endfor %}
         </select>
         <label><input type="checkbox" id="logarithmic-y"/> Logarithmic</label>
       </div>
