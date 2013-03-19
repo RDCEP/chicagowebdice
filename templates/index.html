@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block sidebar %}
+  <form id="submission" method="post" action="/">
+    <div id="parameters" class="">
+      <ul id="input-select">
+          <li><a href="/advanced">Advanced Inputs</a></li>
+          <li><a href="/basic">Basic Inputs</a></li>
+      </ul>
+    </div>
+  </form>
+  <ul id="runs"></ul>
+{% endblock %}
+{% block text %}{{ paragraphs_html|safe }}{% endblock %}

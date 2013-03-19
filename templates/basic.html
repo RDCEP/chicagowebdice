@@ -1,130 +1,54 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
-  <title>RDCEP :: WebDICE</title>
-  <link rel="stylesheet" href="/static/css/styles.css?{{ now }}" type="text/css" media="all" title="Default Stylesheet"/>
-  <link rel="stylesheet" type="text/css" media="screen, projection" href="/static/css/fd-slider.min.css" />
-  <script src="/static/js/fd-slider.min.js"></script>
-  <script src="/static/js/jquery.min.js"></script>
-  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>
+{% extends 'base.html' %}
+{% block headjs %}
   <script type="text/javascript">
     Options = window.Options || { };
     Options.measurements = {{ measurements|safe }};
     Options.locations = {{ graph_locations|safe }};
   </script>
-  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
   <script type="text/javascript" src="/static/js/main.js?{{ now }}"></script>
-</head>
-<body>
-<h1 id="heading"> <span><a href="http://rdcep.org">RDCEP</a></span> :: WebDICE</h1>
-<div id="back-to-rdcep"><a href="/advanced">Switch to Advanced</a></div>
-<ul id="help-menu">
-  <li id="display-help">Documentation<ul>
-    <li><a target="_blank" href="/static/docs/webdice_basic_help.pdf">Basic</a></li>
-    <li><a target="_blank" href="/static/docs/webdice_intermediate_help.pdf">Intermediate</a></li>
-    <li><a target="_blank" href="/static/docs/webdice_equation_help.pdf">Equations</a></li>
-  </ul></li>
-  <li id="view-source"><a href="https://www.github.com/RDCEP/chicagowebdice/" target="_blank">View Source</a></li>
-</ul>
-<div id="sidebar">
-  <form id="submission" method="post" action="/" class="basic">
+{% endblock %}
+{% block mainlink %}<div id="back-to-rdcep"><a href="/advanced">Switch to Advanced</a></div>{% endblock %}
+{% block sidebar %}
+  <form id="submission" method="post" action="/">
     <div id="parameters" class="has-tabs">
       <div id="sidebar-tabs" class="tabs">
         <a href="" class="selected" id="link-to-tab-policy">Policy</a>
-        <a href="" id="link-to-tab-beliefs">Beliefs</a>
+        <a href="" id="link-to-tab-climate">Beliefs</a>
       </div>
-      <div id="tab-policy" class="tab selected">
-        <h2>
-          <input type="radio" value="default" name="policy_type" style="width:auto" checked="checked"/>
-          Business as Usual
-        </h2>
-        <h2 class="disabled">
-          <input type="radio" value="carbon_tax" name="policy_type" style="width:auto" disabled="disabled"/>
-          Simulated carbon tax</h2>
+      <input type="hidden" value="false" id="optimize" name="optimize"/>
+      {% for tab in tabs %}
+      <div id="tab-{{ tab.name|lower }}" class="tab {% if tab.name|lower != 'policy' %}not{% endif %}selected">
+        {% for section in tab.sections %}
+        <h2>{% if section.radio %}{{ section.radio|safe }}{% endif %}{{ section.name }}</h2>
+        {% if section.parameters %}
         <ul>
-          <li class="disabled init-disabled"><label title="Simulated carbon tax" >Tax rate <span class="label"><span class="label-number">0</span><span>%</span></span></label>
-            <input name="carbon_tax" class="percent" type="range" min="0" max="1" step=".01" value="0" data-prec="2" disabled="disabled"/>
-            <div class="tick-wrap"><span class="tick" style="left:-50%" >&bullet;</span></div>
-          </li>
-        </ul>
-        <h2>
-          <input type="radio" value="treaty" name="policy_type" style="width:auto"/>
-          Simulated climate treaty:<br/>Choose limitations on emissions (as a percent of 2005 emissions):</h2>
-        <ul>
-          <li class="disabled init-disabled"><label title="The mandated decrease in emissions by 2050 as a share of 2005 year emissions." >2050 <span class="label"><span class="label-number">100</span><span>%</span></span></label>
-            <input name="e2050" class="reverse" type="range" min="0" max="100" step="5" value="0" data-prec="0" disabled="disabled"/>
-            <div class="tick-wrap"><span class="tick" style="left:-50%" >&bullet;</span></div></li>
-          <li class="disabled init-disabled"><label title="The mandated decrease in emissions by 2100 as a share of 2005 year emissions." >2100 <span class="label"><span class="label-number">100</span><span>%</span></span></label>
-            <input name="e2100" class="reverse" type="range" min="0" max="100" step="5" value="0" data-prec="0" disabled="disabled"/>
-            <div class="tick-wrap"><span class="tick" style="left:-50%" >&bullet;</span></div></li>
-          <li class="disabled init-disabled"><label title="The mandated decrease in emissions by 2150 as a share of 2005 year emissions." >2150 <span class="label"><span class="label-number">100</span><span>%</span></span></label>
-            <input name="e2150" class="reverse" type="range" min="0" max="100" step="5" value="0" data-prec="0" disabled="disabled"/>
-            <div class="tick-wrap"><span class="tick" style="left:-50%" >&bullet;</span></div></li>
-        </ul>
-        <h2>Choose participation in treaty:</h2>
-        <ul>
-          <li class="disabled init-disabled"><label title="Treaty participation in 2005." >2005 <span class="label"><span class="label-number">100</span><span>%</span></span></label>
-            <input name="p2050" class="" type="range" min="0" max="100" step="5" value="100" data-prec="0" disabled="disabled"/>
-            <div class="tick-wrap"><span class="tick" style="left:50%" >&bullet;</span></div></li>
-          <li class="disabled init-disabled"><label title="Treaty participation by 2015." >2015 <span class="label"><span class="label-number">100</span><span>%</span></span></label>
-            <input name="p2100" class="" type="range" min="0" max="100" step="5" value="100" data-prec="0" disabled="disabled"/>
-            <div class="tick-wrap"><span class="tick" style="left:50%" >&bullet;</span></div></li>
-          <li class="disabled init-disabled"><label title="Treaty participation by 2205." >2205 <span class="label"><span class="label-number">100</span><span>%</span></span></label>
-            <input name="p2150" class="" type="range" min="0" max="100" step="5" value="100" data-prec="0" disabled="disabled"/>
-            <div class="tick-wrap"><span class="tick" style="left:50%" >&bullet;</span></div></li>
-        </ul>
-        <h2>
-          <input type="radio" value="optimized" name="policy_type" style="width:auto" />
-          <input type="hidden" value="false" id="optimize" name="optimize"/>
-          Optimized policy
-        </h2>
+          {% for parameter in section.parameters %}
+          <li{% if parameter.disabled %} class="disabled init-disabled" {% endif %}>
+            {% if parameter.type == 'range' %}
+            <label title="{{ parameter.description }}">{{ parameter.name }}
+            {% if tab.name == 'Policy' %}
+            <span class="label">
+              <span class="label-number">{% if parameter.class == 'reverse' %}{{ parameter.max - (parameter.default - parameter.min) }}{% else %}{{ parameter.default }}{% endif %}</span>
+              <span>{{ parameter.unit }}</span>
+            </span>
+            {% endif %}
+            </label>
+            <input name="{{ parameter.machine_name }}" type="range" min="{{ parameter.min }}" max="{{ parameter.max }}" value="{{ parameter.default }}" step="{{ parameter.step }}" data-prec="{{ parameter.precision }}" {% if parameter.disabled %}disabled="disabled"{% endif %} {% if parameter.class %}class="{{ parameter.class }}"{% endif %}/>
+            <div class="minimum-range-value">{{ parameter.min_legend }}</div>
+            <div class="maximum-range-value">{{ parameter.max_legend }}</div>
+            {% endif %}
+            {% if parameter.type == 'select' %}
+            <label title="{{ parameter.description }}">{{ parameter.name }}</label>
+            <select name="{{ parameter.machine_name }}">
+              {% for option in parameter.options %}
+              <option value="{{ option.machine_name }}" title="{{ option.description }}">{{ option.name }}</option>
+              {% endfor %}
+              </select>
+            {% endif %}
+            {% if parameter.help %}<span class="help-button">?</span>{% endif %}
+            </li>{% endfor %}</ul>{% endif %}{% endfor %}
       </div>
-      <div id="tab-beliefs" class="tab notselected">
-        <h2>Your beliefs about the climate and the future</h2>
-        <ul>
-          <li><label title="Temperature increase in degrees C from doubling of atmospheric CO2" >
-            Climate sensitivity: How much will temperatures go up?
-          </label>
-            <input name="t2xco2"  type="range" min="1" max="5" step="1" value="3" data-prec="0"/>
-            <div class="minimum-range-value">Less than expected</div>
-            <div class="maximum-range-value">More than expected</div>
-            <span class="help-button">?</span>
-          </li>
-          <li><label title="Increase in harms from climate change due to an increase in temperatures" >
-            How large will the harms be?
-          </label>
-            <input name="a3"  type="range" min="1" max="5" step="1" value="3" data-prec="0"/>
-            <div class="minimum-range-value">Less harm</div>
-            <div class="maximum-range-value">More harm</div>
-            <span class="help-button">?</span>
-          </li>
-          <li><label title="Decline in the rate of growth in productivity over time" >
-            Decline in rate of growth of productivity
-          </label>
-            <input name="dela"  type="range" min="1" max="5" step="1" value="3" data-prec="0"/>
-            <div class="minimum-range-value">Slower growth</div>
-            <div class="maximum-range-value">Faster growth</div>
-            <span class="help-button">?</span>
-          </li>
-          <li><label title="Rate of decline in energy use per $ of GDP" >
-            Change in energy intensity
-          </label>
-            <input name="dsig"  type="range" min="1" max="5" step="1" value="3" data-prec="0"/>
-            <div class="minimum-range-value">Less energy intense</div>
-            <div class="maximum-range-value">More energy intense</div>
-            <span class="help-button">?</span>
-          </li>
-          <li><label title="Cost of replacing all emissions in 2012 $ per ton of CO_{2} , relative to future cost" >
-            How low will the costs of renewables go?
-          </label>
-            <input name="backrat"  type="range" min="1" max="5" step="1" value="3" data-prec="0"/>
-            <div class="minimum-range-value">Less expensive</div>
-            <div class="maximum-range-value">More expensive</div>
-            <span class="help-button">?</span>
-          </li>
-        </ul>
-      </div>
+    {% endfor %}
     </div>
     <div id="controls">
       <input type="reset" id="reset-inputs" value="Reset Inputs"/>
@@ -133,69 +57,23 @@
     </div>
   </form>
   <ul id="runs"></ul>
-</div>
-<div id="content" class="hasnoruns">
-  <div class="tabs"><a href="" class="selected" id="link-to-four-graphs">Basic Graphs</a>
-    <a href="#" id="link-to-custom-graph">Advanced Graph</a></div>
-  <div class="initial">
-    {{! paragraphs_html }}
-  </div>
-  <div id="four-graphs" class="tab selected"></div>
-  <div id="custom-graph" class="tab notselected">
-    <div id="large-graph">
-      <div id="large-graph-chart" style="height:90%;"></div>
-      <div id="large-graph-zoom" style="height:10%;"></div>
-    </div>
-    <div id="graph-controls">
-      <div>
-        <h2>X-Axis</h2>
-        <select id="select-x-axis">
-          <option value="year">Year</option>
-          {{ dropdowns|safe }}
-        </select>
-        <label><input type="checkbox" id="logarithmic-x"/> Logarithmic</label>
+{% endblock %}
+{% block text %}{{ paragraphs_html|safe }}{% endblock %}
+{% block xaxis %}{% for group in dropdowns %}<optgroup label="-- {{ group.name }} --"></optgroup>
+  {% for option in group.options %}<option value="{{ option.machine_name }}">{{ option.name }}</option>
+  {% endfor %}{% endfor %}{% endblock %}
+{% block yaxis %}{% for group in dropdowns %}<optgroup label="-- {{ group.name }} --"></optgroup>
+  {% for option in group.options %}<option value="{{ option.machine_name }}">{{ option.name }}</option>
+  {% endfor %}{% endfor %}{% endblock %}
+{% block help %}
+  {% for parameter in all_parameters %}
+    {% if parameter.help %}
+      <div class="help-text" id="{{ parameter.machine_name }}-help">
+        {{ parameter.help|safe }}
       </div>
-      <div>
-        <h2>Y-Axis</h2>
-        <select id="select-y-axis">
-          {{ dropdowns|safe }}
-        </select>
-        <label><input type="checkbox" id="logarithmic-y"/> Logarithmic</label>
-      </div>
-      <div>
-        <h2>Labels</h2>
-        <select id="series-labels">
-          <option value="none">None</option>
-          <option value="years">Years</option>
-        </select>
-      </div>
-    </div>
-  </div>
-  <div id="scc-graph" class="tab notselected">
-
-  </div>
-  <form method="post" id="download-data" action="/csv" target="_blank">
-    <textarea name="data" id="download-textarea"></textarea>
-    <input type="submit" value="Download Selected Runs as CSV"/>
-  </form>
-</div>
-<div id="help-wrapper">
-  <div class="help-text" id="t2xco2-help">
-    <p>TKTK</p>
-  </div>
-  <div class="help-text" id="a3-help">
-    <p>TKTK</p>
-  </div>
-  <div class="help-text" id="dela-help">
-    <p>TKTK</p>
-  </div>
-  <div class="help-text" id="dsig-help">
-    <p>TKTK</p>
-  </div>
-  <div class="help-text" id="backrat-help">
-    <p>TKTK</p>
-  </div>
-</div>
-<script src="/static/js/webdice_help.js"></script>
-</body>
-</html>
+    {% endif %}
+  {% endfor %}
+{% endblock %}
+{% block bodyjs %}
+  <script src="/static/js/webdice_help.js"></script>
+{% endblock %}
