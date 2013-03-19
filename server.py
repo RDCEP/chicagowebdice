@@ -3,9 +3,9 @@ from datetime import datetime
 from flask import Flask
 from flask import render_template, request, make_response
 from flask_beaker import BeakerSession
-from dice import Dice2007
-from conf import parse_conf, get_measurements, paragraphs_html
-from conf import get_all_parameters
+from webdice.dice import Dice2007
+from conf.web import parse_conf, get_measurements, paragraphs_html
+from conf.web import get_all_parameters, get_advanced_tabs, get_basic_tabs
 
 session_opts = {
     'session.type': 'ext:memcached',
@@ -49,20 +49,27 @@ def do_session(request, newdice=False):
 def index():
     """Returns index page."""
     do_session(request)
-    return page()
+    now = datetime.now().strftime('%Y%m%d%H%M%S')
+    return render_template(
+        'index.html',
+        now=now,
+        paragraphs_html=paragraphs_html('index'),
+    )
 
 @app.route('/advanced')
 def advanced():
     do_session(request)
-    return page('advanced')
+    tabs = get_advanced_tabs()
+    return page(tabs, 'advanced')
 
 @app.route('/basic')
 def basic():
     do_session(request)
-    return page('basic')
+    tabs = get_basic_tabs()
+    return page(tabs, 'basic')
 
 
-def page(t='index'):
+def page(tabs, tpl='index'):
     """
     Return HTML for all pages.
     ...
@@ -73,7 +80,7 @@ def page(t='index'):
     """
     measurements = get_measurements()
     # tabs = get_tabs()
-    these_tabs, all_parameters = parse_conf()
+    all_parameters = parse_conf()
     without_sections = []
     for s in measurements:
         for m in s['options']:
@@ -83,12 +90,12 @@ def page(t='index'):
     g = json.JSONEncoder().encode(graph_locations)
     now = datetime.now().strftime('%Y%m%d%H%M%S')
     return render_template(
-        t + '.html',
+        tpl + '.html',
         measurements=m,
         graph_locations=g,
-        tabs=these_tabs,
+        tabs=tabs,
         dropdowns=measurements,
-        paragraphs_html=paragraphs_html(t),
+        paragraphs_html=paragraphs_html(tpl),
         all_parameters=all_parameters,
         now=now,
     )
@@ -106,7 +113,6 @@ def graphs():
     s = do_session(request)
     thisdice = s['dice']
     form = request.form
-    print form['dela']
     all_parameters = get_all_parameters()
     for p in all_parameters:
         try: all_parameters[p]['disabled']
@@ -117,7 +123,10 @@ def graphs():
                 try:
                     a.value = float(form[p])
                 except (ValueError, AttributeError): pass  #print p, getattr(form, p)
-    thisdice.damages_model.value = form['damages_model']
+    try:
+        thisdice.damages_model.value = form['damages_model']
+    except:
+        pass
     policy = form['policy_type']
     thisdice.treaty = False
     thisdice.carbon_tax = False

@@ -4,7 +4,7 @@ import re
 
 
 htmlp = HTMLParser.HTMLParser()
-YAML = file('../parameters.yaml', 'r')
+YAML = file('./conf/parameters.yaml', 'r')
 CONF_FILE = yaml.load(YAML)
 YAML.close()
 
@@ -102,7 +102,7 @@ def is_radio(section):
         return False
     return True
 
-def get_tabs():
+def get_advanced_tabs():
     tabs, parameters = parse_conf()
     return tabs
 
@@ -139,6 +139,35 @@ def parse_conf():
                     parameter['disabled'] = True
                 all_parameters[parameter['machine_name']] = parameter
     return [tabs, all_parameters]
+
+def get_basic_tabs():
+    tabs = CONF_FILE['basic_tabs']
+    for tab in tabs:
+        policy = False
+        if tab['name'] == 'Policy':
+            policy = True
+        for section in get_sections(tab):
+            defaults = get_defaults(section)
+            if policy and is_radio(section):
+                button = '<input type="radio" value="'
+                button += section['machine_name']
+                button += '" name="policy_type" style="width:auto"'
+                if section['machine_name'] == 'default':
+                    button += ' checked="checked"'
+                button += '/>'
+                section['radio'] = button
+            parameters = get_parameters(section)
+            for parameter in parameters:
+                parameter = set_from_defaults(parameter, defaults)
+                parameter = set_input_type(parameter, 'min', 'range')
+                parameter = set_input_type(parameter, 'options', 'select')
+                if parameter['type'] == 'range':
+                    parameter = set_tick(parameter)
+                parameter = get_parameter_help(parameter)
+                if policy:
+                    parameter['disabled'] = True
+    return tabs
+
 
 def set_options(p, opts, opt):
     try:
