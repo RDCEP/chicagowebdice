@@ -2,206 +2,35 @@ import numpy as np
 import pandas as pd
 
 
-class DiceWebParam(object):
-    def __init__(self, name, description, section, default,
-                 minimum=None, maximum=None, precision=None, step=None,
-                 submit=None, select=None, unit=None, value=None,
-                 disabled=False):
-        self.name = name
-        self.decription = description
-        self.section = section
-        self.default = default
-        self.minimum = minimum
-        self.maximum = maximum
-        self.step = step
-        self.precision = precision
-        self.unit = unit
-        self.submit = submit
-        self.select = select
-        self.disabled = disabled
-        if not value:
-            self.value = self.default
-
-
-class DiceWebTab(object):
-    def __init__(self, name):
-        self.name = name
-
-
-class DiceWebTabSection(object):
-    def __init__(self, name, tab):
-        self.name = name
-        self.tab = tab
-
-
 class Dice2007Params(object):
     def __init__(self):
-        basic = DiceWebTab('Basic')
-        advanced = DiceWebTab('Advanced')
-        optimize = DiceWebTab('Optimization')
-
-        beliefs = DiceWebTabSection(
-            'Your beliefs about the climate and the future', basic
-        )
-        treaty = DiceWebTabSection(
-            '''Simulated climate treaty: Choose limitations on emissions
-            (as a percent of 2005 emissions):''', basic
-        )
-        emissions = DiceWebTabSection(
-            'Costs of emissions control', advanced
-        )
-        additional = DiceWebTabSection(
-            'Additional Parameters', advanced
-        )
-        model = DiceWebTabSection(
-            'Model Design', advanced
-        )
-        additional2 = DiceWebTabSection(
-            'Additional Parameters', optimize
-        )
-        run_opt = DiceWebTabSection(
-            'Run Model', optimize
-        )
-        self.t2xco2 = DiceWebParam(
-            'Climate sensitivity: How much will temperatures go up?',
-            '''Temperature increase in degrees C from doubling of atmospheric
-            CO2''',
-            beliefs, 3, minimum=1, maximum=5, step=.5, precision=1,
-            unit='C'
-        )
-        self.a3 = DiceWebParam(
-            'Exponent of damage function: How large will the harms be?',
-            '''Increase in harms from climate change due to an increase in
-            temperatures''',
-            beliefs, 2, minimum=1, maximum=4, step=.5, precision=1,
-        )
-        self.dela = DiceWebParam(
-            'How much will growth slow down in the future?',
-            'Decline in the rate of growth in productivity over time',
-            beliefs, .1, minimum=.05, maximum=1.5, step=.05, precision=2,
-            unit='%'
-        )
-        self.dsig = DiceWebParam(
-            '''Change in Energy intensity (higher number means more energy
-            intensive)''',
-            'Rate of decline in energy use per $ of GDP',
-            beliefs, .3, minimum=0, maximum=6, step=.1, precision=1,
-            unit='%'
-        )
-        self.e2050 = DiceWebParam(
-            '2050', '''The mandated decrease in emissions by 2050 as a share of
-            2005 year emissions''',
-            treaty, 100, minimum=0, maximum=100, step=5, precision=0,
-            unit='%'
-        )
-        self.e2100 = DiceWebParam(
-            '2100', '''The mandated decrease in emissions by 2100 as a share of
-            2005 year emissions''',
-            treaty, 100, minimum=0, maximum=100, step=5, precision=0,
-            unit='%'
-        )
-        self.e2150 = DiceWebParam(
-            '2150', '''The mandated decrease in emissions by 2150 as a share of
-            2005 year emissions''',
-            treaty, 100, minimum=0, maximum=100, step=5, precision=0,
-            unit='%'
-        )
-        self.expcost2 = DiceWebParam(
-            'Marginal cost of abatement', 'Additional cost from more abatement',
-            emissions, 2.8, minimum=2, maximum=4, step=.1, precision=1,
-        )
-        self.gback = DiceWebParam(
-            'Rate of decline of clean energy costs',
-            'Rate of decline in costs of reduction emissions',
-            emissions, .05, minimum=0, maximum=.2, step=.05, precision=2,
-            unit='%'
-        )
-        self.backrat = DiceWebParam(
-            'Ratio of current to future clean energy costs',
-            '''Cost of replacing all emissions in 2012 $ per ton of CO_{2} ,
-            relative to future cost''',
-            emissions, 2, minimum=.5, maximum=4, step=.5, precision=1,
-        )
-        self.popasym = DiceWebParam(
-            'Max population', '''Number, in billions, that the population grows
-            asymptotically towards''',
-            additional, 8600, minimum=8000, maximum=12000, step=200,
-            precision=0, unit='billions',
-        )
-        self.dk = DiceWebParam(
-            'Depreciation rate', 'Rate of depreciation per year',
-            additional, .1, minimum=.08, maximum=.2, step=.02, precision=2,
-            unit='%',
-        )
-        self.savings = DiceWebParam(
-            'Savings rate', 'Savings are per year',
-            additional, .2, minimum=.15, maximum=.25, step=.05, precision=2,
-            unit='%',
-        )
-        self.fosslim = DiceWebParam(
-            'Fossil fuel reserves',
-            'Fossil fuels remaining, measured in CO2 emissions',
-            additional, 6000, minimum=6000, maximum=9000, step=500, precision=0,
-            unit=' Gt&nbsp;C',
-        )
-        self.carbon_model = DiceWebParam(
-            'Carbon cycle', 'Oceanic model of carbon transfer',
-            model, 'dice_carbon', disabled=True, select=[{
-                'name': 'DICE', 'machine_name': 'dice_carbon'
-            }]
-        )
-        # self.damages_model = DiceWebParam(
-        #     'Damages model', 'Way that climate change harms enter the economy',
-        #     model, 'dice', disabled=True, select=[{
-        #         'name': 'DICE Damages to Gross Output', 'machine_name': 'dice',
-        #         'description': '''Climate change destroys a certain percentage
-        #         of global output'''
-        #     }]
-        # )
-        self.damages_model = DiceWebParam(
-            '', '', None, 'dice_output'
-        )
-        self.elasmu = DiceWebParam(
-            'Elasticity of marg. consump.',
-            'Exponent of consumption in utility function',
-            additional2, 2, minimum=1, maximum=3, step=.1, precision=1
-        )
-        self.prstp = DiceWebParam(
-            'Pure rate of time preference', 'Discount rate applied to utility',
-            additional2, .015, minimum=0, maximum=4, step=.005, precision=3
-        )
-        self.run_opt = DiceWebParam(
-            'Run optimization', '', run_opt,
-            'run-opt',  submit='Run'
-        )
-        self.treaty_switch = DiceWebParam(
-            '', '', treaty, False
-        )
-        self.p2050 = DiceWebParam(
-            'Treaty participation in 2050', 'Treaty participation in 2050',
-            treaty, 100, minimum=0, maximum=100, step=5, precision=0
-        )
-        self.p2100 = DiceWebParam(
-            'Treaty participation in 2100', 'Treaty participation in 2100',
-            treaty, 100, minimum=0, maximum=100, step=5, precision=0
-        )
-        self.p2150 = DiceWebParam(
-            'Treaty participation in 2150', 'Treaty participation in 2150',
-            treaty, 100, minimum=0, maximum=100, step=5, precision=0
-        )
-        self.c2050 = DiceWebParam(
-            'Carbon tax in 2050', 'Carbon tax in 2050',
-            treaty, 0, minimum=0, maximum=500, step=10, precision=0
-        )
-        self.c2100 = DiceWebParam(
-            'Carbon tax in 2100', 'Carbon tax in 2100',
-            treaty, 0, minimum=0, maximum=500, step=10, precision=0
-        )
-        self.c2150 = DiceWebParam(
-            'Carbon tax in 2150', 'Carbon tax in 2150',
-            treaty, 0, minimum=0, maximum=500, step=10, precision=0
-        )
-
+        self.t2xco2 = 3.
+        self.a3 = 2.
+        self.dela = .1
+        self.dsig = .3
+        self.expcost2 = 2.8
+        self.gback = .05
+        self.backrat = 2.
+        self.popasym = 8600.
+        self.dk = .1
+        self.savings = .2
+        self.fosslim = 6000.
+        self.carbon_model = 'dice_carbon'
+        self.damages_model = 'dice_output'
+        self.elasmu = 2.
+        self.prstp = .015
+        self.treaty_switch = False
+        self.e2050 = 100.
+        self.e2100 = 100.
+        self.e2150 = 100.
+        self.p2050 = 100.
+        self.p2100 = 100.
+        self.p2150 = 100.
+        self.pmax = 100.
+        self.c2050 = 0.
+        self.c2100 = 0.
+        self.c2150 = 0.
+        self.cmax = 500.
         ## Population and technology
         self._pop0 = 6514.  # 2005 world population millions
         self._gpop0 = .35  # growth rate of population per decade
@@ -294,7 +123,7 @@ class Dice2007Params(object):
         temp_lower = np.empty(self.tmax)
         temp_lower[:] = self.tocean0
         investment = np.empty(self.tmax)
-        investment[:] = self.savings.value * self._q0
+        investment[:] = self.savings * self._q0
         miu = np.empty(self.tmax)
         miu[:] = self.miu_2005
         data = pd.DataFrame({

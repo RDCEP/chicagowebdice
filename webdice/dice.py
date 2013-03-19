@@ -116,7 +116,7 @@ class Dice2007(Dice2007Params):
         -------
         array : [a1, a2, a3]
         """
-        return np.array([self.a1, self.a2, self.a3.value])
+        return np.array([self.a1, self.a2, self.a3])
 
     @property
     def gfacpop(self):
@@ -140,7 +140,7 @@ class Dice2007(Dice2007Params):
         array : (exp(pop(0) * t) - 1) / exp(gpop(0) * t)
         """
         return self._pop0 * (1 - self.gfacpop) + self.gfacpop * \
-            self.popasym.value
+            self.popasym
 
     @property
     def ga(self):
@@ -151,7 +151,7 @@ class Dice2007(Dice2007Params):
         -------
         array : ga(0) * exp(-dela * 10 * t)
         """
-        return self._ga0 * np.exp(-(self.dela.value / 100.) * 10 * self.t0)
+        return self._ga0 * np.exp(-(self.dela / 100.) * 10 * self.t0)
 
     @property
     def gsig(self):
@@ -163,7 +163,7 @@ class Dice2007(Dice2007Params):
         array : gsigma * exp(-dsig * 10 * t - disg2 * 10 * t^2)
         """
         return self._gsigma * np.exp(-(
-            self.dsig.value / 100) * 10 * self.t0 - self.dsig2 * 10 *
+            self.dsig / 100) * 10 * self.t0 - self.dsig2 * 10 *
             (self.t0 ** 2)
         )
 
@@ -177,8 +177,8 @@ class Dice2007(Dice2007Params):
         array : pback * ((backrat - 1 + exp(-gback * t)) / backrat
         """
         return self._pback * (
-            (self.backrat.value - 1 + np.exp(-self.gback.value * self.t0)) /
-            self.backrat.value)
+            (self.backrat - 1 + np.exp(-self.gback * self.t0)) /
+            self.backrat)
 
     @property
     def etree(self):
@@ -200,7 +200,7 @@ class Dice2007(Dice2007Params):
         -------
         array : 1 / (1 + prstp)^t
         """
-        return 1 / ((1 + self.prstp.value) ** (10 * self.t0))
+        return 1 / ((1 + self.prstp) ** (10 * self.t0))
 
     @property
     def ecap(self):
@@ -213,9 +213,9 @@ class Dice2007(Dice2007Params):
         """
         return np.concatenate((
             np.ones(5),
-            (np.ones(5) * (100. - self.e2050.value)) / 100.,
-            (np.ones(5) * (100. - self.e2100.value)) / 100.,
-            (np.ones(45) * (100. - self.e2150.value)) / 100.,
+            (np.ones(5) * (100. - self.e2050)) / 100.,
+            (np.ones(5) * (100. - self.e2100)) / 100.,
+            (np.ones(45) * (100. - self.e2150)) / 100.,
         ))
 
     @property
@@ -234,8 +234,7 @@ class Dice2007(Dice2007Params):
                     -self.dpartfract * np.arange(23)),
                 np.linspace(self.partfract21, self.partfract21, 36),
             ))
-        p = [self.p2050.value, self.p2050.value, self.p2100.value,
-             self.p2150.value, self.p2150.maximum]
+        p = [self.p2050, self.p2050, self.p2100, self.p2150, self.pmax]
         return np.concatenate((
             (p[1] + (p[0] - p[1]) * np.exp(np.arange(5) * -.25)) / 100.,
             (p[2] + (p[1] - p[2]) * np.exp(np.arange(5) * -.25)) / 100.,
@@ -259,7 +258,7 @@ class Dice2007(Dice2007Params):
 
     @property
     def lam(self):
-        return self.fco22x / self.t2xco2.value
+        return self.fco22x / self.t2xco2
 
     @property
     def tax_rate(self):
@@ -271,8 +270,8 @@ class Dice2007(Dice2007Params):
         float : backstop * 1000 * miu**(expcost2-1)
         """
         if self.carbon_tax:
-            c = [0, self.c2050.value, self.c2100.value,
-                 self.c2150.value, self.c2150.maximum]
+            c = [0, self.c2050, self.c2100,
+                 self.c2150, self.cmax]
             return np.concatenate((
                 c[0] + ((c[1] - c[0]) / 5 * np.arange(5)),
                 c[1] + ((c[2] - c[1]) / 5 * np.arange(5)),
@@ -280,7 +279,7 @@ class Dice2007(Dice2007Params):
                 c[3] + ((c[3] - c[2]) / 5 * np.arange(45)),
             ))
         return self.backstop * 1000 * self.data['vars']['miu'] ** (
-            self.expcost2.value - 1)
+            self.expcost2 - 1)
 
     @property
     def output_abate(self):
@@ -292,7 +291,7 @@ class Dice2007(Dice2007Params):
         float : gcost1 * miu**expcost2
         """
         return self.data['vars']['gcost1'] * self.data['vars']['miu'] ** \
-            self.expcost2.value
+            self.expcost2
 
     @property
     def welfare(self):
@@ -320,7 +319,7 @@ class Dice2007(Dice2007Params):
         damage_to_prod = False
         if i > 0:
             productivity_frac = 1.
-            if self.damages_model.value == 'productivity_fraction':
+            if self.damages_model == 'productivity_fraction':
                 dmg = D['damage'][ii] / D['gross_output'][ii]
                 productivity_frac = 1. - (dmg * .1)
                 damage_to_prod = 1. - (
@@ -332,11 +331,11 @@ class Dice2007(Dice2007Params):
                 D['al'][ii] / (1 - self.ga[ii])
             )
             D['capital'][i] = self.eq.capital(
-                D['capital'][ii], self.dk.value, D['investment'][ii]
+                D['capital'][ii], self.dk, D['investment'][ii]
             )
-        D['gcost1'][i] = (self._pback * D['sigma'][i] / self.expcost2.value) * (
-            (self.backrat.value - 1 + np.exp(-self.gback.value * i)) /
-            self.backrat.value
+        D['gcost1'][i] = (self._pback * D['sigma'][i] / self.expcost2) * (
+            (self.backrat - 1 + np.exp(-self.gback * i)) /
+            self.backrat
         )
         D['gross_output'][i] = self.eq.gross_output(
             D['al'][i], D['capital'][i], self._gama, self.l[i]
@@ -359,7 +358,7 @@ class Dice2007(Dice2007Params):
                 elif self.carbon_tax:
                     D['miu'][i] = np.power(
                         self.tax_rate[i] / (self.backstop[i] * 1000),
-                        1. / (self.expcost2.value - 1)
+                        1. / (self.expcost2 - 1)
                     )
                 else:
                     D['miu'][i] = 0.
@@ -380,10 +379,10 @@ class Dice2007(Dice2007Params):
             )
         else:
             D['carbon_emitted'][i] = 10 * D['emissions_total'][i]
-        if D['carbon_emitted'][i] > self.fosslim.value:
+        if D['carbon_emitted'][i] > self.fosslim:
             D['miu'][i] = 1
             D['emissions_total'][i] = 0
-            D['carbon_emitted'][i] = self.fosslim.value
+            D['carbon_emitted'][i] = self.fosslim
         if i > 0:
             D['mass_atmosphere'][i] = self.eq.mass_atmosphere(
                 D['emissions_total'][ii], D['mass_atmosphere'][ii],
@@ -418,25 +417,25 @@ class Dice2007(Dice2007Params):
         )
         D['abatement'][i] = self.eq.abatement(
             D['gross_output'][i], D['miu'][i], D['gcost1'][i],
-            self.expcost2.value, self.partfract[i]
+            self.expcost2, self.partfract[i]
         )
         D['output'][i] = self.eq.output(
             D['gross_output'][i], D['damage'][i], D['abatement'][i]
         )
         if i == 0:
-            D['investment'][i] = self.savings.value * self._q0
+            D['investment'][i] = self.savings * self._q0
         else:
             D['investment'][i] = self.eq.investment(
-                self.savings.value, D['output'][i]
+                self.savings, D['output'][i]
             )
         D['consumption'][i] = self.eq.consumption(
-            D['output'][i], self.savings.value
+            D['output'][i], self.savings
         )
         D['consumption_pc'][i] = self.eq.consumption_pc(
             D['consumption'][i], self.l[i]
         )
         D['utility'][i] = self.eq.utility(
-            D['consumption_pc'][i], self.elasmu.value, self.l[i]
+            D['consumption_pc'][i], self.elasmu, self.l[i]
         )
         D['utility_d'][i] = self.eq.utility_d(
             D['utility'][i], self.rr[i], self.l[i]
@@ -451,13 +450,13 @@ class Dice2007(Dice2007Params):
         Loop through step function for calculating endogenous variables
         """
         D = self.data['vars']
-        if self.damages_model.value == 'exponential_map':
+        if self.damages_model == 'exponential_map':
             self.damage_eq = exponential_map
-        elif self.damages_model.value == 'tipping_point':
+        elif self.damages_model == 'tipping_point':
             self.damage_eq = tipping_point
-        elif self.damages_model.value == 'additive_output':
+        elif self.damages_model == 'additive_output':
             self.damage_eq = additive_output
-        elif self.damages_model.value == 'productivity_fraction':
+        elif self.damages_model == 'productivity_fraction':
             self.damage_eq = productivity_fraction
         else:
             self.damage_eq = dice_output
@@ -550,7 +549,7 @@ class Dice2007(Dice2007Params):
         output = ''
         for v in self.user_params:
             vv = getattr(self, v)
-            output += '%s %s\n' % (v, vv.value)
+            output += '%s %s\n' % (v, vv)
         for v in self.vars:
             try:
                 vv = getattr(self, v)
@@ -562,7 +561,6 @@ class Dice2007(Dice2007Params):
 def verify_out(d, param=None, value=None):
     if param is not None:
         x = getattr(d, param)
-        x.value = getattr(x, value)
     d.loop()
     filename = '../verify/gams_%s_%s.csv' % (param, value)
     with open(filename, 'a') as f:
