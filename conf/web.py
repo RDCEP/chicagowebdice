@@ -4,7 +4,7 @@ import re
 
 
 htmlp = HTMLParser.HTMLParser()
-YAML = file('./conf/parameters.yaml', 'r')
+YAML = file('parameters.yaml', 'r')
 CONF_FILE = yaml.load(YAML)
 YAML.close()
 
@@ -25,7 +25,9 @@ def get_defaults(section):
     Return default input attribute values for range inputs in section
     """
     defaults = {}
-    for var in ['min', 'max', 'step', 'default', 'precision', 'unit']:
+    for var in [
+        'min', 'max', 'step', 'default', 'precision', 'unit', 'init_disabled'
+    ]:
         try:
             defaults[var] = section[var]
         except:
@@ -135,8 +137,6 @@ def parse_conf():
                 if parameter['type'] == 'range':
                     parameter = set_tick(parameter)
                 parameter = get_parameter_help(parameter)
-                if policy:
-                    parameter['disabled'] = True
                 all_parameters[parameter['machine_name']] = parameter
     return [tabs, all_parameters]
 
@@ -164,8 +164,6 @@ def get_basic_tabs():
                 if parameter['type'] == 'range':
                     parameter = set_tick(parameter)
                 parameter = get_parameter_help(parameter)
-                if policy:
-                    parameter['disabled'] = True
     return tabs
 
 

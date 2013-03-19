@@ -111,34 +111,38 @@ def graphs():
         Formatted step values
     """
     s = do_session(request)
-    thisdice = s['dice']
+    this_dice = s['dice']
     form = request.form
     all_parameters = get_all_parameters()
     for p in all_parameters:
-        try: all_parameters[p]['disabled']
+        try:
+            all_parameters[p]['disabled']
         except (KeyError, AttributeError):
-            try: a = getattr(thisdice, p)
-            except AttributeError: pass  #print a, p
+            try:
+                getattr(this_dice, p)
+            except AttributeError:
+                pass
             else:
                 try:
-                    a.value = float(form[p])
-                except (ValueError, AttributeError): pass  #print p, getattr(form, p)
+                    this_dice.__dict__[p] = float(form[p])
+                except (ValueError, AttributeError, KeyError):
+                    pass
     try:
-        thisdice.damages_model.value = form['damages_model']
-    except:
+        this_dice.damages_model = form['damages_model']
+    except KeyError:
         pass
     policy = form['policy_type']
-    thisdice.treaty = False
-    thisdice.carbon_tax = False
+    this_dice.treaty = False
+    this_dice.carbon_tax = False
     if policy == 'treaty':
-        thisdice.treaty = True
+        this_dice.treaty = True
     elif policy == 'optimized':
-        thisdice.optimize = True
+        this_dice.optimize = True
     elif policy == 'carbon_tax':
-        thisdice.carbon_tax = True
-    thisdice.loop()
-    thisdice.optimize = False
-    return thisdice.format_output()
+        this_dice.carbon_tax = True
+    this_dice.loop()
+    this_dice.optimize = False
+    return this_dice.format_output()
 
 @app.route('/csv', methods=['POST',])
 def csv_output():
