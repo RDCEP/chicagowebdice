@@ -702,7 +702,6 @@
                         data = ''
                     ;
                     data += 'policy_type=' + $('input[name=policy_type]:checked').val();
-                    data += '&optimize=false'
                     $('#tab-beliefs').find('input').each(function() {
                         $(this).val(function(i, v) {
                             data += '&' + $(this).attr('name') + '=';
@@ -720,7 +719,6 @@
                     url : '/run',
                     data : data,
                     success : function(data, textStatus, xhr) {
-                        $('#optimize').val('false');
                         var runObject = addRunFromCSV("Run #" + (getNumberOfRuns() + 1),
                             generateNextColor(), data, changes);
                         numberOfRunsInProgress--;

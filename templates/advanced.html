@@ -16,7 +16,6 @@
         <a href="" id="link-to-tab-climate">Climate</a>
         <a href="" id="link-to-tab-economy">Economy</a>
       </div>
-      <input type="hidden" value="false" id="optimize" name="optimize"/>
       {% for tab in tabs %}
       <div id="tab-{{ tab.name|lower }}" class="tab {% if tab.name|lower != 'policy' %}not{% endif %}selected">
         {% for section in tab.sections %}
@@ -32,7 +31,7 @@
               <span>{{ parameter.unit }}</span>
             </span>
             </label>
-            <input name="{{ parameter.machine_name }}" type="range" min="{{ parameter.min }}" max="{{ parameter.max }}" value="{{ parameter.default }}" step="{{ parameter.step }}" data-prec="{{ parameter.precision }}" {% if parameter.disabled %}disabled="disabled"{% endif %} {% if parameter.class %}class="{{ parameter.class }}"{% endif %}/>
+            <input name="{{ parameter.machine_name }}" type="range" min="{{ parameter.min }}" max="{{ parameter.max }}" value="{{ parameter.default }}" step="{{ parameter.step }}" data-prec="{{ parameter.precision }}" {% if parameter.disabled or parameter.init_disabled %}disabled="disabled"{% endif %} {% if parameter.class %}class="{{ parameter.class }}"{% endif %}/>
             <div class="tick-wrap">
               <span class="tick" style="left:{{ parameter.tick }}" >&bullet;</span>
             </div>

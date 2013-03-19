@@ -9,13 +9,12 @@
 {% endblock %}
 {% block mainlink %}<div id="back-to-rdcep"><a href="/advanced">Switch to Advanced</a></div>{% endblock %}
 {% block sidebar %}
-  <form id="submission" method="post" action="/">
+  <form id="submission" method="post" class="basic" action="/">
     <div id="parameters" class="has-tabs">
       <div id="sidebar-tabs" class="tabs">
         <a href="" class="selected" id="link-to-tab-policy">Policy</a>
         <a href="" id="link-to-tab-climate">Beliefs</a>
       </div>
-      <input type="hidden" value="false" id="optimize" name="optimize"/>
       {% for tab in tabs %}
       <div id="tab-{{ tab.name|lower }}" class="tab {% if tab.name|lower != 'policy' %}not{% endif %}selected">
         {% for section in tab.sections %}
@@ -33,7 +32,7 @@
             </span>
             {% endif %}
             </label>
-            <input name="{{ parameter.machine_name }}" type="range" min="{{ parameter.min }}" max="{{ parameter.max }}" value="{{ parameter.default }}" step="{{ parameter.step }}" data-prec="{{ parameter.precision }}" {% if parameter.disabled %}disabled="disabled"{% endif %} {% if parameter.class %}class="{{ parameter.class }}"{% endif %}/>
+            <input name="{{ parameter.machine_name }}" type="range" min="{{ parameter.min }}" max="{{ parameter.max }}" value="{{ parameter.default }}" step="{{ parameter.step }}" data-prec="{{ parameter.precision }}" {% if parameter.disabled or parameter.init_disabled %}disabled="disabled"{% endif %} {% if parameter.class %}class="{{ parameter.class }}"{% endif %}/>
             <div class="minimum-range-value">{{ parameter.min_legend }}</div>
             <div class="maximum-range-value">{{ parameter.max_legend }}</div>
             {% endif %}
