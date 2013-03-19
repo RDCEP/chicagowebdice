@@ -1,10 +1,8 @@
 import yaml
 import HTMLParser
 import re
-import pprint
 
 
-pp = pprint.PrettyPrinter(indent=0)
 htmlp = HTMLParser.HTMLParser()
 YAML = file('../parameters.yaml', 'r')
 CONF_FILE = yaml.load(YAML)
@@ -27,7 +25,7 @@ def get_defaults(section):
     Return default input attribute values for range inputs in section
     """
     defaults = {}
-    for var in ['min', 'max', 'step', 'default', 'precision']:
+    for var in ['min', 'max', 'step', 'default', 'precision', 'unit']:
         try:
             defaults[var] = section[var]
         except:
@@ -94,15 +92,15 @@ def get_sections(tab):
         sections = []
     return sections
 
-def get_radio(section):
+def is_radio(section):
     """
     Determine if section should be preceded by a radio button
     """
     try:
-        radio = section['radio']
-        return True
-    except:
+        section['radio']
+    except KeyError:
         return False
+    return True
 
 def get_tabs():
     tabs, parameters = parse_conf()
@@ -113,7 +111,7 @@ def get_all_parameters():
     return parameters
 
 def parse_conf():
-    tabs = CONF_FILE.copy()['tabs']
+    tabs = CONF_FILE['tabs']
     all_parameters = {}
     for tab in tabs:
         policy = False
@@ -121,14 +119,14 @@ def parse_conf():
             policy = True
         for section in get_sections(tab):
             defaults = get_defaults(section)
-            if policy and get_radio(section):
+            if policy and is_radio(section):
                 button = '<input type="radio" value="'
                 button += section['machine_name']
                 button += '" name="policy_type" style="width:auto"'
                 if section['machine_name'] == 'default':
                     button += ' checked="checked"'
                 button += '/>'
-                section['name'] = button + section['name']
+                section['radio'] = button
             parameters = get_parameters(section)
             for parameter in parameters:
                 parameter = set_from_defaults(parameter, defaults)
@@ -137,8 +135,10 @@ def parse_conf():
                 if parameter['type'] == 'range':
                     parameter = set_tick(parameter)
                 parameter = get_parameter_help(parameter)
+                if policy:
+                    parameter['disabled'] = True
                 all_parameters[parameter['machine_name']] = parameter
-    return tabs, all_parameters
+    return [tabs, all_parameters]
 
 def set_options(p, opts, opt):
     try:
@@ -179,18 +179,3 @@ def get_parameter_help(parameter):
     except:
         pass
     return parameter
-
-if __name__ == '__main__':
-    pp.pprint(get_tabs())
-    # print get_measurements()
-    # pp.pprint(get_all_parameters())
-    # pp.pprint(get_parameter_help())
-
-
-
-                # pp.pprint( tabs[0])
-                # for subsection in get_sections(section):
-
-                # for numinput in section['parameters']:
-                #     numinput['disabled'] = True
-                #     print numinput

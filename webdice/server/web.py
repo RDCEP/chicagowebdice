@@ -1,10 +1,11 @@
 import json
 from datetime import datetime
 from flask import Flask
-from flask import render_template, request
+from flask import render_template, request, make_response
 from flask_beaker import BeakerSession
 from dice import Dice2007
-from conf import *
+from conf import parse_conf, get_measurements, paragraphs_html
+from conf import get_all_parameters
 
 session_opts = {
     'session.type': 'ext:memcached',
@@ -71,6 +72,8 @@ def page(t='index'):
         HTML
     """
     measurements = get_measurements()
+    # tabs = get_tabs()
+    these_tabs, all_parameters = parse_conf()
     without_sections = []
     for s in measurements:
         for m in s['options']:
@@ -79,17 +82,16 @@ def page(t='index'):
     m = json.JSONEncoder().encode(without_sections)
     g = json.JSONEncoder().encode(graph_locations)
     now = datetime.now().strftime('%Y%m%d%H%M%S')
-    tpl = render_template(
+    return render_template(
         t + '.html',
-        measurements=get_measurements(),
+        measurements=m,
         graph_locations=g,
-        tabs=get_tabs(),
+        tabs=these_tabs,
         dropdowns=measurements,
         paragraphs_html=paragraphs_html(t),
-        all_parameters=get_all_parameters(),
+        all_parameters=all_parameters,
         now=now,
     )
-    return tpl
 
 @app.route('/run', methods=['POST',])
 def graphs():
@@ -113,10 +115,10 @@ def graphs():
             except AttributeError: pass  #print a, p
             else:
                 try:
-                    a.value = float(getattr(form, p))
+                    a.value = float(form[p])
                 except (ValueError, AttributeError): pass  #print p, getattr(form, p)
-    thisdice.damages_model.value = getattr(form, 'damages_model')
-    policy = getattr(form, 'policy_type')
+    thisdice.damages_model.value = form['damages_model']
+    policy = form['policy_type']
     thisdice.treaty = False
     thisdice.carbon_tax = False
     if policy == 'treaty':
@@ -131,27 +133,10 @@ def graphs():
 
 @app.route('/csv', methods=['POST',])
 def csv_output():
-    data = request.form.data
-    response.set_header('Content-Disposition', 'attachment; filename="WebDICE-Data.csv"')
-    return data
-
-
-@app.route('/tmp')
-def tmp():
-    measurements = get_measurements()
-    graph_locations = get_graph_locations()
-    m = json.JSONEncoder().encode(measurements)
-    g = json.JSONEncoder().encode(graph_locations)
-    now = datetime.now().strftime('%Y%m%d%H%M%S')
-    tpl = render_template('index_tmp',
-        measurements=m,
-        graph_locations=g,
-        tabs_html=tabs_html(),
-        dropdowns=measurements_html(),
-        paragraphs_html=paragraphs_html(),
-        now=now,
-    )
-    return tpl
+    data = request.form['data']
+    response =  make_response(data)
+    response.headers['Content-Disposition'] = 'attachment; filename="WebDICE-Data.csv"'
+    return response
 
 if __name__ == '__main__':
     app.run()

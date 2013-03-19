@@ -37,9 +37,9 @@
       </div>
       <input type="hidden" value="false" id="optimize" name="optimize"/>
       {% for tab in tabs %}<div id="tab-{{ tab.name|lower }}" class="tab {% if tab.name|lower != 'policy' %}not{% endif %}selected">
-        {% for section in tab.sections %}<h2>{{ section.name|safe }}</h2>
+        {% for section in tab.sections %}<h2>{% if section.radio %}{{ section.radio|safe }}{% endif %}{{ section.name }}</h2>
         {% if section.parameters %}<ul>
-          {% for parameter in section.parameters %}<li{% if parameter.disabled %} disabled="disabled init-disabled" {% endif %}>
+          {% for parameter in section.parameters %}<li{% if parameter.disabled %} class="disabled init-disabled" {% endif %}>
             {% if parameter.type == 'range' %}<label title="{{ parameter.description }}">{{ parameter.name }}<span class="label">
             <span class="label-number">{{ parameter.default }}</span><span>{{ parameter.unit }}</span></span></label>
               <input name="{{ parameter.machine_name }}" type="range" min="{{ parameter.min }}" max="{{ parameter.max }}" value="{{ parameter.default }}" step="{{ parameter.step }}" data-prec="{{ parameter.precision }}" {% if parameter.disabled %}disabled="disabled"{% endif %}/>
@@ -68,8 +68,7 @@
     <a href="#" id="link-to-scc-graph">SCC Graph</a>
   </div>
   <div class="initial">
-    {{ tabs.0 }}
-{#    {{ paragraphs_html }}#}
+    {{ paragraphs_html|safe }}
   </div>
   <div id="four-graphs" class="tab selected"></div>
   <div id="custom-graph" class="tab notselected">
@@ -82,7 +81,7 @@
         <h2>X-Axis</h2>
         <select id="select-x-axis">
           <option value="year">Year</option>
-          {% for group in measurements %}<optgroup label="-- {{ group.name }} --"></optgroup>
+          {% for group in dropdowns %}<optgroup label="-- {{ group.name }} --"></optgroup>
           {% for option in group.options %}<option value="{{ option.machine_name }}">{{ option.name }}</option>
           {% endfor %}{% endfor %}
         </select>
@@ -91,7 +90,7 @@
       <div>
         <h2>Y-Axis</h2>
         <select id="select-y-axis">
-          {% for group in measurements %}<optgroup label="-- {{ group.name }} --"></optgroup>
+          {% for group in dropdowns %}<optgroup label="-- {{ group.name }} --"></optgroup>
             {% for option in group.options %}<option value="{{ option.machine_name }}">{{ option.name }}</option>
             {% endfor %}{% endfor %}
         </select>
