@@ -13,7 +13,7 @@
     <div id="parameters" class="has-tabs">
       <div id="sidebar-tabs" class="tabs">
         <a href="" class="selected" id="link-to-tab-policy">Policy</a>
-        <a href="" id="link-to-tab-climate">Beliefs</a>
+        <a href="" id="link-to-tab-beliefs">Beliefs</a>
       </div>
       {% for tab in tabs %}
       <div id="tab-{{ tab.name|lower }}" class="tab {% if tab.name|lower != 'policy' %}not{% endif %}selected">
@@ -27,8 +27,7 @@
             <label title="{{ parameter.description }}">{{ parameter.name }}
             {% if tab.name == 'Policy' %}
             <span class="label">
-              <span class="label-number">{% if parameter.class == 'reverse' %}{{ parameter.max - (parameter.default - parameter.min) }}{% else %}{{ parameter.default }}{% endif %}</span>
-              <span>{{ parameter.unit }}</span>
+              <span class="label-number">{% if parameter.class == 'reverse' %}{{ parameter.max - (parameter.default - parameter.min) }}{% else %}{{ parameter.default }}{% endif %}</span><span>{{ parameter.unit }}</span>
             </span>
             {% endif %}
             </label>
@@ -38,7 +37,7 @@
             {% endif %}
             {% if parameter.type == 'select' %}
             <label title="{{ parameter.description }}">{{ parameter.name }}</label>
-            <select name="{{ parameter.machine_name }}">
+            <select name="{{ parameter.machine_name }}"{% if parameter.disabled or parameter.init_disabled %} disabled="disabled"{% endif %}>
               {% for option in parameter.options %}
               <option value="{{ option.machine_name }}" title="{{ option.description }}">{{ option.name }}</option>
               {% endfor %}
