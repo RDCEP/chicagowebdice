@@ -78,7 +78,9 @@ class ProductivityFraction(DamagesModel):
     def damage(self, gross_output, temp_atmosphere, aa, a_abatement=None,
                a_savings=0):
         d = self.get_production_factor(aa, temp_atmosphere)
-        damage_to_prod = 1. - ((1. - d) / (1. - self.production_factor * d))
+        damage_to_prod = 1. - (
+            (1. - aa[1] * temp_atmosphere ** aa[2]) / d
+        )
         return gross_output * damage_to_prod
 
     def get_production_factor(self, aa, temp_atmosphere):
