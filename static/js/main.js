@@ -297,7 +297,8 @@
         var options = {
           title : (selectedYOption + ' vs. ' + selectedXOption),
           width : contentDiv.offsetWidth,
-          height : contentDiv.offsetHeight - 120,
+          //height : contentDiv.offsetHeight - 120,
+          height : contentDiv.offsetHeight - 30,
           legend : {'position' : 'none' },
           colors : colors,
           pointSize : 2,
