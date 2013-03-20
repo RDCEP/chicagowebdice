@@ -155,11 +155,11 @@ basic_tabs:
             description: Decline in the rate of growth in productivity over time
             min_legend: Slower growth
             max_legend: Faster growth
-          - name: Change in energy intensity
+          - name: Change in energy efficiency
             machine_name: dsig
             description: Rate of decline in energy use per $ of GDP
-            min_legend: Less energy intense
-            max_legend: More energy intense
+            min_legend: Less energy efficient
+            max_legend: More energy efficient
           - name: How low will the costs of renewables go?
             machine_name: backrat
             description: Cost of replacing all emissions in 2012 $ per ton of CO_{2} , relative to future cost
@@ -356,7 +356,7 @@ tabs:
             unit: ' billions'
       - name: Energy parameters
         parameters:
-          - name: Change in energy intensity
+          - name: Reduction in energy intensity per decade
             machine_name: dsig
             default: 0.3
             min: 0.0
@@ -460,6 +460,7 @@ measurements:
             location: bottomright
       - name: Social Cost of Carbon
         machine_name: scc
+        unit: '$'
   - name: Emissions Controls
     options:
       - name: Abatement
