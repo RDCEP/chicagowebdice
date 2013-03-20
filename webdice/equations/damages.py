@@ -19,8 +19,9 @@ def tipping_point(gross_output, temp_atmosphere, aa, damage_to_prod):
     ))
 
 def additive_output(gross_output, temp_atmosphere, aa, damage_to_prod):
-    return  gross_output * (1 / 1 + (
-        gross_output * 6.3745e-5 * temp_atmosphere ** aa[2]
+    return  gross_output - gross_output * (1 / 1 + (
+        # gross_output * 6.3745e-5 * temp_atmosphere ** aa[2]
+        gross_output * aa[1] * temp_atmosphere ** aa[2]
     ))
 
 
