@@ -925,10 +925,9 @@
               'dela': [1.5, 0.38, 0.1, 0.03, 0.0],
               'dsig': [6.0, 1.3, 0.3, 0.06, 0.0],
               'backrat': [1, 1.4, 2.0, 2.8, 4.0]
-            },
-            data = ''
-            ;
-          data += 'policy_type=' + $('input[name=policy_type]:checked').val();
+            }
+          ;
+          data = data.slice(0,data.search('t2xco2'));
           $('#tab-beliefs').find('input').each(function() {
             $(this).val(function(i, v) {
               data += '&' + $(this).attr('name') + '=';
