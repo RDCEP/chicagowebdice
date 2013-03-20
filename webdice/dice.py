@@ -320,7 +320,8 @@ class Dice2007(Dice2007Params):
         if i > 0:
             productivity_frac = 1.
             if self.damages_model == 'productivity_fraction':
-                dmg = D['damage'][ii] / D['gross_output'][ii]
+                # dmg = D['damage'][ii] / D['gross_output'][ii]
+                dmg = self.aa[1] * D['temp_atmosphere'][ii] ** self.aa[2]
                 productivity_frac = 1. - (dmg * .1)
                 damage_to_prod = 1. - (
                     (1. - dmg) / (1. - .1 * dmg)
