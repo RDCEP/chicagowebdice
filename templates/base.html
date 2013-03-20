@@ -28,14 +28,18 @@
 </div>
 <div id="content" class="hasnoruns">
   <div class="tabs">
-    <a href="" class="selected" id="link-to-four-graphs">Basic Graphs</a>
-    <a href="#" id="link-to-custom-graph">Advanced Graph</a>
-    <a href="#" id="link-to-scc-graph">SCC Graph</a>
+    <a href="#" id="link-to-essential-graphs" class="selected">Essential</a>
+    <a href="#" id="link-to-climate-graph">Climate</a>
+    <a href="#" id="link-to-economy-graph">Economy</a>
+    <a href="#" id="link-to-custom-graph">Customizable</a>
+    <a href="#" id="link-to-scc-graph">SCC</a>
   </div>
   <div class="initial">
   {% block text %}{% endblock %}
   </div>
-  <div id="four-graphs" class="tab selected"></div>
+  <div id="essential-graphs" class="tab selected"></div>
+  <div id="climate-graphs" class="tab notselected"></div>
+  <div id="economy-graphs" class="tab notselected"></div>
   <div id="custom-graph" class="tab notselected">
     <div id="large-graph">
         <div id="large-graph-chart" style="height:90%;"></div>

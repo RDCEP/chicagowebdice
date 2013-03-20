@@ -26,7 +26,8 @@ h1 span a {color:#fff;text-decoration:none;}
 #back-to-rdcep a{color:#eee;font:0.9em/2.8em Helvetica,sans-serif;text-decoration:none;}
 #back-to-rdcep a:hover{color:white;}
 #submission{position:absolute;top:0;left:0;right:0;bottom:0px;}
-#parameters{position:absolute;top:0;left:0;right:0;bottom:1.8em;overflow:auto;border-bottom:1px solid #ddd;}
+#parameters{position:absolute;top:0;left:0;right:0;bottom:1.8em;overflow:auto;
+    border-bottom:1px solid #ddd;padding-bottom:2em;}
 #parameters.has-tabs{padding-top:2em;}
 #parameters .tab {padding:0 3em;/*padding:0 1em;*/}
 #submission h2{font:bold 0.8em Helvetica,sans-serif;padding:1.5em 0 0.5em;}
@@ -53,7 +54,9 @@ h1 span a {color:#fff;text-decoration:none;}
 #content .initial{top:3em;left:4em;bottom:1em;right:4em;border-radius:1em;padding:2em;}
 #content .initial p{margin-bottom:1em;}
 #content.hasruns .initial{display:none;}
-#content.hasnoruns #four-graphs{display:none;}
+#content.hasnoruns #essential-graphs{display:none;}
+#content.hasnoruns #climate-graphs{display:none;}
+#content.hasnoruns #economy-graphs{display:none;}
 #content.hasnoruns #custom-graph{display:none;}
 #content.hasnoruns #download-data{display:none;}
 #content.hasnoruns .tabs{display:none !important;}
@@ -65,7 +68,9 @@ h1 span a {color:#fff;text-decoration:none;}
 #download-data input{font:0.7em Helvetica,sans-serif;padding:0.5em;border-bottom:none;}
 #download-data input{cursor:pointer;}
 #download-data textarea{display:none;}
-#four-graphs{position:absolute;top:2em;left:1px;right:0;bottom:0;}
+#essential-graphs{position:absolute;top:2em;left:1px;right:0;bottom:0;}
+#climate-graphs{position:absolute;top:2em;left:1px;right:0;bottom:0;}
+#economy-graphs{position:absolute;top:2em;left:1px;right:0;bottom:0;}
 #custom-graph,#scc-graph{position:absolute;top:2em;left:1px;right:0;bottom:0;overflow:hidden;}
 #graph-controls{position:absolute;bottom:0;left:0px;right:0;height:6.5em;background-color:#eee;}
 #graph-controls{border-top:1px solid #ccc;font:0.8em Helvetica,sans-serif;}

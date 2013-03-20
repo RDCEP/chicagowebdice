@@ -80,19 +80,22 @@ def page(tabs, tpl='index'):
     """
     measurements = get_measurements()
     # tabs = get_tabs()
-    all_parameters = parse_conf()
+    all_parameters = get_all_parameters()
     without_sections = []
     for s in measurements:
         for m in s['options']:
             without_sections.append(m)
-    graph_locations = ['topleft', 'topright', 'bottomleft', 'bottomright']
+    graph_locations = ['topleft', 'topright', 'bottomleft', 'bottomright', ]
+    graph_names = ['essential', 'climate', 'economy', ]
     m = json.JSONEncoder().encode(without_sections)
-    g = json.JSONEncoder().encode(graph_locations)
+    graph_locations = json.JSONEncoder().encode(graph_locations)
+    graph_names = json.JSONEncoder().encode(graph_names)
     now = datetime.now().strftime('%Y%m%d%H%M%S')
     return render_template(
         tpl + '.html',
         measurements=m,
-        graph_locations=g,
+        graph_locations=graph_locations,
+        graph_names=graph_names,
         tabs=tabs,
         dropdowns=measurements,
         paragraphs_html=paragraphs_html(tpl),
@@ -116,15 +119,15 @@ def graphs():
     all_parameters = get_all_parameters()
     for p in all_parameters:
         try:
-            all_parameters[p]['disabled']
+            p['disabled']
         except (KeyError, AttributeError):
             try:
-                getattr(this_dice, p)
+                getattr(this_dice, p['machine_name'])
             except AttributeError:
                 pass
             else:
                 try:
-                    this_dice.__dict__[p] = float(form[p])
+                    this_dice.__dict__[p['machine_name']] = float(form[p['machine_name']])
                 except (ValueError, AttributeError, KeyError):
                     pass
     try:

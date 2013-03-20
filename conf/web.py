@@ -114,7 +114,7 @@ def get_all_parameters():
 
 def parse_conf():
     tabs = CONF_FILE['tabs']
-    all_parameters = {}
+    all_parameters = []
     for tab in tabs:
         policy = False
         if tab['name'] == 'Policy':
@@ -137,7 +137,7 @@ def parse_conf():
                 if parameter['type'] == 'range':
                     parameter = set_tick(parameter)
                 parameter = get_parameter_help(parameter)
-                all_parameters[parameter['machine_name']] = parameter
+                all_parameters.append(parameter)
     return [tabs, all_parameters]
 
 def get_basic_tabs():

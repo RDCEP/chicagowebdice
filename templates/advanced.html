@@ -4,6 +4,7 @@
         Options = window.Options || { };
         Options.measurements = {{ measurements|safe }};
         Options.locations = {{ graph_locations|safe }};
+        Options.graphs = {{  graph_names|safe }};
     </script>
     <script type="text/javascript" src="/static/js/main.js?{{ now }}"></script>
 {% endblock %}
@@ -62,21 +63,23 @@
   </form>
   <ul id="runs"></ul>
 {% endblock %}
-{% block text %}{{ paragraphs_html|safe }}{% endblock %}
-{% block xaxis %}{% for group in dropdowns %}<optgroup label="-- {{ group.name }} --"></optgroup>
-{% for option in group.options %}<option value="{{ option.machine_name }}">{{ option.name }}</option>
-{% endfor %}{% endfor %}{% endblock %}
+{% block text -%}
+  {{ paragraphs_html|safe }}
+{%- endblock %}
+{% block xaxis -%}
+  {% for group in dropdowns -%}
+    <optgroup label="-- {{ group.name }} --"></optgroup>
+    {% for option in group.options -%}
+      <option value="{{ option.machine_name }}">{{ option.name }}</option>
+    {% endfor %}
+  {%- endfor %}
+{%- endblock %}
 {% block yaxis %}{% for group in dropdowns %}<optgroup label="-- {{ group.name }} --"></optgroup>
 {% for option in group.options %}<option value="{{ option.machine_name }}">{{ option.name }}</option>
 {% endfor %}{% endfor %}{% endblock %}
-{% block help %}
-  {% for parameter in all_parameters %}
-  {% if parameter.help %}
-  <div class="help-text" id="{{ parameter.machine_name }}-help">
-    {{ parameter.help|safe }}
-  </div>
-  {% endif %}
-  {% endfor %}
+{% block help %}{% for parameter in all_parameters %}{% if parameter.help %}
+  <div class="help-text" id="{{ parameter.machine_name }}-help">{{ parameter.help|safe }}
+  </div>{% endif %}{% endfor %}
 {% endblock %}
 {% block bodyjs %}
   <script src="/static/js/webdice_help.js"></script>

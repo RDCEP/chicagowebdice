@@ -417,7 +417,9 @@ measurements:
         unit: Thousands $USD / Person / Year
         description: Global average GDP per capita
         format: "$#.##"
-        location: topright
+        graphs:
+          - name: essential
+            location: topright
       - name: Total Consumption
         machine_name: consumption
         unit: Trillions $USD / Year
@@ -428,7 +430,9 @@ measurements:
         machine_name: emissions_total
         unit: Gt of Carbon / 10 yr
         description: Projected path of annual future carbon emissions
-        location: bottomright
+        graphs:
+          - name: essential
+            location: bottomright
       - name: Industrial Emissions
         machine_name: emissions_ind
         unit: Gt of Carbon
@@ -461,7 +465,9 @@ measurements:
         machine_name: mass_atmosphere
         unit: Gt of Carbon
         description: The projected concentration of carbon in the atmosphere.
-        location: bottomleft
+        graphs:
+          - name: essential
+            location: bottomleft
       - name: Carbon Mass in Upper Oceans
         machine_name: mass_upper
         unit: Gt of Carbon
@@ -472,7 +478,9 @@ measurements:
         machine_name: temp_atmosphere
         unit: °C from 1900
         description: Projected increases in global average temperatures compared to pre-industrial temperatures
-        location: topleft
+        graphs:
+          - name: essential
+            location: topleft
       - name: Lower Ocean Temperature Increase
         machine_name: temp_lower
         unit: °C from 1900

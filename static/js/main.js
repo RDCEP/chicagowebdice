@@ -79,7 +79,6 @@
 
   var initializeUI = function() {
     var contentDiv = document.getElementById('content');
-    var fourGraphsDiv = document.getElementById('four-graphs');
     var runsUL = document.getElementById('runs');
     var submissionDiv = document.getElementById('submission');
     var overlayDiv = document.getElementById('overlay');
@@ -196,8 +195,10 @@
       updateAllData();
     };
 
-    var buildChart = function(index, measurement) {
+    var buildChart = function(index, name, measurement) {
+      console.log(data.getNumberOfColumns());
       var div = document.createElement("div");
+      var fourGraphsDiv = document.getElementById(name+'-graphs');
       div.setAttribute('class', 'graph');
       fourGraphsDiv.appendChild(div);
 
@@ -322,7 +323,7 @@
         chart.draw(table, options);
       };
 
-      var updateData = function() {
+      var updateData = function(graph) {
         var visibleColumns = [ ];
         var index = -1;
 
@@ -508,14 +509,24 @@
 
     formatMeasurement(0, -1, "####"); // hackish much?
 
-    for (var i = 0; i < Options.locations.length; i++) {
-      var location = Options.locations[i];
-
-      for (var j = 0; j < Options.measurements.length; j++) {
-        var measurement = Options.measurements[j];
-
-        if (measurement.location == location)
-          buildChart(j, measurement);
+    for ( var aa = 0; aa < Options.graphs.length; aa++ ) {
+      var name = Options.graphs[aa];
+      console.log(name);
+      for ( var i = 0; i < Options.locations.length; i++) {
+        var location = Options.locations[i];
+        console.log(location);
+        for ( var j = 0; j < Options.measurements.length; j++) {
+          var measurement = Options.measurements[j];
+          console.log(measurement);
+          if (measurement.graphs) {
+          for ( var bb = 0; bb < measurement.graphs.length; bb++) {
+            var graph = measurement.graphs[bb];
+            if ((graph.location == location) && (graph.name == name)) {
+              buildChart(j, name, measurement);
+            }
+          }
+          }
+        }
       }
     }
 
