@@ -318,19 +318,9 @@ class Dice2007(Dice2007Params):
         ii = i - 1
         damage_to_prod = False
         if i > 0:
-            productivity_frac = 1.
-            if self.damages_model == 'productivity_fraction':
-                # dmg = D['damage'][ii] / D['gross_output'][ii]
-                dmg = self.aa[1] * D['temp_atmosphere'][ii] ** self.aa[2]
-                productivity_frac = 1. - (dmg * .1)
-                damage_to_prod = 1. - (
-                    (1. - dmg) / (1. - .1 * dmg)
-                )
-                if i < 10: print dmg, productivity_frac, damage_to_prod
+            pf = self.eq.get_production_factor(self.aa, D['temp_atmosphere'][i])
             D['sigma'][i] = D['sigma'][ii] / (1 - self.gsig[i])
-            D['al'][i] = productivity_frac * (
-                D['al'][ii] / (1 - self.ga[ii])
-            )
+            D['al'][i] = pf * (D['al'][ii] / (1 - self.ga[ii]))
             D['capital'][i] = self.eq.capital(
                 D['capital'][ii], self.dk, D['investment'][ii]
             )
@@ -408,20 +398,27 @@ class Dice2007(Dice2007Params):
             D['temp_lower'][i] = self.eq.temp_lower(
                 D['temp_atmosphere'][ii], D['temp_lower'][ii], self.cc
             )
-
-        # D['damage'][i] = self.eq.damage(
-        #     D['gross_output'][i], D['temp_atmosphere'][i], self.aa
-        # )
-        D['damage'][i] = self.damage_eq(
-            D['gross_output'][i], D['temp_atmosphere'][i], self.aa,
-            damage_to_prod
-        )
         D['abatement'][i] = self.eq.abatement(
             D['gross_output'][i], D['miu'][i], D['gcost1'][i],
             self.expcost2, self.partfract[i]
         )
-        D['output'][i] = self.eq.output(
-            D['gross_output'][i], D['damage'][i], D['abatement'][i]
+        # D['damage'][i] = self.damage_eq(
+        #     D['gross_output'][i], D['temp_atmosphere'][i], self.aa,
+        #     damage_to_prod
+        # )
+        # D['output'][i] = self.eq.output(
+        #     D['gross_output'][i], D['damage'][i], D['abatement'][i]
+        # )
+        # D['consumption'][i] = self.eq.consumption(
+        #     D['output'][i], self.savings
+        # )
+        D['damage'][i], D['output'][i], D['consumption'][i] = \
+            self.eq.get_model_values(
+                D['gross_output'][i], D['temp_atmosphere'][i],
+                self.aa, D['abatement'][i], self.savings
+            )
+        D['consumption_pc'][i] = self.eq.consumption_pc(
+            D['consumption'][i], self.l[i]
         )
         if i == 0:
             D['investment'][i] = self.savings * self._q0
@@ -429,12 +426,6 @@ class Dice2007(Dice2007Params):
             D['investment'][i] = self.eq.investment(
                 self.savings, D['output'][i]
             )
-        D['consumption'][i] = self.eq.consumption(
-            D['output'][i], self.savings
-        )
-        D['consumption_pc'][i] = self.eq.consumption_pc(
-            D['consumption'][i], self.l[i]
-        )
         D['utility'][i] = self.eq.utility(
             D['consumption_pc'][i], self.elasmu, self.l[i]
         )
@@ -452,15 +443,15 @@ class Dice2007(Dice2007Params):
         """
         D = self.data['vars']
         if self.damages_model == 'exponential_map':
-            self.damage_eq = exponential_map
+            self.eq = ExponentialMap(self.prod_fac)
         elif self.damages_model == 'tipping_point':
-            self.damage_eq = tipping_point
+            self.eq = WeitzmanTippingPoint(self.prod_fac)
         elif self.damages_model == 'additive_output':
-            self.damage_eq = additive_output
+            self.eq = AdditiveDamages(self.prod_fac)
         elif self.damages_model == 'productivity_fraction':
-            self.damage_eq = productivity_fraction
+            self.eq = ProductivityFraction(self.prod_fac)
         else:
-            self.damage_eq = dice_output
+            self.eq = DamagesModel(self.prod_fac)
         _epsilon = 1e-4
         if self.optimize and miu is None:
             D['miu'] = self.get_ipopt_mu()

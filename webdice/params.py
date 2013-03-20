@@ -40,6 +40,7 @@ class Dice2007Params(object):
         self._q0 = 61.1  # 2005 world gross output trill 2005 US dollars
         self._q0 = 55.667  # 2005 world gross output trill 2005 US dollars
         self._k0 = 137.  # 2005 value capital trill 2005 US dollars
+        self.prod_fac = .05
 
         ## Emissions
         self._sig0 = .13418  # CO2-equivalent emissions-GNP ratio 2005

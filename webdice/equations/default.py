@@ -56,7 +56,9 @@ class Loop(object):
         """T_LO, Temperature of lower oceans, degrees C"""
         return temp_lower + c[3] * (temp_atmosphere - temp_lower)
 
-    def damage(self, gross_output, temp_atmosphere, aa):
+    # @classmethod
+    def damage(self, gross_output, temp_atmosphere, aa, a_abatement=None,
+               a_savings=None):
         """Omega, Damage, trillions $USD"""
         return gross_output - gross_output / (
             1 + aa[0] * temp_atmosphere + aa[1] * temp_atmosphere ** aa[2])
@@ -66,7 +68,8 @@ class Loop(object):
         return partfract ** (1 - expcost2) * gross_output * gcost1 * (
             miu ** expcost2)
 
-    def output(self, gross_output, damage, abatement):
+    def output(self, gross_output, damage, abatement, a_savings=None,
+               a_temp_atmosphere=None, a_aa=None):
         return gross_output * ((1 - abatement / gross_output) /
                                (gross_output / (gross_output - damage)))
 
@@ -74,7 +77,8 @@ class Loop(object):
         """I, Investment, trillions $USD"""
         return savings * output
 
-    def consumption(self, output, savings):
+    def consumption(self, output, savings, a_gross_output=None,
+                    a_abatement=None, a_temp_atmosphere=None, a_aa=None):
         """C, Consumption, trillions $USD"""
         return output - (savings * output)
 

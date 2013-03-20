@@ -1,31 +1,88 @@
 import numpy as np
+from default import Loop
 
 
-def dice_output(gross_output, temp_atmosphere, aa, damage_to_prod):
-    return gross_output * (1 - 1 / (
-        1 + aa[0] * temp_atmosphere + aa[1] * temp_atmosphere ** aa[2]
-    ))
+class DamagesModel(Loop):
+    def __init__(self, production_factor):
+        Loop.__init__(self)
+        self.production_factor = production_factor
+
+    def get_production_factor(self, aa, temp_atmosphere):
+        return 1.
+
+    def get_model_values(self, gross_output, temp_atmosphere,
+                         aa, abatement, savings):
+        damage = self.damage(gross_output, temp_atmosphere, aa,
+                             abatement, savings)
+        output = self.output(gross_output, damage, abatement, savings,
+                             temp_atmosphere, aa)
+        consumption = self.consumption(output, savings, gross_output,
+                                       abatement, temp_atmosphere, aa)
+        return [damage, output, consumption]
 
 
-def exponential_map(gross_output, temp_atmosphere, aa, damage_to_prod):
-    return gross_output * (1 - np.exp(
-        -(aa[0] * temp_atmosphere + aa[1] * temp_atmosphere ** aa[2])
-    ))
+class DiceDamages(DamagesModel):
+    def damage(self, gross_output, temp_atmosphere, aa, a_abatement=None,
+               a_savings=0):
+        return gross_output * (1 - 1 / (
+            1 + aa[0] * temp_atmosphere + (
+                aa[1] * temp_atmosphere ** aa[2]
+        )))
 
 
-def tipping_point(gross_output, temp_atmosphere, aa, damage_to_prod):
-    return gross_output * (1 - 1 / (
-        1 + (temp_atmosphere / 20.46) ** 2 + (temp_atmosphere / 6.081) ** 6.754
-    ))
-
-def additive_output(gross_output, temp_atmosphere, aa, damage_to_prod):
-    return  gross_output - gross_output * (1 / 1 + (
-        # gross_output * 6.3745e-5 * temp_atmosphere ** aa[2]
-        gross_output * aa[1] * temp_atmosphere ** aa[2]
-    ))
+class ExponentialMap(DamagesModel):
+    def damage(self, gross_output, temp_atmosphere, aa, a_abatement=None,
+               a_savings=0):
+        return gross_output * (1 - np.exp(
+            -(aa[0] * temp_atmosphere + aa[1] * temp_atmosphere ** aa[2])
+        ))
 
 
-def productivity_fraction(gross_output, temp_atmosphere, aa, damage_to_prod):
-    if damage_to_prod is False:
-        return dice_output(gross_output, temp_atmosphere, aa, damage_to_prod)
-    return gross_output * (damage_to_prod)
+class AdditiveDamages(DamagesModel):
+    def output_no_damage(self, gross_output, abatement):
+        return gross_output * (1 - (abatement / gross_output))
+
+    def consumption_no_damage(self, gross_output, abatement, savings):
+        ond = self.output_no_damage(gross_output, abatement)
+        return ond - ond * savings
+
+    def consumption(self, output, savings, a_gross_output=None,
+                    a_abatement=None, a_temp_atmosphere=None, a_aa=None):
+        cnd = self.consumption_no_damage(a_gross_output, a_abatement, savings)
+        return cnd / (1 + cnd * 6.3745e-5 * a_temp_atmosphere ** a_aa[2])
+
+    def output(self, gross_output, damage, abatement, a_savings=None,
+               a_temp_atmosphere=None, a_aa=None):
+        consumption = self.consumption(0, a_savings, gross_output, abatement,
+                                       a_temp_atmosphere, a_aa)
+        return consumption / (1 - a_savings)
+
+    def damage(self, gross_output, temp_atmosphere, aa, a_abatement=None,
+               a_savings=0):
+        return self.output_no_damage(
+            gross_output, a_abatement
+        ) - self.output(gross_output, 0, a_abatement, a_savings,
+                        temp_atmosphere, aa)
+
+
+class WeitzmanTippingPoint(DamagesModel):
+    def damage(self, gross_output, temp_atmosphere, aa, a_abatement=None,
+               a_savings=0):
+        return gross_output * (1 - 1 / (
+            1 + (temp_atmosphere / 20.46) ** 2 + (
+                (temp_atmosphere / 6.081) ** 6.754
+        )))
+
+
+class ProductivityFraction(DamagesModel):
+    def damage(self, gross_output, temp_atmosphere, aa, a_abatement=None,
+               a_savings=0):
+        d = self.get_production_factor(aa, temp_atmosphere)
+        damage_to_prod = 1. - ((1. - d) / (1. - self.production_factor * d))
+        return gross_output * damage_to_prod
+
+    def get_production_factor(self, aa, temp_atmosphere):
+        dmg = aa[1] * temp_atmosphere ** aa[2]
+        return 1. - (dmg * self.production_factor)
+
+
