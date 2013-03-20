@@ -58,6 +58,7 @@ h1 span a {color:#fff;text-decoration:none;}
 #content.hasnoruns #climate-graphs{display:none;}
 #content.hasnoruns #economy-graphs{display:none;}
 #content.hasnoruns #custom-graph{display:none;}
+#content.hasnoruns #scc-graph{display:none;}
 #content.hasnoruns #download-data{display:none;}
 #content.hasnoruns .tabs{display:none !important;}
 #content .tabs{background-color:#eee;margin-left:1px;}
