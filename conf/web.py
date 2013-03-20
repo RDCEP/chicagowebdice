@@ -105,15 +105,15 @@ def is_radio(section):
     return True
 
 def get_advanced_tabs():
-    tabs, parameters = parse_conf()
+    tabs, parameters = advanced_tabs()
     return tabs
 
 def get_all_parameters():
-    tabs, parameters = parse_conf()
+    tabs, parameters = advanced_tabs()
     return parameters
 
-def parse_conf():
-    tabs = CONF_FILE['tabs']
+def advanced_tabs():
+    tabs = CONF_FILE['advanced_tabs']
     all_parameters = []
     for tab in tabs:
         policy = False

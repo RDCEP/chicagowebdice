@@ -4,7 +4,7 @@ from flask import Flask
 from flask import render_template, request, make_response
 from flask_beaker import BeakerSession
 from webdice.dice import Dice2007
-from conf.web import parse_conf, get_measurements, paragraphs_html
+from conf.web import get_measurements, paragraphs_html
 from conf.web import get_all_parameters, get_advanced_tabs, get_basic_tabs
 
 session_opts = {

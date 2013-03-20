@@ -167,7 +167,7 @@ basic_tabs:
             max_legend: More expensive
 
 
-tabs:
+advanced_tabs:
   - name: Policy
     sections:
       - name: Business as usual
