@@ -196,7 +196,6 @@
     };
 
     var buildChart = function(index, name, measurement) {
-      console.log(data.getNumberOfColumns());
       var div = document.createElement("div");
       var fourGraphsDiv = document.getElementById(name+'-graphs');
       div.setAttribute('class', 'graph');
@@ -247,8 +246,8 @@
       handlersForDataChanged.push(updateData);
     };
 
-    var buildCustomizeableChart = function(graph) {
-      var div = document.getElementById(graph);
+    var buildLargeChart = function(option) {
+      var div = document.getElementById(option+'-graph');
       var selectXAxis = document.getElementById('select-x-axis');
       var selectYAxis = document.getElementById('select-y-axis');
       var checkedLogarithmicX = document.getElementById('logarithmic-x');
@@ -267,14 +266,11 @@
             colors.push(runsBeingDisplayed[j].color);
         }
 
-        var selectedXOption = $(selectXAxis).find('option:selected').text();
-        var selectedYOption = $(selectYAxis).find('option:selected').text();
-        if (graph == 'scc-graph') {
-          selectedYOption = 'Social Cost of Carbon';
-        }
+        var selectedXOption = $(selectXAxis).find('option[value=year]').text();
+        var selectedYOption = $(selectYAxis).find('option[value='+option+']').text();
 
         var selectedXUnit = function() {
-          var selectedXIndex = $(selectXAxis).find('option:selected').index('#select-x-axis option');
+          var selectedXIndex = $(selectXAxis).find('option[value=year]').index('#select-x-axis option');
           if (selectedXIndex > 0) {
             var Unit = Options.measurements[selectedXIndex-1]['unit'];
             if (typeof Unit === 'undefined') {
@@ -288,15 +284,12 @@
           return Unit;
         };
         var selectedYUnit = function() {
-          var selectedYIndex = $(selectYAxis).find('option:selected').index('#select-y-axis option');
+          var selectedYIndex = $(selectYAxis).find('option[value='+option+']').index('#select-y-axis option');
           var Unit = Options.measurements[selectedYIndex]['unit'];
           if (typeof Unit === 'undefined') {
             Unit = '';
           } else {
             Unit = '('+Unit+')';
-          }
-          if (graph == 'scc-graph') {
-            Unit = '()'
           }
           return Unit;
         };
@@ -323,15 +316,232 @@
         chart.draw(table, options);
       };
 
-      var updateData = function(graph) {
+      var updateData = function() {
+        var visibleColumns = [ ];
+        var index = -1;
+
+        var XAxis = 'year';
+        var YAxis = option;
+        var isTimeSeriesData = (XAxis == 'year')
+
+        var XMeasurementIndex = null, XMeasurement = null, XLabel = null;
+        var YMeasurementIndex = null, YMeasurement = null;
+
+        if (isTimeSeriesData) {
+          XLabel = "Time";
+        } else {
+          for (var i = 0; i < Options.measurements.length; i++) {
+            if (Options.measurements[i].machine_name == XAxis) {
+              XMeasurementIndex = i;
+              XMeasurement = Options.measurements[i];
+            }
+          }
+        }
+
+        for (var i = 0; i < Options.measurements.length; i++) {
+          if (Options.measurements[i].machine_name == YAxis) {
+            YMeasurementIndex = i;
+            YMeasurement = Options.measurements[i];
+          }
+        }
+
+        var dataLiteral = {
+          cols : [{ label : XLabel, type: 'number' }],
+          rows : [ ]
+        };
+
+        var numberOfColumnsInNewTable = 1;
+
+        for (var i = 0; i < getNumberOfRuns(); i++) {
+          if (runsBeingDisplayed[i].visible)
+            numberOfColumnsInNewTable += 3;
+        }
+
+        for (var i = 0; i < getNumberOfRuns(); i++) {
+          if (!runsBeingDisplayed[i].visible)
+            continue;
+
+          var newRowColumnIndex = dataLiteral.cols.length;
+
+          dataLiteral.cols.push({ label : YMeasurement.name, type: 'number' });
+          dataLiteral.cols.push({ type : 'string', role : 'tooltip', p : { role : 'tooltip' } });
+          dataLiteral.cols.push({ type : 'string', role : 'annotation', p : { role : 'annotation' } });
+
+          if (isTimeSeriesData)
+            var columnX = 0;
+          else
+            var columnX = i * getNumberOfMeasurements() + XMeasurementIndex + 1;
+          var columnY = i * getNumberOfMeasurements() + YMeasurementIndex + 1;
+
+          for (var j = 0; j < numberOfStepsInGraphs; j++) {
+            var rows = [ ];
+            var y = parseInt(mapIndexToYear(j));
+            var isPossibleYear = (j == 0 || ((j % 20) == 0) || j == 59)
+            var displayYearLabels = isPossibleYear && (selectLabelsType.value == 'years');
+
+            if (isTimeSeriesData)
+              var tooltip = (
+                runsBeingDisplayed[i].description + "\n" +
+                  "Year: " + y + "\n" +
+                  YMeasurement.name + ": " + data.getFormattedValue(j, columnY)
+                );
+            else
+              var tooltip = (
+                runsBeingDisplayed[i].description + "\n" +
+                  "Year: " + y + "\n" +
+                  XMeasurement.name + ": " + data.getFormattedValue(j, columnX) + "\n" +
+                  YMeasurement.name + ": " + data.getFormattedValue(j, columnY)
+                );
+
+            for (var k = 0; k < numberOfColumnsInNewTable; k++) {
+              if (k == newRowColumnIndex)
+                rows[k] = { v : data.getValue(j, columnY) };
+              else if (k == (newRowColumnIndex + 1))
+                rows[k] = { v : tooltip, f : tooltip };
+              else if (k == (newRowColumnIndex + 2) && displayYearLabels)
+                rows[k] = { v : y };
+              else if (k == 0)
+                rows[k] = { v : data.getValue(j, columnX) };
+              else
+                rows[k] = null;
+            }
+
+            dataLiteral.rows.push({
+              c : rows
+            });
+          }
+        }
+
+        var view = table = new google.visualization.DataTable(dataLiteral);
+
+        for (var k = 0; k < numberOfColumnsInNewTable; k++) {
+          if (k == 0 && isTimeSeriesData) {
+
+            formatColumnOfDataTable(table, 0, '####', null);
+
+          } else {
+            if (k == 0)
+              var measurement = XMeasurement;
+            else
+              var measurement = YMeasurement;
+
+            formatColumnOfDataTable(table, k, measurement.format, measurement.unit);
+          }
+        }
+
+        updateViewport();
+      };
+
+      selectXAxis.onchange = function() {
+        checkedLogarithmicX.checked = false;
+
+        if (previousXAxis == 'year')
+          selectLabelsType.value = 'years';
+
+        previousXAxis = selectXAxis.value;
+
+        updateAllData();
+      };
+
+      selectYAxis.onchange = function() {
+        checkedLogarithmicY.checked = false;
+
+        updateAllData();
+      };
+
+      checkedLogarithmicX.onchange = function() {
+        updateAllViewports();
+      };
+
+      checkedLogarithmicY.onchange = function() {
+        updateAllViewports();
+      };
+
+      selectLabelsType.onchange = function() {
+        updateAllData();
+      };
+
+      updateData();
+      handlersForViewportChanged.push(updateViewport);
+      handlersForDataChanged.push(updateData);
+    };
+
+    var buildCustomizeableChart = function() {
+      var div = document.getElementById('large-graph');
+      var selectXAxis = document.getElementById('select-x-axis');
+      var selectYAxis = document.getElementById('select-y-axis');
+      var checkedLogarithmicX = document.getElementById('logarithmic-x');
+      var checkedLogarithmicY = document.getElementById('logarithmic-y');
+      var selectLabelsType = document.getElementById('series-labels');
+      var previousXAxis = selectXAxis.value;
+
+      var chart = new google.visualization.LineChart(div);
+      var table = null;
+
+      var updateViewport = function() {
+        var colors = [ ];
+
+        for (var j = 0; j < getNumberOfRuns(); j++) {
+          if (runsBeingDisplayed[j].visible)
+            colors.push(runsBeingDisplayed[j].color);
+        }
+
+        var selectedXOption = $(selectXAxis).find('option:selected').text();
+        var selectedYOption = $(selectYAxis).find('option:selected').text();
+
+        var selectedXUnit = function() {
+          var selectedXIndex = $(selectXAxis).find('option:selected').index('#select-x-axis option');
+          if (selectedXIndex > 0) {
+            var Unit = Options.measurements[selectedXIndex-1]['unit'];
+            if (typeof Unit === 'undefined') {
+              Unit = '';
+            } else {
+              Unit = '('+Unit+')';
+            }
+          } else {
+            Unit = '';
+          }
+          return Unit;
+        };
+        var selectedYUnit = function() {
+          var selectedYIndex = $(selectYAxis).find('option:selected').index('#select-y-axis option');
+          var Unit = Options.measurements[selectedYIndex]['unit'];
+          if (typeof Unit === 'undefined') {
+            Unit = '';
+          } else {
+            Unit = '('+Unit+')';
+          }
+          return Unit;
+        };
+
+        var options = {
+          title : (selectedYOption + ' vs. ' + selectedXOption),
+          width : contentDiv.offsetWidth,
+          height : contentDiv.offsetHeight - 120,
+          legend : {'position' : 'none' },
+          colors : colors,
+          pointSize : 2,
+          hAxis : { title : selectedXOption + ' ' + selectedXUnit(), logScale : !!checkedLogarithmicX.checked },
+          vAxis : { title : selectedYOption + ' ' + selectedYUnit(), logScale : !!checkedLogarithmicY.checked }
+        };
+
+        if (selectXAxis.value == 'year') {
+          options.hAxis.format = '####';
+          selectLabelsType.disabled = 'disabled';
+          selectLabelsType.value = 'none';
+        } else {
+          selectLabelsType.disabled = false;
+        }
+
+        chart.draw(table, options);
+      };
+
+      var updateData = function() {
         var visibleColumns = [ ];
         var index = -1;
 
         var XAxis = selectXAxis.value;
         var YAxis = selectYAxis.value;
-        if (graph == 'scc-graph') {
-          YAxis = 'scc';
-        }
         var isTimeSeriesData = (XAxis == 'year')
 
         var XMeasurementIndex = null, XMeasurement = null, XLabel = null;
@@ -511,13 +721,10 @@
 
     for ( var aa = 0; aa < Options.graphs.length; aa++ ) {
       var name = Options.graphs[aa];
-      console.log(name);
       for ( var i = 0; i < Options.locations.length; i++) {
         var location = Options.locations[i];
-        console.log(location);
         for ( var j = 0; j < Options.measurements.length; j++) {
           var measurement = Options.measurements[j];
-          console.log(measurement);
           if (measurement.graphs) {
           for ( var bb = 0; bb < measurement.graphs.length; bb++) {
             var graph = measurement.graphs[bb];
@@ -603,7 +810,7 @@
     handlersForDataChanged.push(updateDownloadedText);
 
     buildCustomizeableChart('large-graph');
-    buildCustomizeableChart('scc-graph');
+    buildLargeChart('scc');
     initializeTrivialTabsUI();
 
     //checks if there are runs. If not, shows initial help page.

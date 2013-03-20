@@ -4,6 +4,7 @@
     Options = window.Options || { };
     Options.measurements = {{ measurements|safe }};
     Options.locations = {{ graph_locations|safe }};
+    Options.graphs = {{  graph_names|safe }};
   </script>
   <script type="text/javascript" src="/static/js/main.js?{{ now }}"></script>
 {% endblock %}
@@ -22,7 +23,7 @@
         {% if section.parameters %}
         <ul>
           {% for parameter in section.parameters %}
-          <li{% if parameter.disabled %} class="disabled init-disabled" {% endif %}>
+          <li{% if parameter.disabled or parameter.init_disabled %} class="disabled init-disabled" {% endif %}>
             {% if parameter.type == 'range' %}
             <label title="{{ parameter.description }}">{{ parameter.name }}
             {% if tab.name == 'Policy' %}
@@ -32,8 +33,14 @@
             {% endif %}
             </label>
             <input name="{{ parameter.machine_name }}" type="range" min="{{ parameter.min }}" max="{{ parameter.max }}" value="{{ parameter.default }}" step="{{ parameter.step }}" data-prec="{{ parameter.precision }}" {% if parameter.disabled or parameter.init_disabled %}disabled="disabled"{% endif %} {% if parameter.class %}class="{{ parameter.class }}"{% endif %}/>
+            {% if tab.name|lower == 'policy' %}
+            <div class="tick-wrap">
+              <span class="tick" style="left:{{ parameter.tick }}" >&bullet;</span>
+            </div>
+            {% else %}
             <div class="minimum-range-value">{{ parameter.min_legend }}</div>
             <div class="maximum-range-value">{{ parameter.max_legend }}</div>
+            {% endif %}
             {% endif %}
             {% if parameter.type == 'select' %}
             <label title="{{ parameter.description }}">{{ parameter.name }}</label>

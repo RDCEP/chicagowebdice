@@ -423,9 +423,15 @@ measurements:
       - name: Total Consumption
         machine_name: consumption
         unit: Trillions $USD / Year
+        graphs:
+          - name: economy
+            location: topright
       - name: Damages
         machine_name: damage
         unit: Trillions $USD / Year
+        graphs:
+          - name: economy
+            location: topleft
       - name: Total Emissions per Year
         machine_name: emissions_total
         unit: Gt of Carbon / 10 yr
@@ -442,10 +448,16 @@ measurements:
       - name: Capital Stock
         machine_name: capital
         unit: Trillions $USD
+        graphs:
+          - name: economy
+            location: bottomleft
       - name: Utility Discounted
         machine_name: utility_d
       - name: Utility
         machine_name: utility
+        graphs:
+          - name: economy
+            location: bottomright
       - name: Social Cost of Carbon
         machine_name: scc
   - name: Emissions Controls
@@ -471,9 +483,15 @@ measurements:
       - name: Carbon Mass in Upper Oceans
         machine_name: mass_upper
         unit: Gt of Carbon
+        graphs:
+          - name: climate
+            location: topleft
       - name: Carbon Mass in Lower Oceans
         machine_name: mass_lower
         unit: Gt of Carbon
+        graphs:
+          - name: climate
+            location: topright
       - name: Atmospheric Temperature Increase
         machine_name: temp_atmosphere
         unit: °C from 1900
@@ -484,6 +502,9 @@ measurements:
       - name: Lower Ocean Temperature Increase
         machine_name: temp_lower
         unit: °C from 1900
+        graphs:
+          - name: climate
+            location: bottomright
 
 parameter_help:
   t2xco2: >
