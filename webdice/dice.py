@@ -443,15 +443,15 @@ class Dice2007(Dice2007Params):
         """
         D = self.data['vars']
         if self.damages_model == 'exponential_map':
-            self.eq = ExponentialMap(self.prod_fac)
+            self.eq = ExponentialMap(self.prod_frac)
         elif self.damages_model == 'tipping_point':
-            self.eq = WeitzmanTippingPoint(self.prod_fac)
+            self.eq = WeitzmanTippingPoint(self.prod_frac)
         elif self.damages_model == 'additive_output':
-            self.eq = AdditiveDamages(self.prod_fac)
+            self.eq = AdditiveDamages(self.prod_frac)
         elif self.damages_model == 'productivity_fraction':
-            self.eq = ProductivityFraction(self.prod_fac)
+            self.eq = ProductivityFraction(self.prod_frac)
         else:
-            self.eq = DamagesModel(self.prod_fac)
+            self.eq = DamagesModel(self.prod_frac)
         _epsilon = 1e-4
         if self.optimize and miu is None:
             D['miu'] = self.get_ipopt_mu()

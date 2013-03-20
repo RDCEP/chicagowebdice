@@ -1071,6 +1071,18 @@
       });
     });
 
+    $('select[name=damages_model]').change(function(e) {
+      console.log(1);
+      var prod_frac = $('input[name=prod_frac]');
+      if ($(this).val() == 'productivity_fraction') {
+        prod_frac.removeAttr('disabled');
+        prod_frac.parent().removeClass('disabled');
+      } else {
+        prod_frac.attr('disabled', 'disabled');
+        prod_frac.parent().addClass('disabled');
+      }
+    })
+
     window.onresize = function() {
       updateAllViewports();
     }

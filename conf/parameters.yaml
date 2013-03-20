@@ -251,7 +251,7 @@ advanced_tabs:
             machine_name: damages_model
             description: Way that climate change harms enter the economy
             options:
-              - name: DICE Damages to Gross Output
+              - name: DICE damages to output
                 machine_name: dice_output
               - name: Exponential mapping to output
                 machine_name: exponential_map
@@ -267,6 +267,14 @@ advanced_tabs:
         #      - name: Damages to Productivity
         #        machine_name: productivity
         #        description: Climate change reduces the rate of growth in global productivity
+          - name: Fraction of damages to productivity
+            machine_name: prod_frac
+            min: 0
+            max: .25
+            step: .05
+            precision: 2
+            default: .05
+            init_disabled: true
   - name: Economy
     sections:
       - name: Cost of reducing emissions
