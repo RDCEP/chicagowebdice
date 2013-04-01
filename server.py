@@ -143,9 +143,9 @@ def graphs():
         this_dice.optimize = True
     elif policy == 'carbon_tax':
         this_dice.carbon_tax = True
-    this_dice.loop()
+    D = this_dice.loop()
     this_dice.optimize = False
-    return this_dice.format_output()
+    return this_dice.format_output(D)
 
 @app.route('/csv', methods=['POST',])
 def csv_output():
