@@ -298,7 +298,7 @@ class Dice2007(Dice2007Params):
         return np.sum(self.data['vars']['utility_d'])
 
     def step(self, i, D, miu=None, deriv=False, epsilon=1e-3, f0=0.0,
-             scc=False):
+             scc_shock=False):
         """
         Single step for calculating endogenous variables
         ...
@@ -316,14 +316,20 @@ class Dice2007(Dice2007Params):
         None
         """
         ii = i - 1
-        damage_to_prod = False
         if i > 0:
-            pf = self.eq.get_production_factor(self.aa, D['temp_atmosphere'][i])
             D['sigma'][i] = D['sigma'][ii] / (1 - self.gsig[i])
-            D['al'][i] = pf * (D['al'][ii] / (1 - self.ga[ii]))
+            D['al'][i] = D['al'][ii] / (1 - self.ga[ii])
             D['capital'][i] = self.eq.capital(
                 D['capital'][ii], self.dk, D['investment'][ii]
             )
+        D['backstop'][i] = (
+            self._pback * D['sigma'][i] / self.expcost2
+        ) * (
+            (self.backrat - 1 + np.exp(-self.gback * self.t0)) / self.backrat
+        )
+        D['al'][i] *= self.eq.get_production_factor(
+            self.aa, D['temp_atmosphere'][i]
+        )
         D['gcost1'][i] = (self._pback * D['sigma'][i] / self.expcost2) * (
             (self.backrat - 1 + np.exp(-self.gback * i)) /
             self.backrat
@@ -356,7 +362,7 @@ class Dice2007(Dice2007Params):
         D['emissions_ind'][i] = self.eq.emissions_ind(
             D['sigma'][i], D['miu'][i], D['gross_output'][i]
         )
-        if scc is True:
+        if scc_shock is True:
             D['emissions_total'][i] = (
                 self.data['vars']['emissions_total'][i] + 1.0
             )
@@ -402,16 +408,6 @@ class Dice2007(Dice2007Params):
             D['gross_output'][i], D['miu'][i], D['gcost1'][i],
             self.expcost2, self.partfract[i]
         )
-        # D['damage'][i] = self.damage_eq(
-        #     D['gross_output'][i], D['temp_atmosphere'][i], self.aa,
-        #     damage_to_prod
-        # )
-        # D['output'][i] = self.eq.output(
-        #     D['gross_output'][i], D['damage'][i], D['abatement'][i]
-        # )
-        # D['consumption'][i] = self.eq.consumption(
-        #     D['output'][i], self.savings
-        # )
         D['damage'][i], D['output'][i], D['consumption'][i] = \
             self.eq.get_model_values(
                 D['gross_output'][i], D['temp_atmosphere'][i],
@@ -435,13 +431,14 @@ class Dice2007(Dice2007Params):
         if deriv:
             self.derivative['fprime'][i] = (D['utility_d'][i] - f0) / epsilon
             D['miu'] = self.data['vars']['miu']
+        return D
 
 
     def loop(self, miu=None, deriv=False, scc=True):
         """
         Loop through step function for calculating endogenous variables
         """
-        D = self.data['vars']
+        D = self.data['vars'].copy()
         if self.damages_model == 'exponential_map':
             self.eq = ExponentialMap(self.prod_frac)
         elif self.damages_model == 'tipping_point':
@@ -457,20 +454,22 @@ class Dice2007(Dice2007Params):
             D['miu'] = self.get_ipopt_mu()
             D['miu'][0] = self.miu_2005
         for i in range(self.tmax):
-            self.step(i, D, miu)
+            D = self.step(i, D, miu)
             if self.optimize and deriv:
                 f0 = np.atleast_1d(D['utility_d'][i])
                 self.step(
                     i, self.data['deriv'], miu=miu, epsilon=_epsilon,
                     deriv=True, f0=f0
                 )
+        if scc:
+            self.get_scc(D, miu)
         if self.optimize and miu is not None:
             if deriv:
                 return self.derivative['fprime'].transpose()
             else:
-                return self.data['vars']['utility_d'].sum()
-        if scc:
-            self.get_scc(D, miu)
+                # return self.data['vars']['utility_d'].sum()
+                return D['utility_d'].sum()
+        return D
 
     def get_scc(self, D, miu):
         """
@@ -494,19 +493,18 @@ class Dice2007(Dice2007Params):
         """
         x_range = 20
         for i in range(x_range):
-            fi = self.tmax - x_range
-            fy = i + fi
+            future_indices = self.tmax - x_range
+            future_indices_1 = i + future_indices
             S = self.data['vars'].copy()
             for j in range(self.tmax):
-                if j >= i:
-                    shock = False
-                    if j == i:
-                        shock = True
-                    self.step(j, S, miu=miu, scc=shock)
-            D['scc'][i] = np.sum(
-                ((self.data['vars']['consumption_pc'][i:fy] -
-                  S['consumption_pc'][i:fy]) * self.rr[:fi])
-            ) * 10000. * (12./44.)
+                shock = False
+                if j == i:
+                    shock = True
+                self.step(j, S, miu=miu, scc_shock=shock)
+            D['scc'][i] = np.sum(((
+                D['consumption_pc'][i:future_indices_1] -
+                S['consumption_pc'][i:future_indices_1]
+            ) * self.rr[:future_indices])).clip(0) * 10000. * (12./44.)
 
     def get_ipopt_mu(self):
         x0 = np.ones(self.tmax)
@@ -535,7 +533,7 @@ class Dice2007(Dice2007Params):
         x, zl, zu, obj, status = r.solve(x0)
         return x
 
-    def format_output(self):
+    def format_output(self, D):
         """Output text for Google Visualizer graph functions."""
         #TODO: This is sloppy as shit.
         output = ''
@@ -546,7 +544,7 @@ class Dice2007(Dice2007Params):
             try:
                 vv = getattr(self, v)
             except:
-                vv = getattr(self.data['vars'], v)
+                vv = getattr(D, v)
             output += '%s %s\n' % (v, ' '.join(map(str, list(vv))))
         return output
 
@@ -574,12 +572,22 @@ def verify_out(d, param=None, value=None):
                 f.write(str(round(d.data['vars'][_vars[v]][i], 2)) + t)
 
 if __name__ == '__main__':
-    d = Dice2007()
-    _params = [
-        't2xco2', 'a3', 'dela', 'dsig', 'expcost2', 'gback',
-        'backrat', 'popasym','dk', 'savings', 'fosslim', 'elasmu', 'prstp', 
-    ]
-    verify_out(d)
-    for p in _params:
-        verify_out(d, p, 'minimum')
-        verify_out(d, p, 'maximum')
+    def run_verification():
+        d = Dice2007()
+        _params = [
+            't2xco2', 'a3', 'dela', 'dsig', 'expcost2', 'gback',
+            'backrat', 'popasym','dk', 'savings', 'fosslim', 'elasmu', 'prstp',
+        ]
+        verify_out(d)
+        for p in _params:
+            verify_out(d, p, 'minimum')
+            verify_out(d, p, 'maximum')
+
+    def test_scc():
+        from datetime import datetime
+        now = datetime.strftime(datetime.now(), '%H%M%S')
+        d = Dice2007()
+        # d.damages_model = 'additive_output'
+        d.loop()
+
+    test_scc()

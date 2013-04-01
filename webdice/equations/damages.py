@@ -3,9 +3,9 @@ from default import Loop
 
 
 class DamagesModel(Loop):
-    def __init__(self, production_factor):
+    def __init__(self, prod_frac):
         Loop.__init__(self)
-        self.production_factor = production_factor
+        self.prod_frac = prod_frac
 
     def get_production_factor(self, aa, temp_atmosphere):
         return 1.
@@ -85,6 +85,6 @@ class ProductivityFraction(DamagesModel):
 
     def get_production_factor(self, aa, temp_atmosphere):
         dmg = aa[1] * temp_atmosphere ** aa[2]
-        return 1. - (dmg * self.production_factor)
+        return 1. - (dmg * self.prod_frac)
 
 
