@@ -322,11 +322,6 @@ class Dice2007(Dice2007Params):
             D['capital'][i] = self.eq.capital(
                 D['capital'][ii], self.dk, D['investment'][ii]
             )
-        D['backstop'][i] = (
-            self._pback * D['sigma'][i] / self.expcost2
-        ) * (
-            (self.backrat - 1 + np.exp(-self.gback * self.t0)) / self.backrat
-        )
         D['al'][i] *= self.eq.get_production_factor(
             self.aa, D['temp_atmosphere'][i]
         )
@@ -433,12 +428,10 @@ class Dice2007(Dice2007Params):
             D['miu'] = self.data['vars']['miu']
         return D
 
-
     def loop(self, miu=None, deriv=False, scc=True):
         """
         Loop through step function for calculating endogenous variables
         """
-        D = self.data['vars'].copy()
         if self.damages_model == 'exponential_map':
             self.eq = ExponentialMap(self.prod_frac)
         elif self.damages_model == 'tipping_point':
@@ -451,25 +444,25 @@ class Dice2007(Dice2007Params):
             self.eq = DamagesModel(self.prod_frac)
         _epsilon = 1e-4
         if self.optimize and miu is None:
-            D['miu'] = self.get_ipopt_mu()
-            D['miu'][0] = self.miu_2005
+            self.data['vars']['miu'] = self.get_ipopt_mu()
+            self.data['vars']['miu'][0] = self.miu_2005
         for i in range(self.tmax):
-            D = self.step(i, D, miu)
+            self.step(i, self.data['vars'], miu)
             if self.optimize and deriv:
-                f0 = np.atleast_1d(D['utility_d'][i])
+                f0 = np.atleast_1d(self.data['vars']['utility_d'][i])
                 self.step(
                     i, self.data['deriv'], miu=miu, epsilon=_epsilon,
                     deriv=True, f0=f0
                 )
         if scc:
-            self.get_scc(D, miu)
+            self.get_scc(self.data['vars'], miu)
         if self.optimize and miu is not None:
             if deriv:
                 return self.derivative['fprime'].transpose()
             else:
                 # return self.data['vars']['utility_d'].sum()
-                return D['utility_d'].sum()
-        return D
+                return self.data['vars']['utility_d'].sum()
+        return self.data['vars']
 
     def get_scc(self, D, miu):
         """
@@ -533,7 +526,7 @@ class Dice2007(Dice2007Params):
         x, zl, zu, obj, status = r.solve(x0)
         return x
 
-    def format_output(self, D):
+    def format_output(self):
         """Output text for Google Visualizer graph functions."""
         #TODO: This is sloppy as shit.
         output = ''
@@ -544,7 +537,7 @@ class Dice2007(Dice2007Params):
             try:
                 vv = getattr(self, v)
             except:
-                vv = getattr(D, v)
+                vv = getattr(self.data['vars'], v)
             output += '%s %s\n' % (v, ' '.join(map(str, list(vv))))
         return output
 
