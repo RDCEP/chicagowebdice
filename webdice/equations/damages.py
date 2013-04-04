@@ -49,7 +49,7 @@ class AdditiveDamages(DamagesModel):
     def consumption(self, output, savings, a_gross_output=None,
                     a_abatement=None, a_temp_atmosphere=None, a_aa=None):
         cnd = self.consumption_no_damage(a_gross_output, a_abatement, savings)
-        return cnd / (1 + cnd * 6.3745e-5 * a_temp_atmosphere ** a_aa[2])
+        return cnd / (1 + cnd * 6.3842e-6 * a_temp_atmosphere ** a_aa[2])
 
     def output(self, gross_output, damage, abatement, a_savings=None,
                a_temp_atmosphere=None, a_aa=None):
@@ -81,6 +81,7 @@ class ProductivityFraction(DamagesModel):
         damage_to_prod = 1. - (
             (1. - aa[1] * temp_atmosphere ** aa[2]) / d
         )
+        # print (d, damage_to_prod, self.prod_frac),
         return gross_output * damage_to_prod
 
     def get_production_factor(self, aa, temp_atmosphere):
