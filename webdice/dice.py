@@ -322,9 +322,9 @@ class Dice2007(Dice2007Params):
             D['capital'][i] = self.eq.capital(
                 D['capital'][ii], self.dk, D['investment'][ii]
             )
-        D['al'][i] *= self.eq.get_production_factor(
-            self.aa, D['temp_atmosphere'][i]
-        )
+            D['al'][i] *= self.eq.get_production_factor(
+                self.aa, D['temp_atmosphere'][ii]
+            )
         D['gcost1'][i] = (self._pback * D['sigma'][i] / self.expcost2) * (
             (self.backrat - 1 + np.exp(-self.gback * i)) /
             self.backrat
@@ -357,14 +357,11 @@ class Dice2007(Dice2007Params):
         D['emissions_ind'][i] = self.eq.emissions_ind(
             D['sigma'][i], D['miu'][i], D['gross_output'][i]
         )
+        D['emissions_total'][i] = self.eq.emissions_total(
+            D['emissions_ind'][i], self.etree[i]
+        )
         if scc_shock is True:
-            D['emissions_total'][i] = (
-                self.data['vars']['emissions_total'][i] + 1.0
-            )
-        else:
-            D['emissions_total'][i] = self.eq.emissions_total(
-                D['emissions_ind'][i], self.etree[i]
-            )
+            D['emissions_total'][i] += 1.
         if i > 0:
             D['carbon_emitted'][i] = (
                 D['carbon_emitted'][ii] + D['emissions_total'][i] * 10
@@ -455,7 +452,7 @@ class Dice2007(Dice2007Params):
                     deriv=True, f0=f0
                 )
         if scc:
-            self.get_scc(self.data['vars'], miu)
+            self.get_scc(miu)
         if self.optimize and miu is not None:
             if deriv:
                 return self.derivative['fprime'].transpose()
@@ -464,7 +461,7 @@ class Dice2007(Dice2007Params):
                 return self.data['vars']['utility_d'].sum()
         return self.data['vars']
 
-    def get_scc(self, D, miu):
+    def get_scc(self, miu):
         """
         Calculate social cost of carbon
         ...
@@ -488,15 +485,15 @@ class Dice2007(Dice2007Params):
         for i in range(x_range):
             future_indices = self.tmax - x_range
             future_indices_1 = i + future_indices
-            S = self.data['vars'].copy()
-            for j in range(self.tmax):
+            self.data['scc'] = self.data['vars'].copy()
+            for j in range(i, future_indices_1):
                 shock = False
                 if j == i:
                     shock = True
-                self.step(j, S, miu=miu, scc_shock=shock)
-            D['scc'][i] = np.sum(((
-                D['consumption_pc'][i:future_indices_1] -
-                S['consumption_pc'][i:future_indices_1]
+                self.step(j, self.data['scc'], miu=None, scc_shock=shock)
+            self.data['vars']['scc'][i] = np.sum(((
+                self.data['vars']['consumption_pc'][i:future_indices_1] -
+                self.data['scc']['consumption_pc'][i:future_indices_1]
             ) * self.rr[:future_indices])).clip(0) * 10000. * (12./44.)
 
     def get_ipopt_mu(self):
