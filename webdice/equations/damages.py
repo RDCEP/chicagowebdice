@@ -40,7 +40,7 @@ class ExponentialMap(DamagesModel):
 
 class AdditiveDamages(DamagesModel):
     def output_no_damage(self, gross_output, abatement):
-        return gross_output * (1 - (abatement / gross_output))
+        return gross_output - abatement
 
     def consumption_no_damage(self, gross_output, abatement, savings):
         ond = self.output_no_damage(gross_output, abatement)
@@ -48,8 +48,11 @@ class AdditiveDamages(DamagesModel):
 
     def consumption(self, output, savings, a_gross_output=None,
                     a_abatement=None, a_temp_atmosphere=None, a_aa=None):
+        Ct0 = 6.3745142949735118e-05
+        C2d = 2.2337206076208615e-05
+        C3d = 1.0102046050195233e-05
         cnd = self.consumption_no_damage(a_gross_output, a_abatement, savings)
-        return cnd / (1 + cnd * 6.3842e-6 * a_temp_atmosphere ** a_aa[2])
+        return cnd / (1 + cnd * Ct0 * a_temp_atmosphere ** a_aa[2])
 
     def output(self, gross_output, damage, abatement, a_savings=None,
                a_temp_atmosphere=None, a_aa=None):
