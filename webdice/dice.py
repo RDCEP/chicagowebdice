@@ -167,19 +167,6 @@ class Dice2007(Dice2007Params):
         )
 
     @property
-    def backstop(self):
-        """
-        Backstop price
-        ...
-        Returns
-        -------
-        array : pback * ((backrat - 1 + exp(-gback * t)) / backrat
-        """
-        return self._pback * (
-            (self.backrat - 1 + np.exp(-self.gback * self.t0)) /
-            self.backrat)
-
-    @property
     def etree(self):
         """
         E_land, Emissions from deforestation
@@ -325,11 +312,11 @@ class Dice2007(Dice2007Params):
                 self.aa, D['temp_atmosphere'][ii]
             )
         D['backstop'][i] = (
-                               self._pback * D['sigma'][i] / self.expcost2
-                           ) * (
-                               (self.backrat - 1 + np.exp(-self.gback * i)) /
-                               self.backrat
-                           )
+            self._pback * D['sigma'][i] / self.expcost2
+        ) * (
+            (self.backrat - 1 + np.exp(-self.gback * i)) /
+            self.backrat
+        )
         D['gcost1'][i] = (self._pback * D['sigma'][i] / self.expcost2) * (
             (self.backrat - 1 + np.exp(-self.gback * i)) /
             self.backrat
