@@ -27,7 +27,7 @@ class DiceDamages(DamagesModel):
         return gross_output * (1 - 1 / (
             1 + aa[0] * temp_atmosphere + (
                 aa[1] * temp_atmosphere ** aa[2]
-        )))
+            )))
 
 
 class ExponentialMap(DamagesModel):
@@ -50,9 +50,10 @@ class AdditiveDamages(DamagesModel):
                     a_abatement=None, a_temp_atmosphere=None, a_aa=None):
         Ct0 = 6.3745142949735118e-05
         C2d = 2.2337206076208615e-05
+        C25d = 1.4797266368778764e-05
         C3d = 1.0102046050195233e-05
         cnd = self.consumption_no_damage(a_gross_output, a_abatement, savings)
-        return cnd / (1 + cnd * Ct0 * a_temp_atmosphere ** a_aa[2])
+        return cnd / (1 + cnd * C25d * a_temp_atmosphere ** a_aa[2])
 
     def output(self, gross_output, damage, abatement, a_savings=None,
                a_temp_atmosphere=None, a_aa=None):
@@ -74,7 +75,7 @@ class WeitzmanTippingPoint(DamagesModel):
         return gross_output * (1 - 1 / (
             1 + (temp_atmosphere / 20.46) ** 2 + (
                 (temp_atmosphere / 6.081) ** 6.754
-        )))
+            )))
 
 
 class ProductivityFraction(DamagesModel):
@@ -82,13 +83,10 @@ class ProductivityFraction(DamagesModel):
                a_savings=0):
         d = self.get_production_factor(aa, temp_atmosphere)
         damage_to_prod = 1. - (
-            (1. - aa[1] * temp_atmosphere ** aa[2]) / d
+            (1. - (1. / (1. + aa[1] * temp_atmosphere ** aa[2]))) / d
         )
-        # print (d, damage_to_prod, self.prod_frac),
-        return gross_output * damage_to_prod
+        return gross_output * (1. - damage_to_prod)
 
     def get_production_factor(self, aa, temp_atmosphere):
-        dmg = aa[1] * temp_atmosphere ** aa[2]
+        dmg = 1. / (1. + aa[1] * temp_atmosphere ** aa[2])
         return 1. - (dmg * self.prod_frac)
-
-

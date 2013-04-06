@@ -1,5 +1,5 @@
 import numpy as np
-import pyipopt
+# import pyipopt
 import pandas as pd
 try:
     import matplotlib.pyplot as plt
@@ -82,7 +82,7 @@ class Dice2007(Dice2007Params):
             "e2050", "e2100", "e2150", "p2050", "p2100", "p2150",
             "fosslim", "scale1", "scale2",
             "tmax", "numScen", "savings", "miu_2005", 'backstop',
-        ]
+            ]
 
     @property
     def user_params(self):
@@ -91,7 +91,7 @@ class Dice2007(Dice2007Params):
             "p2050", "p2100", "p2150",
             'popasym', 'dk', 'savings', 'fosslim', 'expcost2', 'gback',
             'backrat', 'elasmu', 'prstp',
-        ]
+            ]
 
     @property
     def vars(self):
@@ -103,8 +103,8 @@ class Dice2007(Dice2007Params):
             'investment', 'carbon_emitted', 'consumption',
             'consumption_pc', 'utility', 'utility_d',
             'al', 'gcost1', 'sigma', 'miu', 'backstop', 'l', 'tax_rate',
-            'scc',
-        ]
+            'scc', 'consumption_discount',
+            ]
 
     @property
     def aa(self):
@@ -140,7 +140,7 @@ class Dice2007(Dice2007Params):
         array : (exp(pop(0) * t) - 1) / exp(gpop(0) * t)
         """
         return self._pop0 * (1 - self.gfacpop) + self.gfacpop * \
-            self.popasym
+               self.popasym
 
     @property
     def ga(self):
@@ -162,9 +162,8 @@ class Dice2007(Dice2007Params):
         -------
         array : gsigma * exp(-dsig * 10 * t - disg2 * 10 * t^2)
         """
-        return self._gsigma * np.exp(-(
-            self.dsig / 100) * 10 * self.t0 - self.dsig2 * 10 *
-            (self.t0 ** 2)
+        return self._gsigma * np.exp(
+            -(self.dsig / 100) * 10 * self.t0 - self.dsig2 * 10 * (self.t0 ** 2)
         )
 
     @property
@@ -261,7 +260,7 @@ class Dice2007(Dice2007Params):
         return self.fco22x / self.t2xco2
 
     @property
-    def tax_rate(self):
+    def user_tax_rate(self):
         """
         Carbon tax rate
         ...
@@ -278,8 +277,8 @@ class Dice2007(Dice2007Params):
                 c[2] + ((c[3] - c[2]) / 5 * np.arange(5)),
                 c[3] + ((c[3] - c[2]) / 5 * np.arange(45)),
             ))
-        return self.backstop * 1000 * self.data['vars']['miu'] ** (
-            self.expcost2 - 1)
+        else:
+            return False
 
     @property
     def output_abate(self):
@@ -291,7 +290,7 @@ class Dice2007(Dice2007Params):
         float : gcost1 * miu**expcost2
         """
         return self.data['vars']['gcost1'] * self.data['vars']['miu'] ** \
-            self.expcost2
+               self.expcost2
 
     @property
     def welfare(self):
@@ -325,6 +324,12 @@ class Dice2007(Dice2007Params):
             D['al'][i] *= self.eq.get_production_factor(
                 self.aa, D['temp_atmosphere'][ii]
             )
+        D['backstop'][i] = (
+                               self._pback * D['sigma'][i] / self.expcost2
+                           ) * (
+                               (self.backrat - 1 + np.exp(-self.gback * i)) /
+                               self.backrat
+                           )
         D['gcost1'][i] = (self._pback * D['sigma'][i] / self.expcost2) * (
             (self.backrat - 1 + np.exp(-self.gback * i)) /
             self.backrat
@@ -349,11 +354,14 @@ class Dice2007(Dice2007Params):
                     )
                 elif self.carbon_tax:
                     D['miu'][i] = np.power(
-                        self.tax_rate[i] / (self.backstop[i] * 1000),
+                        self.user_tax_rate[i] / (D['backstop'][i] * 1000),
                         1. / (self.expcost2 - 1)
                     )
                 else:
                     D['miu'][i] = 0.
+        if self.user_tax_rate is not False:
+            D['tax_rate'][i] = D['backstop'][i] * 1000 * D['miu'][i] ** (
+                self.expcost2 - 1)
         D['emissions_ind'][i] = self.eq.emissions_ind(
             D['sigma'][i], D['miu'][i], D['gross_output'][i]
         )
@@ -408,6 +416,11 @@ class Dice2007(Dice2007Params):
         D['consumption_pc'][i] = self.eq.consumption_pc(
             D['consumption'][i], self.l[i]
         )
+        if i > 0:
+            D['consumption_discount'][i] = self.eq.consumption_discount(
+                self.prstp, self.elasmu, D['consumption_pc'][ii],
+                D['consumption_pc'][i]
+            ) ** (10 * i)
         if i == 0:
             D['investment'][i] = self.savings * self._q0
         else:
@@ -482,6 +495,7 @@ class Dice2007(Dice2007Params):
         shock : boolean, whether to 'shock' the emissions of the current period
         """
         x_range = 20
+        # _SCC = list([] for x in xrange(x_range))
         for i in range(x_range):
             future_indices = self.tmax - x_range
             future_indices_1 = i + future_indices
@@ -491,10 +505,16 @@ class Dice2007(Dice2007Params):
                 if j == i:
                     shock = True
                 self.step(j, self.data['scc'], miu=None, scc_shock=shock)
-            self.data['vars']['scc'][i] = np.sum(((
+            con_diff = (
                 self.data['vars']['consumption_pc'][i:future_indices_1] -
                 self.data['scc']['consumption_pc'][i:future_indices_1]
-            ) * self.rr[:future_indices])).clip(0) * 10000. * (12./44.)
+            ).clip(0)
+            # _SCC[i] = con_diff
+            self.data['vars']['scc'][i] = np.sum(
+                con_diff.values *
+                self.data['vars']['consumption_discount'][:future_indices].values
+            ).clip(0) * 10000. * (12./44.)
+            # print _SCC
 
     def get_ipopt_mu(self):
         x0 = np.ones(self.tmax)
@@ -552,7 +572,7 @@ def verify_out(d, param=None, value=None):
             'participation', 'participation_markup', 'damage',
             'abatement', 'consumption', 'consumption_pc', 'utility',
             'utility_d', 'pref_fac',
-        ]
+            ]
         for i in range(d.tmax):
             for v in range(len(_vars)):
                 if v + 1 == len(_vars):
@@ -567,7 +587,7 @@ if __name__ == '__main__':
         _params = [
             't2xco2', 'a3', 'dela', 'dsig', 'expcost2', 'gback',
             'backrat', 'popasym','dk', 'savings', 'fosslim', 'elasmu', 'prstp',
-        ]
+            ]
         verify_out(d)
         for p in _params:
             verify_out(d, p, 'minimum')
@@ -580,4 +600,40 @@ if __name__ == '__main__':
         # d.damages_model = 'additive_output'
         d.loop()
 
-    test_scc()
+    # test_scc()
+    def test():
+        d = Dice2007()
+        d.prod_frac = .01
+        # d.eq = DamagesModel(1.)
+        d.eq = ProductivityFraction(d.prod_frac)
+        parameter = 'temp_atmosphere'
+        # parameter = 'output'
+        parameter = 'gross_output'
+        # parameter = 'damage'
+        # parameter = 'al'
+        # parameter = 'consumption'
+        pf1 = np.linspace(1.,1.,60)
+        pf2 = np.linspace(1.,1.,60)
+        dmg1 = np.linspace(1.,1.,60)
+        dmg2 = np.linspace(1.,1.,60)
+        D = d.data.vars
+        for i in range(60):
+            D = d.step(i, D)
+            if i > 0:
+                pf1[i] = d.eq.get_production_factor(d.aa, D['temp_atmosphere'][i])
+        x1 = D[parameter].values.copy()
+
+        D = d.data.scc
+        for i in range(60):
+            sh = False
+            if i == 0:
+                sh = True
+            D = d.step(i, D, scc_shock=sh)
+            if i > 0: pf2[i] = d.eq.get_production_factor(d.aa, D['temp_atmosphere'][i])
+        x2 = D[parameter].values.copy()
+
+        print x2 - x1
+        # print np.array(pf2) - np.array(pf1)
+        # print pf2 - pf1
+        # print D['rf'].values
+        # print DD

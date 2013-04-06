@@ -391,12 +391,21 @@ measurements:
     options:
       - name: Total Factor Productivity
         machine_name: al
+        graphs:
+          - name: economy
+            location: topleft
       - name: Clean Energy Costs
         machine_name: backstop
         unit: Thousands $USD / ton of CO2
+        graphs:
+          - name: economy
+            location: topright
       - name: Carbon Intensity
         machine_name: sigma
         unit: tons of CO2 / 1000 $USD
+        graphs:
+          - name: economy
+            location: bottomleft
       - name: Labor Supply
         machine_name: l
         unit: Millions
@@ -413,15 +422,12 @@ measurements:
       - name: Total Consumption
         machine_name: consumption
         unit: Trillions $USD / Year
-        graphs:
-          - name: economy
-            location: topright
       - name: Damages
         machine_name: damage
         unit: Trillions $USD / Year
         graphs:
           - name: economy
-            location: topleft
+            location: bottomright
       - name: Total Emissions per Year
         machine_name: emissions_total
         unit: Gt of Carbon / 10 yr
@@ -438,30 +444,36 @@ measurements:
       - name: Capital Stock
         machine_name: capital
         unit: Trillions $USD
-        graphs:
-          - name: economy
-            location: bottomleft
       - name: Utility Discounted
         machine_name: utility_d
       - name: Utility
         machine_name: utility
-        graphs:
-          - name: economy
-            location: bottomright
       - name: Social Cost of Carbon
         machine_name: scc
         unit: '$'
+        graphs:
+          - name: policy
+            location: bottomleft
   - name: Emissions Controls
     options:
       - name: Abatement
         machine_name: abatement
         unit: Trillions $USD / Year
+        graphs:
+          - name: policy
+            location: topright
       - name: Emissions Control Rate
         machine_name: miu
       - name: Abatement Cost as a Percentage of Output
         machine_name: output_abate
+        graphs:
+          - name: policy
+            location: bottomright
       - name: Tax Rate
         machine_name: tax_rate
+        graphs:
+          - name: policy
+            location: topleft
   - name: Carbon Cycle
     options:
       - name: Carbon Mass in Atmosphere
@@ -496,9 +508,42 @@ measurements:
         graphs:
           - name: climate
             location: bottomright
+  - name: Test
+    options:
+      - name: Consumption Discount
+        machine_name: consumption_discount
+
 
 parameter_help:
   t2xco2: >
-      TKTK
+      Climate Sensitivity estimates the extent to which the global mean
+      temperature increases when we add greenhouse gasses to the atmosphere.
+      This metric is defined as the temperature increase from doubling the
+      carbon dioxide concentration in the atmosphere relative to the
+      concentration prior to the industrial revolution.  By adjusting the
+      slider you can discover how different levels of temperature increases
+      affect economic activities and how these economic activities in turn
+      effect climate.
 
+  a3: >
+    This model assumes that an increase in global mean temperature will harm
+    the economy.  By adjusting this slider, you can not only discover the
+    various degrees to which increasing temperature can affect the economy,
+    but you can also estimate how these economic damages will in turn affect
+    the climate.
+
+  dela: >
+    This metric represents the decline in the rate of growth of productivity
+    over time.  This model assumes that the ability to produce goods with a
+    given amount of capital and labor increases over time.  However, the rate
+    at which growth of production increases is decreasing.  Faster growth
+    indicates optimism in the continued ability to produce goods efficiently.
+    Slower growth indicates that productivity will decrease over time.
+
+  dsig: >
+    Energy intensity is the emissions per unit of economic output.  As energy
+    efficiency increases energy intensity decreases; with increased efficiency
+    less energy is used to produce output, resulting in fewer emissions.
+    Adjust the slider to discover how energy intensity can affect future
+    emissions and their economic impacts.
 

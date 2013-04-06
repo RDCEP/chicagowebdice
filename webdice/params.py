@@ -155,13 +155,16 @@ class Dice2007Params(object):
             'utility_d': np.zeros(self.tmax),
             'pref_fac': np.ones(self.tmax),
             'scc': np.ones(self.tmax),
-        })
+            'consumption_discount': np.ones(self.tmax),
+            'backstop': np.ones(self.tmax),
+            'tax_rate': np.zeros(self.tmax),
+            })
         self.data = pd.Panel({
             'vars': data,
             'deriv': data,
             'scc': data,
-        })
+            })
         self.derivative = pd.DataFrame({
             'fprime': np.empty(self.tmax),
-        })
+            })
         self.hessian = pd.Series(np.empty(self.tmax))

@@ -86,6 +86,14 @@ class Loop(object):
         """c, Per capita consumption, thousands $USD"""
         return 1000 * consumption / l
 
+    def consumption_discount(self, prstp, elasmu, c0, c1):
+        """Discount rate for consumption"""
+        return 1 / (
+            1 + (prstp * 100 + elasmu * (
+                (c1 - c0) / c0
+            ) * 10) / 100
+        )
+
     def utility(self, consumption_pc, elasmu, l):
         """U, Period utility function"""
         return (1 / (1 - elasmu + .000001)) * consumption_pc ** (1 - elasmu) + 1
