@@ -155,6 +155,7 @@ class Dice2007Params(object):
             'utility_d': np.zeros(self.tmax),
             'pref_fac': np.ones(self.tmax),
             'scc': np.ones(self.tmax),
+            'rf': np.ones(self.tmax),
         })
         self.data = pd.Panel({
             'vars': data,
