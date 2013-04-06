@@ -408,6 +408,15 @@ class Dice2007(Dice2007Params):
         D['consumption_pc'][i] = self.eq.consumption_pc(
             D['consumption'][i], self.l[i]
         )
+        if i > 0:
+            _g_dot = (
+                (D['consumption_pc'][i] - D['consumption_pc'][ii]) /
+                D['consumption_pc'][i]
+            ) * 10
+            print _g_dot
+            D['rf'][i] = (
+                1 / (1 + (self.prstp * 100 + self.elasmu * _g_dot) / 100) ** (10 * i)
+            )
         if i == 0:
             D['investment'][i] = self.savings * self._q0
         else:
@@ -491,10 +500,14 @@ class Dice2007(Dice2007Params):
                 if j == i:
                     shock = True
                 self.step(j, self.data['scc'], miu=None, scc_shock=shock)
-            self.data['vars']['scc'][i] = np.sum(((
+            con_diff = (
                 self.data['vars']['consumption_pc'][i:future_indices_1] -
                 self.data['scc']['consumption_pc'][i:future_indices_1]
-            ) * self.rr[:future_indices])).clip(0) * 10000. * (12./44.)
+            )
+            self.data['vars']['scc'][i] = np.sum(
+                con_diff.values *
+                self.data['vars']['rf'][:future_indices].values
+            ).clip(0) * 10000. * (12./44.)
 
     def get_ipopt_mu(self):
         x0 = np.ones(self.tmax)
