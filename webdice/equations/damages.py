@@ -25,9 +25,8 @@ class DiceDamages(DamagesModel):
     def damage(self, gross_output, temp_atmosphere, aa, a_abatement=None,
                a_savings=0):
         return gross_output * (1 - 1 / (
-            1 + aa[0] * temp_atmosphere + (
-                aa[1] * temp_atmosphere ** aa[2]
-            )))
+            1 + aa[0] * temp_atmosphere + aa[1] * temp_atmosphere ** aa[2]
+        ))
 
 
 class ExponentialMap(DamagesModel):
@@ -81,12 +80,16 @@ class WeitzmanTippingPoint(DamagesModel):
 class ProductivityFraction(DamagesModel):
     def damage(self, gross_output, temp_atmosphere, aa, a_abatement=None,
                a_savings=0):
-        d = self.get_production_factor(aa, temp_atmosphere)
-        damage_to_prod = 1. - (
-            (1. - (1. / (1. + aa[1] * temp_atmosphere ** aa[2]))) / d
+        fD = self.get_production_factor(aa, temp_atmosphere)
+        damage_to_prod = 1 - (
+            (1 - 1 / (
+                1 + aa[0] * temp_atmosphere + aa[1] * temp_atmosphere ** aa[2]
+            )) / fD
         )
         return gross_output * (1. - damage_to_prod)
 
     def get_production_factor(self, aa, temp_atmosphere):
-        dmg = 1. / (1. + aa[1] * temp_atmosphere ** aa[2])
-        return 1. - (dmg * self.prod_frac)
+        D = 1 - 1 / (
+            1 + aa[0] * temp_atmosphere + aa[1] * temp_atmosphere ** aa[2]
+        )
+        return 1 - self.prod_frac * D
