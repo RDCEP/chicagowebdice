@@ -60,8 +60,9 @@ class Loop(object):
     def damage(self, gross_output, temp_atmosphere, aa, a_abatement=None,
                a_savings=None):
         """Omega, Damage, trillions $USD"""
-        return gross_output - gross_output / (
-            1 + aa[0] * temp_atmosphere + aa[1] * temp_atmosphere ** aa[2])
+        return gross_output * (1 - 1 / (
+            1 + aa[0] * temp_atmosphere + aa[1] * temp_atmosphere ** aa[2]
+        ))
 
     def abatement(self, gross_output, miu, gcost1, expcost2, partfract):
         """Lambda, Abatement costs, trillions $USD"""
@@ -70,8 +71,9 @@ class Loop(object):
 
     def output(self, gross_output, damage, abatement, a_savings=None,
                a_temp_atmosphere=None, a_aa=None):
-        return gross_output * ((1 - abatement / gross_output) /
-                               (gross_output / (gross_output - damage)))
+        return (
+            (gross_output - abatement) * (gross_output - damage)
+        ) / gross_output
 
     def investment(self, savings, output):
         """I, Investment, trillions $USD"""
@@ -80,19 +82,22 @@ class Loop(object):
     def consumption(self, output, savings, a_gross_output=None,
                     a_abatement=None, a_temp_atmosphere=None, a_aa=None):
         """C, Consumption, trillions $USD"""
-        return output - (savings * output)
+        return output * (1.0 - savings)
 
     def consumption_pc(self, consumption, l):
         """c, Per capita consumption, thousands $USD"""
         return 1000 * consumption / l
 
-    def consumption_discount(self, prstp, elasmu, c0, c1):
+    def consumption_discount(self, prstp, elasmu, c0, c1, i):
         """Discount rate for consumption"""
+        # return (prstp * 100 + elasmu * (
+        #         (c1 - c0) / c0
+        #     ) * 10) / 100
         return 1 / (
             1 + (prstp * 100 + elasmu * (
                 (c1 - c0) / c0
             ) * 10) / 100
-        )
+        ) ** (10 * i)
 
     def utility(self, consumption_pc, elasmu, l):
         """U, Period utility function"""
