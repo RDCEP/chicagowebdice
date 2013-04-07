@@ -478,31 +478,29 @@ class Dice2007(Dice2007Params):
         Internal Variables
         ------------------
         x_range : integer, number of periods in output graph
-        fi : integer, (future indices) number of periods to calculate future consumption
-        fy : integer, (final year) last period of to calculate consumption
+        future_indices : integer, number of periods to
+            calculate future consumption
+        final_year : integer, last period of to calculate consumption
         shock : boolean, whether to 'shock' the emissions of the current period
         """
         x_range = 20
-        # _SCC = list([] for x in xrange(x_range))
         for i in range(x_range):
             future_indices = self.tmax - x_range
-            future_indices_1 = i + future_indices
+            final_year = i + future_indices
             self.data['scc'] = self.data['vars'].copy()
-            for j in range(i, future_indices_1):
+            for j in range(i, final_year):
                 shock = False
                 if j == i:
                     shock = True
                 self.step(j, self.data['scc'], miu=None, scc_shock=shock)
             con_diff = (
-                self.data['vars']['consumption_pc'][i:future_indices_1] -
-                self.data['scc']['consumption_pc'][i:future_indices_1]
+                self.data['vars']['consumption_pc'][i:final_year] -
+                self.data['scc']['consumption_pc'][i:final_year]
             ).clip(0)
-            # _SCC[i] = con_diff
             self.data['vars']['scc'][i] = np.sum(
                 con_diff.values *
                 self.data['vars']['consumption_discount'][:future_indices].values
             ).clip(0) * 100000. * (12./44.)
-            # print _SCC
 
     def get_ipopt_mu(self):
         x0 = np.ones(self.tmax)
