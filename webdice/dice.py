@@ -28,8 +28,9 @@ class Dice2007(Dice2007Params):
     vars : list
         Names of all DICE variables
     aa : array
+        Values for damages function
     gfacpop: array
-        Popula-ion growth factor
+        Population growth factor
     l : array
         Labor or population
     ga : array
@@ -48,11 +49,21 @@ class Dice2007(Dice2007Params):
         Participation in treaty
     forcoth : array
         Forcing for GHGs
+    output_abate : array
+        Abatement as a percentage of output
+    user_tax_rate : array or boolean
+        Array of user-determined annual tax rates, or False
 
     Methods
     -------
     loop()
+        Initiate step() loop, get_ipopt_mu(), and scc()
+    step()
         Step function for calculating endogenous variables
+    get_scc()
+        Call loop() to run calculations for SCC
+    get_ipopt_mu()
+        Interface with pyipopt to optimize miu
     format_output()
         Output text for Google Visualizer graph functions
     """
@@ -458,7 +469,6 @@ class Dice2007(Dice2007Params):
             if deriv:
                 return self.derivative['fprime'].transpose()
             else:
-                # return self.data['vars']['utility_d'].sum()
                 return self.data['vars']['utility_d'].sum()
         return self.data['vars']
 
