@@ -107,6 +107,8 @@ class Dice2007Params(object):
         gcost1 = np.zeros(self.tmax)
         sigma = np.empty(self.tmax)
         sigma[:] = self._sig0
+        backstop = np.empty(self.tmax)
+        backstop[:] = self._pback
         al = np.empty(self.tmax)
         al[:] = self._a0
         capital = np.empty(self.tmax)
@@ -156,7 +158,7 @@ class Dice2007Params(object):
             'pref_fac': np.ones(self.tmax),
             'scc': np.ones(self.tmax),
             'consumption_discount': np.ones(self.tmax),
-            'backstop': np.ones(self.tmax),
+            'backstop': backstop,
             'tax_rate': np.zeros(self.tmax),
             })
         self.data = pd.Panel({
