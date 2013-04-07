@@ -44,10 +44,11 @@ class Loop(object):
         #     ((mass_atmosphere + ma_next) / 2) + .000001
         # ) / matPI) / np.log(2)) + forcoth
 
-    def temp_atmosphere(self, temp_atmosphere, temp_lower, forcing, lam, c):
+    def temp_atmosphere(self, temp_atmosphere, temp_lower, forcing, c,
+                        fco22x, t2xco2):
         """T_AT, Temperature of atmosphere, degrees C"""
         return temp_atmosphere + c[0] * (
-            forcing - lam * temp_atmosphere - c[2] * (
+            forcing - (fco22x / t2xco2) * temp_atmosphere - c[2] * (
                 temp_atmosphere - temp_lower
             )
         )

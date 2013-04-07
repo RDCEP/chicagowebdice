@@ -256,10 +256,6 @@ class Dice2007(Dice2007Params):
         ))
 
     @property
-    def lam(self):
-        return self.fco22x / self.t2xco2
-
-    @property
     def user_tax_rate(self):
         """
         Carbon tax rate
@@ -398,7 +394,7 @@ class Dice2007(Dice2007Params):
         if i > 0:
             D['temp_atmosphere'][i] = self.eq.temp_atmosphere(
                 D['temp_atmosphere'][ii], D['temp_lower'][ii],
-                D['forcing'][i], self.lam, self.cc
+                D['forcing'][i], self.fco22x, self.t2xco2, self.cc
             )
             D['temp_lower'][i] = self.eq.temp_lower(
                 D['temp_atmosphere'][ii], D['temp_lower'][ii], self.cc
