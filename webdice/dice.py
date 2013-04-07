@@ -1,6 +1,8 @@
 import numpy as np
-# import pyipopt
-import pandas as pd
+try:
+    import pyipopt
+except ImportError:
+    print 'No ipopt'
 try:
     import matplotlib.pyplot as plt
     from matplotlib import rcParams
@@ -180,7 +182,7 @@ class Dice2007(Dice2007Params):
     @property
     def rr(self):
         """
-        R, Average utility social discount rate
+        R, Average utility discount rate
         ...
         Returns
         -------
@@ -314,8 +316,7 @@ class Dice2007(Dice2007Params):
         D['backstop'][i] = (
             self._pback * D['sigma'][i] / self.expcost2
         ) * (
-            (self.backrat - 1 + np.exp(-self.gback * i)) /
-            self.backrat
+            (self.backrat - 1 + np.exp(-self.gback * i)) / self.backrat
         )
         D['gcost1'][i] = (self._pback * D['sigma'][i] / self.expcost2) * (
             (self.backrat - 1 + np.exp(-self.gback * i)) /
@@ -406,8 +407,8 @@ class Dice2007(Dice2007Params):
         if i > 0:
             D['consumption_discount'][i] = self.eq.consumption_discount(
                 self.prstp, self.elasmu, D['consumption_pc'][ii],
-                D['consumption_pc'][i]
-            ) ** (10 * i)
+                D['consumption_pc'][i], i
+            )
         if i == 0:
             D['investment'][i] = self.savings * self._q0
         else:
@@ -500,7 +501,7 @@ class Dice2007(Dice2007Params):
             self.data['vars']['scc'][i] = np.sum(
                 con_diff.values *
                 self.data['vars']['consumption_discount'][:future_indices].values
-            ).clip(0) * 10000. * (12./44.)
+            ).clip(0) * 100000. * (12./44.)
             # print _SCC
 
     def get_ipopt_mu(self):
@@ -579,48 +580,3 @@ if __name__ == '__main__':
         for p in _params:
             verify_out(d, p, 'minimum')
             verify_out(d, p, 'maximum')
-
-    def test_scc():
-        from datetime import datetime
-        now = datetime.strftime(datetime.now(), '%H%M%S')
-        d = Dice2007()
-        # d.damages_model = 'additive_output'
-        d.loop()
-
-    # test_scc()
-    def test():
-        d = Dice2007()
-        d.prod_frac = .01
-        # d.eq = DamagesModel(1.)
-        d.eq = ProductivityFraction(d.prod_frac)
-        parameter = 'temp_atmosphere'
-        # parameter = 'output'
-        parameter = 'gross_output'
-        # parameter = 'damage'
-        # parameter = 'al'
-        # parameter = 'consumption'
-        pf1 = np.linspace(1.,1.,60)
-        pf2 = np.linspace(1.,1.,60)
-        dmg1 = np.linspace(1.,1.,60)
-        dmg2 = np.linspace(1.,1.,60)
-        D = d.data.vars
-        for i in range(60):
-            D = d.step(i, D)
-            if i > 0:
-                pf1[i] = d.eq.get_production_factor(d.aa, D['temp_atmosphere'][i])
-        x1 = D[parameter].values.copy()
-
-        D = d.data.scc
-        for i in range(60):
-            sh = False
-            if i == 0:
-                sh = True
-            D = d.step(i, D, scc_shock=sh)
-            if i > 0: pf2[i] = d.eq.get_production_factor(d.aa, D['temp_atmosphere'][i])
-        x2 = D[parameter].values.copy()
-
-        print x2 - x1
-        # print np.array(pf2) - np.array(pf1)
-        # print pf2 - pf1
-        # print D['rf'].values
-        # print DD
