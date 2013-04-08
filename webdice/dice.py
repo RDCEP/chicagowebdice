@@ -51,8 +51,8 @@ class Dice2007(Dice2007Params):
         Forcing for GHGs
     output_abate : array
         Abatement as a percentage of output
-    user_tax_rate : array or boolean
-        Array of user-determined annual tax rates, or False
+    user_tax_rate : array
+        Array of user-determined annual tax rates
 
     Methods
     -------
@@ -262,19 +262,16 @@ class Dice2007(Dice2007Params):
         ...
         Returns
         -------
-        float : backstop * 1000 * miu**(expcost2-1)
+        array
         """
-        if self.carbon_tax:
-            c = [0, self.c2050, self.c2100,
-                 self.c2150, self.cmax]
-            return np.concatenate((
-                c[0] + ((c[1] - c[0]) / 5 * np.arange(5)),
-                c[1] + ((c[2] - c[1]) / 5 * np.arange(5)),
-                c[2] + ((c[3] - c[2]) / 5 * np.arange(5)),
-                c[3] + ((c[3] - c[2]) / 5 * np.arange(45)),
-            ))
-        else:
-            return False
+        c = [0, self.c2050, self.c2100,
+             self.c2150, self.cmax]
+        return np.concatenate((
+            c[0] + ((c[1] - c[0]) / 5 * np.arange(5)),
+            c[1] + ((c[2] - c[1]) / 5 * np.arange(5)),
+            c[2] + ((c[3] - c[2]) / 5 * np.arange(5)),
+            c[3] + ((c[3] - c[2]) / 5 * np.arange(45)),
+        ))
 
     @property
     def output_abate(self):
@@ -283,13 +280,25 @@ class Dice2007(Dice2007Params):
         ...
         Returns
         -------
-        float : gcost1 * miu**expcost2
+        array :
         """
-        return self.data.vars.gcost1 * self.data.vars.miu ** \
-               self.expcost2
+        # return self.data.vars.gcost1 * self.data.vars.miu ** \
+        #        self.expcost2
+        return self.data.vars.abatement / self.data.vars.gross_output * 100
+
+    @property
+    def backstop(self):
+        return self.data.vars.gcost1
 
     @property
     def welfare(self):
+        """
+        Objective function
+        ...
+        Returns
+        -------
+        float : sum of discounted utility
+        """
         return np.sum(self.data.vars.utility_d)
 
     def step(self, i, D, miu=None, deriv=False, epsilon=1e-3, f0=0.0,
@@ -305,10 +314,11 @@ class Dice2007(Dice2007Params):
         deriv : boolean
         epsilon : float
         f0 : float
+        scc_shock : boolean
         ...
         Returns
         -------
-        None
+        pandas.DataFrame : 60 steps of all variables in D
         """
         ii = i - 1
         if i > 0:
@@ -320,13 +330,8 @@ class Dice2007(Dice2007Params):
             D.al[i] *= self.eq.get_production_factor(
                 self.aa, D.temp_atmosphere[ii]
             )
-        D.backstop[i] = (
-            self._pback * D.sigma[i] / self.expcost2
-        ) * (
-            (self.backrat - 1 + np.exp(-self.gback * i)) / self.backrat
-        )
         D.gcost1[i] = (self._pback * D.sigma[i] / self.expcost2) * (
-            (self.backrat - 1 + np.exp(-self.gback * i)) /
+            (self.backrat - 1 + np.exp(-self.gback * ii)) /
             self.backrat
         )
         D.gross_output[i] = self.eq.gross_output(
@@ -348,15 +353,17 @@ class Dice2007(Dice2007Params):
                         D.sigma[i], D.gross_output[i]
                     )
                 elif self.carbon_tax:
-                    D.miu[i] = np.power(
-                        self.user_tax_rate[i] / (D.backstop[i] * 1000),
-                        1. / (self.expcost2 - 1)
-                    )
+                    D.miu[i] = min((
+                        ((self.user_tax_rate[i] * D.emissions_total[ii]) /
+                        (1000 * D.gross_output[i] * D.gcost1[i])) ** (
+                        1 / (self.expcost2 - 1)
+                    )), 1.)
                 else:
                     D.miu[i] = 0.
-        if self.user_tax_rate is not False:
-            D.tax_rate[i] = D.backstop[i] * 1000 * D.miu[i] ** (
-                self.expcost2 - 1)
+        D.tax_rate[i] = ((
+            D.gcost1[i] * D.miu[i] ** (self.expcost2 - 1) * D.gross_output[i]) /
+            (D.emissions_total[i]
+        ) * 1000)
         D.emissions_ind[i] = self.eq.emissions_ind(
             D.sigma[i], D.miu[i], D.gross_output[i]
         )
@@ -436,6 +443,16 @@ class Dice2007(Dice2007Params):
     def loop(self, miu=None, deriv=False, scc=True):
         """
         Loop through step function for calculating endogenous variables
+        ...
+        Accepts
+        -------
+        miu : array
+        deriv : boolean
+        scc : boolean
+        ...
+        Returns
+        -------
+        DataFrame : self.data.vars
         """
         if self.damages_model == 'exponential_map':
             self.eq = ExponentialMap(self.prod_frac)
@@ -474,8 +491,7 @@ class Dice2007(Dice2007Params):
         ...
         Accepts
         -------
-        D : pandas, models variables
-        i : integer, index of step in loop method
+        miu : array, 60 values of miu
         ...
         Returns
         -------
@@ -509,6 +525,29 @@ class Dice2007(Dice2007Params):
             ).clip(0) * 100000. * (12./44.)
 
     def get_ipopt_mu(self):
+        """
+        Calculate optimal miu
+        ...
+        Accepts
+        -------
+        None
+        ...
+        Returns
+        -------
+        array : optimal miu
+        ...
+        Internal Variables
+        ------------------
+        x0 : array, initial guess
+        M : integer, size of constraints
+        nnzj : integer, number of non-zero values in Jacobian
+        nnzh : integer, number of non-zero values in Hessian
+        xl : array, lower bounds
+        xu : array, upper bounds
+        gl : array, lower bounds of constraints
+        gu : array, upper bounds of constraints
+
+        """
         x0 = np.ones(self.tmax)
         M = 0
         nnzj = 0
@@ -584,3 +623,11 @@ if __name__ == '__main__':
         for p in _params:
             verify_out(d, p, 'minimum')
             verify_out(d, p, 'maximum')
+
+    d = Dice2007()
+    d.carbon_tax = True
+    d.c2050 = 50.
+    d.c2100 = 70.
+    d.c2150 = 90.
+    D = d.loop()
+    print D.tax_rate
