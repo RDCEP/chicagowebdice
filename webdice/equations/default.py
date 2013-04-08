@@ -67,8 +67,10 @@ class Loop(object):
 
     def abatement(self, gross_output, miu, gcost1, expcost2, partfract):
         """Lambda, Abatement costs, trillions $USD"""
-        return partfract ** (1 - expcost2) * gross_output * gcost1 * (
-            miu ** expcost2)
+        return (
+            gross_output * partfract ** (1 - expcost2) *
+            gcost1 * miu ** expcost2
+        )
 
     def output(self, gross_output, damage, abatement, a_savings=None,
                a_temp_atmosphere=None, a_aa=None):
