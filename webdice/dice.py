@@ -286,9 +286,17 @@ class Dice2007(Dice2007Params):
         #        self.expcost2
         return self.data.vars.abatement / self.data.vars.gross_output * 100
 
-    @property
     def backstop(self):
-        return self.data.vars.gcost1
+        """
+        Backstop price
+        ...
+        Returns
+        -------
+        array : pback * ((backrat - 1 + exp(-gback * t)) / backrat
+        """
+        return self._pback * (
+            (self.backrat - 1 + np.exp(-self.gback * self.t0)) /
+            self.backrat)
 
     @property
     def welfare(self):
