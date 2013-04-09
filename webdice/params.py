@@ -107,6 +107,8 @@ class Dice2007Params(object):
         gcost1 = np.zeros(self.tmax)
         sigma = np.empty(self.tmax)
         sigma[:] = self._sig0
+        backstop = np.empty(self.tmax)
+        backstop[:] = self._pback
         al = np.empty(self.tmax)
         al[:] = self._a0
         capital = np.empty(self.tmax)
@@ -155,14 +157,16 @@ class Dice2007Params(object):
             'utility_d': np.zeros(self.tmax),
             'pref_fac': np.ones(self.tmax),
             'scc': np.ones(self.tmax),
-            'rf': np.ones(self.tmax),
-        })
+            'consumption_discount': np.ones(self.tmax),
+            'backstop': backstop,
+            'tax_rate': np.zeros(self.tmax),
+            })
         self.data = pd.Panel({
             'vars': data,
             'deriv': data,
             'scc': data,
-        })
+            })
         self.derivative = pd.DataFrame({
             'fprime': np.empty(self.tmax),
-        })
+            })
         self.hessian = pd.Series(np.empty(self.tmax))

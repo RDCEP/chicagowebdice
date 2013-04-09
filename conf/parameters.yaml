@@ -391,12 +391,21 @@ measurements:
     options:
       - name: Total Factor Productivity
         machine_name: al
+        graphs:
+          - name: economy
+            location: topleft
       - name: Clean Energy Costs
         machine_name: backstop
         unit: Thousands $USD / ton of CO2
+        graphs:
+          - name: economy
+            location: topright
       - name: Carbon Intensity
         machine_name: sigma
         unit: tons of CO2 / 1000 $USD
+        graphs:
+          - name: economy
+            location: bottomleft
       - name: Labor Supply
         machine_name: l
         unit: Millions
@@ -413,15 +422,12 @@ measurements:
       - name: Total Consumption
         machine_name: consumption
         unit: Trillions $USD / Year
-        graphs:
-          - name: economy
-            location: topright
       - name: Damages
         machine_name: damage
         unit: Trillions $USD / Year
         graphs:
           - name: economy
-            location: topleft
+            location: bottomright
       - name: Total Emissions per Year
         machine_name: emissions_total
         unit: Gt of Carbon / 10 yr
@@ -438,30 +444,37 @@ measurements:
       - name: Capital Stock
         machine_name: capital
         unit: Trillions $USD
-        graphs:
-          - name: economy
-            location: bottomleft
       - name: Utility Discounted
         machine_name: utility_d
       - name: Utility
         machine_name: utility
-        graphs:
-          - name: economy
-            location: bottomright
       - name: Social Cost of Carbon
         machine_name: scc
         unit: '$'
+        graphs:
+          - name: policy
+            location: bottomleft
   - name: Emissions Controls
     options:
       - name: Abatement
         machine_name: abatement
         unit: Trillions $USD / Year
+        graphs:
+          - name: policy
+            location: topright
       - name: Emissions Control Rate
         machine_name: miu
       - name: Abatement Cost as a Percentage of Output
         machine_name: output_abate
+        graphs:
+          - name: policy
+            location: bottomright
       - name: Tax Rate
         machine_name: tax_rate
+        unit: $USD / ton of Carbon
+        graphs:
+          - name: policy
+            location: topleft
   - name: Carbon Cycle
     options:
       - name: Carbon Mass in Atmosphere
@@ -496,9 +509,113 @@ measurements:
         graphs:
           - name: climate
             location: bottomright
+  - name: Test
+    options:
+      - name: Consumption Discount
+        machine_name: consumption_discount
+
 
 parameter_help:
   t2xco2: >
-      TKTK
+      Climate Sensitivity estimates the extent to which the global mean
+      temperature increases when we add greenhouse gasses to the atmosphere.
+      This metric is defined as the temperature increase from doubling the
+      carbon dioxide concentration in the atmosphere relative to the
+      concentration prior to the industrial revolution.  By adjusting the
+      slider you can discover how different levels of temperature increases
+      affect economic activities and how these economic activities in turn
+      effect climate.
 
+  a3: >
+    This model assumes that an increase in global mean temperature will harm
+    the economy.  By adjusting this slider, you can not only discover the
+    various degrees to which increasing temperature can affect the economy,
+    but you can also estimate how these economic damages will in turn affect
+    the climate.
 
+  dela: >
+    This metric represents the decline in the rate of growth of productivity
+    over time.  This model assumes that the ability to produce goods with a
+    given amount of capital and labor increases over time.  However, the rate
+    at which growth of production increases is decreasing.  Faster growth
+    indicates optimism in the continued ability to produce goods efficiently.
+    Slower growth indicates that productivity will decrease over time.
+
+  dsig: >
+    Energy intensity is the emissions per unit of economic output.  As energy
+    efficiency increases energy intensity decreases; with increased efficiency
+    less energy is used to produce output, resulting in fewer emissions.
+    Adjust the slider to discover how energy intensity can affect future
+    emissions and their economic impacts.
+
+  backrat: >
+      We do not know what the costs of zero-carbon energy will ultimately be.
+      The lower the cost of zero-carbon technologies, the cheaper emissions
+      reductions will be.  Adjust the slider to reflect your beliefs on how low
+      the cost of zero-carbon energy will be and to discover how these costs
+      affect climate and the economy.
+
+  expcost2: >
+      The cost of reducing emissions will increase as we try to reduce a greater
+      percentage of the total. Small reductions, such as through efficiency
+      improvements, may be relatively easy while large reductions, such as
+      eliminating most uses of fossil fuels, will be expensive. You can set how
+      fast the costs of emissions reductions go up as we try to eliminate a greater
+      percentage of emissions. The higher the number, the faster costs increase.
+
+  gback: >
+      The model assumes that the cost of replacing all fossil fuels with zero-carbon
+      energy will cost $1,170 per ton of CO2 today but that these costs will decline
+      over time. You can set the speed of this decline anywhere from 0% (these costs
+      never go down) to 20% per year, the most optimistic case.
+
+  dk: >
+      As capital (buildings, machines, factories and similar items) is used, it
+      wears out. The model assumes that it wears out at a rate of 10% per year.
+      You can choose a value between 8% per year and 20% per year.
+
+  savings: >
+      The model assumes that people save 22% of their incomes each year. Savings
+      rate do not adjust based on expectations of future events, so that, for
+      example, if you set the harms from climate change to be high, people do not
+      save more so that they will have a cushion to offset the harms. You can
+      adjust the savings rate to be anything from 10% to 25%.
+
+  popasym: >
+      The population has been growing but as people get wealthier, the rate of
+      growth has slowed down and demographers think that eventually it may stabilize.
+      You can choose the level it stabilizes at, the maximum population, to be
+      anything from 8 billion people to 12 billion people. The default value is 8.6
+      billion people.
+
+  fosslim: >
+      Fossil fuel is a non-renewable resource. The total amount of fossil fuel
+      available puts a cap on total emissions. Under most scenarios, we do not
+      reach this cap by 2200 so the cap has no effect on the output, but if the
+      economy grows quickly and energy intensity does not decline very much, we
+      may hit the cap. The default value is that there are 6,000 gigatons of carbon
+      (Gt C) contained in unrecovered fossil fuels. You can choose a lower value,
+      5000 Gt C, based on the assumption that some portion of the reserves will
+      not be recoverable, or a higher value, up to 9,000 Gt C, based on the
+      assumption that we will continue to discover new sources of fossil fuels.
+
+  elasmu: >
+      As they become wealthier, most people value an additional dollar of wealth
+      less than when they were poor. A poor person may greatly value an additional
+      dollar to pay for necessities, while someone who has these necessities may
+      value the additional dollar less. This may not be uniformly true but it is
+      thought to be true for most of the population. You can set how fast the value
+      of an additional dollar declines from less, by setting the value to 1.0, to
+      more, by setting the value to 3.0.
+
+  prstp: >
+      The model finds the optimal controls on emissions by finding the controls
+      that maximize the welfare of the people alive during the modeled years.
+      For this purpose, the model considers people living from now until 600 years
+      from now. The pure rate of time preference is a discount rate which allows
+      you to account for the fact that some people will be living in the distant
+      future. The value of the pure rate of time preference is highly contested and
+      many people believe that it is unethical to weight people less because they
+      live in the future while others believe that it is appropriate and consistent
+      with how people actually make choices. The default value is 1.5% but you can
+      set it anywhere from 0% to 10%.

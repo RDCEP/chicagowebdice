@@ -44,10 +44,11 @@ class Loop(object):
         #     ((mass_atmosphere + ma_next) / 2) + .000001
         # ) / matPI) / np.log(2)) + forcoth
 
-    def temp_atmosphere(self, temp_atmosphere, temp_lower, forcing, lam, c):
+    def temp_atmosphere(self, temp_atmosphere, temp_lower, forcing,
+                        fco22x, t2xco2, c):
         """T_AT, Temperature of atmosphere, degrees C"""
         return temp_atmosphere + c[0] * (
-            forcing - lam * temp_atmosphere - c[2] * (
+            forcing - (fco22x / t2xco2) * temp_atmosphere - c[2] * (
                 temp_atmosphere - temp_lower
             )
         )
@@ -60,18 +61,22 @@ class Loop(object):
     def damage(self, gross_output, temp_atmosphere, aa, a_abatement=None,
                a_savings=None):
         """Omega, Damage, trillions $USD"""
-        return gross_output - gross_output / (
-            1 + aa[0] * temp_atmosphere + aa[1] * temp_atmosphere ** aa[2])
+        return gross_output * (1 - 1 / (
+            1 + aa[0] * temp_atmosphere + aa[1] * temp_atmosphere ** aa[2]
+        ))
 
     def abatement(self, gross_output, miu, gcost1, expcost2, partfract):
         """Lambda, Abatement costs, trillions $USD"""
-        return partfract ** (1 - expcost2) * gross_output * gcost1 * (
-            miu ** expcost2)
+        return (
+            gross_output * partfract ** (1 - expcost2) *
+            gcost1 * miu ** expcost2
+        )
 
     def output(self, gross_output, damage, abatement, a_savings=None,
                a_temp_atmosphere=None, a_aa=None):
-        return gross_output * ((1 - abatement / gross_output) /
-                               (gross_output / (gross_output - damage)))
+        return (
+            (gross_output - abatement) * (gross_output - damage)
+        ) / gross_output
 
     def investment(self, savings, output):
         """I, Investment, trillions $USD"""
@@ -80,11 +85,22 @@ class Loop(object):
     def consumption(self, output, savings, a_gross_output=None,
                     a_abatement=None, a_temp_atmosphere=None, a_aa=None):
         """C, Consumption, trillions $USD"""
-        return output - (savings * output)
+        return output * (1.0 - savings)
 
     def consumption_pc(self, consumption, l):
         """c, Per capita consumption, thousands $USD"""
         return 1000 * consumption / l
+
+    def consumption_discount(self, prstp, elasmu, c0, c1, i):
+        """Discount rate for consumption"""
+        # return (prstp * 100 + elasmu * (
+        #         (c1 - c0) / c0
+        #     ) * 10) / 100
+        return 1 / (
+            1 + (prstp * 100 + elasmu * (
+                (c1 - c0) / c0
+            ) * 10) / 100
+        ) ** (10 * i)
 
     def utility(self, consumption_pc, elasmu, l):
         """U, Period utility function"""
