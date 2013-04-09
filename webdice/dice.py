@@ -2,12 +2,12 @@ import numpy as np
 try:
     import pyipopt
 except ImportError:
-    print 'No ipopt'
+    print 'pyipopt noy installed.'
 try:
     import matplotlib.pyplot as plt
     from matplotlib import rcParams
 except ImportError:
-    pass
+    print 'matplotlib not installed.'
 from params import Dice2007Params
 import equations
 from equations.damages import *
@@ -280,23 +280,19 @@ class Dice2007(Dice2007Params):
         ...
         Returns
         -------
-        array :
+        array
         """
         # return self.data.vars.gcost1 * self.data.vars.miu ** \
         #        self.expcost2
         return self.data.vars.abatement / self.data.vars.gross_output * 100
 
+    @property
     def backstop(self):
-        """
-        Backstop price
-        ...
-        Returns
-        -------
-        array : pback * ((backrat - 1 + exp(-gback * t)) / backrat
-        """
+        # return self._pback * (1 - self.gback) ** self.t0
         return self._pback * (
             (self.backrat - 1 + np.exp(-self.gback * self.t0)) /
-            self.backrat)
+            self.backrat
+        )
 
     @property
     def welfare(self):
@@ -338,10 +334,7 @@ class Dice2007(Dice2007Params):
             D.al[i] *= self.eq.get_production_factor(
                 self.aa, D.temp_atmosphere[ii]
             )
-        D.gcost1[i] = (self._pback * D.sigma[i] / self.expcost2) * (
-            (self.backrat - 1 + np.exp(-self.gback * ii)) /
-            self.backrat
-        )
+        D.gcost1[i] = self.backstop[i] * D.sigma[i] / self.expcost2
         D.gross_output[i] = self.eq.gross_output(
             D.al[i], D.capital[i], self._gama, self.l[i]
         )
@@ -366,18 +359,25 @@ class Dice2007(Dice2007Params):
                         (1000 * D.gross_output[i] * D.gcost1[i])) ** (
                         1 / (self.expcost2 - 1)
                     )), 1.)
+                    # D.miu[i] = (
+                    #     (self.user_tax_rate[i] / self.backstop[i] * 1000) **
+                    #     (1 / (self.expcost2 - 1))
+                    # )
                 else:
                     D.miu[i] = 0.
-        D.tax_rate[i] = ((
-            D.gcost1[i] * D.miu[i] ** (self.expcost2 - 1) * D.gross_output[i]) /
-            (D.emissions_total[i]
-        ) * 1000)
         D.emissions_ind[i] = self.eq.emissions_ind(
             D.sigma[i], D.miu[i], D.gross_output[i]
         )
         D.emissions_total[i] = self.eq.emissions_total(
             D.emissions_ind[i], self.etree[i]
         )
+        D.tax_rate[i] = (
+            (D.gcost1[i] * D.miu[i] ** (self.expcost2 - 1) *
+             D.gross_output[i]) / D.emissions_ind[i] * 1000
+        )
+        # D.tax_rate[i] = (
+        #     self.backstop[i] * D.miu[i] ** (self.expcost2 - 1) * 1000
+        # )
         if scc_shock is True:
             D.emissions_total[i] += 1.
         if i > 0:
@@ -550,8 +550,8 @@ class Dice2007(Dice2007Params):
         M : integer, size of constraints
         nnzj : integer, number of non-zero values in Jacobian
         nnzh : integer, number of non-zero values in Hessian
-        xl : array, lower bounds
-        xu : array, upper bounds
+        xl : array, lower bounds of objective
+        xu : array, upper bounds of objective
         gl : array, lower bounds of constraints
         gu : array, upper bounds of constraints
 
@@ -633,9 +633,11 @@ if __name__ == '__main__':
             verify_out(d, p, 'maximum')
 
     d = Dice2007()
-    d.carbon_tax = True
-    d.c2050 = 50.
-    d.c2100 = 70.
-    d.c2150 = 90.
+    # d.carbon_tax = True
+    # d.c2050 = 50.
+    # d.c2100 = 70.
+    # d.c2150 = 90.
+    d.damages_model = 'productivity_fraction'
+    d.prod_frac = .25
     D = d.loop()
-    print D.tax_rate
+    print D.scc
