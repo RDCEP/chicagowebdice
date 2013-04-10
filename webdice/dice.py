@@ -1,13 +1,5 @@
 import numpy as np
-try:
-    import pyipopt
-except ImportError:
-    print 'pyipopt noy installed.'
-try:
-    import matplotlib.pyplot as plt
-    from matplotlib import rcParams
-except ImportError:
-    print 'matplotlib not installed.'
+import pyipopt
 from params import Dice2007Params
 import equations
 from equations.damages import *
@@ -78,33 +70,10 @@ class Dice2007(Dice2007Params):
         self.carbon_tax = False
 
     @property
-    def varscale(self):
-        return {'mass_atmosphere': 1000., }
-
-    @property
-    def parameters(self):
-        return [
-            'elasmu', 'prstp', '_population_2005', '_population_growth',
-            'popasym', '_productivity','_productivity_growth', 'productivity_decline',
-            'depreciation', '_output_elasticty', '_output_2005', '_capital_2005',
-            '_intensity_2005', '_intensity_growth', 'intensity_decline_rate',
-            '_intensity_quadratic', '_emissions_deforest_2005', '_mass_atmosphere_2005',
-            '_mass_upper_2005', '_mass_lower_2005', '_mass_preindustrial',
-            'temp_co2_doubling', '_forcing_ghg_2000', '_forcing_ghg_2100',
-            '_temp_lower_2000', '_temp_atmosphere_2000',
-            '_forcing_co2_doubling', 'a1', '_damages_coefficient',
-            'damages_exponent', 'b11', 'b12', 'b21', 'b22', 'b23', 'b32',
-            'b33', 'c1', 'c2', 'c3', 'c4', 'abatement_exponent',
-            '_backstop_2005', 'backstop_ratio', 'backstop_decline',
-            'miu_upper', '_participation_2005', '_participation_2015',
-            '_participation_2205', '_participation_decline', 'e2050',
-            'e2100', 'e2150', 'p2050', 'p2100', 'p2150', 'fosslim',
-            'scale1', 'scale2', 'tmax', 'numScen', 'savings', 'miu_2005',
-            'backstop',
-            ]
-
-    @property
     def user_params(self):
+        """
+        List of model parameters to be included with output to graphs and CSV.
+        """
         return [
             'temp_co2_doubling', 'damages_exponent', 'productivity_decline',
             'intensity_decline_rate', 'e2050', 'e2100', 'e2150',
@@ -115,6 +84,9 @@ class Dice2007(Dice2007Params):
 
     @property
     def vars(self):
+        """
+        List of model variables to be included with output to graphs and CSV.
+        """
         return [
             'capital', 'gross_output', 'emissions_ind',
             'emissions_total', 'mass_atmosphere', 'mass_upper',
@@ -163,11 +135,8 @@ class Dice2007(Dice2007Params):
         -------
         array
         """
-        return (
-            self._population_2005 * 
-            (1 - self.population_growth) + self.population_growth * 
-            self.popasym
-        )
+        return self._population_2005 * (1 - self.population_growth) + \
+               self.population_growth * self.popasym
 
     @property
     def productivity_growth(self):
@@ -259,7 +228,7 @@ class Dice2007(Dice2007Params):
                     self._participation_2205, self._participation_2205, 36
                 ),
             ))
-        p = [self.p2050, self.p2050, self.p2100, self.p2150, self.pmax]
+        p = [self.p2050, self.p2050, self.p2100, self.p2150, self._pmax]
         return np.concatenate((
             (p[1] + (p[0] - p[1]) * np.exp(np.arange(5) * -.25)) / 100.,
             (p[2] + (p[1] - p[2]) * np.exp(np.arange(5) * -.25)) / 100.,
@@ -293,7 +262,7 @@ class Dice2007(Dice2007Params):
         array
         """
         c = [0, self.c2050, self.c2100,
-             self.c2150, self.cmax]
+             self.c2150, self._cmax]
         return np.concatenate((
             c[0] + ((c[1] - c[0]) / 5 * np.arange(5)),
             c[1] + ((c[2] - c[1]) / 5 * np.arange(5)),
@@ -374,7 +343,8 @@ class Dice2007(Dice2007Params):
             self.backstop[i] * D.carbon_intensity[i] / self.abatement_exponent
         )
         D.gross_output[i] = self.eq.gross_output(
-            D.productivity[i], D.capital[i], self._output_elasticty, self.population[i]
+            D.productivity[i], D.capital[i], self._output_elasticty,
+            self.population[i]
         )
         if self.optimize:
             if miu is not None:
@@ -552,7 +522,7 @@ class Dice2007(Dice2007Params):
                 shock = False
                 if j == i:
                     shock = True
-                self.step(j, self.data.scc, miu=None, scc_shock=shock)
+                self.step(j, self.data.scc, miu=miu, scc_shock=shock)
             con_diff = (
                 self.data.vars.consumption_pc[i:final_year] -
                 self.data.scc.consumption_pc[i:final_year]
@@ -560,7 +530,7 @@ class Dice2007(Dice2007Params):
             self.data.vars.scc[i] = np.sum(
                 con_diff.values *
                 self.data.vars.consumption_discount[:future_indices].values
-            ).clip(0) * 100000. * (12./44.)
+            ).clip(0) * 100000. * (12.0 / 44.0)
 
     def get_ipopt_mu(self):
         """
@@ -656,21 +626,10 @@ if __name__ == '__main__':
         _params = [
             'temp_co2_doubling', 'damages_exponent', 'productivity_decline',
             'intensity_decline', 'abatement_exponent', 'backstop_decline',
-            'backstop_ratio', 'popasym','depreciation', 'savings',
+            'backstop_ratio', 'popasym', 'depreciation', 'savings',
             'fosslim', 'elasmu', 'prstp',
         ]
         verify_out(d)
         for p in _params:
             verify_out(d, p, 'minimum')
             verify_out(d, p, 'maximum')
-
-    d = Dice2007()
-    # d.carbon_tax = True
-    # d.c2050 = 50.
-    # d.c2100 = 70.
-    # d.c2150 = 90.
-    # d.damages_model = 'productivity_fraction'
-    d.prod_frac = .25
-    D = d.loop()
-    # print D.scc
-    print D.tax_rate

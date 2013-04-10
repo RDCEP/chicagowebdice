@@ -27,11 +27,11 @@ class Dice2007Params(object):
         self.p2050 = 100.
         self.p2100 = 100.
         self.p2150 = 100.
-        self.pmax = 100.
+        self._pmax = 100.
         self.c2050 = 0.
         self.c2100 = 0.
         self.c2150 = 0.
-        self.cmax = 500.
+        self._cmax = 500.
         ## Population and technology
         self._population_2005 = 6514.
         self._population_growth = .35
