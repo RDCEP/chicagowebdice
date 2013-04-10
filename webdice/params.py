@@ -4,19 +4,20 @@ import pandas as pd
 
 class Dice2007Params(object):
     def __init__(self):
-        self.t2xco2 = 3.
-        self.a3 = 2.
-        self.dela = .1
-        self.dsig = .3
-        self.expcost2 = 2.8
-        self.gback = .05
-        self.backrat = 2.
+        self.temp_co2_doubling = 3.
+        self.damages_exponent = 2.
+        self.productivity_decline = .1
+        self.intensity_decline_rate = .3
+        self.abatement_exponent = 2.8
+        self.backstop_decline = .05
+        self.backstop_ratio = 2.
         self.popasym = 8600.
-        self.dk = .1
+        self.depreciation = .1
         self.savings = .2
         self.fosslim = 6000.
         self.carbon_model = 'dice_carbon'
         self.damages_model = 'dice_output'
+        self.prod_frac = .05
         self.elasmu = 2.
         self.prstp = .015
         self.treaty_switch = False
@@ -26,33 +27,32 @@ class Dice2007Params(object):
         self.p2050 = 100.
         self.p2100 = 100.
         self.p2150 = 100.
-        self.pmax = 100.
+        self._pmax = 100.
         self.c2050 = 0.
         self.c2100 = 0.
         self.c2150 = 0.
-        self.cmax = 500.
+        self._cmax = 500.
         ## Population and technology
-        self._pop0 = 6514.  # 2005 world population millions
-        self._gpop0 = .35  # growth rate of population per decade
-        self._a0 = .02722  # Initial level of total factor productivity
-        self._ga0 = .092  # Initial growth rate for technology per decade
-        self._gama = .300  # Capital elasticity in production function
-        self._q0 = 61.1  # 2005 world gross output trill 2005 US dollars
-        self._q0 = 55.667  # 2005 world gross output trill 2005 US dollars
-        self._k0 = 137.  # 2005 value capital trill 2005 US dollars
-        self.prod_frac = .05
+        self._population_2005 = 6514.
+        self._population_growth = .35
+        self._productivity = .02722
+        self._productivity_growth = .092
+        self._output_elasticty = .300
+        self._output_2005 = 61.1
+        self._output_2005 = 55.667
+        self._capital_2005 = 137.
 
         ## Emissions
-        self._sig0 = .13418  # CO2-equivalent emissions-GNP ratio 2005
-        self._gsigma = -.0730  # Initial growth of sigma per decade
-        self.dsig2 = .000  # Quadratic term in decarbonization
-        self._eland0 = 11.0  # Carbon emissions from land 2005 (GtC per decade)
+        self._intensity_2005 = .13418
+        self._intensity_growth = -.0730
+        self._intensity_quadratic = .000
+        self._emissions_deforest_2005 = 11.0
 
         ## Carbon Cycle
-        self.mat2000 = 808.9  # Concentration in atmosphere 2005 (GtC)
-        self.mu2000 = 1255.  # Concentration in upper strata 2005 (GtC)
-        self.ml2000 = 18365.  # Concentration in lower strata 2005 (GtC)
-        self.matPI = 278. * 2.13  # Preindustrial conc. in atmosphere 2005 (GtC)
+        self._mass_atmosphere_2005 = 808.9
+        self._mass_upper_2005 = 1255.
+        self._mass_lower_2005 = 18365.
+        self._mass_preindustrial = 278. * 2.13
         # Carbon cycle transition matrix
         self.b11 = .810712
         self.b12 = .189288
@@ -63,75 +63,74 @@ class Dice2007Params(object):
         self.b31 = 0
         self.b32 = .003119
         self.b33 = .996881
-        self.bb = np.array([
+        self.carbon_matrix = np.array([
             self.b11, self.b12, self.b13, self.b21, self.b22, self.b23,
             self.b31, self.b32, self.b33
         ]).reshape(3, 3)
 
         ## Climate model
-        self.fex0 = -.06  # Estimate of 2000 forcings of non-CO2 GHG
-        self.fex1 = .30  # Estimate of 2100 forcings of non-CO2 GHG
-        self.tocean0 = .0068  # 2000 lower strat. temp change (C) from 1900
-        self.tatm0 = .7307  # 2000 atmospheric temp change (C) from 1900
+        self._forcing_ghg_2000 = -.06
+        self._forcing_ghg_2100 = .30
+        self._temp_lower_2000 = .0068
+        self._temp_atmosphere_2000 = .7307
         self.c1 = .220
         self.c2 = 0
         self.c3 = .300
         self.c4 = .050
-        self.cc = np.array([self.c1, self.c2, self.c3, self.c4])
-        self.fco22x = 3.8  # Estimated forcings of equilibrium CO2 doubling
-        # Climate damage selfeters, calibrated for quadratic at 2.5 C for 2105
+        self.thermal_transfer = np.array([self.c1, self.c2, self.c3, self.c4])
+        self._forcing_co2_doubling = 3.8
+        # Climate damage parameters, calibrated for quadratic at 2.5 C for 2105
         self.a1 = 0
-        self.a2 = 0.0028388
+        self._damages_coefficient = 0.0028388
 
         ## Abatement cost
-        self._pback = 1.17  # Cost of backstop 2005, thousands of $ per tC 2005
-        self.limmiu = 1.  # Upper limit on control rate
+        self._backstop_2005 = 1.17
+        self.miu_upper = 1.  # Upper limit on control rate
+        self.miu_2005 = .005
 
         ## Participation
-        self.partfract1 = 1.  # Fraction of emissions under control regime 2005
-        self.partfract2 = 1.  # Fraction of emissions under control regime 2015
-        self.partfract21 = 1.  # Fraction of emissions under control regime 2205
-        self.dpartfract = 0.  # Decline rate of participation
+        self._participation_2005 = 1.
+        self._participation_2015 = 1.
+        self._participation_2205 = 1.
+        self._participation_decline = 0.
 
-        ## Availability of fossil fuels
-        ## Scaling and inessential selfeters
-        self.scale1 = 194.  # Scaling coefficient in the objective function
-        self.scale2 = 381800.  # Scaling coefficient in the objective function
         self.tmax = 60  # Time periods, in decades (60 * 10 = 600 years)
-        self.numScen = 1  # Number of scenarios to run
-        self.miu_2005 = .005  # emission control rate
         self.t0 = np.arange(float(self.tmax))
         self.t1 = self.t0 + 1
 
+        ## Scaling and inessential parameters
+        self.scale1 = 194.  # Scaling coefficient in the objective function
+        self.scale2 = 381800.  # Scaling coefficient in the objective function
+
         # Variables for initiating pandas array
-        gcost1 = np.zeros(self.tmax)
-        sigma = np.empty(self.tmax)
-        sigma[:] = self._sig0
-        al = np.empty(self.tmax)
-        al[:] = self._a0
+        backstop_growth = np.zeros(self.tmax)
+        carbon_intensity = np.empty(self.tmax)
+        carbon_intensity[:] = self._intensity_2005
+        productivity = np.empty(self.tmax)
+        productivity[:] = self._productivity
         capital = np.empty(self.tmax)
-        capital[:] = self._k0
+        capital[:] = self._capital_2005
         output = np.empty(self.tmax)
-        output[:] = self._q0
+        output[:] = self._output_2005
         mass_atmosphere = np.empty(self.tmax)
-        mass_atmosphere[:] = self.mat2000
+        mass_atmosphere[:] = self._mass_atmosphere_2005
         mass_upper = np.empty(self.tmax)
-        mass_upper[:] = self.mu2000
+        mass_upper[:] = self._mass_upper_2005
         mass_lower = np.empty(self.tmax)
-        mass_lower[:] = self.ml2000
+        mass_lower[:] = self._mass_lower_2005
         temp_atmosphere = np.empty(self.tmax)
-        temp_atmosphere[:] = self.tatm0
+        temp_atmosphere[:] = self._temp_atmosphere_2000
         temp_lower = np.empty(self.tmax)
-        temp_lower[:] = self.tocean0
+        temp_lower[:] = self._temp_lower_2000
         investment = np.empty(self.tmax)
-        investment[:] = self.savings * self._q0
+        investment[:] = self.savings * self._output_2005
         miu = np.empty(self.tmax)
         miu[:] = self.miu_2005
         data = pd.DataFrame({
             'miu': miu,
-            'sigma': sigma,
-            'al': al,
-            'gcost1': gcost1,
+            'carbon_intensity': carbon_intensity,
+            'productivity': productivity,
+            'backstop_growth': backstop_growth,
             'capital': capital,
             'output': output,
             'mass_atmosphere': mass_atmosphere,

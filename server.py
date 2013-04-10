@@ -86,7 +86,7 @@ def page(tabs, tpl='index'):
         for m in s['options']:
             without_sections.append(m)
     graph_locations = ['topleft', 'topright', 'bottomleft', 'bottomright', ]
-    graph_names = ['essential', 'climate', 'economy', ]
+    graph_names = ['essential', 'climate', 'economy', 'policy']
     m = json.JSONEncoder().encode(without_sections)
     graph_locations = json.JSONEncoder().encode(graph_locations)
     graph_names = json.JSONEncoder().encode(graph_names)

@@ -5,57 +5,72 @@ class Loop(object):
     def __init__(self):
         pass
 
-    def capital(self, capital, dk, investment):
+    def capital(self, capital, depreciation, investment):
         """K(t), Capital, trillions $USD"""
-        return capital * (1 - dk) ** 10 + 10 * investment
+        return capital * (1 - depreciation) ** 10 + 10 * investment
 
-    def gross_output(self,al, capital, gama, l):
+    def gross_output(self, productivity, capital, gama, l):
         """Gross output"""
-        return al * capital ** gama * l ** (1 - gama)
+        return productivity * capital ** gama * l ** (1 - gama)
 
-    def emissions_ind(self, sigma, miu, gross_output):
+    def emissions_ind(self, intensity, miu, gross_output):
         """E_ind, Industrial emissions, GtC"""
-        return sigma * (1. - miu) * gross_output
+        return intensity * (1. - miu) * gross_output
 
     def emissions_total(self, emissions_ind, etree):
         """E, Total emissions, GtC"""
         return emissions_ind + etree
 
-    def mass_atmosphere(self, emissions_total, mass_atmosphere, mass_upper, b):
+    def mass_atmosphere(self, emissions_total, mass_atmosphere, mass_upper,
+                        carbon_matrix):
         """M_AT, Carbon concentration in atmosphere, GtC"""
-        return b[0][0] * mass_atmosphere + b[1][0] * mass_upper + (
-            10 * emissions_total
+        return (
+            carbon_matrix[0][0] * mass_atmosphere + carbon_matrix[1][0] *
+            mass_upper + (10 * emissions_total)
         )
 
-    def mass_upper(self, mass_atmosphere, mass_upper, mass_lower, b):
+    def mass_upper(self, mass_atmosphere, mass_upper, mass_lower,
+                   carbon_matrix):
         """M_UP, Carbon concentration in shallow oceans, GtC"""
-        return b[0][1] * mass_atmosphere + b[1][1] * mass_upper + (
-            b[2][1] * mass_lower
+        return (
+            carbon_matrix[0][1] * mass_atmosphere + carbon_matrix[1][1] *
+            mass_upper + (carbon_matrix[2][1] * mass_lower)
         )
 
-    def mass_lower(self, mass_upper, mass_lower, b):
+    def mass_lower(self, mass_upper, mass_lower, carbon_matrix):
         """M_LO, Carbon concentration in lower oceans, GtC"""
-        return b[1][2] * mass_upper + b[2][2] * mass_lower
+        return (
+            carbon_matrix[1][2] * mass_upper + carbon_matrix[2][2] * mass_lower
+        )
 
-    def forcing(self, fco22x, mass_atmosphere, matPI, forcoth):
+    def forcing(self, _forcing_co2_doubling, mass_atmosphere,
+                _mass_preindustrial, forcing_ghg):
         """F, Forcing, W/m^2"""
-        return fco22x * np.log(mass_atmosphere / matPI) + forcoth
-        # return fco22x * (np.log((
+        return (
+            _forcing_co2_doubling *
+            np.log(mass_atmosphere / _mass_preindustrial) + forcing_ghg
+        )
+        # return _forcing_co2_doubling * (np.log((
         #     ((mass_atmosphere + ma_next) / 2) + .000001
-        # ) / matPI) / np.log(2)) + forcoth
+        # ) / _mass_preindustrial) / np.log(2)) + forcing_ghg
 
     def temp_atmosphere(self, temp_atmosphere, temp_lower, forcing,
-                        fco22x, t2xco2, c):
+                        _forcing_co2_doubling, temp_co2_doubling,
+                        thermal_transfer):
         """T_AT, Temperature of atmosphere, degrees C"""
-        return temp_atmosphere + c[0] * (
-            forcing - (fco22x / t2xco2) * temp_atmosphere - c[2] * (
-                temp_atmosphere - temp_lower
+        return (
+            temp_atmosphere + thermal_transfer[0] * (
+                forcing - (_forcing_co2_doubling / temp_co2_doubling) *
+                temp_atmosphere - thermal_transfer[2] *
+                (temp_atmosphere - temp_lower)
             )
         )
 
-    def temp_lower(self, temp_atmosphere, temp_lower, c):
+    def temp_lower(self, temp_atmosphere, temp_lower, thermal_transfer):
         """T_LO, Temperature of lower oceans, degrees C"""
-        return temp_lower + c[3] * (temp_atmosphere - temp_lower)
+        return (
+            temp_lower + thermal_transfer[3] * (temp_atmosphere - temp_lower)
+        )
 
     # @classmethod
     def damage(self, gross_output, temp_atmosphere, aa, a_abatement=None,
@@ -65,11 +80,12 @@ class Loop(object):
             1 + aa[0] * temp_atmosphere + aa[1] * temp_atmosphere ** aa[2]
         ))
 
-    def abatement(self, gross_output, miu, gcost1, expcost2, partfract):
+    def abatement(self, gross_output, miu, backstop_growth, abatement_exponent,
+                  participation):
         """Lambda, Abatement costs, trillions $USD"""
         return (
-            gross_output * partfract ** (1 - expcost2) *
-            gcost1 * miu ** expcost2
+            gross_output * participation ** (1 - abatement_exponent) *
+            backstop_growth * miu ** abatement_exponent
         )
 
     def output(self, gross_output, damage, abatement, a_savings=None,
@@ -93,9 +109,6 @@ class Loop(object):
 
     def consumption_discount(self, prstp, elasmu, c0, c1, i):
         """Discount rate for consumption"""
-        # return (prstp * 100 + elasmu * (
-        #         (c1 - c0) / c0
-        #     ) * 10) / 100
         return 1 / (
             1 + (prstp * 100 + elasmu * (
                 (c1 - c0) / c0
@@ -113,10 +126,16 @@ class Loop(object):
     def welfare(self, utility_d, rr):
         return np.sum(utility_d)
 
-    def miu(self, emissions_ind, ecap, _e2005, sigma, gross_output):
+    def miu(self, emissions_ind, emissions_cap, _e2005, intensity,
+            gross_output):
         """mu, Emissions reduction rate"""
-        if ecap == 0:
+        if emissions_cap == 0:
             return 1.
-        elif round(emissions_ind, 2) < round((_e2005 * ecap), 2):
+        elif round(emissions_ind, 2) < round((_e2005 * emissions_cap), 2):
             return 0.
-        else: return 1 - ((_e2005 * ecap) / (sigma * gross_output))
+        else: return 1 - ((_e2005 * emissions_cap) / (intensity * gross_output))
+
+    def tax_rate(self, backstop, miu, abatement_exponent):
+        return (
+            backstop * miu ** (abatement_exponent - 1) * 1000
+        )
