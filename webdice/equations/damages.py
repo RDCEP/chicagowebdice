@@ -7,33 +7,36 @@ class DamagesModel(Loop):
         Loop.__init__(self)
         self.prod_frac = prod_frac
 
-    def get_production_factor(self, aa, temp_atmosphere):
+    def get_production_factor(self, damages_terms, temp_atmosphere):
         return 1.
 
     def get_model_values(self, gross_output, temp_atmosphere,
-                         aa, abatement, savings):
-        damages = self.damages(gross_output, temp_atmosphere, aa,
-                             abatement, savings)
+                         damages_terms, abatement, savings):
+        damages = self.damages(gross_output, temp_atmosphere, damages_terms,
+                               abatement, savings)
         output = self.output(gross_output, damages, abatement, savings,
-                             temp_atmosphere, aa)
+                             temp_atmosphere, damages_terms)
         consumption = self.consumption(output, savings, gross_output,
-                                       abatement, temp_atmosphere, aa)
+                                       abatement, temp_atmosphere,
+                                       damages_terms)
         return [damages, output, consumption]
 
 
 class DiceDamages(DamagesModel):
-    def damages(self, gross_output, temp_atmosphere, aa, a_abatement=None,
+    def damages(self, gross_output, temp_atmosphere, damages_terms, a_abatement=None,
                a_savings=0):
         return gross_output * (1 - 1 / (
-            1 + aa[0] * temp_atmosphere + aa[1] * temp_atmosphere ** aa[2]
+            1 + damages_terms[0] * temp_atmosphere + damages_terms[1] *
+            temp_atmosphere ** damages_terms[2]
         ))
 
 
 class ExponentialMap(DamagesModel):
-    def damages(self, gross_output, temp_atmosphere, aa, a_abatement=None,
-               a_savings=0):
+    def damages(self, gross_output, temp_atmosphere, damages_terms,
+                a_abatement=None, a_savings=0):
         return gross_output * (1 - np.exp(
-            -(aa[0] * temp_atmosphere + aa[1] * temp_atmosphere ** aa[2])
+            -(damages_terms[0] * temp_atmosphere + damages_terms[1] *
+              temp_atmosphere ** damages_terms[2])
         ))
 
 
@@ -60,17 +63,17 @@ class AdditiveDamages(DamagesModel):
                                        a_temp_atmosphere, a_aa)
         return consumption / (1 - a_savings)
 
-    def damages(self, gross_output, temp_atmosphere, aa, a_abatement=None,
-               a_savings=0):
-        return self.output_no_damages(
-            gross_output, a_abatement
-        ) - self.output(gross_output, 0, a_abatement, a_savings,
-                        temp_atmosphere, aa)
+    def damages(self, gross_output, temp_atmosphere, damages_terms,
+                a_abatement=None, a_savings=0):
+        output_no_damages = self.output_no_damages(gross_output, a_abatement)
+        output = self.output(gross_output, 0, a_abatement, a_savings,
+                             temp_atmosphere, damages_terms)
+        return output_no_damages - output
 
 
 class WeitzmanTippingPoint(DamagesModel):
-    def damages(self, gross_output, temp_atmosphere, aa, a_abatement=None,
-               a_savings=0):
+    def damages(self, gross_output, temp_atmosphere, damages_terms,
+                a_abatement=None, a_savings=0):
         return gross_output * (1 - 1 / (
             1 + (temp_atmosphere / 20.46) ** 2 + (
                 (temp_atmosphere / 6.081) ** 6.754
@@ -78,18 +81,20 @@ class WeitzmanTippingPoint(DamagesModel):
 
 
 class ProductivityFraction(DamagesModel):
-    def damages(self, gross_output, temp_atmosphere, aa, a_abatement=None,
-               a_savings=0):
-        fD = self.get_production_factor(aa, temp_atmosphere)
+    def damages(self, gross_output, temp_atmosphere, damages_terms,
+                a_abatement=None, a_savings=0):
+        fD = self.get_production_factor(damages_terms, temp_atmosphere)
         damages_to_prod = 1 - (
             (1 - 1 / (
-                1 + aa[0] * temp_atmosphere + aa[1] * temp_atmosphere ** aa[2]
+                1 + damages_terms[0] * temp_atmosphere + damages_terms[1] *
+                temp_atmosphere ** damages_terms[2]
             )) / fD
         )
         return gross_output * (1. - damages_to_prod)
 
-    def get_production_factor(self, aa, temp_atmosphere):
+    def get_production_factor(self, damages_terms, temp_atmosphere):
         D = 1 - 1 / (
-            1 + aa[0] * temp_atmosphere + aa[1] * temp_atmosphere ** aa[2]
+            1 + damages_terms[0] * temp_atmosphere + damages_terms[1] *
+            temp_atmosphere ** damages_terms[2]
         )
         return 1 - self.prod_frac * D
