@@ -54,18 +54,19 @@ class Dice2007Params(object):
         self._mass_lower_2005 = 18365.
         self._mass_preindustrial = 278. * 2.13
         # Carbon cycle transition matrix
-        self.b11 = .810712
-        self.b12 = .189288
-        self.b13 = 0
-        self.b21 = .097213
-        self.b22 = .852787
-        self.b23 = .05
-        self.b31 = 0
-        self.b32 = .003119
-        self.b33 = .996881
+        self._b11 = .810712
+        self._b12 = .189288
+        self._b13 = 0
+        self._b21 = .097213
+        self._b22 = .852787
+        self._b23 = .05
+        self._b31 = 0
+        self._b32 = .003119
+        self._b33 = .996881
         self.carbon_matrix = np.array([
-            self.b11, self.b12, self.b13, self.b21, self.b22, self.b23,
-            self.b31, self.b32, self.b33
+            self._b11, self._b12, self._b13,
+            self._b21, self._b22, self._b23,
+            self._b31, self._b32, self._b33,
         ]).reshape(3, 3)
 
         ## Climate model
@@ -73,20 +74,22 @@ class Dice2007Params(object):
         self._forcing_ghg_2100 = .30
         self._temp_lower_2000 = .0068
         self._temp_atmosphere_2000 = .7307
-        self.c1 = .220
-        self.c2 = 0
-        self.c3 = .300
-        self.c4 = .050
-        self.thermal_transfer = np.array([self.c1, self.c2, self.c3, self.c4])
+        self._c1 = .220
+        self._c2 = 0
+        self._c3 = .300
+        self._c4 = .050
+        self.thermal_transfer = np.array([
+            self._c1, self._c2, self._c3, self._c4
+        ])
         self._forcing_co2_doubling = 3.8
         # Climate damage parameters, calibrated for quadratic at 2.5 C for 2105
-        self.a1 = 0
+        self._a1 = 0
         self._damages_coefficient = 0.0028388
 
         ## Abatement cost
         self._backstop_2005 = 1.17
-        self.miu_upper = 1.  # Upper limit on control rate
-        self.miu_2005 = .005
+        self._miu_upper = 1.  # Upper limit on control rate
+        self._miu_2005 = .005
 
         ## Participation
         self._participation_2005 = 1.
@@ -99,8 +102,8 @@ class Dice2007Params(object):
         self.t1 = self.t0 + 1
 
         ## Scaling and inessential parameters
-        self.scale1 = 194.  # Scaling coefficient in the objective function
-        self.scale2 = 381800.  # Scaling coefficient in the objective function
+        self._scale1 = 194.  # Scaling coefficient in the objective function
+        self._scale2 = 381800.  # Scaling coefficient in the objective function
 
         # Variables for initiating pandas array
         backstop_growth = np.zeros(self.tmax)
@@ -125,7 +128,7 @@ class Dice2007Params(object):
         investment = np.empty(self.tmax)
         investment[:] = self.savings * self._output_2005
         miu = np.empty(self.tmax)
-        miu[:] = self.miu_2005
+        miu[:] = self._miu_2005
         data = pd.DataFrame({
             'miu': miu,
             'carbon_intensity': carbon_intensity,
@@ -146,7 +149,7 @@ class Dice2007Params(object):
             'carbon_emitted': np.zeros(self.tmax),
             'participation': np.zeros(self.tmax),
             'participation_markup': np.zeros(self.tmax),
-            'damage': np.zeros(self.tmax),
+            'damages': np.zeros(self.tmax),
             'abatement': np.zeros(self.tmax),
             'consumption': np.zeros(self.tmax),
             'consumption_pc': np.zeros(self.tmax),

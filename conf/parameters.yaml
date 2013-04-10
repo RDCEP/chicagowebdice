@@ -423,7 +423,7 @@ measurements:
         machine_name: consumption
         unit: Trillions $USD / Year
       - name: Damages
-        machine_name: damage
+        machine_name: damages
         unit: Trillions $USD / Year
         graphs:
           - name: economy
