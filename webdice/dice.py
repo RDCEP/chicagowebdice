@@ -2,12 +2,12 @@ import numpy as np
 try:
     import pyipopt
 except ImportError:
-    print 'No ipopt'
+    print 'pyipopt noy installed.'
 try:
     import matplotlib.pyplot as plt
     from matplotlib import rcParams
 except ImportError:
-    pass
+    print 'matplotlib not installed.'
 from params import Dice2007Params
 import equations
 from equations.damages import *
@@ -29,25 +29,25 @@ class Dice2007(Dice2007Params):
         Names of all DICE variables
     aa : array
         Values for damages function
-    gfacpop: array
+    population_growth: array
         Population growth factor
-    l : array
+    population : array
         Labor or population
-    ga : array
+    productivity_growth : array
         Growth rate of productivity
-    gsig : array
+    intensity_decline : array
         Rate of carbon decline
-    gcost1 : array
+    backstop_growth : array
         Growth of cost factor
-    etree : array
+    emissions_deforest : array
         Emission from deforestation
-    rr : array
+    utility_discount : array
         Average utility discount rate
-    ecap : array
+    emissions_cap : array
         Emissions caps for treaty
-    partfract : array
+    participation : array
         Participation in treaty
-    forcoth : array
+    forcing_ghg : array
         Forcing for GHGs
     output_abate : array
         Abatement as a percentage of output
@@ -84,27 +84,34 @@ class Dice2007(Dice2007Params):
     @property
     def parameters(self):
         return [
-            "elasmu", "prstp", "_pop0", "_gpop0", "popasym", "_a0",
-            "_ga0", "dela", "dk", "_gama", "_q0", "_k0", "_sig0",
-            "_gsigma", "dsig", "dsig2", "_eland0", "mat2000",
-            "mu2000", "ml2000", "matPI", "t2xco2", "fex0", "fex1",
-            "tocean0", "tatm0", "fco22x", "a1", "a2", "a3", "b11", "b12",
-            "b21", "b22", "b23", "b32", "b33", "c1", "c2", "c3", "c4",
-            "expcost2", "_pback", "backrat", "gback", "limmiu",
-            "partfract1", "partfract2", "partfract21", "dpartfract",
-            "e2050", "e2100", "e2150", "p2050", "p2100", "p2150",
-            "fosslim", "scale1", "scale2",
-            "tmax", "numScen", "savings", "miu_2005", 'backstop',
+            'elasmu', 'prstp', '_population_2005', '_population_growth',
+            'popasym', '_productivity','_productivity_growth', 'tech_decline',
+            'tech_depreciation', '_gama', '_output_2005', '_capital_2005',
+            '_intensity_2005', '_intensity_growth', 'decarbon_decline',
+            'dsig2', '_emissions_deforest_2005', '_mass_atmosphere_2005',
+            '_mass_upper_2005', '_mass_lower_2005', '_mass_preindustrial',
+            'temp_co2_doubling', '_forcing_ghg_2000', '_forcing_ghg_2100',
+            '_temp_lower_2000', '_temp_atmosphere_2000',
+            '_forcing_co2_doubling', 'a1', '_damages_coefficient',
+            'damages_exponent', 'b11', 'b12', 'b21', 'b22', 'b23', 'b32',
+            'b33', 'c1', 'c2', 'c3', 'c4', 'abatement_exponent',
+            '_backstop_2005', 'backstop_ratio', 'backstop_decline',
+            'miu_upper', '_participation_2005', '_participation_2015',
+            '_participation_2205', '_participation_decline', 'e2050',
+            'e2100', 'e2150', 'p2050', 'p2100', 'p2150', 'fosslim',
+            'scale1', 'scale2', 'tmax', 'numScen', 'savings', 'miu_2005',
+            'backstop',
             ]
 
     @property
     def user_params(self):
         return [
-            't2xco2', 'a3', 'dela', 'dsig', 'e2050', 'e2100', 'e2150',
-            "p2050", "p2100", "p2150",
-            'popasym', 'dk', 'savings', 'fosslim', 'expcost2', 'gback',
-            'backrat', 'elasmu', 'prstp',
-            ]
+            'temp_co2_doubling', 'damages_exponent', 'tech_decline',
+            'decarbon_decline', 'e2050', 'e2100', 'e2150',
+            'p2050', 'p2100', 'p2150', 'popasym', 'tech_depreciation',
+            'savings', 'fosslim', 'abatement_exponent', 'backstop_decline',
+            'backstop_ratio', 'elasmu', 'prstp',
+        ]
 
     @property
     def vars(self):
@@ -115,9 +122,9 @@ class Dice2007(Dice2007Params):
             'temp_lower', 'damage', 'abatement', 'output', 'output_abate',
             'investment', 'carbon_emitted', 'consumption',
             'consumption_pc', 'utility', 'utility_d',
-            'al', 'gcost1', 'sigma', 'miu', 'backstop', 'l', 'tax_rate',
-            'scc', 'consumption_discount',
-            ]
+            'productivity', 'backstop_growth', 'carbon_intensity', 'miu', 'backstop',
+            'population', 'tax_rate', 'scc', 'consumption_discount',
+        ]
 
     @property
     def aa(self):
@@ -127,82 +134,94 @@ class Dice2007(Dice2007Params):
         ...
         Returns
         -------
-        array : [a1, a2, a3]
+        array
         """
-        return np.array([self.a1, self.a2, self.a3])
+        return np.array(
+            [self.a1, self._damages_coefficient, self.damages_exponent]
+        )
 
     @property
-    def gfacpop(self):
+    def population_growth(self):
         """
         L_g, Population growth factor
         ...
         Returns
         -------
-        array : exp(gpop0 * t - 1) / exp(gpop * t)
+        array
         """
-        return (np.exp(self._gpop0 * self.t0) - 1) / (np.exp(self._gpop0 *
-                                                             self.t0))
+        return (
+            (np.exp(self._population_growth * self.t0) - 1) / 
+            (np.exp(self._population_growth * self.t0))
+        )
 
     @property
-    def l(self):
+    def population(self):
         """
         L, Population.
         ...
         Returns
         -------
-        array : (exp(pop(0) * t) - 1) / exp(gpop(0) * t)
+        array
         """
-        return self._pop0 * (1 - self.gfacpop) + self.gfacpop * \
-               self.popasym
+        return (
+            self._population_2005 * 
+            (1 - self.population_growth) + self.population_growth * 
+            self.popasym
+        )
 
     @property
-    def ga(self):
+    def productivity_growth(self):
         """
         A_g, Growth rate of total factor productivity.
         ...
         Returns
         -------
-        array : ga(0) * exp(-dela * 10 * t)
+        array
         """
-        return self._ga0 * np.exp(-(self.dela / 100.) * 10 * self.t0)
+        return self._productivity_growth * np.exp(
+            -(self.tech_decline / 100.) * 10 * self.t0
+        )
 
     @property
-    def gsig(self):
+    def intensity_decline(self):
         """
         sigma_g, Rate of decline of carbon intensity
         ...
         Returns
         -------
-        array : gsigma * exp(-dsig * 10 * t - disg2 * 10 * t^2)
+        array
         """
-        return self._gsigma * np.exp(
-            -(self.dsig / 100) * 10 * self.t0 - self.dsig2 * 10 * (self.t0 ** 2)
+        return (
+            self._intensity_growth * np.exp(
+                -(self.decarbon_decline / 100) * 10 * 
+                self.t0 - self.dsig2 * 10 * (self.t0 ** 2)
+            )
         )
 
     @property
-    def etree(self):
+    def emissions_deforest(self):
         """
         E_land, Emissions from deforestation
         ...
         Returns
         -------
-        array : Eland(0) * (1 - .1)^t
+        array
         """
-        return self._eland0 * (1 - .1) ** self.t0
+        return self._emissions_deforest_2005 * (1 - .1) ** self.t0
 
     @property
-    def rr(self):
+    def utility_discount(self):
         """
         R, Average utility discount rate
         ...
         Returns
         -------
-        array : 1 / (1 + prstp)^t
+        array
         """
         return 1 / ((1 + self.prstp) ** (10 * self.t0))
 
     @property
-    def ecap(self):
+    def emissions_cap(self):
         """
         Emissions caps from treaty inputs
         ...
@@ -218,7 +237,7 @@ class Dice2007(Dice2007Params):
         ))
 
     @property
-    def partfract(self):
+    def participation(self):
         """
         phi, Fraction of emissions in control regime
         ...
@@ -228,10 +247,17 @@ class Dice2007(Dice2007Params):
         """
         if not self.treaty:
             return np.concatenate((
-                np.linspace(self.partfract1, self.partfract1, 1),
-                self.partfract21 + (self.partfract2 - self.partfract21) * np.exp(
-                    -self.dpartfract * np.arange(23)),
-                np.linspace(self.partfract21, self.partfract21, 36),
+                np.linspace(
+                    self._participation_2005, self._participation_2005, 1
+                ),
+                self._participation_2205 + (
+                    self._participation_2015 - self._participation_2205
+                ) * np.exp(
+                    -self._participation_decline * np.arange(23)
+                ),
+                np.linspace(
+                    self._participation_2205, self._participation_2205, 36
+                ),
             ))
         p = [self.p2050, self.p2050, self.p2100, self.p2150, self.pmax]
         return np.concatenate((
@@ -242,7 +268,7 @@ class Dice2007(Dice2007Params):
         ))
 
     @property
-    def forcoth(self):
+    def forcing_ghg(self):
         """
         F_EX, Exogenous forcing for other greenhouse gases
         ...
@@ -251,8 +277,10 @@ class Dice2007(Dice2007Params):
         array
         """
         return np.concatenate((
-            self.fex0 + .1 * (self.fex1 - self.fex0) * np.arange(11),
-            self.fex0 + (np.ones(49) * .36),
+            self._forcing_ghg_2000 + .1 * (
+                self._forcing_ghg_2100 - self._forcing_ghg_2000
+            ) * np.arange(11),
+            self._forcing_ghg_2000 + (np.ones(49) * .36),
         ))
 
     @property
@@ -280,23 +308,25 @@ class Dice2007(Dice2007Params):
         ...
         Returns
         -------
-        array :
+        array
         """
-        # return self.data.vars.gcost1 * self.data.vars.miu ** \
-        #        self.expcost2
+        # return self.data.vars.backstop_growth * self.data.vars.miu ** \
+        #        self.abatement_exponent
         return self.data.vars.abatement / self.data.vars.gross_output * 100
 
+    @property
     def backstop(self):
         """
-        Backstop price
+        Cost of replacing clean energy
         ...
         Returns
         -------
-        array : pback * ((backrat - 1 + exp(-gback * t)) / backrat
+        array
         """
-        return self._pback * (
-            (self.backrat - 1 + np.exp(-self.gback * self.t0)) /
-            self.backrat)
+        return self._backstop_2005 * (
+            (self.backstop_ratio - 1 + 
+             np.exp(-self.backstop_decline * self.t0)) / self.backstop_ratio
+        ) * (12./44.)
 
     @property
     def welfare(self):
@@ -305,7 +335,7 @@ class Dice2007(Dice2007Params):
         ...
         Returns
         -------
-        float : sum of discounted utility
+        float
         """
         return np.sum(self.data.vars.utility_d)
 
@@ -330,20 +360,21 @@ class Dice2007(Dice2007Params):
         """
         ii = i - 1
         if i > 0:
-            D.sigma[i] = D.sigma[ii] / (1 - self.gsig[i])
-            D.al[i] = D.al[ii] / (1 - self.ga[ii])
+            D.carbon_intensity[i] = D.carbon_intensity[ii] / (
+                1 - self.intensity_decline[i])
+            D.productivity[i] = D.productivity[ii] / (
+                1 - self.productivity_growth[ii])
             D.capital[i] = self.eq.capital(
-                D.capital[ii], self.dk, D.investment[ii]
+                D.capital[ii], self.tech_depreciation, D.investment[ii]
             )
-            D.al[i] *= self.eq.get_production_factor(
+            D.productivity[i] *= self.eq.get_production_factor(
                 self.aa, D.temp_atmosphere[ii]
             )
-        D.gcost1[i] = (self._pback * D.sigma[i] / self.expcost2) * (
-            (self.backrat - 1 + np.exp(-self.gback * ii)) /
-            self.backrat
+        D.backstop_growth[i] = (
+            self.backstop[i] * D.carbon_intensity[i] / self.abatement_exponent
         )
         D.gross_output[i] = self.eq.gross_output(
-            D.al[i], D.capital[i], self._gama, self.l[i]
+            D.productivity[i], D.capital[i], self._gama, self.population[i]
         )
         if self.optimize:
             if miu is not None:
@@ -356,27 +387,25 @@ class Dice2007(Dice2007Params):
             if i > 0:
                 if self.treaty:
                     D.miu[i] = self.eq.miu(
-                        D.emissions_ind[ii], self.ecap[ii],
+                        D.emissions_ind[ii], self.emissions_cap[ii],
                         D.emissions_ind[0],
-                        D.sigma[i], D.gross_output[i]
+                        D.carbon_intensity[i], D.gross_output[i]
                     )
                 elif self.carbon_tax:
-                    D.miu[i] = min((
-                        ((self.user_tax_rate[i] * D.emissions_total[ii]) /
-                        (1000 * D.gross_output[i] * D.gcost1[i])) ** (
-                        1 / (self.expcost2 - 1)
-                    )), 1.)
+                    D.miu[i] = (
+                        (self.user_tax_rate[i] / self.backstop[i] * 1000) **
+                        (1 / (self.abatement_exponent - 1))
+                    )
                 else:
                     D.miu[i] = 0.
-        D.tax_rate[i] = ((
-            D.gcost1[i] * D.miu[i] ** (self.expcost2 - 1) * D.gross_output[i]) /
-            (D.emissions_total[i]
-        ) * 1000)
+        D.tax_rate[i] = self.eq.tax_rate(
+            self.backstop[i], D.miu[i], self.abatement_exponent
+        )
         D.emissions_ind[i] = self.eq.emissions_ind(
-            D.sigma[i], D.miu[i], D.gross_output[i]
+            D.carbon_intensity[i], D.miu[i], D.gross_output[i]
         )
         D.emissions_total[i] = self.eq.emissions_total(
-            D.emissions_ind[i], self.etree[i]
+            D.emissions_ind[i], self.emissions_deforest[i]
         )
         if scc_shock is True:
             D.emissions_total[i] += 1.
@@ -393,30 +422,31 @@ class Dice2007(Dice2007Params):
         if i > 0:
             D.mass_atmosphere[i] = self.eq.mass_atmosphere(
                 D.emissions_total[ii], D.mass_atmosphere[ii],
-                D.mass_upper[ii], self.bb
+                D.mass_upper[ii], self.carbon_matrix
             )
             D.mass_upper[i] = self.eq.mass_upper(
                 D.mass_atmosphere[ii], D.mass_upper[ii],
-                D.mass_lower[ii], self.bb
+                D.mass_lower[ii], self.carbon_matrix
             )
             D.mass_lower[i] = self.eq.mass_lower(
-                D.mass_upper[ii], D.mass_lower[ii], self.bb
+                D.mass_upper[ii], D.mass_lower[ii], self.carbon_matrix
             )
         D.forcing[i] = self.eq.forcing(
-            self.fco22x, D.mass_atmosphere[i], self.matPI,
-            self.forcoth[i]
+            self._forcing_co2_doubling, D.mass_atmosphere[i], 
+            self._mass_preindustrial, self.forcing_ghg[i]
         )
         if i > 0:
             D.temp_atmosphere[i] = self.eq.temp_atmosphere(
-                D.temp_atmosphere[ii], D.temp_lower[ii],
-                D.forcing[i], self.fco22x, self.t2xco2, self.cc
+                D.temp_atmosphere[ii], D.temp_lower[ii], D.forcing[i], 
+                self._forcing_co2_doubling, self.temp_co2_doubling,
+                self.thermal_transfer
             )
             D.temp_lower[i] = self.eq.temp_lower(
-                D.temp_atmosphere[ii], D.temp_lower[ii], self.cc
+                D.temp_atmosphere[ii], D.temp_lower[ii], self.thermal_transfer
             )
         D.abatement[i] = self.eq.abatement(
-            D.gross_output[i], D.miu[i], D.gcost1[i],
-            self.expcost2, self.partfract[i]
+            D.gross_output[i], D.miu[i], D.backstop_growth[i],
+            self.abatement_exponent, self.participation[i]
         )
         D.damage[i], D.output[i], D.consumption[i] = \
             self.eq.get_model_values(
@@ -424,7 +454,7 @@ class Dice2007(Dice2007Params):
                 self.aa, D.abatement[i], self.savings
             )
         D.consumption_pc[i] = self.eq.consumption_pc(
-            D.consumption[i], self.l[i]
+            D.consumption[i], self.population[i]
         )
         if i > 0:
             D.consumption_discount[i] = self.eq.consumption_discount(
@@ -432,16 +462,16 @@ class Dice2007(Dice2007Params):
                 D.consumption_pc[i], i
             )
         if i == 0:
-            D.investment[i] = self.savings * self._q0
+            D.investment[i] = self.savings * self._output_2005
         else:
             D.investment[i] = self.eq.investment(
                 self.savings, D.output[i]
             )
         D.utility[i] = self.eq.utility(
-            D.consumption_pc[i], self.elasmu, self.l[i]
+            D.consumption_pc[i], self.elasmu, self.population[i]
         )
         D.utility_d[i] = self.eq.utility_d(
-            D.utility[i], self.rr[i], self.l[i]
+            D.utility[i], self.utility_discount[i], self.population[i]
         )
         if deriv:
             self.derivative.fprime[i] = (D.utility_d[i] - f0) / epsilon
@@ -550,8 +580,8 @@ class Dice2007(Dice2007Params):
         M : integer, size of constraints
         nnzj : integer, number of non-zero values in Jacobian
         nnzh : integer, number of non-zero values in Hessian
-        xl : array, lower bounds
-        xu : array, upper bounds
+        xl : array, lower bounds of objective
+        xu : array, upper bounds of objective
         gl : array, lower bounds of constraints
         gu : array, upper bounds of constraints
 
@@ -604,10 +634,10 @@ def verify_out(d, param=None, value=None):
     filename = '../verify/gams_%s_%s.csv' % (param, value)
     with open(filename, 'a') as f:
         _vars = [
-            'miu', 'sigma', 'al', 'gcost1', 'capital', 'output',
-            'mass_atmosphere', 'mass_upper', 'mass_lower', 'temp_atmosphere',
-            'temp_lower', 'investment', 'gross_output', 'forcing',
-            'emissions_ind', 'emissions_total', 'carbon_emitted',
+            'miu', 'carbon_intensity', 'productivity', 'backstop_growth', 'capital',
+            'output', 'mass_atmosphere', 'mass_upper', 'mass_lower', 
+            'temp_atmosphere', 'temp_lower', 'investment', 'gross_output', 
+            'forcing', 'emissions_ind', 'emissions_total', 'carbon_emitted',
             'participation', 'participation_markup', 'damage',
             'abatement', 'consumption', 'consumption_pc', 'utility',
             'utility_d', 'pref_fac',
@@ -624,18 +654,23 @@ if __name__ == '__main__':
     def run_verification():
         d = Dice2007()
         _params = [
-            't2xco2', 'a3', 'dela', 'dsig', 'expcost2', 'gback',
-            'backrat', 'popasym','dk', 'savings', 'fosslim', 'elasmu', 'prstp',
-            ]
+            'temp_co2_doubling', 'damages_exponent', 'tech_decline', 
+            'decarbon_decline', 'abatement_exponent', 'backstop_decline',
+            'backstop_ratio', 'popasym','tech_depreciation', 'savings', 
+            'fosslim', 'elasmu', 'prstp',
+        ]
         verify_out(d)
         for p in _params:
             verify_out(d, p, 'minimum')
             verify_out(d, p, 'maximum')
 
     d = Dice2007()
-    d.carbon_tax = True
-    d.c2050 = 50.
-    d.c2100 = 70.
-    d.c2150 = 90.
+    # d.carbon_tax = True
+    # d.c2050 = 50.
+    # d.c2100 = 70.
+    # d.c2150 = 90.
+    # d.damages_model = 'productivity_fraction'
+    d.prod_frac = .25
     D = d.loop()
+    # print D.scc
     print D.tax_rate

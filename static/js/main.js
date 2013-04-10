@@ -919,16 +919,16 @@
          */
         if ($(form).hasClass('basic')) {
           var new_values = {
-              't2xco2': [1,2,3,4,5],
-              'a3': [1, 1.4, 2.0, 2.8, 4.0],
-//                            'dela': [0.0, 0.03, 0.1, 0.38, 1.5],
-//                            'dsig': [0.0, 0.06, 0.3, 1.3, 6.0],
-              'dela': [1.5, 0.38, 0.1, 0.03, 0.0],
-              'dsig': [6.0, 1.3, 0.3, 0.06, 0.0],
-              'backrat': [1, 1.4, 2.0, 2.8, 4.0]
+              'temp_co2_doubling': [1,2,3,4,5],
+              'damages_exponent': [1, 1.4, 2.0, 2.8, 4.0],
+//                            'tech_decline': [0.0, 0.03, 0.1, 0.38, 1.5],
+//                            'decarbon_decline': [0.0, 0.06, 0.3, 1.3, 6.0],
+              'tech_decline': [1.5, 0.38, 0.1, 0.03, 0.0],
+              'decarbon_decline': [6.0, 1.3, 0.3, 0.06, 0.0],
+              'backstop_ratio': [1, 1.4, 2.0, 2.8, 4.0]
             }
           ;
-          data = data.slice(0,data.search('t2xco2'));
+          data = data.slice(0,data.search('temp_co2_doubling'));
           $('#tab-beliefs').find('input').each(function() {
             $(this).val(function(i, v) {
               data += '&' + $(this).attr('name') + '=';

@@ -122,28 +122,28 @@ basic_tabs:
         precision: 0
         parameters:
           - name: 'Climate sensitivity: How much will temperatures go up?'
-            machine_name: t2xco2
+            machine_name: temp_co2_doubling
             description: Temperature increase in degrees C from doubling of atmospheric CO2
             unit: °C
             min_legend: Less than expected
             max_legend: More than expected
           - name: How large will the harms be?
-            machine_name: a3
+            machine_name: damages_exponent
             description: Increase in harms from climate change due to an increase in temperatures
             min_legend: Less harm
             max_legend: More harm
           - name: Decline in rate of growth of productivity
-            machine_name: dela
+            machine_name: tech_decline
             description: Decline in the rate of growth in productivity over time
             min_legend: Slower growth
             max_legend: Faster growth
           - name: Change in energy efficiency
-            machine_name: dsig
+            machine_name: decarbon_decline
             description: Rate of decline in energy use per $ of GDP
             min_legend: Less energy efficient
             max_legend: More energy efficient
           - name: How low will the costs of renewables go?
-            machine_name: backrat
+            machine_name: backstop_ratio
             description: Cost of replacing all emissions in 2012 $ per ton of CO_{2} , relative to future cost
             min_legend: Less expensive
             max_legend: More expensive
@@ -222,7 +222,7 @@ advanced_tabs:
       - name: Your beliefs about the climate and the future
         parameters:
           - name: 'Climate sensitivity: How much will temperatures go up?'
-            machine_name: t2xco2
+            machine_name: temp_co2_doubling
             min: 1
             max: 5
             step: 0.5
@@ -231,7 +231,7 @@ advanced_tabs:
             description: Temperature increase in degrees C from doubling of atmospheric CO2
             unit: °C
           - name: How large will the harms be?
-            machine_name: a3
+            machine_name: damages_exponent
             min: 1
             max: 4
             step: 0.5
@@ -280,7 +280,7 @@ advanced_tabs:
       - name: Cost of reducing emissions
         parameters:
           - name: Marginal cost of reducing emissions
-            machine_name: expcost2
+            machine_name: abatement_exponent
             default: 2.8
             min: 2
             max: 4
@@ -288,7 +288,7 @@ advanced_tabs:
             precision: 1
             description: Additional cost from more abatement
           - name: How fast will the costs of renewable energy decline?
-            machine_name: gback
+            machine_name: backstop_decline
             default: 0.05
             min: 0
             max: 0.2
@@ -297,7 +297,7 @@ advanced_tabs:
             description: Rate of decline in costs of reduction emissions
             unit: "%"
           - name: How low will the costs of renewables go?
-            machine_name: backrat
+            machine_name: backstop_ratio
             default: 2.0
             min: 1.0
             max: 4
@@ -307,7 +307,7 @@ advanced_tabs:
       - name: Econommic performance
         parameters:
           - name: Decline in rate of growth of productivity
-            machine_name: dela
+            machine_name: tech_decline
             min: 0.05
             max: 1.5
             step: 0.05
@@ -316,7 +316,7 @@ advanced_tabs:
             description: Decline in the rate of growth in productivity over time
             unit: '%'
           - name: Depreciation rate
-            machine_name: dk
+            machine_name: tech_depreciation
             default: 0.10
             min: 0.08
             max: 0.2
@@ -347,7 +347,7 @@ advanced_tabs:
       - name: Energy parameters
         parameters:
           - name: Reduction in energy intensity per decade
-            machine_name: dsig
+            machine_name: decarbon_decline
             default: 0.3
             min: 0.0
             max: 6.0
@@ -390,7 +390,7 @@ measurements:
   - name: User-controlled Inputs
     options:
       - name: Total Factor Productivity
-        machine_name: al
+        machine_name: productivity
         graphs:
           - name: economy
             location: topleft
@@ -401,13 +401,13 @@ measurements:
           - name: economy
             location: topright
       - name: Carbon Intensity
-        machine_name: sigma
+        machine_name: carbon_intensity
         unit: tons of CO2 / 1000 $USD
         graphs:
           - name: economy
             location: bottomleft
       - name: Labor Supply
-        machine_name: l
+        machine_name: population
         unit: Millions
   - name: Economic Results
     options:
@@ -516,7 +516,7 @@ measurements:
 
 
 parameter_help:
-  t2xco2: >
+  temp_co2_doubling: >
       Climate Sensitivity estimates the extent to which the global mean
       temperature increases when we add greenhouse gasses to the atmosphere.
       This metric is defined as the temperature increase from doubling the
@@ -526,14 +526,14 @@ parameter_help:
       affect economic activities and how these economic activities in turn
       effect climate.
 
-  a3: >
+  damages_exponent: >
     This model assumes that an increase in global mean temperature will harm
     the economy.  By adjusting this slider, you can not only discover the
     various degrees to which increasing temperature can affect the economy,
     but you can also estimate how these economic damages will in turn affect
     the climate.
 
-  dela: >
+  tech_decline: >
     This metric represents the decline in the rate of growth of productivity
     over time.  This model assumes that the ability to produce goods with a
     given amount of capital and labor increases over time.  However, the rate
@@ -541,21 +541,21 @@ parameter_help:
     indicates optimism in the continued ability to produce goods efficiently.
     Slower growth indicates that productivity will decrease over time.
 
-  dsig: >
+  decarbon_decline: >
     Energy intensity is the emissions per unit of economic output.  As energy
     efficiency increases energy intensity decreases; with increased efficiency
     less energy is used to produce output, resulting in fewer emissions.
     Adjust the slider to discover how energy intensity can affect future
     emissions and their economic impacts.
 
-  backrat: >
+  backstop_ratio: >
       We do not know what the costs of zero-carbon energy will ultimately be.
       The lower the cost of zero-carbon technologies, the cheaper emissions
       reductions will be.  Adjust the slider to reflect your beliefs on how low
       the cost of zero-carbon energy will be and to discover how these costs
       affect climate and the economy.
 
-  expcost2: >
+  abatement_exponent: >
       The cost of reducing emissions will increase as we try to reduce a greater
       percentage of the total. Small reductions, such as through efficiency
       improvements, may be relatively easy while large reductions, such as
@@ -563,13 +563,13 @@ parameter_help:
       fast the costs of emissions reductions go up as we try to eliminate a greater
       percentage of emissions. The higher the number, the faster costs increase.
 
-  gback: >
+  backstop_decline: >
       The model assumes that the cost of replacing all fossil fuels with zero-carbon
       energy will cost $1,170 per ton of CO2 today but that these costs will decline
       over time. You can set the speed of this decline anywhere from 0% (these costs
       never go down) to 20% per year, the most optimistic case.
 
-  dk: >
+  tech_depreciation: >
       As capital (buildings, machines, factories and similar items) is used, it
       wears out. The model assumes that it wears out at a rate of 10% per year.
       You can choose a value between 8% per year and 20% per year.
