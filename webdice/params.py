@@ -6,17 +6,18 @@ class Dice2007Params(object):
     def __init__(self):
         self.temp_co2_doubling = 3.
         self.damages_exponent = 2.
-        self.tech_decline = .1
-        self.decarbon_decline = .3
+        self.productivity_decline = .1
+        self.intensity_decline_rate = .3
         self.abatement_exponent = 2.8
         self.backstop_decline = .05
         self.backstop_ratio = 2.
         self.popasym = 8600.
-        self.tech_depreciation = .1
+        self.depreciation = .1
         self.savings = .2
         self.fosslim = 6000.
         self.carbon_model = 'dice_carbon'
         self.damages_model = 'dice_output'
+        self.prod_frac = .05
         self.elasmu = 2.
         self.prstp = .015
         self.treaty_switch = False
@@ -36,16 +37,15 @@ class Dice2007Params(object):
         self._population_growth = .35
         self._productivity = .02722
         self._productivity_growth = .092
-        self._gama = .300  # Capital elasticity in production function
+        self._output_elasticty = .300
         self._output_2005 = 61.1
         self._output_2005 = 55.667
         self._capital_2005 = 137.
-        self.prod_frac = .05
 
         ## Emissions
         self._intensity_2005 = .13418
         self._intensity_growth = -.0730
-        self.dsig2 = .000  # Quadratic term in decarbonization
+        self._intensity_quadratic = .000
         self._emissions_deforest_2005 = 11.0
 
         ## Carbon Cycle

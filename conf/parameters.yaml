@@ -133,12 +133,12 @@ basic_tabs:
             min_legend: Less harm
             max_legend: More harm
           - name: Decline in rate of growth of productivity
-            machine_name: tech_decline
+            machine_name: productivity_decline
             description: Decline in the rate of growth in productivity over time
             min_legend: Slower growth
             max_legend: Faster growth
           - name: Change in energy efficiency
-            machine_name: decarbon_decline
+            machine_name: intensity_decline_rate
             description: Rate of decline in energy use per $ of GDP
             min_legend: Less energy efficient
             max_legend: More energy efficient
@@ -307,7 +307,7 @@ advanced_tabs:
       - name: Econommic performance
         parameters:
           - name: Decline in rate of growth of productivity
-            machine_name: tech_decline
+            machine_name: productivity_decline
             min: 0.05
             max: 1.5
             step: 0.05
@@ -316,7 +316,7 @@ advanced_tabs:
             description: Decline in the rate of growth in productivity over time
             unit: '%'
           - name: Depreciation rate
-            machine_name: tech_depreciation
+            machine_name: depreciation
             default: 0.10
             min: 0.08
             max: 0.2
@@ -347,7 +347,7 @@ advanced_tabs:
       - name: Energy parameters
         parameters:
           - name: Reduction in energy intensity per decade
-            machine_name: decarbon_decline
+            machine_name: intensity_decline_rate
             default: 0.3
             min: 0.0
             max: 6.0
@@ -533,7 +533,7 @@ parameter_help:
     but you can also estimate how these economic damages will in turn affect
     the climate.
 
-  tech_decline: >
+  productivity_decline: >
     This metric represents the decline in the rate of growth of productivity
     over time.  This model assumes that the ability to produce goods with a
     given amount of capital and labor increases over time.  However, the rate
@@ -541,7 +541,7 @@ parameter_help:
     indicates optimism in the continued ability to produce goods efficiently.
     Slower growth indicates that productivity will decrease over time.
 
-  decarbon_decline: >
+  intensity_decline_rate: >
     Energy intensity is the emissions per unit of economic output.  As energy
     efficiency increases energy intensity decreases; with increased efficiency
     less energy is used to produce output, resulting in fewer emissions.
@@ -569,7 +569,7 @@ parameter_help:
       over time. You can set the speed of this decline anywhere from 0% (these costs
       never go down) to 20% per year, the most optimistic case.
 
-  tech_depreciation: >
+  depreciation: >
       As capital (buildings, machines, factories and similar items) is used, it
       wears out. The model assumes that it wears out at a rate of 10% per year.
       You can choose a value between 8% per year and 20% per year.

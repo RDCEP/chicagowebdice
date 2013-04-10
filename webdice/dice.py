@@ -85,10 +85,10 @@ class Dice2007(Dice2007Params):
     def parameters(self):
         return [
             'elasmu', 'prstp', '_population_2005', '_population_growth',
-            'popasym', '_productivity','_productivity_growth', 'tech_decline',
-            'tech_depreciation', '_gama', '_output_2005', '_capital_2005',
-            '_intensity_2005', '_intensity_growth', 'decarbon_decline',
-            'dsig2', '_emissions_deforest_2005', '_mass_atmosphere_2005',
+            'popasym', '_productivity','_productivity_growth', 'productivity_decline',
+            'depreciation', '_output_elasticty', '_output_2005', '_capital_2005',
+            '_intensity_2005', '_intensity_growth', 'intensity_decline_rate',
+            '_intensity_quadratic', '_emissions_deforest_2005', '_mass_atmosphere_2005',
             '_mass_upper_2005', '_mass_lower_2005', '_mass_preindustrial',
             'temp_co2_doubling', '_forcing_ghg_2000', '_forcing_ghg_2100',
             '_temp_lower_2000', '_temp_atmosphere_2000',
@@ -106,9 +106,9 @@ class Dice2007(Dice2007Params):
     @property
     def user_params(self):
         return [
-            'temp_co2_doubling', 'damages_exponent', 'tech_decline',
-            'decarbon_decline', 'e2050', 'e2100', 'e2150',
-            'p2050', 'p2100', 'p2150', 'popasym', 'tech_depreciation',
+            'temp_co2_doubling', 'damages_exponent', 'productivity_decline',
+            'intensity_decline_rate', 'e2050', 'e2100', 'e2150',
+            'p2050', 'p2100', 'p2150', 'popasym', 'depreciation',
             'savings', 'fosslim', 'abatement_exponent', 'backstop_decline',
             'backstop_ratio', 'elasmu', 'prstp',
         ]
@@ -179,7 +179,7 @@ class Dice2007(Dice2007Params):
         array
         """
         return self._productivity_growth * np.exp(
-            -(self.tech_decline / 100.) * 10 * self.t0
+            -(self.productivity_decline / 100.) * 10 * self.t0
         )
 
     @property
@@ -193,8 +193,8 @@ class Dice2007(Dice2007Params):
         """
         return (
             self._intensity_growth * np.exp(
-                -(self.decarbon_decline / 100) * 10 * 
-                self.t0 - self.dsig2 * 10 * (self.t0 ** 2)
+                -(self.intensity_decline_rate / 100) * 10 *
+                self.t0 - self._intensity_quadratic * 10 * (self.t0 ** 2)
             )
         )
 
@@ -365,7 +365,7 @@ class Dice2007(Dice2007Params):
             D.productivity[i] = D.productivity[ii] / (
                 1 - self.productivity_growth[ii])
             D.capital[i] = self.eq.capital(
-                D.capital[ii], self.tech_depreciation, D.investment[ii]
+                D.capital[ii], self.depreciation, D.investment[ii]
             )
             D.productivity[i] *= self.eq.get_production_factor(
                 self.aa, D.temp_atmosphere[ii]
@@ -374,7 +374,7 @@ class Dice2007(Dice2007Params):
             self.backstop[i] * D.carbon_intensity[i] / self.abatement_exponent
         )
         D.gross_output[i] = self.eq.gross_output(
-            D.productivity[i], D.capital[i], self._gama, self.population[i]
+            D.productivity[i], D.capital[i], self._output_elasticty, self.population[i]
         )
         if self.optimize:
             if miu is not None:
@@ -393,7 +393,7 @@ class Dice2007(Dice2007Params):
                     )
                 elif self.carbon_tax:
                     D.miu[i] = (
-                        (self.user_tax_rate[i] / self.backstop[i] * 1000) **
+                        (self.user_tax_rate[i] / (self.backstop[i] * 1000)) **
                         (1 / (self.abatement_exponent - 1))
                     )
                 else:
@@ -654,9 +654,9 @@ if __name__ == '__main__':
     def run_verification():
         d = Dice2007()
         _params = [
-            'temp_co2_doubling', 'damages_exponent', 'tech_decline', 
-            'decarbon_decline', 'abatement_exponent', 'backstop_decline',
-            'backstop_ratio', 'popasym','tech_depreciation', 'savings', 
+            'temp_co2_doubling', 'damages_exponent', 'productivity_decline',
+            'intensity_decline', 'abatement_exponent', 'backstop_decline',
+            'backstop_ratio', 'popasym','depreciation', 'savings',
             'fosslim', 'elasmu', 'prstp',
         ]
         verify_out(d)

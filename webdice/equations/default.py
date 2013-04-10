@@ -5,9 +5,9 @@ class Loop(object):
     def __init__(self):
         pass
 
-    def capital(self, capital, tech_depreciation, investment):
+    def capital(self, capital, depreciation, investment):
         """K(t), Capital, trillions $USD"""
-        return capital * (1 - tech_depreciation) ** 10 + 10 * investment
+        return capital * (1 - depreciation) ** 10 + 10 * investment
 
     def gross_output(self, productivity, capital, gama, l):
         """Gross output"""
@@ -137,5 +137,5 @@ class Loop(object):
 
     def tax_rate(self, backstop, miu, abatement_exponent):
         return (
-            backstop * miu ** (abatement_exponent - 1)
+            backstop * miu ** (abatement_exponent - 1) * 1000
         )
