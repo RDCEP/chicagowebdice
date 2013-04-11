@@ -445,7 +445,7 @@ measurements:
         machine_name: capital
         unit: Trillions $USD
       - name: Utility Discounted
-        machine_name: utility_d
+        machine_name: utility_discounted
       - name: Utility
         machine_name: utility
       - name: Social Cost of Carbon

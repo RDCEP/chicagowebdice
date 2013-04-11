@@ -154,7 +154,7 @@ class Dice2007Params(object):
             'consumption': np.zeros(self.tmax),
             'consumption_pc': np.zeros(self.tmax),
             'utility': np.zeros(self.tmax),
-            'utility_d': np.zeros(self.tmax),
+            'utility_discounted': np.zeros(self.tmax),
             'pref_fac': np.ones(self.tmax),
             'scc': np.ones(self.tmax),
             'consumption_discount': np.ones(self.tmax),

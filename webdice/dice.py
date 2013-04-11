@@ -93,7 +93,7 @@ class Dice2007(Dice2007Params):
             'mass_lower', 'forcing', 'temp_atmosphere',
             'temp_lower', 'damages', 'abatement', 'output', 'output_abate',
             'investment', 'carbon_emitted', 'consumption',
-            'consumption_pc', 'utility', 'utility_d',
+            'consumption_pc', 'utility', 'utility_discounted',
             'productivity', 'backstop_growth', 'carbon_intensity', 'miu', 'backstop',
             'population', 'tax_rate', 'scc', 'consumption_discount',
         ]
@@ -306,7 +306,7 @@ class Dice2007(Dice2007Params):
         -------
         float
         """
-        return np.sum(self.data.vars.utility_d)
+        return np.sum(self.data.vars.utility_discounted)
 
     def step(self, i, D, miu=None, deriv=False, epsilon=1e-3, f0=0.0,
              scc_shock=False):
@@ -440,11 +440,11 @@ class Dice2007(Dice2007Params):
         D.utility[i] = self.eq.utility(
             D.consumption_pc[i], self.elasmu, self.population[i]
         )
-        D.utility_d[i] = self.eq.utility_d(
+        D.utility_discounted[i] = self.eq.utility_discounted(
             D.utility[i], self.utility_discount[i], self.population[i]
         )
         if deriv:
-            self.derivative.fprime[i] = (D.utility_d[i] - f0) / epsilon
+            self.derivative.fprime[i] = (D.utility_discounted[i] - f0) / epsilon
             D.miu = self.data.vars.miu
         return D
 
@@ -479,7 +479,7 @@ class Dice2007(Dice2007Params):
         for i in range(self.tmax):
             self.step(i, self.data.vars, miu)
             if self.optimize and deriv:
-                f0 = np.atleast_1d(self.data.vars.utility_d[i])
+                f0 = np.atleast_1d(self.data.vars.utility_discounted[i])
                 self.step(
                     i, self.data.deriv, miu=miu, epsilon=_epsilon,
                     deriv=True, f0=f0
@@ -490,7 +490,7 @@ class Dice2007(Dice2007Params):
             if deriv:
                 return self.derivative.fprime.transpose()
             else:
-                return self.data.vars.utility_d.sum()
+                return self.data.vars.utility_discounted.sum()
         return self.data.vars
 
     def get_scc(self, miu):
@@ -610,7 +610,7 @@ def verify_out(d, param=None, value=None):
             'forcing', 'emissions_ind', 'emissions_total', 'carbon_emitted',
             'participation', 'participation_markup', 'damages',
             'abatement', 'consumption', 'consumption_pc', 'utility',
-            'utility_d', 'pref_fac',
+            'utility_discounted', 'pref_fac',
             ]
         for i in range(d.tmax):
             for v in range(len(_vars)):

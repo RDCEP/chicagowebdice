@@ -229,7 +229,7 @@ class Loop(object):
             (1 / (1 - elasmu + .000001)) * consumption_pc ** (1 - elasmu) + 1
         )
 
-    def utility_d(self, utility, utility_discount, l):
+    def utility_discounted(self, utility, utility_discount, l):
         """
         Utility discounted
         ...
