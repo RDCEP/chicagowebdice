@@ -428,8 +428,8 @@ class Dice2007(Dice2007Params):
         )
         if i > 0:
             D.consumption_discount[i] = self.eq.consumption_discount(
-                self.prstp, self.elasmu, D.consumption_pc[ii],
-                D.consumption_pc[i], i
+                self.utility_discount[i], self.elasmu, D.consumption_pc[0],
+                D.consumption_pc[i]
             )
         if i == 0:
             D.investment[i] = self.savings * self._output_2005
