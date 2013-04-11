@@ -159,7 +159,7 @@
     };
 
     var addRunFromCSV = function(description, color, result, changesFromDefault) {
-      var fields = new Object;
+      var fields = Object;
       var lines = result.split('\n');
 
       for (var i = 0; i < lines.length; i++) {
