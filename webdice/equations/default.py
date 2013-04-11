@@ -207,7 +207,7 @@ class Loop(object):
         """
         return 1000 * consumption / population
 
-    def consumption_discount(self, prstp, elasmu, c0, c1, i):
+    def consumption_discount(self, utility_discount, elasmu, c0, c1):
         """
         Average discount rate for consumption
         ...
@@ -215,11 +215,7 @@ class Loop(object):
         -------
         float
         """
-        return 1 / (
-            1 + (prstp * 100 + elasmu * (
-                (c1 - c0) / c0
-            ) * 10) / 100
-        ) ** (10 * i)
+        return utility_discount * c1 ** -elasmu / c0 ** -elasmu
 
     def utility(self, consumption_pc, elasmu, population):
         """
@@ -229,7 +225,9 @@ class Loop(object):
         -------
         float
         """
-        return (1 / (1 - elasmu + .000001)) * consumption_pc ** (1 - elasmu) + 1
+        return (
+            (1 / (1 - elasmu + .000001)) * consumption_pc ** (1 - elasmu) + 1
+        )
 
     def utility_d(self, utility, utility_discount, l):
         """
