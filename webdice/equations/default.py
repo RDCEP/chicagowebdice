@@ -217,6 +217,14 @@ class Loop(object):
         """
         return utility_discount * c1 ** -elasmu / c0 ** -elasmu
 
+    def consumption_discount(self, prstp, population, elasmu, c0, c1, i):
+        """Discount rate for consumption"""
+        return 1 / (
+            1 + (prstp * 100 + elasmu * (
+                (c1 - c0) / c0
+            ) * 10) / 100
+        ) ** (10 * i)
+
     def utility(self, consumption_pc, elasmu, population):
         """
         U, Period utility function

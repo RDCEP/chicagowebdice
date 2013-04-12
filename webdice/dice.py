@@ -429,8 +429,8 @@ class Dice2007(Dice2007Params):
         )
         if i > 0:
             D.consumption_discount[i] = self.eq.consumption_discount(
-                self.utility_discount[i], self.elasmu, D.consumption_pc[0],
-                D.consumption_pc[i]
+                self.prstp, self.population, self.elasmu, D.consumption_pc[0],
+                D.consumption_pc[i], i
             )
         if i == 0:
             D.investment[i] = self.savings * self._output_2005
@@ -493,72 +493,6 @@ class Dice2007(Dice2007Params):
             else:
                 return self.data.vars.utility_discounted.sum()
         return self.data.vars
-
-    def get_scc2(self, miu):
-        """
-        Calculate social cost of carbon
-        ...
-        Accepts
-        -------
-        miu : array, 60 values of miu
-        ...
-        Returns
-        -------
-        None
-        ...
-        Internal Variables
-        ------------------
-        x_range : integer, number of periods in output graph
-        future_indices : integer, number of periods to
-            calculate future consumption
-        final_year : integer, last period of to calculate consumption
-        shock : boolean, whether to 'shock' the emissions of the current period
-        """
-        x_range = 20
-        for i in range(x_range):
-            future_indices = self.tmax - x_range
-            final_year = i + future_indices
-            self.data.scc = self.data.vars.copy()
-            E_baseline = np.empty(future_indices)
-            E_increment = np.empty(future_indices)
-            W_baseline = np.empty(future_indices)
-            W_increment = np.empty(future_indices)
-            C_baseline = np.empty(future_indices)
-            C_increment = np.empty(future_indices)
-            for j in range(i, final_year):
-                shock = 0.0
-                if j == i:
-                    shock = 1.0
-                self.step(j, self.data.scc, miu=miu, emissions_shock=shock)
-                W_increment[j-i] = self.data.scc.utility_discounted.sum()
-                W_baseline[j-i] = self.data.vars.utility_discounted[i:final_year].sum()
-                E_increment[j-i] = self.data.scc.emissions_total.sum()
-                E_baseline[j-i] = self.data.vars.emissions_total[i:final_year].sum()
-            self.data.scc = self.data.vars.copy()
-            for j in range(i, final_year):
-                shock = 0.0
-                if j == i:
-                    shock = 1.0
-                self.step(j, self.data.scc, miu=miu, consumption_shock=shock)
-                C_increment[j-i] = self.data.scc.utility_discounted.sum()
-                C_baseline[j-i] = self.data.vars.utility_discounted[i:final_year].sum()
-            C_diff = (
-                self.data.vars.consumption_pc[i:final_year] -
-                self.data.scc.consumption_pc[i:final_year]
-            ).clip(0)
-            C_diff = C_baseline - C_increment
-            W_diff = W_baseline - W_increment
-            E_diff = E_baseline - E_increment
-            self.data.vars.scc[i] = np.sum(
-                # ((C_diff * 10000000) / E_diff) *
-                # ((W_diff)) *
-                # (E_diff / W_diff) * 100000 *
-                # (E_diff / C_diff) * 100000 *
-                (W_diff / C_diff)
-                # ((E_diff)) *
-                # E_diff *
-                # self.data.vars.consumption_discount[:future_indices].values
-            ) * (12.0 / 44.0)
 
     def get_scc(self, miu):
         """
@@ -702,7 +636,7 @@ if __name__ == '__main__':
             verify_out(d, p, 'minimum')
             verify_out(d, p, 'maximum')
 
-    d = Dice2007()
+    d = Dice2007(optimize=True)
     # d.prstp = .015
     # d.damages_model = 'productivity_fraction'
     d.prod_frac = .2
