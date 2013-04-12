@@ -93,7 +93,7 @@ class Dice2007(Dice2007Params):
             'mass_lower', 'forcing', 'temp_atmosphere',
             'temp_lower', 'damages', 'abatement', 'output', 'output_abate',
             'investment', 'carbon_emitted', 'consumption',
-            'consumption_pc', 'utility', 'utility_d',
+            'consumption_pc', 'utility', 'utility_discounted',
             'productivity', 'backstop_growth', 'carbon_intensity', 'miu', 'backstop',
             'population', 'tax_rate', 'scc', 'consumption_discount',
         ]
@@ -306,10 +306,10 @@ class Dice2007(Dice2007Params):
         -------
         float
         """
-        return np.sum(self.data.vars.utility_d)
+        return np.sum(self.data.vars.utility_discounted)
 
     def step(self, i, D, miu=None, deriv=False, epsilon=1e-3, f0=0.0,
-             scc_shock=False):
+             emissions_shock=0.0, consumption_shock=0.0):
         """
         Single step for calculating endogenous variables
         ...
@@ -321,7 +321,8 @@ class Dice2007(Dice2007Params):
         deriv : boolean
         epsilon : float
         f0 : float
-        scc_shock : boolean
+        emissions_shock : float
+        consumption_shock : float
         ...
         Returns
         -------
@@ -377,8 +378,7 @@ class Dice2007(Dice2007Params):
         D.emissions_total[i] = self.eq.emissions_total(
             D.emissions_ind[i], self.emissions_deforest[i]
         )
-        if scc_shock is True:
-            D.emissions_total[i] += 1.
+        D.emissions_total[i] += emissions_shock
         if i > 0:
             D.carbon_emitted[i] = (
                 D.carbon_emitted[ii] + D.emissions_total[i] * 10
@@ -423,6 +423,7 @@ class Dice2007(Dice2007Params):
                 D.gross_output[i], D.temp_atmosphere[i],
                 self.damages_terms, D.abatement[i], self.savings
             )
+        D.consumption[i] += consumption_shock
         D.consumption_pc[i] = self.eq.consumption_pc(
             D.consumption[i], self.population[i]
         )
@@ -440,11 +441,11 @@ class Dice2007(Dice2007Params):
         D.utility[i] = self.eq.utility(
             D.consumption_pc[i], self.elasmu, self.population[i]
         )
-        D.utility_d[i] = self.eq.utility_d(
+        D.utility_discounted[i] = self.eq.utility_discounted(
             D.utility[i], self.utility_discount[i], self.population[i]
         )
         if deriv:
-            self.derivative.fprime[i] = (D.utility_d[i] - f0) / epsilon
+            self.derivative.fprime[i] = (D.utility_discounted[i] - f0) / epsilon
             D.miu = self.data.vars.miu
         return D
 
@@ -475,11 +476,11 @@ class Dice2007(Dice2007Params):
         _epsilon = 1e-4
         if self.optimize and miu is None:
             self.data.vars.miu = self.get_ipopt_mu()
-            self.data.vars.miu[0] = self.miu_2005
+            self.data.vars.miu[0] = self._miu_2005
         for i in range(self.tmax):
             self.step(i, self.data.vars, miu)
             if self.optimize and deriv:
-                f0 = np.atleast_1d(self.data.vars.utility_d[i])
+                f0 = np.atleast_1d(self.data.vars.utility_discounted[i])
                 self.step(
                     i, self.data.deriv, miu=miu, epsilon=_epsilon,
                     deriv=True, f0=f0
@@ -490,10 +491,10 @@ class Dice2007(Dice2007Params):
             if deriv:
                 return self.derivative.fprime.transpose()
             else:
-                return self.data.vars.utility_d.sum()
+                return self.data.vars.utility_discounted.sum()
         return self.data.vars
 
-    def get_scc(self, miu):
+    def get_scc2(self, miu):
         """
         Calculate social cost of carbon
         ...
@@ -517,18 +518,85 @@ class Dice2007(Dice2007Params):
         for i in range(x_range):
             future_indices = self.tmax - x_range
             final_year = i + future_indices
-            self.data['scc'] = self.data['vars'].copy()
+            self.data.scc = self.data.vars.copy()
+            E_baseline = np.empty(future_indices)
+            E_increment = np.empty(future_indices)
+            W_baseline = np.empty(future_indices)
+            W_increment = np.empty(future_indices)
+            C_baseline = np.empty(future_indices)
+            C_increment = np.empty(future_indices)
             for j in range(i, final_year):
-                shock = False
+                shock = 0.0
                 if j == i:
-                    shock = True
-                self.step(j, self.data.scc, miu=miu, scc_shock=shock)
-            con_diff = (
+                    shock = 1.0
+                self.step(j, self.data.scc, miu=miu, emissions_shock=shock)
+                W_increment[j-i] = self.data.scc.utility_discounted.sum()
+                W_baseline[j-i] = self.data.vars.utility_discounted[i:final_year].sum()
+                E_increment[j-i] = self.data.scc.emissions_total.sum()
+                E_baseline[j-i] = self.data.vars.emissions_total[i:final_year].sum()
+            self.data.scc = self.data.vars.copy()
+            for j in range(i, final_year):
+                shock = 0.0
+                if j == i:
+                    shock = 1.0
+                self.step(j, self.data.scc, miu=miu, consumption_shock=shock)
+                C_increment[j-i] = self.data.scc.utility_discounted.sum()
+                C_baseline[j-i] = self.data.vars.utility_discounted[i:final_year].sum()
+            C_diff = (
                 self.data.vars.consumption_pc[i:final_year] -
                 self.data.scc.consumption_pc[i:final_year]
             ).clip(0)
+            C_diff = C_baseline - C_increment
+            W_diff = W_baseline - W_increment
+            E_diff = E_baseline - E_increment
             self.data.vars.scc[i] = np.sum(
-                con_diff.values *
+                # ((C_diff * 10000000) / E_diff) *
+                # ((W_diff)) *
+                # (E_diff / W_diff) * 100000 *
+                # (E_diff / C_diff) * 100000 *
+                (W_diff / C_diff)
+                # ((E_diff)) *
+                # E_diff *
+                # self.data.vars.consumption_discount[:future_indices].values
+            ) * (12.0 / 44.0)
+
+    def get_scc(self, miu):
+        """
+        Calculate social cost of carbon
+        ...
+        Accepts
+        -------
+        miu : array, 60 values of miu
+        ...
+        Returns
+        -------
+        None
+        ...
+        Internal Variables
+        ------------------
+        x_range : integer, number of periods in output graph
+        future_indices : integer, number of periods to
+            calculate future consumption
+        final_year : integer, last period of to calculate consumption
+        shock : float, amount to 'shock' the emissions of the current period
+        """
+        x_range = 20
+        for i in range(x_range):
+            future_indices = self.tmax - x_range
+            final_year = i + future_indices
+            self.data['scc'] = self.data['vars'].copy()
+            for j in range(i, final_year):
+                shock = 0
+                if j == i:
+                    shock = 1.0
+                self.step(j, self.data.scc, miu=miu, emissions_shock=shock)
+            diff = 'consumption_pc'
+            DIFF = np.absolute(
+                self.data.vars[diff][i:final_year] -
+                self.data.scc[diff][i:final_year]
+            ).clip(0)
+            self.data.vars.scc[i] = np.sum(
+                DIFF *
                 self.data.vars.consumption_discount[:future_indices].values
             ).clip(0) * 100000. * (12.0 / 44.0)
 
@@ -610,7 +678,7 @@ def verify_out(d, param=None, value=None):
             'forcing', 'emissions_ind', 'emissions_total', 'carbon_emitted',
             'participation', 'participation_markup', 'damages',
             'abatement', 'consumption', 'consumption_pc', 'utility',
-            'utility_d', 'pref_fac',
+            'utility_discounted', 'pref_fac',
             ]
         for i in range(d.tmax):
             for v in range(len(_vars)):
@@ -633,3 +701,10 @@ if __name__ == '__main__':
         for p in _params:
             verify_out(d, p, 'minimum')
             verify_out(d, p, 'maximum')
+
+    d = Dice2007()
+    # d.prstp = .015
+    # d.damages_model = 'productivity_fraction'
+    d.prod_frac = .2
+    D = d.loop()
+    print D.scc[:20]
