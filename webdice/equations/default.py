@@ -239,7 +239,7 @@ class Loop(object):
         """
         return utility_discount * l * utility
 
-    def welfare(self, utility_d, utility_discount):
+    def welfare(self, utility_discounted, utility_discount):
         """
         Objective function
         ...
@@ -247,7 +247,7 @@ class Loop(object):
         -------
         float
         """
-        return np.sum(utility_d)
+        return np.sum(utility_discounted)
 
     def miu(self, emissions_ind, emissions_cap, _e2005, intensity,
             gross_output):
