@@ -9,8 +9,8 @@
   <script src="/static/js/jquery.min.js"></script>
   <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>
   <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-  {% block headjs %}
-  {% endblock %}
+  {% block headcss %}{% endblock %}
+  {% block headjs %}{% endblock %}
 </head>
 <body>
 <h1 id="heading"> <span>RDCEP</span> :: WebDICE</h1>
@@ -23,6 +23,7 @@
   </ul></li>
   <li id="view-source"><a href="https://www.github.com/RDCEP/chicagowebdice/" target="_blank">View Source</a></li>
 </ul>
+{% block page %}
 <div id="sidebar">
 {% block sidebar %}{% endblock %}
 </div>
@@ -40,6 +41,7 @@
   <div id="essential-graphs" class="tab selected"></div>
   <div id="climate-graphs" class="tab notselected"></div>
   <div id="economy-graphs" class="tab notselected"></div>
+  <div id="policy-graphs" class="tab notselected"></div>
   <div id="custom-graph" class="tab notselected">
     <div id="large-graph">
         <div id="large-graph-chart" style="height:90%;"></div>
@@ -81,5 +83,6 @@
 {% block help %}{% endblock %}
 </div>
 {% block bodyjs %}{% endblock %}
+{% endblock %}
 </body>
 </html>
