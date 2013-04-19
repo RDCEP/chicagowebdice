@@ -1,5 +1,5 @@
 *{margin:0;padding:0;}
-h1 span a {color:#fff;text-decoration:none;}
+h1 span a, h1 a {color:#fff;text-decoration:none;}
 #heading{background:url(../images/header.png);}
 #heading{position:absolute;top:0;left:0;right:0;padding:0 1em;font:bold 2em/3.5em Helvetica,sans-serif;}
 #heading{color:white;text-shadow:0 0 5px #444;border-bottom:1px solid #262;margin-top:-1px;}
@@ -113,7 +113,7 @@ h1 span a {color:#fff;text-decoration:none;}
 .disabled,.disabled .label {color:#999999!important;}
 #runs li .clickable-run-input {position:relative;right:auto;top:auto;}
 
-.help-button {position:absolute;right:-4.5em;top:1em;padding:.5em 1em .5em;
+.help-button {position:absolute;right:-4.5em;top:1em;padding:.5em 1.75em .5em .5em;
     background-color:#fff;color:#999;cursor:pointer;font-weight:bold;
     font-size:.9em;text-align:right;}
 #help-wrapper {position:absolute;left:26em;}
@@ -130,3 +130,5 @@ font-family:Helveltica,Arial,Calibri,sans-serif;padding:.1em .5em;
     margin-bottom:.5em;font-size:1.5em;}
 #input-select li a {color:#666;text-decoration:none;}
 #input-select li a:hover {color:#000;}
+
+.tab h2 {position:relative;}
