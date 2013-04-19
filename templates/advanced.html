@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block headjs %}
+{% block headjs -%}
     <script type="text/javascript">
         Options = window.Options || { };
         Options.measurements = {{ measurements|safe }};
@@ -7,9 +7,9 @@
         Options.graphs = {{  graph_names|safe }};
     </script>
     <script type="text/javascript" src="/static/js/main.js?{{ now }}"></script>
-{% endblock %}
+{%- endblock %}
 {% block mainlink %}<div id="back-to-rdcep"><a href="/basic">Switch to Basic</a></div>{% endblock %}
-{% block sidebar %}
+{% block sidebar -%}
   <form id="submission" method="post" action="/">
     <div id="parameters" class="has-tabs">
       <div id="sidebar-tabs" class="tabs">
@@ -17,15 +17,19 @@
         <a href="" id="link-to-tab-climate">Climate</a>
         <a href="" id="link-to-tab-economy">Economy</a>
       </div>
-      {% for tab in tabs %}
+      {% for tab in tabs -%}
       <div id="tab-{{ tab.name|lower }}" class="tab {% if tab.name|lower != 'policy' %}not{% endif %}selected">
-        {% for section in tab.sections %}
-        <h2>{% if section.radio %}{{ section.radio|safe }}{% endif %}{{ section.name }}</h2>
-        {% if section.parameters %}
+        {% for section in tab.sections -%}
+        <h2>{% if section.radio -%}{{ section.radio|safe }}
+          {% if section.help -%}
+            <span class="help-button">?</span>
+          {%- endif %}
+        {%- endif %}{{ section.name }}</h2>
+        {% if section.parameters -%}
         <ul>
-          {% for parameter in section.parameters %}
+          {% for parameter in section.parameters -%}
           <li{% if parameter.disabled or parameter.init_disabled %} class="disabled init-disabled" {% endif %}>
-            {% if parameter.type == 'range' %}
+            {% if parameter.type == 'range' -%}
             <label title="{{ parameter.description }}">{{ parameter.name }}
             <span class="label">
               <span class="label-number">{% if parameter.class == 'reverse' %}{{ parameter.max - (parameter.default - parameter.min) }}{% else %}{{ parameter.default }}{% endif %}</span><span>{{ parameter.unit|safe }}</span>
@@ -35,25 +39,25 @@
             <div class="tick-wrap">
               <span class="tick" style="left:{{ parameter.tick }}" >&bullet;</span>
             </div>
-            {% endif %}
-            {% if parameter.type == 'select' %}
+            {%- endif %}
+            {% if parameter.type == 'select' -%}
             <label title="{{ parameter.description }}">{{ parameter.name }}</label>
               <select name="{{ parameter.machine_name }}"{% if parameter.disabled or parameter.init_disabled %} disabled="disabled"{% endif %}>
-              {% for option in parameter.options %}
+              {% for option in parameter.options -%}
               <option value="{{ option.machine_name }}" title="{{ option.description }}">{{ option.name }}</option>
-              {% endfor %}
+              {%- endfor %}
             </select>
-            {% endif %}
-            {% if parameter.help %}
+            {%- endif %}
+            {% if parameter.help -%}
             <span class="help-button">?</span>
-            {% endif %}
+            {%- endif %}
           </li>
-          {% endfor %}
+          {%- endfor %}
         </ul>
-        {% endif %}
-        {% endfor %}
+        {%- endif %}
+        {%- endfor %}
       </div>
-      {% endfor %}
+      {%- endfor %}
     </div>
     <div id="controls">
       <input type="reset" id="reset-inputs" value="Reset Inputs"/>
@@ -62,21 +66,26 @@
     </div>
   </form>
   <ul id="runs"></ul>
-{% endblock %}
+{%- endblock %}
 {% block text -%}
-  {{ paragraphs_html|safe }}
+  {# paragraphs_html|safe #}
 {%- endblock %}
 {% block xaxis -%}
-  {% for group in dropdowns -%}
-    <optgroup label="-- {{ group.name }} --"></optgroup>
-    {% for option in group.options -%}
-      <option value="{{ option.machine_name }}">{{ option.name }}</option>
-    {% endfor %}
-  {%- endfor %}
+{% for group in dropdowns -%}
+<optgroup label="-- {{ group.name }} --"></optgroup>
+{% for option in group.options -%}
+<option value="{{ option.machine_name }}">{{ option.name }}</option>
+{% endfor %}
+{%- endfor %}
 {%- endblock %}
-{% block yaxis %}{% for group in dropdowns %}<optgroup label="-- {{ group.name }} --"></optgroup>
-{% for option in group.options %}<option value="{{ option.machine_name }}">{{ option.name }}</option>
-{% endfor %}{% endfor %}{% endblock %}
+{% block yaxis -%}
+{% for group in dropdowns -%}
+<optgroup label="-- {{ group.name }} --"></optgroup>
+{% for option in group.options -%}
+<option value="{{ option.machine_name }}">{{ option.name }}</option>
+{%- endfor %}
+{%- endfor %}
+{%- endblock %}
 {% block help %}{% for parameter in all_parameters %}{% if parameter.help %}
   <div class="help-text" id="{{ parameter.machine_name }}-help">{{ parameter.help|safe }}
   </div>{% endif %}{% endfor %}

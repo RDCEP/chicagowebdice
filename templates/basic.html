@@ -19,8 +19,12 @@
       {% for tab in tabs %}
       <div id="tab-{{ tab.name|lower }}" class="tab {% if tab.name|lower != 'policy' %}not{% endif %}selected">
         {% for section in tab.sections %}
-        <h2>{% if section.radio %}{{ section.radio|safe }}{% endif %}{{ section.name }}</h2>
-        {% if section.parameters %}
+        <h2>{% if section.radio -%}{{ section.radio|safe }}
+          {% if section.help -%}
+            <span class="help-button">?</span>
+          {%- endif %}
+        {%- endif %}{{ section.name }}</h2>
+        {% if section.parameters -%}
         <ul>
           {% for parameter in section.parameters %}
           <li{% if parameter.disabled or parameter.init_disabled %} class="disabled init-disabled" {% endif %}>
@@ -63,7 +67,7 @@
   </form>
   <ul id="runs"></ul>
 {% endblock %}
-{% block text %}{{ paragraphs_html|safe }}{% endblock %}
+{% block text -%}{# paragraphs_html|safe #}{%- endblock %}
 {% block xaxis %}{% for group in dropdowns %}<optgroup label="-- {{ group.name }} --"></optgroup>
   {% for option in group.options %}<option value="{{ option.machine_name }}">{{ option.name }}</option>
   {% endfor %}{% endfor %}{% endblock %}
