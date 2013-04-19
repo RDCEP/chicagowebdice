@@ -1,13 +1,48 @@
 {% extends 'base.html' %}
-{% block sidebar %}
-  <form id="submission" method="post" action="/">
-    <div id="parameters" class="">
-      <ul id="input-select">
-          <li><a href="/advanced">Advanced Inputs</a></li>
-          <li><a href="/basic">Basic Inputs</a></li>
-      </ul>
+{% block headcss %}<link rel="stylesheet" href="/static/css/home.css">{% endblock %}
+{% block page %}
+  <div id="home-wrapper" class="clearfix">
+    <div class="home-column">
+      <div class="home-cell">
+        <h3>About</h3>
+        <img class="home-head-image" src="../static/images/home/coral.jpg" alt="">
+        <p>The DICE 2007 model, developed by Professor William Nordhaus of Yale
+          University, is the most widely used model of the economics of climate
+          change.  webDICE is an online simulation of this model which allows users
+          to see the effects of climate change on the economy and society.</p>
+        <p>The default values in the model only present the user with one set of
+          projected potential impacts.  In order to understand the range of
+          potential impacts as a result of climate change, the user can adjust
+          parameters within the model to reflect differing beliefs about climate,
+          the economy and the future. </p>
+      </div>
+      <div class="home-cell">
+        <h3>Contact</h3>
+        <p>This model has been developed by researchers at the University of
+          Chicago supported by RDCEP.  We are continually working to improve the
+          model and the interface. If you have suggestions, contact us at:</p>
+        <p><a href="mailto:info-rdcep@ci.uchicago.edu">info-rdcep@ci.uchicago.edu</a></p>
+      </div>
     </div>
-  </form>
-  <ul id="runs"></ul>
+    <div class="home-column">
+      <div class="home-cell">
+        <h3>Basic Inputs</h3>
+        <p>The basic inputs section is designed for students and new users.
+          By limiting the set of adjustable variables to those deemed most
+          important, users can view the predicted effects of their beliefs about
+          the climate, the economy and the future.</p>
+        <p><a href="/basic">Go to basic inputs</a></p>
+      </div>
+      <div class="home-cell">
+        <h3>Advanced Inputs</h3>
+        <p>The advanced inputs section is designed for more experienced users.
+          The complete set of adjustable variables has been made available,
+          allowing the user to assess the effect their beliefs have on the model.</p>
+        <p><a href="/advanced">Go to advanced inputs</a></p>
+      </div>
+      <div class="home-cell home-image-cell">
+        <img class="home-head-image" src="../static/images/home/polar-bear.jpg">
+      </div>
+    </div>
+  </div>
 {% endblock %}
-{% block text %}{{ paragraphs_html|safe }}{% endblock %}
