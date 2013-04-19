@@ -9,11 +9,22 @@
   <script src="/static/js/jquery.min.js"></script>
   <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>
   <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-  {% block headjs %}
-  {% endblock %}
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-31803228-1']);
+    _gaq.push(['_setDomainName', 'rdcep.org']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+  {% block headcss %}{% endblock %}
+  {% block headjs %}{% endblock %}
 </head>
 <body>
-<h1 id="heading"> <span>RDCEP</span> :: WebDICE</h1>
+<h1 id="heading"> <span>RDCEP</span> :: <a href="/">WebDICE</a></h1>
 {% block mainlink %}<div id="back-to-rdcep"><a href="http://www.rdcep.org/">Back to RDCEP</a></div>{% endblock %}
 <ul id="help-menu">
   <li id="display-help">Documentation<ul>
@@ -23,6 +34,7 @@
   </ul></li>
   <li id="view-source"><a href="https://www.github.com/RDCEP/chicagowebdice/" target="_blank">View Source</a></li>
 </ul>
+{% block page %}
 <div id="sidebar">
 {% block sidebar %}{% endblock %}
 </div>
@@ -31,6 +43,7 @@
     <a href="#" id="link-to-essential-graphs" class="selected">Essential</a>
     <a href="#" id="link-to-climate-graphs">Climate</a>
     <a href="#" id="link-to-economy-graphs">Economy</a>
+    <a href="#" id="link-to-policy-graphs">Policy</a>
     <a href="#" id="link-to-custom-graph">Customizable</a>
     <a href="#" id="link-to-scc-graph">SCC</a>
   </div>
@@ -40,6 +53,7 @@
   <div id="essential-graphs" class="tab selected"></div>
   <div id="climate-graphs" class="tab notselected"></div>
   <div id="economy-graphs" class="tab notselected"></div>
+  <div id="policy-graphs" class="tab notselected"></div>
   <div id="custom-graph" class="tab notselected">
     <div id="large-graph">
         <div id="large-graph-chart" style="height:90%;"></div>
@@ -80,6 +94,7 @@
 <div id="help-wrapper">
 {% block help %}{% endblock %}
 </div>
+{% endblock %}
 {% block bodyjs %}{% endblock %}
 </body>
 </html>
