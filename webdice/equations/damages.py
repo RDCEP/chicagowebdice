@@ -3,15 +3,41 @@ from default import Loop
 
 
 class DamagesModel(Loop):
+    """
+    Subclass default equations for the sake of using alternate
+    damages functions.
+    ....
+    Args
+    ----
+    prod_frac : float
+    """
     def __init__(self, prod_frac):
         Loop.__init__(self)
         self.prod_frac = prod_frac
 
     def get_production_factor(self, damages_terms, temp_atmosphere):
+        """
+        Return default fraction of productivity
+        """
         return 1.
 
     def get_model_values(self, gross_output, temp_atmosphere,
                          damages_terms, abatement, savings):
+        """
+        Calculate and return damages, output, and consumption
+        ...
+        Arguments
+        ---------
+        gross_output : float
+        temp_atmosphere : float
+        damages_terms : array
+        abatement : float
+        savings : float
+        ...
+        Returns
+        -------
+        array
+        """
         damages = self.damages(gross_output, temp_atmosphere, damages_terms,
                                abatement, savings)
         output = self.output(gross_output, damages, abatement, savings,
@@ -23,8 +49,11 @@ class DamagesModel(Loop):
 
 
 class DiceDamages(DamagesModel):
-    def damages(self, gross_output, temp_atmosphere, damages_terms, a_abatement=None,
-               a_savings=0):
+    """
+    Standard DICE2007 damages function
+    """
+    def damages(self, gross_output, temp_atmosphere, damages_terms,
+                a_abatement=None, a_savings=0):
         return gross_output * (1 - 1 / (
             1 + damages_terms[0] * temp_atmosphere + damages_terms[1] *
             temp_atmosphere ** damages_terms[2]
@@ -32,6 +61,9 @@ class DiceDamages(DamagesModel):
 
 
 class ExponentialMap(DamagesModel):
+    """
+    DICE2007 Damages with exponential mapping to output
+    """
     def damages(self, gross_output, temp_atmosphere, damages_terms,
                 a_abatement=None, a_savings=0):
         return gross_output * (1 - np.exp(
@@ -41,10 +73,38 @@ class ExponentialMap(DamagesModel):
 
 
 class AdditiveDamages(DamagesModel):
+    """
+    Weitzman additive damages function
+    """
     def output_no_damages(self, gross_output, abatement):
+        """
+        Calculate output without damages
+        ...
+        Arguments
+        ---------
+        gross_output : float
+        abatement : float
+        ...
+        Returns
+        -------
+        float
+        """
         return gross_output - abatement
 
     def consumption_no_damages(self, gross_output, abatement, savings):
+        """
+        Calculate consumption without damages
+        ...
+        Arguments
+        ---------
+        gross_output : float
+        abatement : float
+        savings : float
+        ...
+        Returns
+        -------
+        float
+        """
         ond = self.output_no_damages(gross_output, abatement)
         return ond - ond * savings
 
@@ -72,6 +132,9 @@ class AdditiveDamages(DamagesModel):
 
 
 class WeitzmanTippingPoint(DamagesModel):
+    """
+    Weitzman tipping point damages
+    """
     def damages(self, gross_output, temp_atmosphere, damages_terms,
                 a_abatement=None, a_savings=0):
         return gross_output * (1 - 1 / (
@@ -81,6 +144,9 @@ class WeitzmanTippingPoint(DamagesModel):
 
 
 class ProductivityFraction(DamagesModel):
+    """
+    Wiesbach and Moyer damages as a fraction of productivity
+    """
     def damages(self, gross_output, temp_atmosphere, damages_terms,
                 a_abatement=None, a_savings=0):
         fD = self.get_production_factor(damages_terms, temp_atmosphere)
@@ -93,6 +159,18 @@ class ProductivityFraction(DamagesModel):
         return gross_output * (1. - damages_to_prod)
 
     def get_production_factor(self, damages_terms, temp_atmosphere):
+        """
+        Calculate fraction of productivity
+        ...
+        Arguments
+        ---------
+        damages_terms : array
+        temp_atmosphere : float
+        ...
+        Returns
+        -------
+        float
+        """
         D = 1 - 1 / (
             1 + damages_terms[0] * temp_atmosphere + damages_terms[1] *
             temp_atmosphere ** damages_terms[2]
