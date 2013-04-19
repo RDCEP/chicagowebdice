@@ -309,7 +309,7 @@ class Dice2007(Dice2007Params):
         return np.sum(self.data.vars.utility_discounted)
 
     def step(self, i, D, miu=None, deriv=False, epsilon=1e-3, f0=0.0,
-             emissions_shock=0.0, consumption_shock=0.0):
+             emissions_shock=0.0):
         """
         Single step for calculating endogenous variables
         ...
