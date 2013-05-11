@@ -1,4 +1,4 @@
-﻿about: >
+﻿﻿about: >
   This file describes all the numeric parameters for the model. All values
   are assumed to be floats unless otherwise specified, and have the given
   range and precision values.
