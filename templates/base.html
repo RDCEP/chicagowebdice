@@ -13,7 +13,7 @@
   {% block headjs %}{% endblock %}
 </head>
 <body>
-<h1 id="heading"> <span>RDCEP</span> :: WebDICE</h1>
+    <h1 id="heading"> <span>RDCEP</span> :: <a href="/">WebDICE</a></h1>
 {% block mainlink %}<div id="back-to-rdcep"><a href="http://www.rdcep.org/">Back to RDCEP</a></div>{% endblock %}
 <ul id="help-menu">
   <li id="display-help">Documentation<ul>
@@ -32,6 +32,7 @@
     <a href="#" id="link-to-essential-graphs" class="selected">Essential</a>
     <a href="#" id="link-to-climate-graphs">Climate</a>
     <a href="#" id="link-to-economy-graphs">Economy</a>
+    <a href="#" id="link-to-policy-graphs">Policy</a>
     <a href="#" id="link-to-custom-graph">Customizable</a>
     <a href="#" id="link-to-scc-graph">SCC</a>
   </div>
@@ -82,7 +83,7 @@
 <div id="help-wrapper">
 {% block help %}{% endblock %}
 </div>
-{% block bodyjs %}{% endblock %}
 {% endblock %}
+{% block bodyjs %}{% endblock %}
 </body>
 </html>
