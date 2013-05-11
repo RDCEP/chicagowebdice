@@ -13,35 +13,40 @@
 
 initial_help:
   index: >
-      webDICE is a simulation tool designed to show how climate change might affect
-      people living today and in the future. It is based in the most widely used
-      model of the economy and the climate, the DICE model, developed by Professor
-      William Nordhaus, of Yale University. webDICE allows you to run the DICE
-      model quickly with an easy to use interface. You can change the key variables
-      in the model to reflect your views about the economy and about climate change
-      and run the model with these choices.
+      webDICE is a simulation tool designed to show how climate change might
+      affect people living today and in the future. It is based in the most
+      widely used model of the economy and the climate, the DICE model,
+      developed by Professor William Nordhaus, of Yale University. webDICE
+      allows you to run the DICE model quickly with an easy to use interface.
+      You can change the key variables in the model to reflect your views
+      about the economy and about climate change and run the model with
+      these choices.
 
-      The complete set of DICE variables can be found in the “Advanced” version.
-      An abbreviated set of variables is available in the “Basic” version.
+      The complete set of DICE variables can be found in the “Advanced”
+      version. An abbreviated set of variables is available in the “Basic”
+      version.
 
       The model has been developed by researchers at the University of Chicago
-      supported by RDCEP. We are continually working to improve the model and the
-      interface. If you have suggestions, contact us at
-      <a href="mailto:info-rdcep@ci.uchicago.edu" target="_blank">info-rdcep@ci.uchicago.edu</a>.
+      supported by RDCEP. We are continually working to improve the model and
+      the interface. If you have suggestions, contact us at <a
+      href="mailto:info-rdcep@ci.uchicago.edu" target="_blank">
+      info-rdcep@ci.uchicago.edu</a>.
 
 
   advanced: >
       To run a simulation click on the “Run Model” button at the bottom of the
-      page. The variables are set to the defaults based on our best guess of the
-      correct values. You can change the variables to reflect your views by moving
-      the sliders. Running a simulation will let you see how the outcomes change.
+      page. The variables are set to the defaults based on our best guess of
+      the correct values. You can change the variables to reflect your views
+      by moving the sliders. Running a simulation will let you see how the
+      outcomes change.
 
 
   basic: >
-      To run a simulation click on the “Run Model” button at the bottom of the
-      page. The variables are set to the defaults based on our best guess of the
-      correct values. You can change the variables to reflect your views by moving
-      the sliders. Running a simulation will let you see how the outcomes change.
+      To run a simulation click on the “Run Model” button at the bottom of
+      the page. The variables are set to the defaults based on our best guess
+      of the correct values. You can change the variables to reflect your
+      views by moving the sliders. Running a simulation will let you see how
+      the outcomes change.
 
 
 basic_tabs:
@@ -81,15 +86,21 @@ basic_tabs:
         parameters:
           - name: 2050
             machine_name: e2050
-            description: The mandated decrease in emissions by 2050 as a share of 2005 year emissions.
+            description: >
+                The mandated decrease in emissions by 2050 as a share of 2005
+                year emissions.
             class: reverse
           - name: 2100
             machine_name: e2100
-            description: The mandated decrease in emissions by 2100 as a share of 2005 year emissions.
+            description: >
+                The mandated decrease in emissions by 2100 as a share of 2005
+                year emissions.
             class: reverse
           - name: 2150
             machine_name: e2150
-            description: The mandated decrease in emissions by 2150 as a share of 2005 year emissions.
+            description: >
+                The mandated decrease in emissions by 2150 as a share of 2005
+                year emissions.
             class: reverse
       - name: Participation
         min: 0
@@ -123,13 +134,17 @@ basic_tabs:
         parameters:
           - name: 'Climate sensitivity: How much will temperatures go up?'
             machine_name: temp_co2_doubling
-            description: Temperature increase in degrees C from doubling of atmospheric CO2
+            description: >
+                Temperature increase in degrees C from doubling of
+                atmospheric CO2
             unit: °C
             min_legend: Less than expected
             max_legend: More than expected
           - name: How large will the harms be?
             machine_name: damages_exponent
-            description: Increase in harms from climate change due to an increase in temperatures
+            description: >
+                Increase in harms from climate change due to an increase
+                in temperatures
             min_legend: Less harm
             max_legend: More harm
           - name: Decline in rate of growth of productivity
@@ -144,7 +159,9 @@ basic_tabs:
             max_legend: More energy efficient
           - name: How low will the costs of renewables go?
             machine_name: backstop_ratio
-            description: Cost of replacing all emissions in 2012 $ per ton of CO_{2} , relative to future cost
+            description: >
+                Cost of replacing all emissions in 2012 $ per ton of
+                CO_{2}, relative to future cost
             min_legend: Less expensive
             max_legend: More expensive
 
@@ -186,15 +203,21 @@ advanced_tabs:
         parameters:
           - name: 2050
             machine_name: e2050
-            description: The mandated decrease in emissions by 2050 as a share of 2005 year emissions.
+            description: >
+                The mandated decrease in emissions by 2050 as a share of
+                2005 year emissions.
             class: reverse
           - name: 2100
             machine_name: e2100
-            description: The mandated decrease in emissions by 2100 as a share of 2005 year emissions.
+            description: >
+                The mandated decrease in emissions by 2100 as a share of
+                2005 year emissions.
             class: reverse
           - name: 2150
             machine_name: e2150
-            description: The mandated decrease in emissions by 2150 as a share of 2005 year emissions.
+            description: >
+                The mandated decrease in emissions by 2150 as a share of
+                2005 year emissions.
             class: reverse
       - name: Participation
         min: 0
@@ -228,7 +251,9 @@ advanced_tabs:
             step: 0.5
             default: 3.0
             precision: 1
-            description: Temperature increase in degrees C from doubling of atmospheric CO2
+            description: >
+                Temperature increase in degrees C from doubling of
+                atmospheric CO2
             unit: °C
           - name: How large will the harms be?
             machine_name: damages_exponent
@@ -237,7 +262,9 @@ advanced_tabs:
             step: 0.5
             default: 2.0
             precision: 1
-            description: Increase in harms from climate change due to an increase in temperatures
+            description: >
+                Increase in harms from climate change due to an increase
+                in temperatures
       - name: Model design
         parameters:
           - name: Carbon cycle
@@ -263,10 +290,13 @@ advanced_tabs:
                 machine_name: productivity_fraction
         #      - name: Kopp Damages to Capital
         #        machine_name: kopp
-        #        description: Climate change destroys a certain percentage of global input
+        #        description: >
+        #             Climate change destroys a certain percentage of global input
         #      - name: Damages to Productivity
         #        machine_name: productivity
-        #        description: Climate change reduces the rate of growth in global productivity
+        #        description: >
+        #             Climate change reduces the rate of growth in global
+        #             productivity
           - name: Fraction of damages to productivity
             machine_name: prod_frac
             min: 0
@@ -303,7 +333,9 @@ advanced_tabs:
             max: 4
             step: 0.5
             precision: 1
-            description: Cost of replacing all emissions in 2012 $ per ton of CO_{2} , relative to future cost
+            description: >
+                Cost of replacing all emissions in 2012 $ per ton of CO_{2},
+                relative to future cost
       - name: Econommic performance
         parameters:
           - name: Decline in rate of growth of productivity
@@ -342,7 +374,9 @@ advanced_tabs:
             step: 200
             default: 8600
             precision: 0
-            description: Number, in millions, that the population grows asymptotically towards
+            description: >
+                Number, in millions, that the population grows asymptotically
+                towards
             unit: ' billions'
       - name: Energy parameters
         parameters:
@@ -499,7 +533,9 @@ measurements:
       - name: Atmospheric Temperature Increase
         machine_name: temp_atmosphere
         unit: °C from 1900
-        description: Projected increases in global average temperatures compared to pre-industrial temperatures
+        description: >
+            Projected increases in global average temperatures compared
+            to pre-industrial temperatures
         graphs:
           - name: essential
             location: topleft
@@ -516,106 +552,110 @@ measurements:
 
 
 parameter_help:
-  temp_co2_doubling: >
-      Climate Sensitivity estimates the extent to which the global mean
-      temperature increases when we add greenhouse gasses to the atmosphere.
-      This metric is defined as the temperature increase from doubling the
-      carbon dioxide concentration in the atmosphere relative to the
-      concentration prior to the industrial revolution.  By adjusting the
-      slider you can discover how different levels of temperature increases
-      affect economic activities and how these economic activities in turn
-      effect climate.
+  advanced:
+    temp_co2_doubling: >
+        Climate Sensitivity estimates the extent to which the global mean
+        temperature increases when we add greenhouse gasses to the atmosphere.
+        This metric is defined as the temperature increase from doubling the
+        carbon dioxide concentration in the atmosphere relative to the
+        concentration prior to the industrial revolution.  By adjusting the
+        slider you can discover how different levels of temperature increases
+        affect economic activities and how these economic activities in turn
+        effect climate.
 
-  damages_exponent: >
-    This model assumes that an increase in global mean temperature will harm
-    the economy.  By adjusting this slider, you can not only discover the
-    various degrees to which increasing temperature can affect the economy,
-    but you can also estimate how these economic damages will in turn affect
-    the climate.
+    damages_exponent: >
+      This model assumes that an increase in global mean temperature will harm
+      the economy.  By adjusting this slider, you can not only discover the
+      various degrees to which increasing temperature can affect the economy,
+      but you can also estimate how these economic damages will in turn affect
+      the climate.
 
-  productivity_decline: >
-    This metric represents the decline in the rate of growth of productivity
-    over time.  This model assumes that the ability to produce goods with a
-    given amount of capital and labor increases over time.  However, the rate
-    at which growth of production increases is decreasing.  Faster growth
-    indicates optimism in the continued ability to produce goods efficiently.
-    Slower growth indicates that productivity will decrease over time.
+    productivity_decline: >
+      This metric represents the decline in the rate of growth of productivity
+      over time.  This model assumes that the ability to produce goods with a
+      given amount of capital and labor increases over time.  However, the rate
+      at which growth of production increases is decreasing.  Faster growth
+      indicates optimism in the continued ability to produce goods efficiently.
+      Slower growth indicates that productivity will decrease over time.
 
-  intensity_decline_rate: >
-    Energy intensity is the emissions per unit of economic output.  As energy
-    efficiency increases energy intensity decreases; with increased efficiency
-    less energy is used to produce output, resulting in fewer emissions.
-    Adjust the slider to discover how energy intensity can affect future
-    emissions and their economic impacts.
+    intensity_decline_rate: >
+      Energy intensity is the emissions per unit of economic output.  As energy
+      efficiency increases energy intensity decreases; with increased efficiency
+      less energy is used to produce output, resulting in fewer emissions.
+      Adjust the slider to discover how energy intensity can affect future
+      emissions and their economic impacts.
 
-  backstop_ratio: >
-      We do not know what the costs of zero-carbon energy will ultimately be.
-      The lower the cost of zero-carbon technologies, the cheaper emissions
-      reductions will be.  Adjust the slider to reflect your beliefs on how low
-      the cost of zero-carbon energy will be and to discover how these costs
-      affect climate and the economy.
+    backstop_ratio: >
+        We do not know what the costs of zero-carbon energy will ultimately be.
+        The lower the cost of zero-carbon technologies, the cheaper emissions
+        reductions will be.  Adjust the slider to reflect your beliefs on how
+        low the cost of zero-carbon energy will be and to discover how these
+        costs affect climate and the economy.
 
-  abatement_exponent: >
-      The cost of reducing emissions will increase as we try to reduce a greater
-      percentage of the total. Small reductions, such as through efficiency
-      improvements, may be relatively easy while large reductions, such as
-      eliminating most uses of fossil fuels, will be expensive. You can set how
-      fast the costs of emissions reductions go up as we try to eliminate a greater
-      percentage of emissions. The higher the number, the faster costs increase.
+    abatement_exponent: >
+        The cost of reducing emissions will increase as we try to reduce a
+        greater percentage of the total. Small reductions, such as through
+        efficiency improvements, may be relatively easy while large reductions,
+        such as eliminating most uses of fossil fuels, will be expensive. You
+        can set how fast the costs of emissions reductions go up as we try to
+        eliminate a greater percentage of emissions. The higher the number,
+        the faster costs increase.
 
-  backstop_decline: >
-      The model assumes that the cost of replacing all fossil fuels with zero-carbon
-      energy will cost $1,170 per ton of CO2 today but that these costs will decline
-      over time. You can set the speed of this decline anywhere from 0% (these costs
-      never go down) to 20% per year, the most optimistic case.
+    backstop_decline: >
+        The model assumes that the cost of replacing all fossil fuels with zero-carbon
+        energy will cost $1,170 per ton of CO2 today but that these costs will decline
+        over time. You can set the speed of this decline anywhere from 0% (these costs
+        never go down) to 20% per year, the most optimistic case.
 
-  depreciation: >
-      As capital (buildings, machines, factories and similar items) is used, it
-      wears out. The model assumes that it wears out at a rate of 10% per year.
-      You can choose a value between 8% per year and 20% per year.
+    depreciation: >
+        As capital (buildings, machines, factories and similar items) is used, it
+        wears out. The model assumes that it wears out at a rate of 10% per year.
+        You can choose a value between 8% per year and 20% per year.
 
-  savings: >
-      The model assumes that people save 22% of their incomes each year. Savings
-      rate do not adjust based on expectations of future events, so that, for
-      example, if you set the harms from climate change to be high, people do not
-      save more so that they will have a cushion to offset the harms. You can
-      adjust the savings rate to be anything from 10% to 25%.
+    savings: >
+        The model assumes that people save 22% of their incomes each year. Savings
+        rate do not adjust based on expectations of future events, so that, for
+        example, if you set the harms from climate change to be high, people do not
+        save more so that they will have a cushion to offset the harms. You can
+        adjust the savings rate to be anything from 10% to 25%.
 
-  popasym: >
-      The population has been growing but as people get wealthier, the rate of
-      growth has slowed down and demographers think that eventually it may stabilize.
-      You can choose the level it stabilizes at, the maximum population, to be
-      anything from 8 billion people to 12 billion people. The default value is 8.6
-      billion people.
+    popasym: >
+        The population has been growing but as people get wealthier, the rate of
+        growth has slowed down and demographers think that eventually it may stabilize.
+        You can choose the level it stabilizes at, the maximum population, to be
+        anything from 8 billion people to 12 billion people. The default value is 8.6
+        billion people.
 
-  fosslim: >
-      Fossil fuel is a non-renewable resource. The total amount of fossil fuel
-      available puts a cap on total emissions. Under most scenarios, we do not
-      reach this cap by 2200 so the cap has no effect on the output, but if the
-      economy grows quickly and energy intensity does not decline very much, we
-      may hit the cap. The default value is that there are 6,000 gigatons of carbon
-      (Gt C) contained in unrecovered fossil fuels. You can choose a lower value,
-      5000 Gt C, based on the assumption that some portion of the reserves will
-      not be recoverable, or a higher value, up to 9,000 Gt C, based on the
-      assumption that we will continue to discover new sources of fossil fuels.
+    fosslim: >
+        Fossil fuel is a non-renewable resource. The total amount of fossil fuel
+        available puts a cap on total emissions. Under most scenarios, we do not
+        reach this cap by 2200 so the cap has no effect on the output, but if the
+        economy grows quickly and energy intensity does not decline very much, we
+        may hit the cap. The default value is that there are 6,000 gigatons of carbon
+        (Gt C) contained in unrecovered fossil fuels. You can choose a lower value,
+        5000 Gt C, based on the assumption that some portion of the reserves will
+        not be recoverable, or a higher value, up to 9,000 Gt C, based on the
+        assumption that we will continue to discover new sources of fossil fuels.
 
-  elasmu: >
-      As they become wealthier, most people value an additional dollar of wealth
-      less than when they were poor. A poor person may greatly value an additional
-      dollar to pay for necessities, while someone who has these necessities may
-      value the additional dollar less. This may not be uniformly true but it is
-      thought to be true for most of the population. You can set how fast the value
-      of an additional dollar declines from less, by setting the value to 1.0, to
-      more, by setting the value to 3.0.
+    elasmu: >
+        As they become wealthier, most people value an additional dollar of wealth
+        less than when they were poor. A poor person may greatly value an additional
+        dollar to pay for necessities, while someone who has these necessities may
+        value the additional dollar less. This may not be uniformly true but it is
+        thought to be true for most of the population. You can set how fast the value
+        of an additional dollar declines from less, by setting the value to 1.0, to
+        more, by setting the value to 3.0.
 
-  prstp: >
-      The model finds the optimal controls on emissions by finding the controls
-      that maximize the welfare of the people alive during the modeled years.
-      For this purpose, the model considers people living from now until 600 years
-      from now. The pure rate of time preference is a discount rate which allows
-      you to account for the fact that some people will be living in the distant
-      future. The value of the pure rate of time preference is highly contested and
-      many people believe that it is unethical to weight people less because they
-      live in the future while others believe that it is appropriate and consistent
-      with how people actually make choices. The default value is 1.5% but you can
-      set it anywhere from 0% to 10%.
+    prstp: >
+        The model finds the optimal controls on emissions by finding the controls
+        that maximize the welfare of the people alive during the modeled years.
+        For this purpose, the model considers people living from now until 600 years
+        from now. The pure rate of time preference is a discount rate which allows
+        you to account for the fact that some people will be living in the distant
+        future. The value of the pure rate of time preference is highly contested and
+        many people believe that it is unethical to weight people less because they
+        live in the future while others believe that it is appropriate and consistent
+        with how people actually make choices. The default value is 1.5% but you can
+        set it anywhere from 0% to 10%.
+
+  basic:
