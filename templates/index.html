@@ -40,9 +40,45 @@
           allowing the user to assess the effect their beliefs have on the model.</p>
         <p><a href="/advanced">Go to advanced inputs</a></p>
       </div>
-      <div class="home-cell home-image-cell">
+      <!--<div class="home-cell home-image-cell">
         <img class="home-head-image" src="../static/images/home/polar-bear.jpg">
+      </div>-->
+      <div class="home-cell">
+        <h3>Watch a webDICE tutorial</h3>
+        <div class="home-head-image">
+          <div id="tutorial-flv">Loading...</div>
+        </div>
+        <p>We&rsquo;ve tried to make the webDICE interface as user-friendly as
+        possible, given the complexity of the DICE model. Nonetheless, for
+        new users, we&rsquo;ve created this video tutorial to make its use
+        as clear as possible.</p>
       </div>
     </div>
   </div>
 {% endblock %}
+{% block bodyjs -%}
+<script src="/static/js/vendor/jwplayer/jwplayer.js"></script>
+<script>
+  jwplayer("tutorial-flv").setup({
+    playlist: [{
+      sources: [
+        {
+          file: "/static/video/webDICE_tutorial_new.mp4",
+          label: "MP4 Tutorial"
+        },
+        {
+          file: "/static/video/webDICE_tutorial_new.ogv",
+          label: "OGV Tutorial"
+        },
+        {
+          file: "/static/video/webDICE_tutorial_new.flv",
+          label: "FLV Tutorial"
+        }
+      ]
+    }],
+    title: 'webDICE Tutorial',
+    width: 450,
+    image: "/static/images/home/graph_001.png"
+  });
+</script>
+{%- endblock %}
