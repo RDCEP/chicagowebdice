@@ -336,7 +336,7 @@ advanced_tabs:
             description: >
                 Cost of replacing all emissions in 2012 $ per ton of CO_{2},
                 relative to future cost
-      - name: Econommic performance
+      - name: Economic performance
         parameters:
           - name: Decline in rate of growth of productivity
             machine_name: productivity_decline
@@ -377,7 +377,7 @@ advanced_tabs:
             description: >
                 Number, in millions, that the population grows asymptotically
                 towards
-            unit: ' billions'
+            unit: ' millions'
       - name: Energy parameters
         parameters:
           - name: Reduction in energy intensity per decade
@@ -552,7 +552,67 @@ measurements:
 
 
 parameter_help:
+  basic:
+    default: >
+        Business as usual simulates the model with no political restraint
+        on carbon emissions.  Projections are solely based on the values
+        for other parameters selected by the user.
+
+    carbon_tax: >
+        tax
+
+    treaty: >
+        The simulated climate treaty approximates an international 
+        agreement wherein specific emissions targets are established.  
+        These targets represent a fraction of 2005 emissions that would 
+        be permitted in and after a given time period.  For example, 
+        selecting a value of 25% implies a 75% decrease in emissions from 
+        2005 levels.  The user can select a level of emissions reductions 
+        for each of three time periods after, 2050, 2100 and 2150.  
+
+        The user can also select the level of participation in the 
+        selected treaty.  This parameter will not change the level of 
+        emissions relative to 2005 as selected in the climate treaty, 
+        but will affect the cost of compliance (as reflected by increased 
+        abatement costs).
+
+    optimized: >
+        In optimization mode, webDICE finds the price of carbon that 
+        will maximize global welfare given the user-specified parameters.
+
+    temp_co2_doubling: >
+        Climate Sensitivity estimates the extent to which the global mean 
+        temperature increases when we add greenhouse gasses to the atmosphere.  
+        This metric is defined as the temperature increase from doubling the 
+        carbon dioxide concentration in the atmosphere relative to the concentration 
+        prior to the industrial revolution.  By adjusting the slider you can 
+        discover how different levels of temperature increases affect economic 
+        activities and how these economic activities in turn effect climate.
+
   advanced:
+    default: >
+        Business as usual simulates the model with no political restraint on 
+        carbon emissions.  Projections are solely based on the values for 
+        other parameters selected by the user.
+
+    treaty: >
+        The simulated climate treaty approximates an international agreement 
+        wherein specific emissions targets are established.  These targets 
+        represent a fraction of 2005 emissions that would be permitted in and 
+        after a given time period.  For example, selecting a value of 25% implies 
+        a 75% decrease in emissions from 2005 levels.  The user can select a level 
+        of emissions reductions for each of three time periods after, 2050, 
+        2100 and 2150.
+
+        The user can also select the level of participation in the selected treaty.  
+        This parameter will not change the level of emissions relative to 2005 as 
+        selected in the climate treaty, but will affect the cost of compliance 
+        (as reflected by increased abatement costs).
+
+    optimized: >
+        In optimization mode, webDICE finds the price of carbon that will maximize 
+        global welfare given the user-specified parameters.
+
     temp_co2_doubling: >
         Climate Sensitivity estimates the extent to which the global mean
         temperature increases when we add greenhouse gasses to the atmosphere.
@@ -564,26 +624,26 @@ parameter_help:
         effect climate.
 
     damages_exponent: >
-      This model assumes that an increase in global mean temperature will harm
-      the economy.  By adjusting this slider, you can not only discover the
-      various degrees to which increasing temperature can affect the economy,
-      but you can also estimate how these economic damages will in turn affect
-      the climate.
+        This model assumes that an increase in global mean temperature will harm
+        the economy.  By adjusting this slider, you can not only discover the
+        various degrees to which increasing temperature can affect the economy,
+        but you can also estimate how these economic damages will in turn affect
+        the climate.
 
     productivity_decline: >
-      This metric represents the decline in the rate of growth of productivity
-      over time.  This model assumes that the ability to produce goods with a
-      given amount of capital and labor increases over time.  However, the rate
-      at which growth of production increases is decreasing.  Faster growth
-      indicates optimism in the continued ability to produce goods efficiently.
-      Slower growth indicates that productivity will decrease over time.
+        This metric represents the decline in the rate of growth of productivity
+        over time.  This model assumes that the ability to produce goods with a
+        given amount of capital and labor increases over time.  However, the rate
+        at which growth of production increases is decreasing.  Faster growth
+        indicates optimism in the continued ability to produce goods efficiently.
+        Slower growth indicates that productivity will decrease over time.
 
     intensity_decline_rate: >
-      Energy intensity is the emissions per unit of economic output.  As energy
-      efficiency increases energy intensity decreases; with increased efficiency
-      less energy is used to produce output, resulting in fewer emissions.
-      Adjust the slider to discover how energy intensity can affect future
-      emissions and their economic impacts.
+        Energy intensity is the emissions per unit of economic output.  As energy
+        efficiency increases energy intensity decreases; with increased efficiency
+        less energy is used to produce output, resulting in fewer emissions.
+        Adjust the slider to discover how energy intensity can affect future
+        emissions and their economic impacts.
 
     backstop_ratio: >
         We do not know what the costs of zero-carbon energy will ultimately be.
@@ -659,3 +719,62 @@ parameter_help:
         set it anywhere from 0% to 10%.
 
   basic:
+    damages_exponent: >
+        This model assumes that an increase in global mean temperature will harm
+        the economy.  By adjusting this slider, you can not only discover the
+        various degrees to which increasing temperature can affect the economy,
+        but you can also estimate how these economic damages will in turn affect
+        the climate.
+
+    temp_co2_doubling: >
+        Climate Sensitivity estimates the extent to which the global mean temperature 
+        increases when we add greenhouse gasses to the atmosphere.  This metric is 
+        defined as the temperature increase from doubling the carbon dioxide concentration 
+        in the atmosphere relative to the concentration prior to the industrial revolution.  
+        By adjusting the slider you can discover how different levels of temperature 
+        increases affect economic activities and how these economic activities in turn 
+        effect climate.
+
+    productivity_decline: >
+        This model assumes that the ability to produce goods with a given amount of 
+        capital and labor increases over time.  However, the rate at which growth of 
+        production increases is decreasing.  Faster growth indicates optimism in the 
+        continued ability to produce goods efficiently.  Slower growth indicates that 
+        productivity will decrease over time.
+
+    intensity_decline_rate: >
+        Energy efficiency represents a decline in emissions per unit of economic 
+        output.  As energy efficiency increases energy intensity decreases; with 
+        increased efficiency less energy is used to produce output, resulting in 
+        fewer emissions.  Adjust the slider to discover how energy efficiency can 
+        affect future emissions and their economic impacts.
+
+    backstop_ratio: >
+        We do not know what the costs of zero-carbon energy will ultimately be.  
+        The lower the cost of zero-carbon technologies, the cheaper emissions 
+        reductions will be.  Adjust the slider to reflect your beliefs on how low 
+        the cost of zero-carbon energy will be and to discover how these costs 
+        affect climate and the economy. 
+
+    default: >
+        Business as usual simulates the model with no political restraint on
+        carbon emissions.  Projections are solely based on the values for
+        other parameters selected by the user.
+
+    treaty: >
+        The simulated climate treaty approximates an international agreement
+        wherein specific emissions targets are established.  These targets
+        represent a fraction of 2005 emissions that would be permitted in and
+        after a given time period.  For example, selecting a value of 25% implies
+        a 75% decrease in emissions from 2005 levels.  The user can select a level
+        of emissions reductions for each of three time periods after, 2050,
+        2100 and 2150.
+
+        The user can also select the level of participation in the selected treaty.
+        This parameter will not change the level of emissions relative to 2005 as
+        selected in the climate treaty, but will affect the cost of compliance
+        (as reflected by increased abatement costs).
+
+    optimized: >
+        In optimization mode, webDICE finds the price of carbon that will maximize
+        global welfare given the user-specified parameters.    
