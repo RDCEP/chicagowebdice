@@ -129,6 +129,11 @@ def advanced_tabs():
                     button += ' checked="checked"'
                 button += '/>'
                 section['radio'] = button
+                HELP = get_parameter_help(section, 'advanced',
+                        return_html=True)
+                if HELP is not None:
+                    section['help'] = HELP
+                    all_parameters.append(section)
             parameters = get_parameters(section)
             for parameter in parameters:
                 parameter = set_from_defaults(parameter, defaults)
@@ -136,7 +141,7 @@ def advanced_tabs():
                 parameter = set_input_type(parameter, 'options', 'select')
                 if parameter['type'] == 'range':
                     parameter = set_tick(parameter)
-                parameter = get_parameter_help(parameter)
+                parameter = get_parameter_help(parameter, 'advanced')
                 all_parameters.append(parameter)
     return [tabs, all_parameters]
 
@@ -156,6 +161,7 @@ def get_basic_tabs():
                     button += ' checked="checked"'
                 button += '/>'
                 section['radio'] = button
+                section['help'] = get_parameter_help(section, 'basic', return_html=True)
             parameters = get_parameters(section)
             for parameter in parameters:
                 parameter = set_from_defaults(parameter, defaults)
@@ -163,7 +169,7 @@ def get_basic_tabs():
                 parameter = set_input_type(parameter, 'options', 'select')
                 if parameter['type'] == 'range':
                     parameter = set_tick(parameter)
-                parameter = get_parameter_help(parameter)
+                parameter = get_parameter_help(parameter, 'basic')
     return tabs
 
 
@@ -194,15 +200,19 @@ def paragraphs_html(t):
         html += '<p>%s</p>\n' % paragraph
     return html
 
-def get_parameter_help(parameter):
+def get_parameter_help(parameter, help_type, return_html=False):
     parameters_help = CONF_FILE['parameter_help']
+    html = None
     try:
-        parameter_help = parameters_help[parameter['machine_name']]
+        parameter_help = parameters_help[help_type][parameter['machine_name']]
         html = ''
         paragraphs = parameter_help.split('\n')
         for paragraph in paragraphs:
             html += '<p>%s</p>\n' % paragraph
-        parameter['help'] = html
     except:
         pass
-    return parameter
+    if not return_html:
+        parameter['help'] = html
+        return parameter
+    else:
+        return html
