@@ -369,9 +369,8 @@ class Dice2007(Dice2007Params):
                     )
                 else:
                     D.miu[i] = 0.
-        D.tax_rate[i] = self.eq.tax_rate(
-            self.backstop[i], D.miu[i], self.abatement_exponent
-        )
+                if D.carbon_emitted[ii] > self.fosslim:
+                    D.miu[i] = 1.0
         D.emissions_ind[i] = self.eq.emissions_ind(
             D.carbon_intensity[i], D.miu[i], D.gross_output[i]
         )
@@ -386,9 +385,12 @@ class Dice2007(Dice2007Params):
         else:
             D.carbon_emitted[i] = 10 * D.emissions_total[i]
         if D.carbon_emitted[i] > self.fosslim:
-            D.miu[i] = 1
+            # D.miu[i] = 1
             D.emissions_total[i] = 0
             D.carbon_emitted[i] = self.fosslim
+        D.tax_rate[i] = self.eq.tax_rate(
+            self.backstop[i], D.miu[i], self.abatement_exponent
+        )
         if i > 0:
             D.mass_atmosphere[i] = self.eq.mass_atmosphere(
                 D.emissions_total[ii], D.mass_atmosphere[ii],
@@ -518,21 +520,21 @@ class Dice2007(Dice2007Params):
         for i in range(x_range):
             future_indices = self.tmax - x_range
             final_year = i + future_indices
-            self.data['scc'] = self.data['vars'].copy()
+            self.data.scc = self.data.vars.copy()
             for j in range(i, final_year):
                 shock = 0
                 if j == i:
                     shock = 1.0
-                self.step(j, self.data.scc, miu=miu, emissions_shock=shock)
+                S = self.step(j, self.data.scc, miu=miu, emissions_shock=shock)
             diff = 'consumption_pc'
-            DIFF = np.absolute(
-                self.data.vars[diff][i:final_year] -
-                self.data.scc[diff][i:final_year]
-            ).clip(0)
-            self.data.vars.scc[i] = np.sum(
-                DIFF *
-                self.data.vars.consumption_discount[:future_indices].values
-            ).clip(0) * 100000. * (12.0 / 44.0)
+            DIFF = (
+                (
+                    self.data.vars[diff][i:final_year].values -
+                    self.data.scc[diff][i:final_year].values
+                ).clip(0) *
+                self.data.scc.consumption_discount[:future_indices].values
+            )
+            self.data.vars.scc[i] = np.sum(DIFF) * 100000. * (12. / 44.)
 
     def get_ipopt_mu(self):
         """
@@ -613,7 +615,7 @@ def verify_out(d, param=None, value=None):
             'participation', 'participation_markup', 'damages',
             'abatement', 'consumption', 'consumption_pc', 'utility',
             'utility_discounted', 'pref_fac',
-            ]
+        ]
         for i in range(d.tmax):
             for v in range(len(_vars)):
                 if v + 1 == len(_vars):
@@ -636,9 +638,3 @@ if __name__ == '__main__':
             verify_out(d, p, 'minimum')
             verify_out(d, p, 'maximum')
 
-    d = Dice2007(optimize=True)
-    # d.prstp = .015
-    # d.damages_model = 'productivity_fraction'
-    d.prod_frac = .2
-    D = d.loop()
-    print D.scc[:20]
