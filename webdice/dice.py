@@ -61,7 +61,7 @@ class Dice2007(Dice2007Params):
     """
     def __init__(self, optimize=False):
         self.eq = equations.default.Loop()
-        Dice2007Params.__init__(self)
+        super(Dice2007Params, self).__init__()
         self.p = Dice2007Params()
         self.optimize = False
         if optimize:
@@ -94,8 +94,9 @@ class Dice2007(Dice2007Params):
             'temp_lower', 'damages', 'abatement', 'output', 'output_abate',
             'investment', 'carbon_emitted', 'consumption',
             'consumption_pc', 'utility', 'utility_discounted',
-            'productivity', 'backstop_growth', 'carbon_intensity', 'miu', 'backstop',
-            'population', 'tax_rate', 'scc', 'consumption_discount',
+            'productivity', 'backstop_growth', 'carbon_intensity', 'miu',
+            'backstop', 'population', 'tax_rate', 'scc',
+            'consumption_discount',
         ]
 
     @property
@@ -135,8 +136,8 @@ class Dice2007(Dice2007Params):
         -------
         array
         """
-        return self._population_2005 * (1 - self.population_growth) + \
-               self.population_growth * self.popasym
+        return self._population_2005 * (1 - self.population_growth) + (
+            self.population_growth * self.popasym)
 
     @property
     def productivity_growth(self):
@@ -525,7 +526,9 @@ class Dice2007(Dice2007Params):
                 shock = 0
                 if j == i:
                     shock = 1.0
-                S = self.step(j, self.data.scc, miu=miu, emissions_shock=shock)
+                self.data.scc = self.step(
+                    j, self.data.scc, miu=miu, emissions_shock=shock
+                )
             diff = 'consumption_pc'
             DIFF = (
                 (
@@ -568,12 +571,16 @@ class Dice2007(Dice2007Params):
         xu = np.ones(self.tmax)
         gl = np.zeros(M)
         gu = np.ones(M) * 4.0
+
         def eval_f(x):
             return self.loop(x, scc=False)
+
         def eval_grad_f(x):
             return self.loop(x, deriv=True, scc=False)
+
         def eval_g(x):
             return np.zeros(M)
+
         def eval_jac_g(x, flag):
             if flag:
                 return [], []
@@ -601,6 +608,7 @@ class Dice2007(Dice2007Params):
             output += '%s %s\n' % (v, ' '.join(map(str, list(vv))))
         return output
 
+
 def verify_out(d, param=None, value=None):
     if param is not None:
         x = getattr(d, param)
@@ -608,8 +616,8 @@ def verify_out(d, param=None, value=None):
     filename = '../verify/gams_%s_%s.csv' % (param, value)
     with open(filename, 'a') as f:
         _vars = [
-            'miu', 'carbon_intensity', 'productivity', 'backstop_growth', 'capital',
-            'output', 'mass_atmosphere', 'mass_upper', 'mass_lower', 
+            'miu', 'carbon_intensity', 'productivity', 'backstop_growth',
+            'capital', 'output', 'mass_atmosphere', 'mass_upper', 'mass_lower',
             'temp_atmosphere', 'temp_lower', 'investment', 'gross_output', 
             'forcing', 'emissions_ind', 'emissions_total', 'carbon_emitted',
             'participation', 'participation_markup', 'damages',
