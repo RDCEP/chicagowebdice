@@ -46,7 +46,7 @@ class Dice2007Params(object):
         self._intensity_2005 = .13418
         self._intensity_growth = -.0730
         self._intensity_quadratic = .000
-        self._emissions_deforest_2005 = 11.0
+        self._emissions_deforest_2005 = 1.1 #11.0
 
         ## Carbon Cycle
         self._mass_atmosphere_2005 = 808.9
