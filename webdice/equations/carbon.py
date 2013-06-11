@@ -1,5 +1,4 @@
 import numpy as np
-from default import Loop
 
 class CarbonModel(object):
     def __init__(self):
@@ -14,7 +13,6 @@ class CarbonModel(object):
 
     @property
     def carbon_matrix(self):
-        # Carbon cycle transition matrix
         return self._carbon_matrix
 
     @carbon_matrix.setter
@@ -76,11 +74,11 @@ class DiceCarbon(CarbonModel):
 class BeamCarbon(CarbonModel):
     def __init__(self):
         CarbonModel.__init__(self)
-        self.N = 100
+        self.N = 20
 
     def get_h(self, mass_upper):
         return -5e-7 + 8.24427e-10 * mass_upper + 1.40633e-25 * np.sqrt(
-            1.26024e+37 - 4.15591e+34 + 3.43659e+31 * mass_upper ** 2
+            1.26024e+37 - 4.15591e+34 * mass_upper + 3.43659e+31 * mass_upper ** 2
         )
 
     def get_model_values(self, emissions_total, mass_atmosphere,

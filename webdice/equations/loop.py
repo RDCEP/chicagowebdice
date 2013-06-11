@@ -114,20 +114,6 @@ class Loop(object):
             temp_lower + thermal_transfer[3] * (temp_atmosphere - temp_lower)
         )
 
-    def damages(self, gross_output, temp_atmosphere, damages_terms,
-               a_abatement=None, a_savings=None):
-        """
-        Omega, Damage, trillions $USD
-        ...
-        Returns
-        -------
-        float
-        """
-        return gross_output * (1 - 1 / (
-            1 + damages_terms[0] * temp_atmosphere +
-            damages_terms[1] * temp_atmosphere ** damages_terms[2]
-        ))
-
     def abatement(self, gross_output, miu, backstop_growth, abatement_exponent,
                   participation):
         """
@@ -142,19 +128,6 @@ class Loop(object):
             backstop_growth * miu ** abatement_exponent
         )
 
-    def output(self, gross_output, damages, abatement, a_savings=None,
-               a_temp_atmosphere=None, a_aa=None):
-        """
-        Net output after abatement and damages, trillions $USD
-        ...
-        Returns
-        -------
-        float
-        """
-        return (
-            (gross_output - abatement) * (gross_output - damages)
-        ) / gross_output
-
     def investment(self, savings, output):
         """
         I, Investment, trillions $USD
@@ -164,17 +137,6 @@ class Loop(object):
         float
         """
         return savings * output
-
-    def consumption(self, output, savings, a_gross_output=None,
-                    a_abatement=None, a_temp_atmosphere=None, a_aa=None):
-        """
-        C, Consumption, trillions $USD
-        ...
-        Returns
-        -------
-        float
-        """
-        return output * (1.0 - savings)
 
     def consumption_pc(self, consumption, population):
         """
@@ -190,9 +152,16 @@ class Loop(object):
         """Discount rate for consumption"""
         return 1 / (
             1 + (prstp * 100 + elasmu * (
-                (c1 - c0) / c0
-            ) * 10) / 100
+                (c1 - c0) / 10 / c0
+            )) / 100
         ) ** (10 * i)
+
+        # Ramsey discount from SCC paper
+        # return np.exp(-(elasmu / (i + .000001) * np.log(
+        #     c1 / c0) / 10 + prstp) * i * 10)
+
+        # Constant rate from SCC paper
+        # return 1 / ((1 + .03) ** (i * 10))
 
     def utility(self, consumption_pc, elasmu, population):
         """

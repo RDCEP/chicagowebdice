@@ -1,8 +1,7 @@
 import numpy as np
-from default import Loop
 
 
-class DamagesModel(Loop):
+class DamagesModel(object):
     """
     Subclass default equations for the sake of using alternate
     damages functions.
@@ -12,7 +11,6 @@ class DamagesModel(Loop):
     prod_frac : float
     """
     def __init__(self, prod_frac):
-        Loop.__init__(self)
         self.prod_frac = prod_frac
 
     def get_production_factor(self, damages_terms, temp_atmosphere):
@@ -20,6 +18,45 @@ class DamagesModel(Loop):
         Return default fraction of productivity
         """
         return 1.
+
+    def damages(self, gross_output, temp_atmosphere, damages_terms,
+               a_abatement=None, a_savings=None):
+        """
+        Omega, Damage, trillions $USD
+        ...
+        Returns
+        -------
+        float
+        """
+        return gross_output * (1 - 1 / (
+            1 + damages_terms[0] * temp_atmosphere +
+            damages_terms[1] * temp_atmosphere ** damages_terms[2]
+        ))
+
+    def output(self, gross_output, damages, abatement, a_savings=None,
+               a_temp_atmosphere=None, a_aa=None):
+        """
+        Net output after abatement and damages, trillions $USD
+        ...
+        Returns
+        -------
+        float
+        """
+        return (
+            (gross_output - abatement) * (gross_output - damages)
+        ) / gross_output
+
+    def consumption(self, output, savings, a_gross_output=None,
+                    a_abatement=None, a_temp_atmosphere=None, a_aa=None):
+        """
+        C, Consumption, trillions $USD
+        ...
+        Returns
+        -------
+        float
+        """
+        return output * (1.0 - savings)
+
 
     def get_model_values(self, gross_output, temp_atmosphere,
                          damages_terms, abatement, savings):

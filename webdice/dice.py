@@ -1,7 +1,6 @@
 import numpy as np
 import pyipopt
 from params import Dice2007Params
-# import equations
 from equations.loop import Loop
 from equations.damages import *
 from equations.carbon import *
@@ -62,10 +61,8 @@ class Dice2007(Dice2007Params):
         Output text for Google Visualizer graph functions
     """
     def __init__(self, optimize=False):
-        # self.eq = equations.default.Loop()
         self.eq = Loop()
         Dice2007Params.__init__(self)
-        self.p = Dice2007Params()
         self.optimize = False
         if optimize:
             self.optimize = True
@@ -340,10 +337,9 @@ class Dice2007(Dice2007Params):
             D.capital[i] = self.eq.capital(
                 D.capital[ii], self.depreciation, D.investment[ii]
             )
-            # D.productivity[i] *= self.eq.get_production_factor(
             D.productivity[i] *= self.eq.damages_model.get_production_factor(
                 self.damages_terms, D.temp_atmosphere[ii]
-            )
+            ) ** 10
         D.backstop_growth[i] = (
             self.backstop[i] * D.carbon_intensity[i] / self.abatement_exponent
         )
@@ -401,17 +397,6 @@ class Dice2007(Dice2007Params):
                     D.mass_upper[ii], D.mass_lower[ii]
                 )
             )
-            # D.mass_atmosphere[i] = self.eq.mass_atmosphere(
-            #     D.emissions_total[ii], D.mass_atmosphere[ii],
-            #     D.mass_upper[ii], self.carbon_matrix
-            # )
-            # D.mass_upper[i] = self.eq.mass_upper(
-            #     D.mass_atmosphere[ii], D.mass_upper[ii],
-            #     D.mass_lower[ii], self.carbon_matrix
-            # )
-            # D.mass_lower[i] = self.eq.mass_lower(
-            #     D.mass_upper[ii], D.mass_lower[ii], self.carbon_matrix
-            # )
         D.forcing[i] = self.eq.forcing(
             self._forcing_co2_doubling, D.mass_atmosphere[i], 
             self._mass_preindustrial, self.forcing_ghg[i]
@@ -475,7 +460,6 @@ class Dice2007(Dice2007Params):
         DataFrame : self.data.vars
         """
         if self.damages_model == 'exponential_map':
-            # self.eq = ExponentialMap(self.prod_frac)
             self.eq.damages_model = ExponentialMap(self.prod_frac)
         elif self.damages_model == 'tipping_point':
             self.eq.damages_model = WeitzmanTippingPoint(self.prod_frac)
@@ -548,7 +532,7 @@ class Dice2007(Dice2007Params):
                 ).clip(0) *
                 self.data.scc.consumption_discount[:future_indices].values
             )
-            self.data.vars.scc[i] = np.sum(DIFF) * 100000. * (12. / 44.)
+            self.data.vars.scc[i] = np.sum(DIFF) * 10000. * (12. / 44.)
 
     def get_ipopt_mu(self):
         """
@@ -651,17 +635,3 @@ if __name__ == '__main__':
         for p in _params:
             verify_out(d, p, 'minimum')
             verify_out(d, p, 'maximum')
-
-    d = Dice2007()
-    d.eq.carbon_model = carbon.DiceCarbon()
-    d.loop()
-    print d.data.vars.loc[:7, 'mass_atmosphere':'mass_upper']
-    # print d.data.vars.loc[:, 'mass_atmosphere':'mass_upper'].sum(axis=1)
-    # print d.data.vars.loc[:, 'emissions_total']
-    # print d.data.vars.loc[:, 'mass_atmosphere':'mass_upper'].sum(axis=1) - d.data.vars.loc[0, 'mass_atmosphere':'mass_upper'].sum(axis=1)
-    d.eq.carbon_model = carbon.BeamCarbon()
-    d.loop()
-    print d.data.vars.loc[:7, 'mass_atmosphere':'mass_upper']
-    # print d.data.vars.loc[:, 'mass_atmosphere':'mass_upper'].sum(axis=1)
-    # print d.data.vars.loc[:, 'emissions_total']
-    # print d.data.vars.loc[:, 'mass_atmosphere':'mass_upper'].sum(axis=1) - d.data.vars.loc[0, 'mass_atmosphere':'mass_upper'].sum(axis=1)
