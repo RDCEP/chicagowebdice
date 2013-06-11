@@ -65,6 +65,7 @@ h1 span a, h1 a {color:#fff;text-decoration:none;}
 #content .tabs .selected{background-color:#fff;}
 #content .tab {overflow:hidden;}
 #content>div>div>div{display:none !important;}
+#content .tab {overflow:hidden;}
 #download-data{position:absolute;right:1em;bottom:0;}
 #download-data input{display:block;/*border:0px solid red;*/background-color:#eee;border:1px solid #ccc;}
 #download-data input{font:0.7em Helvetica,sans-serif;padding:0.5em;border-bottom:none;}
@@ -120,7 +121,7 @@ h1 span a, h1 a {color:#fff;text-decoration:none;}
 #help-wrapper {position:absolute;left:26em;}
 .help-text {padding:.5em 1em;background-color:#fff;border:1px solid #ccc;
     font-family:Helvetica,sans-serif;font-size:.9em;width:25em;display:none;}
-
+.help-text p+p {margin-top:.5em;}
 .maximum-range-value,.minimum-range-value {font-size:.6em;}
 .maximum-range-value {text-align:right;}
 .minimum-range-value {float:left;}

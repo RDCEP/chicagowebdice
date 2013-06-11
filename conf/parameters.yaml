@@ -1,4 +1,4 @@
-﻿about: >
+﻿﻿about: >
   This file describes all the numeric parameters for the model. All values
   are assumed to be floats unless otherwise specified, and have the given
   range and precision values.
@@ -338,7 +338,7 @@ advanced_tabs:
             description: >
                 Cost of replacing all emissions in 2012 $ per ton of CO_{2},
                 relative to future cost
-      - name: Econommic performance
+      - name: Economic performance
         parameters:
           - name: Decline in rate of growth of productivity
             machine_name: productivity_decline
@@ -379,7 +379,7 @@ advanced_tabs:
             description: >
                 Number, in millions, that the population grows asymptotically
                 towards
-            unit: ' billions'
+            unit: ' millions'
       - name: Energy parameters
         parameters:
           - name: Reduction in energy intensity per decade
@@ -779,4 +779,4 @@ parameter_help:
 
     optimized: >
         In optimization mode, webDICE finds the price of carbon that will maximize
-        global welfare given the user-specified parameters.
+        global welfare given the user-specified parameters.    

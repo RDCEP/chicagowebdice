@@ -159,7 +159,7 @@
     };
 
     var addRunFromCSV = function(description, color, result, changesFromDefault) {
-      var fields = Object;
+      var fields = new Object;
       var lines = result.split('\n');
 
       for (var i = 0; i < lines.length; i++) {
@@ -750,12 +750,12 @@
       return false;
     };
 
-//		var runOptimizationButton = document.getElementById('run-opt');
-//		runOptimizationButton.onclick = function() {
-    //code to come later
-    //run dice optimization
-//			return false;
-//		}
+    //		var runOptimizationButton = document.getElementById('run-opt');
+    //		runOptimizationButton.onclick = function() {
+        //code to come later
+        //run dice optimization
+    //			return false;
+    //		}
 
     /*
      *There was origionally going to be an image next to each parameter that linked to a specific
@@ -847,7 +847,8 @@
 //            $('#optimize').val('true');
 //        });
     var form = document.getElementById('submission');
-    form.onsubmit = function(e) {
+    $('#submission').on('submit', function(e) {
+    //form.onsubmit = function(e) {
       e.preventDefault();
       /* We're putting the hackish-equivalent of a try...finally statement here! (Jermey's Safari fix that I accidentally somehow deleted)*/
 
@@ -1015,7 +1016,8 @@
         });
 
       }, 0); return false;
-    };
+    //};
+    });
 
     $('input[type=range]', form).change(function() {
       /*
@@ -1086,8 +1088,15 @@
     window.onresize = function() {
       updateAllViewports();
     }
+
+    /*
+    This line triggers the form submission, AJAX, graphs, etc. when the
+    page loads.
+     */
+    $('#submission').trigger('submit');
   };
 
   google.load('visualization', '1.0', {'packages' : ['corechart']});
   google.setOnLoadCallback(initializeUI);
+
 })(jQuery);

@@ -9,22 +9,11 @@
   <script src="/static/js/jquery.min.js"></script>
   <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>
   <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-  <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-31803228-1']);
-    _gaq.push(['_setDomainName', 'rdcep.org']);
-    _gaq.push(['_trackPageview']);
-    (function() {
-      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
-  </script>
   {% block headcss %}{% endblock %}
   {% block headjs %}{% endblock %}
 </head>
 <body>
-<h1 id="heading"> <span>RDCEP</span> :: <a href="/">WebDICE</a></h1>
+    <h1 id="heading"> <span>RDCEP</span> :: <a href="/">WebDICE</a></h1>
 {% block mainlink %}<div id="back-to-rdcep"><a href="http://www.rdcep.org/">Back to RDCEP</a></div>{% endblock %}
 <ul id="help-menu">
   <li id="display-help">Documentation<ul>
