@@ -423,7 +423,6 @@ class Dice2007(Dice2007Params):
                 D.gross_output[i], D.temp_atmosphere[i],
                 self.damages_terms, D.abatement[i], self.savings
             )
-        # D.consumption[i] += consumption_shock
         D.consumption_pc[i] = self.eq.consumption_pc(
             D.consumption[i], self.population[i]
         )
