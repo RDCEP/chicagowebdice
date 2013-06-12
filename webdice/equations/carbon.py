@@ -46,7 +46,6 @@ class CarbonModel(object):
             self.mass_lower(mass_upper, mass_lower),
         )
 
-
     def mass_atmosphere(self, emissions_total, mass_atmosphere, mass_upper):
         """
         M_AT, Carbon concentration in atmosphere, GtC
@@ -114,20 +113,21 @@ class BeamCarbon(CarbonModel):
         self.N = 20
 
     def get_h(self, mass_upper):
-        #sympy
+        # sympy
         return 8.11054e-10 * mass_upper + 3.24421e-15 * np.sqrt(
             6.25e+10 * mass_upper ** 2 - 7.68281e+13 * mass_upper + 2.36815e+16
         ) - 5.0e-7
 
-        #wolfram alpha
+        # wolfram alpha
         # return 8.11054e-10 * mass_upper + 5.07187e-24 * np.sqrt(
         #     2.55719e+28 * mass_upper**2-3.14342e+31 * mass_upper + 9.68932e+33
         # ) - 5.e-7
 
-        #mathematica
-        #return -5e-7 + 8.24427e-10 * mass_upper + 1.40633e-25 * np.sqrt(
-        #    1.26024e+37 - 4.15591e+34 * mass_upper + 3.43659e+31 * mass_upper ** 2
-        #)
+        # mathematica
+        # return -5e-7 + 8.24427e-10 * mass_upper + 1.40633e-25 * np.sqrt(
+        #     1.26024e+37 - 4.15591e+34 * mass_upper + 3.43659e+31 * \
+        #     mass_upper ** 2
+        # )
 
     def get_model_values(self, emissions_total, mass_atmosphere,
                           mass_upper, mass_lower):
@@ -140,10 +140,10 @@ class BeamCarbon(CarbonModel):
                 _b, -_b - .05, .05,
                 0, .001, -.001,
             ]).reshape(3, 3)
-            _maa = self.mass_atmosphere(emissions_total, _ma, _mu) / self.N
-            _muu = self.mass_upper(_ma, _mu, _ml) / self.N
-            _mll = self.mass_lower(_mu, _ml) / self.N
-            _ma += _maa
-            _mu += _muu
-            _ml += _mll
-        return (_ma, _mu, _ml)
+            _ma_incr = self.mass_atmosphere(emissions_total, _ma, _mu) / self.N
+            _mu_incr = self.mass_upper(_ma, _mu, _ml) / self.N
+            _ml_incr = self.mass_lower(_mu, _ml) / self.N
+            _ma += _ma_incr
+            _mu += _mu_incr
+            _ml += _ml_incr
+        return _ma, _mu, _ml
