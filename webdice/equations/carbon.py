@@ -1,6 +1,26 @@
 import numpy as np
 
 class CarbonModel(object):
+    """
+    CarbonModel base class
+    ...
+    Properties
+    ----------
+    initial_carbon : tuple
+        Values for M_AT, M_UP, and M_LO at t=0
+    Methods
+    -------
+    mass_atmosphere()
+        Calculate M_AT at t
+    mass_upper()
+        Calculate M_UP at t
+    mass_lower()
+        Calculate M_LO at t
+    get_model_values()
+        Return values for M_AT, M_UP, M_LO
+    forcing()
+        Calculate forcing at t
+    """
     def __init__(self, _mass_atmosphere, _mass_upper, _mass_lower, _mass_pre):
         _b11, _b12, _b13 = .810712, .189288, 0
         _b21, _b22, _b23 = .097213, .852787, .05
@@ -40,6 +60,21 @@ class CarbonModel(object):
 
     def get_model_values(self, emissions_total, mass_atmosphere,
                           mass_upper, mass_lower):
+        """
+        Return values for M_AT, M_UP, M_LO
+        ...
+        Args
+        ----
+        emissions_total : float, E_total at t-1
+        mass_atmosphere : float, M_AT at t-1
+        mass_upper : float, M_UP at t-1
+        mass_lower : float, M_LO at t-1
+        ...
+        Returns
+        -------
+        tuple
+            M_AT, M_UP, M_LO at t
+        """
         return (
             self.mass_atmosphere(emissions_total, mass_atmosphere, mass_upper),
             self.mass_upper(mass_atmosphere, mass_upper, mass_lower),
@@ -106,6 +141,16 @@ class DiceCarbon(CarbonModel):
 
 
 class BeamCarbon(CarbonModel):
+    """
+    CarbonModel for simplified BEAM
+    ...
+    Methods
+    -------
+    get_h()
+        Calculate H based on M_UP
+    get_model_values()
+        Set BEAM transfer matrix, and return values for M_AT, M_UP, M_LO
+    """
     def __init__(self, _mass_atmosphere, _mass_upper, _mass_lower, _mass_pre):
         CarbonModel.__init__(
             self, _mass_atmosphere, _mass_upper, _mass_lower, _mass_pre
@@ -113,6 +158,17 @@ class BeamCarbon(CarbonModel):
         self.N = 20
 
     def get_h(self, mass_upper):
+        """
+        Calculate H based on M_UP
+        ...
+        Args
+        ----
+        mass_upper : float, M_UP at t-1
+        ...
+        Returns
+        -------
+        float
+        """
         # sympy
         return 8.11054e-10 * mass_upper + 3.24421e-15 * np.sqrt(
             6.25e+10 * mass_upper ** 2 - 7.68281e+13 * mass_upper + 2.36815e+16
@@ -131,6 +187,21 @@ class BeamCarbon(CarbonModel):
 
     def get_model_values(self, emissions_total, mass_atmosphere,
                           mass_upper, mass_lower):
+        """
+        Set BEAM transfer matrix, and return values for M_AT, M_UP, M_LO
+        ...
+        Args
+        ----
+        emissions_total : float, E_total at t-1
+        mass_atmosphere : float, M_AT at t-1
+        mass_upper : float, M_UP at t-1
+        mass_lower : float, M_LO at t-1
+        ...
+        Returns
+        -------
+        tuple
+            M_AT, M_UP, M_LO at t
+        """
         _ma, _mu, _ml = mass_atmosphere, mass_upper, mass_lower
         for i in range(self.N):
             _h = self.get_h(_mu)
