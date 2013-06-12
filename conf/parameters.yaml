@@ -379,7 +379,7 @@ advanced_tabs:
             description: >
                 Number, in millions, that the population grows asymptotically
                 towards
-            unit: ' millions'
+            unit: ' million'
       - name: Energy parameters
         parameters:
           - name: Reduction in energy intensity per decade
