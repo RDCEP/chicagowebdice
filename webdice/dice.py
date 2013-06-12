@@ -629,8 +629,8 @@ if __name__ == '__main__':
             verify_out(d, p, 'maximum')
 
     d = Dice2007()
-    d.loop()
+    d.loop(scc=False)
     print d.data.vars.loc[:20, 'mass_atmosphere':'mass_upper']
     d.carbon_model = 'beam'
-    d.loop()
+    d.loop(scc=False)
     print d.data.vars.loc[:20, 'mass_atmosphere':'mass_upper']
