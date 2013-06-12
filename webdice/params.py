@@ -49,9 +49,6 @@ class Dice2007Params(object):
         self._emissions_deforest_2005 = 1.1 #11.0
 
         ## Carbon Cycle
-        self._mass_atmosphere_2005 = 808.9
-        self._mass_upper_2005 = 1255.
-        self._mass_lower_2005 = 18365.
         self._mass_preindustrial = 278. * 2.13
 
         ## Climate model

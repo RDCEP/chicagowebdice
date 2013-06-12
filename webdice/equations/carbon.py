@@ -10,6 +10,23 @@ class CarbonModel(object):
             _b21, _b22, _b23,
             _b31, _b32, _b33,
         ]).reshape(3, 3)
+        self._mass_atmosphere_2005 = 808.9
+        self._mass_upper_2005 = 1255.
+        self._mass_lower_2005 = 18365.
+
+    @property
+    def initial_carbon(self):
+        return (
+            self._mass_atmosphere_2005,
+            self._mass_upper_2005,
+            self._mass_lower_2005,
+        )
+
+    @initial_carbon.setter
+    def initial_carbon(self, value):
+        self._mass_atmosphere_2005 = value[0]
+        self._mass_upper_2005 = value[1]
+        self._mass_lower_2005 = value[2]
 
     @property
     def carbon_matrix(self):
@@ -75,24 +92,39 @@ class BeamCarbon(CarbonModel):
     def __init__(self):
         CarbonModel.__init__(self)
         self.N = 20
+        self.initial_carbon = [808.9, 772.4, 38620.5]
 
     def get_h(self, mass_upper):
-        return -5e-7 + 8.24427e-10 * mass_upper + 1.40633e-25 * np.sqrt(
-            1.26024e+37 - 4.15591e+34 * mass_upper + 3.43659e+31 * mass_upper ** 2
-        )
+        #sympy
+        return 8.11054e-10 * mass_upper + 3.24421e-15 * np.sqrt(
+            6.25e+10 * mass_upper ** 2 - 7.68281e+13 * mass_upper + 2.36815e+16
+        ) - 5.0e-7
+
+        #wolfram alpha
+        # return 8.11054e-10 * mass_upper + 5.07187e-24 * np.sqrt(
+        #     2.55719e+28 * mass_upper**2-3.14342e+31 * mass_upper + 9.68932e+33
+        # ) - 5.e-7
+
+        #mathematica
+        #return -5e-7 + 8.24427e-10 * mass_upper + 1.40633e-25 * np.sqrt(
+        #    1.26024e+37 - 4.15591e+34 * mass_upper + 3.43659e+31 * mass_upper ** 2
+        #)
 
     def get_model_values(self, emissions_total, mass_atmosphere,
                           mass_upper, mass_lower):
         _ma, _mu, _ml = mass_atmosphere, mass_upper, mass_lower
         for i in range(self.N):
             _h = self.get_h(_mu)
-            _b12 = (28.944 * _h ** 2) / (_h ** 2 + _h / 10 ** 6 + 7.53 * 10 ** -16)
+            _b = (28.944 * _h ** 2) / (_h ** 2 + _h * 10e-6 + 7.53e-16)
             self.carbon_matrix = np.array([
-                -.2, _b12, 0,
-                .2,  -_b12 - .05, .001,
-                0, .05, -.001
+                -.2, .2, 0,
+                _b, -_b - .05, .05,
+                0, .001, -.001,
             ]).reshape(3, 3)
-            _ma += self.mass_atmosphere(emissions_total, _ma, _mu) / self.N
-            _mu += self.mass_upper(_ma, _mu, _ml) / self.N
-            _ml += self.mass_lower(_mu, _ml) / self.N
+            _maa = self.mass_atmosphere(emissions_total, _ma, _mu) / self.N
+            _muu = self.mass_upper(_ma, _mu, _ml) / self.N
+            _mll = self.mass_lower(_mu, _ml) / self.N
+            _ma += _maa
+            _mu += _muu
+            _ml += _mll
         return [_ma, _mu, _ml]

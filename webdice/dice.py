@@ -309,7 +309,7 @@ class Dice2007(Dice2007Params):
         return np.sum(self.data.vars.utility_discounted)
 
     def step(self, i, D, miu=None, deriv=False, epsilon=1e-3, f0=0.0,
-             emissions_shock=0.0, consumption_shock=0.0):
+             emissions_shock=0.0):
         """
         Single step for calculating endogenous variables
         ...
@@ -385,7 +385,6 @@ class Dice2007(Dice2007Params):
         else:
             D.carbon_emitted[i] = 10 * D.emissions_total[i]
         if D.carbon_emitted[i] > self.fosslim:
-            # D.miu[i] = 1
             D.emissions_total[i] = 0
             D.carbon_emitted[i] = self.fosslim
         D.tax_rate[i] = self.eq.tax_rate(
@@ -397,6 +396,10 @@ class Dice2007(Dice2007Params):
                     D.emissions_total[ii], D.mass_atmosphere[ii],
                     D.mass_upper[ii], D.mass_lower[ii]
                 )
+            )
+        else:
+            D.mass_atmosphere[i], D.mass_upper[i], D.mass_lower[i] = (
+                self.eq.carbon_model.initial_carbon
             )
         D.forcing[i] = self.eq.forcing(
             self._forcing_co2_doubling, D.mass_atmosphere[i], 
@@ -636,3 +639,10 @@ if __name__ == '__main__':
         for p in _params:
             verify_out(d, p, 'minimum')
             verify_out(d, p, 'maximum')
+
+    d = Dice2007()
+    d.loop()
+    print d.data.vars.loc[:20, 'mass_atmosphere':'mass_upper']
+    d.carbon_model = 'beam'
+    d.loop()
+    print d.data.vars.loc[:20, 'mass_atmosphere':'mass_upper']
