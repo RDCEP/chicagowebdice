@@ -1,5 +1,5 @@
 import numpy as np
-from new_damages import *
+from damages import *
 from carbon import *
 
 class Loop(object):
