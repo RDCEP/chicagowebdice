@@ -2,8 +2,7 @@ import numpy as np
 import pyipopt
 from params import Dice2007Params
 from equations.loop import Loop
-from equations.damages import *
-from equations.carbon import *
+from equations import set_models
 
 class Dice2007(Dice2007Params):
     """Variables, parameters, and step function for DICE 2007.
@@ -462,25 +461,10 @@ class Dice2007(Dice2007Params):
         -------
         DataFrame : self.data.vars
         """
-        if self.damages_model == 'exponential_map':
-            self.eq.damages_model = ExponentialMap(self.prod_frac)
-        elif self.damages_model == 'tipping_point':
-            self.eq.damages_model = WeitzmanTippingPoint(self.prod_frac)
-        elif self.damages_model == 'additive_output':
-            self.eq.damages_model = AdditiveDamages(self.prod_frac)
-        elif self.damages_model == 'productivity_fraction':
-            self.eq.damages_model = ProductivityFraction(self.prod_frac)
-        else:
-            self.eq.damages_model = DamagesModel(self.prod_frac)
-        if self.carbon_model == 'beam':
-            self.eq.carbon_model = BeamCarbon(
-                808.9, 772.4, 38620.5, self._mass_preindustrial
-            )
-        else:
-            self.eq.carbon_model = DiceCarbon(
-                self._mass_atmosphere_2005, self._mass_upper_2005,
-                self._mass_lower_2005, self._mass_preindustrial,
-            )
+        set_models(self.eq, self.damages_model, self.carbon_model,
+                   self.prod_frac, self._mass_atmosphere_2005,
+                   self._mass_upper_2005, self._mass_lower_2005,
+                   self._mass_preindustrial,)
         _epsilon = 1e-4
         if self.optimize and miu is None:
             self.data.vars.miu = self.get_ipopt_mu()
