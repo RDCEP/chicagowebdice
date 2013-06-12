@@ -1,7 +1,7 @@
 import numpy as np
 
 class CarbonModel(object):
-    def __init__(self):
+    def __init__(self, _mass_atmosphere, _mass_upper, _mass_lower, _mass_pre):
         _b11, _b12, _b13 = .810712, .189288, 0
         _b21, _b22, _b23 = .097213, .852787, .05
         _b31, _b32, _b33 = 0, .003119, .996881
@@ -10,9 +10,11 @@ class CarbonModel(object):
             _b21, _b22, _b23,
             _b31, _b32, _b33,
         ]).reshape(3, 3)
-        self._mass_atmosphere_2005 = 808.9
-        self._mass_upper_2005 = 1255.
-        self._mass_lower_2005 = 18365.
+        self._mass_atmosphere_2005 = _mass_atmosphere
+        self._mass_upper_2005 = _mass_upper
+        self._mass_lower_2005 = _mass_lower
+        self._mass_preindustrial = _mass_pre
+
 
     @property
     def initial_carbon(self):
@@ -38,11 +40,11 @@ class CarbonModel(object):
 
     def get_model_values(self, emissions_total, mass_atmosphere,
                           mass_upper, mass_lower):
-        return [
+        return (
             self.mass_atmosphere(emissions_total, mass_atmosphere, mass_upper),
             self.mass_upper(mass_atmosphere, mass_upper, mass_lower),
             self.mass_lower(mass_upper, mass_lower),
-        ]
+        )
 
 
     def mass_atmosphere(self, emissions_total, mass_atmosphere, mass_upper):
@@ -83,16 +85,33 @@ class CarbonModel(object):
             self.carbon_matrix[1][2] * mass_upper + self.carbon_matrix[2][2] * mass_lower
         )
 
+    def forcing(self, _forcing_co2_doubling, mass_atmosphere, forcing_ghg):
+        """
+        F, Forcing, W/m^2
+        ...
+        Returns
+        -------
+        float
+        """
+        return (
+            _forcing_co2_doubling *
+            np.log(mass_atmosphere / self._mass_preindustrial) + forcing_ghg
+        )
+        # return _forcing_co2_doubling * (np.log((
+        #     ((mass_atmosphere + ma_next) / 2) + .000001
+        # ) / _mass_preindustrial) / np.log(2)) + forcing_ghg
+
 
 class DiceCarbon(CarbonModel):
     pass
 
 
 class BeamCarbon(CarbonModel):
-    def __init__(self):
-        CarbonModel.__init__(self)
+    def __init__(self, _mass_atmosphere, _mass_upper, _mass_lower, _mass_pre):
+        CarbonModel.__init__(
+            self, _mass_atmosphere, _mass_upper, _mass_lower, _mass_pre
+        )
         self.N = 20
-        self.initial_carbon = [808.9, 772.4, 38620.5]
 
     def get_h(self, mass_upper):
         #sympy
@@ -127,4 +146,4 @@ class BeamCarbon(CarbonModel):
             _ma += _maa
             _mu += _muu
             _ml += _mll
-        return [_ma, _mu, _ml]
+        return (_ma, _mu, _ml)

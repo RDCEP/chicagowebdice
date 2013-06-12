@@ -401,9 +401,9 @@ class Dice2007(Dice2007Params):
             D.mass_atmosphere[i], D.mass_upper[i], D.mass_lower[i] = (
                 self.eq.carbon_model.initial_carbon
             )
-        D.forcing[i] = self.eq.forcing(
-            self._forcing_co2_doubling, D.mass_atmosphere[i], 
-            self._mass_preindustrial, self.forcing_ghg[i]
+        D.forcing[i] = self.eq.carbon_model.forcing(
+            self._forcing_co2_doubling, D.mass_atmosphere[i],
+            self.forcing_ghg[i]
         )
         if i > 0:
             D.temp_atmosphere[i] = self.eq.temp_atmosphere(
@@ -474,9 +474,14 @@ class Dice2007(Dice2007Params):
         else:
             self.eq.damages_model = DamagesModel(self.prod_frac)
         if self.carbon_model == 'beam':
-            self.eq.carbon_model = BeamCarbon()
+            self.eq.carbon_model = BeamCarbon(
+                808.9, 772.4, 38620.5, self._mass_preindustrial
+            )
         else:
-            self.eq.carbon_model = DiceCarbon()
+            self.eq.carbon_model = DiceCarbon(
+                self._mass_atmosphere_2005, self._mass_upper_2005,
+                self._mass_lower_2005, self._mass_preindustrial,
+            )
         _epsilon = 1e-4
         if self.optimize and miu is None:
             self.data.vars.miu = self.get_ipopt_mu()

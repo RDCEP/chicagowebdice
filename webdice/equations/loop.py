@@ -2,6 +2,7 @@ import numpy as np
 from damages import *
 from carbon import *
 
+
 class Loop(object):
     """Default equation set."""
     def __init__(self, damages_model=DiceDamages, carbon_model=DiceCarbon):
@@ -66,23 +67,6 @@ class Loop(object):
         float
         """
         return emissions_ind + etree
-
-    def forcing(self, _forcing_co2_doubling, mass_atmosphere,
-                _mass_preindustrial, forcing_ghg):
-        """
-        F, Forcing, W/m^2
-        ...
-        Returns
-        -------
-        float
-        """
-        return (
-            _forcing_co2_doubling *
-            np.log(mass_atmosphere / _mass_preindustrial) + forcing_ghg
-        )
-        # return _forcing_co2_doubling * (np.log((
-        #     ((mass_atmosphere + ma_next) / 2) + .000001
-        # ) / _mass_preindustrial) / np.log(2)) + forcing_ghg
 
     def temp_atmosphere(self, temp_atmosphere, temp_lower, forcing,
                         _forcing_co2_doubling, temp_co2_doubling,
