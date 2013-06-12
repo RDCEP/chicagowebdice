@@ -134,6 +134,10 @@ def graphs():
         this_dice.damages_model = form['damages_model']
     except KeyError:
         pass
+    try:
+        this_dice.carbon_model = form['carbon_model']
+    except KeyError:
+        pass
     policy = form['policy_type']
     this_dice.treaty = False
     this_dice.carbon_tax = False

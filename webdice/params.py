@@ -46,28 +46,13 @@ class Dice2007Params(object):
         self._intensity_2005 = .13418
         self._intensity_growth = -.0730
         self._intensity_quadratic = .000
-        self._emissions_deforest_2005 = 11.0
+        self._emissions_deforest_2005 = 1.1 #11.0
 
         ## Carbon Cycle
         self._mass_atmosphere_2005 = 808.9
         self._mass_upper_2005 = 1255.
         self._mass_lower_2005 = 18365.
         self._mass_preindustrial = 278. * 2.13
-        # Carbon cycle transition matrix
-        self._b11 = .810712
-        self._b12 = .189288
-        self._b13 = 0
-        self._b21 = .097213
-        self._b22 = .852787
-        self._b23 = .05
-        self._b31 = 0
-        self._b32 = .003119
-        self._b33 = .996881
-        self.carbon_matrix = np.array([
-            self._b11, self._b12, self._b13,
-            self._b21, self._b22, self._b23,
-            self._b31, self._b32, self._b33,
-        ]).reshape(3, 3)
 
         ## Climate model
         self._forcing_ghg_2000 = -.06

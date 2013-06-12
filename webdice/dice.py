@@ -1,8 +1,8 @@
 import numpy as np
 import pyipopt
 from params import Dice2007Params
-import equations
-from equations.damages import *
+from equations.loop import Loop
+from equations import set_models
 
 class Dice2007(Dice2007Params):
     """Variables, parameters, and step function for DICE 2007.
@@ -60,9 +60,8 @@ class Dice2007(Dice2007Params):
         Output text for Google Visualizer graph functions
     """
     def __init__(self, optimize=False):
-        self.eq = equations.default.Loop()
-        super(Dice2007Params, self).__init__()
-        self.p = Dice2007Params()
+        self.eq = Loop()
+        Dice2007Params.__init__(self)
         self.optimize = False
         if optimize:
             self.optimize = True
@@ -94,9 +93,8 @@ class Dice2007(Dice2007Params):
             'temp_lower', 'damages', 'abatement', 'output', 'output_abate',
             'investment', 'carbon_emitted', 'consumption',
             'consumption_pc', 'utility', 'utility_discounted',
-            'productivity', 'backstop_growth', 'carbon_intensity', 'miu',
-            'backstop', 'population', 'tax_rate', 'scc',
-            'consumption_discount',
+            'productivity', 'backstop_growth', 'carbon_intensity', 'miu', 'backstop',
+            'population', 'tax_rate', 'scc', 'consumption_discount',
         ]
 
     @property
@@ -136,8 +134,8 @@ class Dice2007(Dice2007Params):
         -------
         array
         """
-        return self._population_2005 * (1 - self.population_growth) + (
-            self.population_growth * self.popasym)
+        return self._population_2005 * (1 - self.population_growth) + \
+               self.population_growth * self.popasym
 
     @property
     def productivity_growth(self):
@@ -310,7 +308,7 @@ class Dice2007(Dice2007Params):
         return np.sum(self.data.vars.utility_discounted)
 
     def step(self, i, D, miu=None, deriv=False, epsilon=1e-3, f0=0.0,
-             emissions_shock=0.0, consumption_shock=0.0):
+             emissions_shock=0.0):
         """
         Single step for calculating endogenous variables
         ...
@@ -338,9 +336,9 @@ class Dice2007(Dice2007Params):
             D.capital[i] = self.eq.capital(
                 D.capital[ii], self.depreciation, D.investment[ii]
             )
-            D.productivity[i] *= self.eq.get_production_factor(
+            D.productivity[i] *= self.eq.damages_model.get_production_factor(
                 self.damages_terms, D.temp_atmosphere[ii]
-            )
+            ) ** 10
         D.backstop_growth[i] = (
             self.backstop[i] * D.carbon_intensity[i] / self.abatement_exponent
         )
@@ -386,27 +384,25 @@ class Dice2007(Dice2007Params):
         else:
             D.carbon_emitted[i] = 10 * D.emissions_total[i]
         if D.carbon_emitted[i] > self.fosslim:
-            # D.miu[i] = 1
             D.emissions_total[i] = 0
             D.carbon_emitted[i] = self.fosslim
         D.tax_rate[i] = self.eq.tax_rate(
             self.backstop[i], D.miu[i], self.abatement_exponent
         )
         if i > 0:
-            D.mass_atmosphere[i] = self.eq.mass_atmosphere(
-                D.emissions_total[ii], D.mass_atmosphere[ii],
-                D.mass_upper[ii], self.carbon_matrix
+            D.mass_atmosphere[i], D.mass_upper[i], D.mass_lower[i] = (
+                self.eq.carbon_model.get_model_values(
+                    D.emissions_total[ii], D.mass_atmosphere[ii],
+                    D.mass_upper[ii], D.mass_lower[ii]
+                )
             )
-            D.mass_upper[i] = self.eq.mass_upper(
-                D.mass_atmosphere[ii], D.mass_upper[ii],
-                D.mass_lower[ii], self.carbon_matrix
+        else:
+            D.mass_atmosphere[i], D.mass_upper[i], D.mass_lower[i] = (
+                self.eq.carbon_model.initial_carbon
             )
-            D.mass_lower[i] = self.eq.mass_lower(
-                D.mass_upper[ii], D.mass_lower[ii], self.carbon_matrix
-            )
-        D.forcing[i] = self.eq.forcing(
-            self._forcing_co2_doubling, D.mass_atmosphere[i], 
-            self._mass_preindustrial, self.forcing_ghg[i]
+        D.forcing[i] = self.eq.carbon_model.forcing(
+            self._forcing_co2_doubling, D.mass_atmosphere[i],
+            self.forcing_ghg[i]
         )
         if i > 0:
             D.temp_atmosphere[i] = self.eq.temp_atmosphere(
@@ -422,11 +418,10 @@ class Dice2007(Dice2007Params):
             self.abatement_exponent, self.participation[i]
         )
         D.damages[i], D.output[i], D.consumption[i] = \
-            self.eq.get_model_values(
+            self.eq.damages_model.get_model_values(
                 D.gross_output[i], D.temp_atmosphere[i],
                 self.damages_terms, D.abatement[i], self.savings
             )
-        D.consumption[i] += consumption_shock
         D.consumption_pc[i] = self.eq.consumption_pc(
             D.consumption[i], self.population[i]
         )
@@ -466,16 +461,10 @@ class Dice2007(Dice2007Params):
         -------
         DataFrame : self.data.vars
         """
-        if self.damages_model == 'exponential_map':
-            self.eq = ExponentialMap(self.prod_frac)
-        elif self.damages_model == 'tipping_point':
-            self.eq = WeitzmanTippingPoint(self.prod_frac)
-        elif self.damages_model == 'additive_output':
-            self.eq = AdditiveDamages(self.prod_frac)
-        elif self.damages_model == 'productivity_fraction':
-            self.eq = ProductivityFraction(self.prod_frac)
-        else:
-            self.eq = DamagesModel(self.prod_frac)
+        set_models(self.eq, self.damages_model, self.carbon_model,
+                   self.prod_frac, self._mass_atmosphere_2005,
+                   self._mass_upper_2005, self._mass_lower_2005,
+                   self._mass_preindustrial,)
         _epsilon = 1e-4
         if self.optimize and miu is None:
             self.data.vars.miu = self.get_ipopt_mu()
@@ -526,9 +515,7 @@ class Dice2007(Dice2007Params):
                 shock = 0
                 if j == i:
                     shock = 1.0
-                self.data.scc = self.step(
-                    j, self.data.scc, miu=miu, emissions_shock=shock
-                )
+                S = self.step(j, self.data.scc, miu=miu, emissions_shock=shock)
             diff = 'consumption_pc'
             DIFF = (
                 (
@@ -537,7 +524,7 @@ class Dice2007(Dice2007Params):
                 ).clip(0) *
                 self.data.scc.consumption_discount[:future_indices].values
             )
-            self.data.vars.scc[i] = np.sum(DIFF) * 100000. * (12. / 44.)
+            self.data.vars.scc[i] = np.sum(DIFF) * 10000. * (12. / 44.)
 
     def get_ipopt_mu(self):
         """
@@ -571,16 +558,12 @@ class Dice2007(Dice2007Params):
         xu = np.ones(self.tmax)
         gl = np.zeros(M)
         gu = np.ones(M) * 4.0
-
         def eval_f(x):
             return self.loop(x, scc=False)
-
         def eval_grad_f(x):
             return self.loop(x, deriv=True, scc=False)
-
         def eval_g(x):
             return np.zeros(M)
-
         def eval_jac_g(x, flag):
             if flag:
                 return [], []
@@ -608,7 +591,6 @@ class Dice2007(Dice2007Params):
             output += '%s %s\n' % (v, ' '.join(map(str, list(vv))))
         return output
 
-
 def verify_out(d, param=None, value=None):
     if param is not None:
         x = getattr(d, param)
@@ -616,8 +598,8 @@ def verify_out(d, param=None, value=None):
     filename = '../verify/gams_%s_%s.csv' % (param, value)
     with open(filename, 'a') as f:
         _vars = [
-            'miu', 'carbon_intensity', 'productivity', 'backstop_growth',
-            'capital', 'output', 'mass_atmosphere', 'mass_upper', 'mass_lower',
+            'miu', 'carbon_intensity', 'productivity', 'backstop_growth', 'capital',
+            'output', 'mass_atmosphere', 'mass_upper', 'mass_lower', 
             'temp_atmosphere', 'temp_lower', 'investment', 'gross_output', 
             'forcing', 'emissions_ind', 'emissions_total', 'carbon_emitted',
             'participation', 'participation_markup', 'damages',
@@ -646,3 +628,9 @@ if __name__ == '__main__':
             verify_out(d, p, 'minimum')
             verify_out(d, p, 'maximum')
 
+    d = Dice2007()
+    d.loop()
+    print d.data.vars.loc[:20, 'mass_atmosphere':'mass_upper']
+    d.carbon_model = 'beam'
+    d.loop()
+    print d.data.vars.loc[:20, 'mass_atmosphere':'mass_upper']

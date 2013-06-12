@@ -270,10 +270,12 @@ advanced_tabs:
           - name: Carbon cycle
             machine_name: carbon_model
             description: Oceanic model of carbon transfer
-            disabled: true
+            disabled: false
             options:
               - name: DICE
                 machine_name: dice_carbon
+              - name: BEAM
+                machine_name: beam
           - name: Damages model
             machine_name: damages_model
             description: Way that climate change harms enter the economy
@@ -301,7 +303,7 @@ advanced_tabs:
             machine_name: prod_frac
             min: 0
             max: .25
-            step: .05
+            step: .01
             precision: 2
             default: .05
             init_disabled: true

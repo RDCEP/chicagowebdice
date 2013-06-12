@@ -62,7 +62,8 @@ h1 span a, h1 a {color:#fff;text-decoration:none;}
 #content.hasnoruns #download-data{display:none;}
 #content.hasnoruns .tabs{display:none !important;}
 #content .tabs{background-color:#eee;margin-left:1px;}
-#content .tabs .selected{background-color:#fff;}-
+#content .tabs .selected{background-color:#fff;}
+#content .tab {overflow:hidden;}
 #content>div>div>div{display:none !important;}
 #content .tab {overflow:hidden;}
 #download-data{position:absolute;right:1em;bottom:0;}
