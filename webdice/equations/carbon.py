@@ -172,21 +172,9 @@ class BeamCarbon(CarbonModel):
         -------
         float
         """
-        # sympy
-        # return 8.11054e-10 * mass_upper + 3.24421e-15 * np.sqrt(
-        #     6.25e+10 * mass_upper ** 2 - 7.68281e+13 * mass_upper + 2.36815e+16
-        # ) - 5.0e-7
-
-        # wolfram alpha
-        # return 8.11054e-10 * mass_upper + 5.07187e-24 * np.sqrt(
-        #     2.55719e+28 * mass_upper**2-3.14342e+31 * mass_upper + 9.68932e+33
-        # ) - 5.e-7
-
-        # mathematica
-        return -5e-7 + 8.24427e-10 * mass_upper + 1.40633e-25 * np.sqrt(
-            1.26024e+37 - 4.15591e+34 * mass_upper + 3.43659e+31 * \
-            mass_upper ** 2
-        )
+        return 8.11054e-10 * mass_upper + 3.24421e-15 * np.sqrt(
+            6.25e+10 * mass_upper ** 2 - 7.68281e+13 * mass_upper + 2.36815e+16
+        ) - 5.0e-7
 
     def get_model_values(self, emissions_total, mass_atmosphere,
                          mass_upper, mass_lower):
