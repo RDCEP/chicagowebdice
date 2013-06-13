@@ -281,24 +281,15 @@ advanced_tabs:
             description: Way that climate change harms enter the economy
             options:
               - name: DICE damages to output
-                machine_name: dice_output
+                machine_name: dice_damages
               - name: Exponential mapping to output
                 machine_name: exponential_map
               - name: Additive to output
-                machine_name: additive_output
+                machine_name: additive_damages
               - name: Weitzman tipping point
-                machine_name: tipping_point
+                machine_name: weitzman_tipping_point
               - name: Fraction of productivity
                 machine_name: productivity_fraction
-        #      - name: Kopp Damages to Capital
-        #        machine_name: kopp
-        #        description: >
-        #             Climate change destroys a certain percentage of global input
-        #      - name: Damages to Productivity
-        #        machine_name: productivity
-        #        description: >
-        #             Climate change reduces the rate of growth in global
-        #             productivity
           - name: Fraction of damages to productivity
             machine_name: prod_frac
             min: 0
