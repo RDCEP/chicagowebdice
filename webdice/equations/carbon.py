@@ -44,6 +44,8 @@ class CarbonModel(object):
         self._mass_upper_2005 = PARAMS._mass_upper_2005
         self._mass_lower_2005 = PARAMS._mass_lower_2005
         self._mass_preindustrial = PARAMS._mass_preindustrial
+        self._temp_atmosphere_2005 = PARAMS._temp_atmosphere_2000
+        self._temp_lower_2005 = PARAMS._temp_lower_2000
 
     @property
     def initial_carbon(self):
@@ -66,6 +68,15 @@ class CarbonModel(object):
     @carbon_matrix.setter
     def carbon_matrix(self, value):
         self._carbon_matrix = value
+
+    @property
+    def initial_temps(self):
+        return [self._temp_atmosphere_2005, self._temp_lower_2005]
+
+    @initial_temps.setter
+    def initial_temps(self, value):
+        self._temp_atmosphere_2005 = value[0]
+        self._temp_lower_2005 = value[1]
 
     @property
     def forcing_ghg(self):
@@ -166,6 +177,52 @@ class CarbonModel(object):
         # return _forcing_co2_doubling * (np.log((
         #     ((mass_atmosphere + ma_next) / 2) + .000001
         # ) / _mass_preindustrial) / np.log(2)) + forcing_ghg
+
+    def get_temperature_values(self, index, data, temp_co2_doubling,
+                               thermal_transfer):
+        if index == 0:
+            return self.initial_temps
+        i = index - 1
+        return (
+            self.temp_atmosphere(
+                data.temp_atmosphere[i], data.temp_lower[i], self.forcing[i],
+                PARAMS._forcing_co2_doubling, temp_co2_doubling,
+                thermal_transfer
+            ),
+            self.temp_lower(
+                data.temp_atmosphere[i], data.temp_lower[i], thermal_transfer
+            ),
+        )
+
+    def temp_atmosphere(self, temp_atmosphere, temp_lower, forcing,
+                        _forcing_co2_doubling, temp_co2_doubling,
+                        thermal_transfer):
+        """
+        T_AT, Temperature of atmosphere, degrees C
+        ...
+        Returns
+        -------
+        float
+        """
+        return (
+            temp_atmosphere + thermal_transfer[0] * (
+                forcing - (_forcing_co2_doubling / temp_co2_doubling) *
+                temp_atmosphere - thermal_transfer[2] *
+                (temp_atmosphere - temp_lower)
+            )
+        )
+
+    def temp_lower(self, temp_atmosphere, temp_lower, thermal_transfer):
+        """
+        T_LO, Temperature of lower oceans, degrees C
+        ...
+        Returns
+        -------
+        float
+        """
+        return (
+            temp_lower + thermal_transfer[3] * (temp_atmosphere - temp_lower)
+        )
 
 
 class DiceCarbon(CarbonModel):

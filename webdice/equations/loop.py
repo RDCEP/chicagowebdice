@@ -58,51 +58,6 @@ class Loop(object):
             population ** (1 - output_elasticty)
         )
 
-
-    def temp_atmosphere(self, temp_atmosphere, temp_lower, forcing,
-                        _forcing_co2_doubling, temp_co2_doubling,
-                        thermal_transfer):
-        """
-        T_AT, Temperature of atmosphere, degrees C
-        ...
-        Returns
-        -------
-        float
-        """
-        return (
-            temp_atmosphere + thermal_transfer[0] * (
-                forcing - (_forcing_co2_doubling / temp_co2_doubling) *
-                temp_atmosphere - thermal_transfer[2] *
-                (temp_atmosphere - temp_lower)
-            )
-        )
-
-    def temp_lower(self, temp_atmosphere, temp_lower, thermal_transfer):
-        """
-        T_LO, Temperature of lower oceans, degrees C
-        ...
-        Returns
-        -------
-        float
-        """
-        return (
-            temp_lower + thermal_transfer[3] * (temp_atmosphere - temp_lower)
-        )
-
-    def abatement(self, gross_output, miu, backstop_growth, abatement_exponent,
-                  participation):
-        """
-        Lambda, Abatement costs, trillions $USD
-        ...
-        Returns
-        -------
-        float
-        """
-        return (
-            gross_output * participation ** (1 - abatement_exponent) *
-            backstop_growth * miu ** abatement_exponent
-        )
-
     def investment(self, savings, output):
         """
         I, Investment, trillions $USD

@@ -340,19 +340,10 @@ class Dice2007(Dice2007Params):
                     D.miu[i] = 0.
                 if D.carbon_emitted[ii] > self.fosslim:
                     D.miu[i] = 1.0
-        D.emissions_ind[i], D.emissions_total[i] = (
+        D.carbon_emitted[i], D.emissions_ind[i], D.emissions_total[i] = (
             self.eq.emissions_model.get_emissions_values(i, D)
         )
         D.emissions_total[i] += emissions_shock
-        if i > 0:
-            D.carbon_emitted[i] = (
-                D.carbon_emitted[ii] + D.emissions_total[i] * 10
-            )
-        else:
-            D.carbon_emitted[i] = 10 * D.emissions_total[i]
-        if D.carbon_emitted[i] > self.fosslim:
-            D.emissions_total[i] = 0
-            D.carbon_emitted[i] = self.fosslim
         D.tax_rate[i] = self.eq.tax_rate(
             self.backstop[i], D.miu[i], self.abatement_exponent
         )
@@ -360,15 +351,11 @@ class Dice2007(Dice2007Params):
             self.eq.carbon_model.get_carbon_values(i, D)
         )
         D.forcing[i] = self.eq.carbon_model.forcing(i, D)
-        if i > 0:
-            D.temp_atmosphere[i] = self.eq.temp_atmosphere(
-                D.temp_atmosphere[ii], D.temp_lower[ii], D.forcing[i], 
-                self._forcing_co2_doubling, self.temp_co2_doubling,
-                self.thermal_transfer
+        D.temp_atmosphere[i], D.temp_lower[i] = (
+            self.eq.carbon_model.get_temperature_values(
+                i, D, self.temp_co2_doubling, self.thermal_transfer
             )
-            D.temp_lower[i] = self.eq.temp_lower(
-                D.temp_atmosphere[ii], D.temp_lower[ii], self.thermal_transfer
-            )
+        )
         D.abatement[i] = self.eq.abatement(
             D.gross_output[i], D.miu[i], D.backstop_growth[i],
             self.abatement_exponent, self.participation[i]

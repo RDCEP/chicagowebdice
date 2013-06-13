@@ -27,7 +27,15 @@ class EmissionsModel(object):
         emissions_total = self.emissions_total(
             emissions_ind, self.emissions_deforest
         )
-        return emissions_ind, emissions_total
+        carbon_emitted = self.carbon_emitted(emissions_total, index, data)
+        if carbon_emitted > PARAMS.fosslim:
+            emissions_total = 0.0
+            carbon_emitted = PARAMS.fosslim
+        return (
+            emissions_ind,
+            emissions_total,
+            carbon_emitted,
+        )
 
     def emissions_ind(self, intensity, miu, gross_output):
         """
@@ -48,3 +56,8 @@ class EmissionsModel(object):
         float
         """
         return emissions_ind + etree
+
+    def carbon_emitted(self, emissions_total, index, data):
+        if index > 0:
+            return data.carbon_emitted[index - 1] + emissions_total * 10
+        return emissions_total * 10
