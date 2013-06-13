@@ -35,7 +35,6 @@ class CarbonModel(object):
         self._mass_lower_2005 = _mass_lower
         self._mass_preindustrial = _mass_pre
 
-
     @property
     def initial_carbon(self):
         return (
@@ -186,7 +185,7 @@ class BeamCarbon(CarbonModel):
         # )
 
     def get_model_values(self, emissions_total, mass_atmosphere,
-                          mass_upper, mass_lower):
+                         mass_upper, mass_lower):
         """
         Set BEAM transfer matrix, and return values for M_AT, M_UP, M_LO
         ...
@@ -205,7 +204,7 @@ class BeamCarbon(CarbonModel):
         _ma, _mu, _ml = mass_atmosphere, mass_upper, mass_lower
         for i in range(self.N):
             _h = self.get_h(_mu)
-            _b = (28.944 * _h ** 2) / (_h ** 2 + _h * 10e-6 + 7.53e-16)
+            _b = (28.944 * _h ** 2) / (_h ** 2 + _h * 1e-6 + 7.53e-16)
             self.carbon_matrix = np.array([
                 -.2, .2, 0,
                 _b, -_b - .05, .05,
