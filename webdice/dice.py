@@ -164,17 +164,6 @@ class Dice2007(Dice2007Params):
         )
 
     @property
-    def emissions_deforest(self):
-        """
-        E_land, Emissions from deforestation
-        ...
-        Returns
-        -------
-        array
-        """
-        return self._emissions_deforest_2005 * (1 - .1) ** self.t0
-
-    @property
     def utility_discount(self):
         """
         R, Average utility discount rate
@@ -351,11 +340,8 @@ class Dice2007(Dice2007Params):
                     D.miu[i] = 0.
                 if D.carbon_emitted[ii] > self.fosslim:
                     D.miu[i] = 1.0
-        D.emissions_ind[i] = self.eq.emissions_ind(
-            D.carbon_intensity[i], D.miu[i], D.gross_output[i]
-        )
-        D.emissions_total[i] = self.eq.emissions_total(
-            D.emissions_ind[i], self.emissions_deforest[i]
+        D.emissions_ind[i], D.emissions_total[i] = (
+            self.eq.emissions_model.get_emissions_values(i, D)
         )
         D.emissions_total[i] += emissions_shock
         if i > 0:

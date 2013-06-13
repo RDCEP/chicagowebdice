@@ -1,6 +1,7 @@
 import numpy as np
 from damages import *
 from carbon import *
+from emissions import *
 
 
 class Loop(object):
@@ -8,6 +9,7 @@ class Loop(object):
     def __init__(self, damages_model=DiceDamages, carbon_model=DiceCarbon):
         self._damages_model = damages_model
         self._carbon_model = carbon_model
+        self._emissions_model = EmissionsModel
 
     @property
     def damages_model(self):
@@ -23,6 +25,14 @@ class Loop(object):
 
     @carbon_model.setter
     def carbon_model(self, value):
+        self._carbon_model = value
+
+    @property
+    def emissions_model(self):
+        return self._emissions_model
+
+    @emissions_model.setter
+    def emissions_model(self, value):
         self._carbon_model = value
 
     def capital(self, capital, depreciation, investment):
@@ -48,25 +58,6 @@ class Loop(object):
             population ** (1 - output_elasticty)
         )
 
-    def emissions_ind(self, intensity, miu, gross_output):
-        """
-        E_ind, Industrial emissions, GtC
-        ...
-        Returns
-        -------
-        float
-        """
-        return intensity * (1. - miu) * gross_output
-
-    def emissions_total(self, emissions_ind, etree):
-        """
-        E, Total emissions, GtC
-        ...
-        Returns
-        -------
-        float
-        """
-        return emissions_ind + etree
 
     def temp_atmosphere(self, temp_atmosphere, temp_lower, forcing,
                         _forcing_co2_doubling, temp_co2_doubling,

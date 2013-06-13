@@ -1,5 +1,6 @@
 import damages
 import carbon
+import emissions
 
 
 def set_models(eq, damages_model, carbon_model, prod_frac):
@@ -23,3 +24,4 @@ def set_models(eq, damages_model, carbon_model, prod_frac):
     eq.carbon_model = getattr(
         carbon, "".join(x.capitalize() for x in carbon_model.split('_'))
     )()
+    eq.emissions_model = emissions.EmissionsModel()
