@@ -89,12 +89,7 @@ class DiceDamages(DamagesModel):
     """
     Standard DICE2007 damages function
     """
-    def damages(self, gross_output, temp_atmosphere, damages_terms,
-                a_abatement=None, a_savings=0):
-        return gross_output * (1 - 1 / (
-            1 + damages_terms[0] * temp_atmosphere + damages_terms[1] *
-            temp_atmosphere ** damages_terms[2]
-        ))
+    pass
 
 
 class ExponentialMap(DamagesModel):
