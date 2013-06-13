@@ -13,6 +13,11 @@ class CarbonModel(object):
     ----------
     initial_carbon : tuple
         Values for M_AT, M_UP, and M_LO at t=0
+    carbon_matrix : array
+        Carbon transfer coefficients
+    forcing_ghg : array
+        Forcing for GHGs
+    ...
     Methods
     -------
     mass_atmosphere()
@@ -61,6 +66,22 @@ class CarbonModel(object):
     @carbon_matrix.setter
     def carbon_matrix(self, value):
         self._carbon_matrix = value
+
+    @property
+    def forcing_ghg(self):
+        """
+        F_EX, Exogenous forcing for other greenhouse gases
+        ...
+        Returns
+        -------
+        array
+        """
+        return np.concatenate((
+            PARAMS._forcing_ghg_2000 + .1 * (
+                PARAMS._forcing_ghg_2100 - PARAMS._forcing_ghg_2000
+            ) * np.arange(11),
+            PARAMS._forcing_ghg_2000 + (np.ones(49) * .36),
+        ))
 
     def get_carbon_values(self, index, data):
         """
@@ -127,7 +148,8 @@ class CarbonModel(object):
             self.carbon_matrix[1][2] * mass_upper + self.carbon_matrix[2][2] * mass_lower
         )
 
-    def forcing(self, _forcing_co2_doubling, mass_atmosphere, forcing_ghg):
+    # def forcing(self, _forcing_co2_doubling, mass_atmosphere, forcing_ghg):
+    def forcing(self, index, data):
         """
         F, Forcing, W/m^2
         ...
@@ -136,8 +158,10 @@ class CarbonModel(object):
         float
         """
         return (
-            _forcing_co2_doubling *
-            np.log(mass_atmosphere / self._mass_preindustrial) + forcing_ghg
+            PARAMS._forcing_co2_doubling *
+            np.log(
+                data.mass_atmosphere[index] / self._mass_preindustrial
+            ) + self.forcing_ghg[index]
         )
         # return _forcing_co2_doubling * (np.log((
         #     ((mass_atmosphere + ma_next) / 2) + .000001
