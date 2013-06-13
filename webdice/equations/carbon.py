@@ -1,4 +1,9 @@
 import numpy as np
+from webdice.params import Dice2007Params
+
+
+PARAMS = Dice2007Params()
+
 
 class CarbonModel(object):
     """
@@ -21,7 +26,7 @@ class CarbonModel(object):
     forcing()
         Calculate forcing at t
     """
-    def __init__(self, _mass_atmosphere, _mass_upper, _mass_lower, _mass_pre):
+    def __init__(self):
         _b11, _b12, _b13 = .810712, .189288, 0
         _b21, _b22, _b23 = .097213, .852787, .05
         _b31, _b32, _b33 = 0, .003119, .996881
@@ -30,10 +35,10 @@ class CarbonModel(object):
             _b21, _b22, _b23,
             _b31, _b32, _b33,
         ]).reshape(3, 3)
-        self._mass_atmosphere_2005 = _mass_atmosphere
-        self._mass_upper_2005 = _mass_upper
-        self._mass_lower_2005 = _mass_lower
-        self._mass_preindustrial = _mass_pre
+        self._mass_atmosphere_2005 = PARAMS._mass_atmosphere_2005
+        self._mass_upper_2005 = PARAMS._mass_upper_2005
+        self._mass_lower_2005 = PARAMS._mass_lower_2005
+        self._mass_preindustrial = PARAMS._mass_preindustrial
 
     @property
     def initial_carbon(self):
@@ -150,11 +155,10 @@ class BeamCarbon(CarbonModel):
     get_model_values()
         Set BEAM transfer matrix, and return values for M_AT, M_UP, M_LO
     """
-    def __init__(self, _mass_atmosphere, _mass_upper, _mass_lower, _mass_pre):
-        CarbonModel.__init__(
-            self, _mass_atmosphere, _mass_upper, _mass_lower, _mass_pre
-        )
+    def __init__(self):
+        CarbonModel.__init__(self)
         self.N = 20
+        self.initial_carbon = [808.9, 772.4, 38620.5]
 
     def get_h(self, mass_upper):
         """
@@ -169,9 +173,9 @@ class BeamCarbon(CarbonModel):
         float
         """
         # sympy
-        return 8.11054e-10 * mass_upper + 3.24421e-15 * np.sqrt(
-            6.25e+10 * mass_upper ** 2 - 7.68281e+13 * mass_upper + 2.36815e+16
-        ) - 5.0e-7
+        # return 8.11054e-10 * mass_upper + 3.24421e-15 * np.sqrt(
+        #     6.25e+10 * mass_upper ** 2 - 7.68281e+13 * mass_upper + 2.36815e+16
+        # ) - 5.0e-7
 
         # wolfram alpha
         # return 8.11054e-10 * mass_upper + 5.07187e-24 * np.sqrt(
@@ -179,10 +183,10 @@ class BeamCarbon(CarbonModel):
         # ) - 5.e-7
 
         # mathematica
-        # return -5e-7 + 8.24427e-10 * mass_upper + 1.40633e-25 * np.sqrt(
-        #     1.26024e+37 - 4.15591e+34 * mass_upper + 3.43659e+31 * \
-        #     mass_upper ** 2
-        # )
+        return -5e-7 + 8.24427e-10 * mass_upper + 1.40633e-25 * np.sqrt(
+            1.26024e+37 - 4.15591e+34 * mass_upper + 3.43659e+31 * \
+            mass_upper ** 2
+        )
 
     def get_model_values(self, emissions_total, mass_atmosphere,
                          mass_upper, mass_lower):

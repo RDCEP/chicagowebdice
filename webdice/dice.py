@@ -462,9 +462,7 @@ class Dice2007(Dice2007Params):
         DataFrame : self.data.vars
         """
         set_models(self.eq, self.damages_model, self.carbon_model,
-                   self.prod_frac, self._mass_atmosphere_2005,
-                   self._mass_upper_2005, self._mass_lower_2005,
-                   self._mass_preindustrial,)
+                   self.prod_frac)
         _epsilon = 1e-4
         if self.optimize and miu is None:
             self.data.vars.miu = self.get_ipopt_mu()
@@ -630,7 +628,7 @@ if __name__ == '__main__':
 
     d = Dice2007()
     d.loop(scc=False)
-    print d.data.vars.loc[:20, 'mass_atmosphere':'mass_upper']
+    # print d.data.vars.loc[:20, 'mass_atmosphere':'mass_upper']
     d.carbon_model = 'beam'
     d.loop(scc=False)
-    print d.data.vars.loc[:20, 'mass_atmosphere':'mass_upper']
+    # print d.data.vars.loc[:20, 'mass_atmosphere':'mass_upper']

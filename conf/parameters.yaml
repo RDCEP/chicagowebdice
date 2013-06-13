@@ -275,7 +275,7 @@ advanced_tabs:
               - name: DICE
                 machine_name: dice_carbon
               - name: BEAM
-                machine_name: beam
+                machine_name: beam_carbon
           - name: Damages model
             machine_name: damages_model
             description: Way that climate change harms enter the economy
