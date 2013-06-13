@@ -62,7 +62,7 @@ class CarbonModel(object):
     def carbon_matrix(self, value):
         self._carbon_matrix = value
 
-    def get_model_values(self, index, data):
+    def get_carbon_values(self, index, data):
         """
         Return values for M_AT, M_UP, M_LO
         ...
@@ -180,7 +180,7 @@ class BeamCarbon(CarbonModel):
             6.25e+10 * mass_upper ** 2 - 7.68281e+13 * mass_upper + 2.36815e+16
         ) - 5.0e-7
 
-    def get_model_values(self, index, data):
+    def get_carbon_values(self, index, data):
         """
         Set BEAM transfer matrix, and return values for M_AT, M_UP, M_LO
         ...

@@ -389,7 +389,7 @@ class Dice2007(Dice2007Params):
             self.backstop[i], D.miu[i], self.abatement_exponent
         )
         D.mass_atmosphere[i], D.mass_upper[i], D.mass_lower[i] = (
-            self.eq.carbon_model.get_model_values(i, D)
+            self.eq.carbon_model.get_carbon_values(i, D)
         )
         D.forcing[i] = self.eq.carbon_model.forcing(
             self._forcing_co2_doubling, D.mass_atmosphere[i],
