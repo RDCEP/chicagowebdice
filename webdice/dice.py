@@ -10,9 +10,8 @@ class Dice2007(Dice2007Params):
     Attributes
     ----------
     eq : object
-        webdice.equations.<foo>.Loop object
-    Also see webdice.params.diceParams
-
+        webdice.equations.loop.Loop object
+    ...
     Properties
     ----------
     parameters : list
@@ -45,7 +44,7 @@ class Dice2007(Dice2007Params):
         Abatement as a percentage of output
     user_tax_rate : array
         Array of user-determined annual tax rates
-
+    ...
     Methods
     -------
     loop()
@@ -389,17 +388,9 @@ class Dice2007(Dice2007Params):
         D.tax_rate[i] = self.eq.tax_rate(
             self.backstop[i], D.miu[i], self.abatement_exponent
         )
-        if i > 0:
-            D.mass_atmosphere[i], D.mass_upper[i], D.mass_lower[i] = (
-                self.eq.carbon_model.get_model_values(
-                    D.emissions_total[ii], D.mass_atmosphere[ii],
-                    D.mass_upper[ii], D.mass_lower[ii]
-                )
-            )
-        else:
-            D.mass_atmosphere[i], D.mass_upper[i], D.mass_lower[i] = (
-                self.eq.carbon_model.initial_carbon
-            )
+        D.mass_atmosphere[i], D.mass_upper[i], D.mass_lower[i] = (
+            self.eq.carbon_model.get_model_values(i, D)
+        )
         D.forcing[i] = self.eq.carbon_model.forcing(
             self._forcing_co2_doubling, D.mass_atmosphere[i],
             self.forcing_ghg[i]
@@ -463,7 +454,6 @@ class Dice2007(Dice2007Params):
         """
         set_models(self.eq, self.damages_model, self.carbon_model,
                    self.prod_frac)
-        _epsilon = 1e-4
         if self.optimize and miu is None:
             self.data.vars.miu = self.get_ipopt_mu()
             self.data.vars.miu[0] = self._miu_2005
@@ -472,7 +462,7 @@ class Dice2007(Dice2007Params):
             if self.optimize and deriv:
                 f0 = np.atleast_1d(self.data.vars.utility_discounted[i])
                 self.step(
-                    i, self.data.deriv, miu=miu, epsilon=_epsilon,
+                    i, self.data.deriv, miu=miu, epsilon=1e-4,
                     deriv=True, f0=f0
                 )
         if scc:

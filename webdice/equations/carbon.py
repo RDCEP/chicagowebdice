@@ -62,8 +62,7 @@ class CarbonModel(object):
     def carbon_matrix(self, value):
         self._carbon_matrix = value
 
-    def get_model_values(self, emissions_total, mass_atmosphere,
-                          mass_upper, mass_lower):
+    def get_model_values(self, index, data):
         """
         Return values for M_AT, M_UP, M_LO
         ...
@@ -79,10 +78,15 @@ class CarbonModel(object):
         tuple
             M_AT, M_UP, M_LO at t
         """
+        if index == 0:
+            return self.initial_carbon
+        i = index - 1
         return (
-            self.mass_atmosphere(emissions_total, mass_atmosphere, mass_upper),
-            self.mass_upper(mass_atmosphere, mass_upper, mass_lower),
-            self.mass_lower(mass_upper, mass_lower),
+            self.mass_atmosphere(data.emissions_total[i],
+                                 data.mass_atmosphere[i], data.mass_upper[i]),
+            self.mass_upper(data.mass_atmosphere[i], data.mass_upper[i],
+                            data.mass_lower[i]),
+            self.mass_lower(data.mass_upper[i], data.mass_lower[i]),
         )
 
     def mass_atmosphere(self, emissions_total, mass_atmosphere, mass_upper):
@@ -176,8 +180,7 @@ class BeamCarbon(CarbonModel):
             6.25e+10 * mass_upper ** 2 - 7.68281e+13 * mass_upper + 2.36815e+16
         ) - 5.0e-7
 
-    def get_model_values(self, emissions_total, mass_atmosphere,
-                         mass_upper, mass_lower):
+    def get_model_values(self, index, data):
         """
         Set BEAM transfer matrix, and return values for M_AT, M_UP, M_LO
         ...
@@ -193,8 +196,13 @@ class BeamCarbon(CarbonModel):
         tuple
             M_AT, M_UP, M_LO at t
         """
-        _ma, _mu, _ml = mass_atmosphere, mass_upper, mass_lower
-        for i in range(self.N):
+        if index == 0:
+            return self.initial_carbon
+        i = index - 1
+        _ma, _mu, _ml = (
+            data.mass_atmosphere[i], data.mass_upper[i], data.mass_lower[i]
+        )
+        for x in range(self.N):
             _h = self.get_h(_mu)
             _b = (28.944 * _h ** 2) / (_h ** 2 + _h * 1e-6 + 7.53e-16)
             self.carbon_matrix = np.array([
@@ -202,7 +210,8 @@ class BeamCarbon(CarbonModel):
                 _b, -_b - .05, .05,
                 0, .001, -.001,
             ]).reshape(3, 3)
-            _ma_incr = self.mass_atmosphere(emissions_total, _ma, _mu) / self.N
+            _ma_incr = self.mass_atmosphere(
+                data.emissions_total[i], _ma, _mu) / self.N
             _mu_incr = self.mass_upper(_ma, _mu, _ml) / self.N
             _ml_incr = self.mass_lower(_mu, _ml) / self.N
             _ma += _ma_incr
