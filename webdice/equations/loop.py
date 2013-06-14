@@ -16,6 +16,19 @@ class Loop(object):
     ------
     damages_model : obj
     carbon_model : obj
+    ...
+    Properties
+    ----------
+    damages_model : obj
+    carbon_model : obj
+    utility_model : obj
+    emissions_model : obj
+    productivity_model : obj
+    consumption_model : obj
+    ...
+    Methods
+    -------
+    set_models()
     """
     def __init__(self, params, damages_model=damages.DiceDamages,
                  carbon_model=carbon.DiceCarbon):
