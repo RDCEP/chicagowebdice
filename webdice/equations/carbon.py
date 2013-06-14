@@ -1,8 +1,4 @@
 import numpy as np
-from webdice.params import Dice2007Params
-
-
-PARAMS = Dice2007Params()
 
 
 class CarbonModel(object):
@@ -31,7 +27,7 @@ class CarbonModel(object):
     forcing()
         Calculate forcing at t
     """
-    def __init__(self):
+    def __init__(self, params):
         _b11, _b12, _b13 = .810712, .189288, 0
         _b21, _b22, _b23 = .097213, .852787, .05
         _b31, _b32, _b33 = 0, .003119, .996881
@@ -40,12 +36,13 @@ class CarbonModel(object):
             _b21, _b22, _b23,
             _b31, _b32, _b33,
         ]).reshape(3, 3)
-        self._mass_atmosphere_2005 = PARAMS._mass_atmosphere_2005
-        self._mass_upper_2005 = PARAMS._mass_upper_2005
-        self._mass_lower_2005 = PARAMS._mass_lower_2005
-        self._mass_preindustrial = PARAMS._mass_preindustrial
-        self._temp_atmosphere_2005 = PARAMS._temp_atmosphere_2000
-        self._temp_lower_2005 = PARAMS._temp_lower_2000
+        self._params = params
+        self._mass_atmosphere_2005 = params._mass_atmosphere_2005
+        self._mass_upper_2005 = params._mass_upper_2005
+        self._mass_lower_2005 = params._mass_lower_2005
+        self._mass_preindustrial = params._mass_preindustrial
+        self._temp_atmosphere_2005 = params._temp_atmosphere_2000
+        self._temp_lower_2005 = params._temp_lower_2000
 
     @property
     def initial_carbon(self):
@@ -88,10 +85,10 @@ class CarbonModel(object):
         array
         """
         return np.concatenate((
-            PARAMS._forcing_ghg_2000 + .1 * (
-                PARAMS._forcing_ghg_2100 - PARAMS._forcing_ghg_2000
+            self._params._forcing_ghg_2000 + .1 * (
+                self._params._forcing_ghg_2100 - self._params._forcing_ghg_2000
             ) * np.arange(11),
-            PARAMS._forcing_ghg_2000 + (np.ones(49) * .36),
+            self._params._forcing_ghg_2000 + (np.ones(49) * .36),
         ))
 
     def get_carbon_values(self, index, data):
@@ -169,7 +166,7 @@ class CarbonModel(object):
         float
         """
         return (
-            PARAMS._forcing_co2_doubling *
+            self._params._forcing_co2_doubling *
             np.log(
                 data.mass_atmosphere[index] / self._mass_preindustrial
             ) + self.forcing_ghg[index]
@@ -178,19 +175,18 @@ class CarbonModel(object):
         #     ((mass_atmosphere + ma_next) / 2) + .000001
         # ) / _mass_preindustrial) / np.log(2)) + forcing_ghg
 
-    def get_temperature_values(self, index, data, temp_co2_doubling,
-                               thermal_transfer):
+    def get_temperature_values(self, index, data):
         if index == 0:
             return self.initial_temps
         i = index - 1
         return (
             self.temp_atmosphere(
-                data.temp_atmosphere[i], data.temp_lower[i], self.forcing[i],
-                PARAMS._forcing_co2_doubling, temp_co2_doubling,
-                thermal_transfer
+                data.temp_atmosphere[i], data.temp_lower[i], data.forcing[i],
+                self._params._forcing_co2_doubling, self._params.temp_co2_doubling,
+                self._params.thermal_transfer
             ),
             self.temp_lower(
-                data.temp_atmosphere[i], data.temp_lower[i], thermal_transfer
+                data.temp_atmosphere[i], data.temp_lower[i], self._params.thermal_transfer
             ),
         )
 
@@ -240,8 +236,8 @@ class BeamCarbon(CarbonModel):
     get_model_values()
         Set BEAM transfer matrix, and return values for M_AT, M_UP, M_LO
     """
-    def __init__(self):
-        CarbonModel.__init__(self)
+    def __init__(self, params):
+        CarbonModel.__init__(self, params)
         self.N = 20
         self.initial_carbon = [808.9, 772.4, 38620.5]
 

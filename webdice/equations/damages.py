@@ -10,14 +10,29 @@ class DamagesModel(object):
     ----
     prod_frac : float
     """
-    def __init__(self, prod_frac):
+    def __init__(self, prod_frac, params):
         self.prod_frac = prod_frac
+        self._params = params
 
     def get_production_factor(self, damages_terms, temp_atmosphere):
         """
         Return default fraction of productivity
         """
         return 1.
+
+    def abatement(self, gross_output, miu, backstop_growth, abatement_exponent,
+                  participation):
+        """
+        Lambda, Abatement costs, trillions $USD
+        ...
+        Returns
+        -------
+        float
+        """
+        return (
+            gross_output * participation ** (1 - abatement_exponent) *
+            backstop_growth * miu ** abatement_exponent
+        )
 
     def damages(self, gross_output, temp_atmosphere, damages_terms,
                a_abatement=None, a_savings=None):
@@ -58,8 +73,8 @@ class DamagesModel(object):
         return output * (1.0 - savings)
 
 
-    def get_model_values(self, gross_output, temp_atmosphere,
-                         damages_terms, abatement, savings):
+    def get_model_values(self, index, data, damages_terms,
+                abatement_exponent, participation):
         """
         Calculate and return damages, output, and consumption
         ...
@@ -75,14 +90,24 @@ class DamagesModel(object):
         -------
         array
         """
-        damages = self.damages(gross_output, temp_atmosphere, damages_terms,
-                               abatement, savings)
-        output = self.output(gross_output, damages, abatement, savings,
-                             temp_atmosphere, damages_terms)
-        consumption = self.consumption(output, savings, gross_output,
-                                       abatement, temp_atmosphere,
-                                       damages_terms)
-        return [damages, output, consumption]
+
+        abatement = self.abatement(
+            data.gross_output[index], data.miu[index],
+            data.backstop_growth[index], abatement_exponent, participation
+        )
+        damages = self.damages(
+            data.gross_output[index], data.temp_atmosphere[index],
+            damages_terms, abatement, self._params.savings
+        )
+        output = self.output(
+            data.gross_output[index], damages, abatement, self._params.savings,
+            data.temp_atmosphere[index], damages_terms
+        )
+        consumption = self.consumption(
+            data.output[index], self._params.savings, data.gross_output[index],
+            abatement, data.temp_atmosphere[index], damages_terms
+        )
+        return [abatement, damages, output, consumption]
 
 
 class DiceDamages(DamagesModel):

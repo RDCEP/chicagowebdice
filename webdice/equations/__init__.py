@@ -3,7 +3,7 @@ import carbon
 import emissions
 
 
-def set_models(eq, damages_model, carbon_model, prod_frac):
+def set_models(eq, damages_model, carbon_model, prod_frac, params):
     """
     Set the models used for damages and oceanic carbon transfer
     ...
@@ -20,8 +20,7 @@ def set_models(eq, damages_model, carbon_model, prod_frac):
     """
     eq.damages_model = getattr(
         damages, "".join(x.capitalize() for x in damages_model.split('_'))
-    )(prod_frac)
+    )(prod_frac, params)
     eq.carbon_model = getattr(
         carbon, "".join(x.capitalize() for x in carbon_model.split('_'))
-    )()
-    eq.emissions_model = emissions.EmissionsModel()
+    )(params)
