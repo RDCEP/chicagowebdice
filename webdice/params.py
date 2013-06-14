@@ -20,7 +20,10 @@ class Dice2007Params(object):
         self.prod_frac = .05
         self.elasmu = 2.
         self.prstp = .015
-        self.treaty_switch = False
+        self._treaty = False
+        self._optimize = False
+        self._eps = 1e-4
+        self._carbon_tax = False
         self.e2050 = 100.
         self.e2100 = 100.
         self.e2150 = 100.
@@ -82,37 +85,43 @@ class Dice2007Params(object):
         self._participation_2205 = 1.
         self._participation_decline = 0.
 
-        self.tmax = 60  # Time periods, in decades (60 * 10 = 600 years)
-        self.t0 = np.arange(float(self.tmax))
+        self._tmax = 60  # Time periods, in decades (60 * 10 = 600 years)
+        self.t0 = np.arange(float(self._tmax))
         self.t1 = self.t0 + 1
 
         ## Scaling and inessential parameters
         self._scale1 = 194.  # Scaling coefficient in the objective function
         self._scale2 = 381800.  # Scaling coefficient in the objective function
 
+
+        population_growth_rate = (
+            (np.exp(self._population_growth * self.t0) - 1) /
+            (np.exp(self._population_growth * self.t0))
+        )
+
         # Variables for initiating pandas array
-        backstop_growth = np.zeros(self.tmax)
-        carbon_intensity = np.empty(self.tmax)
+        backstop_growth = np.zeros(self._tmax)
+        carbon_intensity = np.empty(self._tmax)
         carbon_intensity[:] = self._intensity_2005
-        productivity = np.empty(self.tmax)
+        productivity = np.empty(self._tmax)
         productivity[:] = self._productivity
-        capital = np.empty(self.tmax)
+        capital = np.empty(self._tmax)
         capital[:] = self._capital_2005
-        output = np.empty(self.tmax)
+        output = np.empty(self._tmax)
         output[:] = self._output_2005
-        mass_atmosphere = np.empty(self.tmax)
+        mass_atmosphere = np.empty(self._tmax)
         mass_atmosphere[:] = self._mass_atmosphere_2005
-        mass_upper = np.empty(self.tmax)
+        mass_upper = np.empty(self._tmax)
         mass_upper[:] = self._mass_upper_2005
-        mass_lower = np.empty(self.tmax)
+        mass_lower = np.empty(self._tmax)
         mass_lower[:] = self._mass_lower_2005
-        temp_atmosphere = np.empty(self.tmax)
+        temp_atmosphere = np.empty(self._tmax)
         temp_atmosphere[:] = self._temp_atmosphere_2000
-        temp_lower = np.empty(self.tmax)
+        temp_lower = np.empty(self._tmax)
         temp_lower[:] = self._temp_lower_2000
-        investment = np.empty(self.tmax)
+        investment = np.empty(self._tmax)
         investment[:] = self.savings * self._output_2005
-        miu = np.empty(self.tmax)
+        miu = np.empty(self._tmax)
         miu[:] = self._miu_2005
         data = pd.DataFrame({
             'miu': miu,
@@ -127,30 +136,31 @@ class Dice2007Params(object):
             'temp_atmosphere': temp_atmosphere,
             'temp_lower': temp_lower,
             'investment': investment,
-            'gross_output': np.zeros(self.tmax),
-            'forcing': np.zeros(self.tmax),
-            'emissions_ind': np.zeros(self.tmax),
-            'emissions_total': np.zeros(self.tmax),
-            'carbon_emitted': np.zeros(self.tmax),
-            'participation': np.zeros(self.tmax),
-            'participation_markup': np.zeros(self.tmax),
-            'damages': np.zeros(self.tmax),
-            'abatement': np.zeros(self.tmax),
-            'consumption': np.zeros(self.tmax),
-            'consumption_pc': np.zeros(self.tmax),
-            'utility': np.zeros(self.tmax),
-            'utility_discounted': np.zeros(self.tmax),
-            'pref_fac': np.ones(self.tmax),
-            'scc': np.ones(self.tmax),
-            'consumption_discount': np.ones(self.tmax),
-            'tax_rate': np.zeros(self.tmax),
+            'gross_output': np.zeros(self._tmax),
+            'forcing': np.zeros(self._tmax),
+            'emissions_ind': np.zeros(self._tmax),
+            'emissions_total': np.zeros(self._tmax),
+            'carbon_emitted': np.zeros(self._tmax),
+            'participation': np.zeros(self._tmax),
+            'damages': np.zeros(self._tmax),
+            'abatement': np.zeros(self._tmax),
+            'consumption': np.zeros(self._tmax),
+            'consumption_pc': np.zeros(self._tmax),
+            'utility': np.zeros(self._tmax),
+            'utility_discounted': np.zeros(self._tmax),
+            'scc': np.ones(self._tmax),
+            'consumption_discount': np.ones(self._tmax),
+            'tax_rate': np.zeros(self._tmax),
+            'backstop': np.zeros(self._tmax),
+            'population': np.zeros(self._tmax),
+            'output_abate': np.zeros(self._tmax),
         })
-        self.data = pd.Panel({
+        self._data = pd.Panel({
             'vars': data,
             'deriv': data,
             'scc': data,
         })
-        self.derivative = pd.DataFrame({
-            'fprime': np.empty(self.tmax),
+        self._derivative = pd.DataFrame({
+            'fprime': np.empty(self._tmax),
         })
-        self.hessian = pd.Series(np.empty(self.tmax))
+        self._hessian = pd.Series(np.empty(self._tmax))
