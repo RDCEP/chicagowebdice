@@ -2,14 +2,20 @@ import numpy as np
 from damages import *
 from carbon import *
 from emissions import *
-
+from consumption import *
+from welfare import *
+from productivity import *
 
 class Loop(object):
     """Default equation set."""
-    def __init__(self, damages_model=DiceDamages, carbon_model=DiceCarbon):
+    def __init__(self, params, damages_model=DiceDamages,
+                 carbon_model=DiceCarbon):
         self._damages_model = damages_model
         self._carbon_model = carbon_model
-        self._emissions_model = EmissionsModel
+        self._emissions_model = EmissionsModel(params)
+        self._consumption_model = ConsumptionModel(params)
+        self._welfare_model = UtilityModel(params)
+        self._productivity_model = ProductivityModel(params)
 
     @property
     def damages_model(self):
@@ -35,85 +41,29 @@ class Loop(object):
     def emissions_model(self, value):
         self._carbon_model = value
 
-    def capital(self, capital, depreciation, investment):
-        """
-        K(t), Capital, trillions $USD
-        ...
-        Returns
-        -------
-        Float
-        """
-        return capital * (1 - depreciation) ** 10 + 10 * investment
+    @property
+    def consumption_model(self):
+        return self._consumption_model
 
-    def gross_output(self, productivity, capital, output_elasticty, population):
-        """
-        Gross output
-        ...
-        Returns
-        -------
-        float
-        """
-        return (
-            productivity * capital ** output_elasticty *
-            population ** (1 - output_elasticty)
-        )
+    @consumption_model.setter
+    def consumption_model(self, value):
+        self._consumption_model = value
 
-    def investment(self, savings, output):
-        """
-        I, Investment, trillions $USD
-        ...
-        Returns
-        -------
-        float
-        """
-        return savings * output
+    @property
+    def welfare_model(self):
+        return self._welfare_model
 
-    def consumption_pc(self, consumption, population):
-        """
-        c, Per capita consumption, thousands $USD
-        ...
-        Returns
-        -------
-        float
-        """
-        return 1000 * consumption / population
+    @welfare_model.setter
+    def welfare_model(self, value):
+        self._welfare_model = value
 
-    def consumption_discount(self, prstp, population, elasmu, c0, c1, i):
-        """Discount rate for consumption"""
-        return 1 / (
-            1 + (prstp * 100 + elasmu * (
-                (c1 - c0) / 10 / c0
-            )) / 100
-        ) ** (10 * i)
+    @property
+    def productivity_model(self):
+        return self._productivity_model
 
-        # Ramsey discount from SCC paper
-        # return np.exp(-(elasmu / (i + .000001) * np.log(
-        #     c1 / c0) / 10 + prstp) * i * 10)
-
-        # Constant rate from SCC paper
-        # return 1 / ((1 + .03) ** (i * 10))
-
-    def utility(self, consumption_pc, elasmu, population):
-        """
-        U, Period utility function
-        ...
-        Returns
-        -------
-        float
-        """
-        return (
-            (1 / (1 - elasmu + .000001)) * consumption_pc ** (1 - elasmu) + 1
-        )
-
-    def utility_discounted(self, utility, utility_discount, l):
-        """
-        Utility discounted
-        ...
-        Returns
-        -------
-        float
-        """
-        return utility_discount * l * utility
+    @productivity_model.setter
+    def productivity_model(self, value):
+        self._productivity_model = value
 
     def welfare(self, utility_discounted, utility_discount):
         """
