@@ -13,6 +13,8 @@ class CarbonModel(object):
         Carbon transfer coefficients
     forcing_ghg : array
         Forcing for GHGs
+    initial_temps : array
+        Values for T_AT, T_OCEAN at t=0
     ...
     Methods
     -------
@@ -22,10 +24,13 @@ class CarbonModel(object):
         Calculate M_UP at t
     mass_lower()
         Calculate M_LO at t
-    get_model_values()
+    get_carbon_values()
         Return values for M_AT, M_UP, M_LO
     forcing()
         Calculate forcing at t
+    temp_atmosphere()
+    temp_lower()
+    get_temperature_values()
     """
     def __init__(self, params):
         _b11, _b12, _b13 = .810712, .189288, 0
@@ -43,6 +48,7 @@ class CarbonModel(object):
         self._mass_preindustrial = params._mass_preindustrial
         self._temp_atmosphere_2005 = params._temp_atmosphere_2000
         self._temp_lower_2005 = params._temp_lower_2000
+        self._forcing_co2_doubling = params._forcing_co2_doubling
 
     @property
     def initial_carbon(self):
@@ -156,7 +162,6 @@ class CarbonModel(object):
             self.carbon_matrix[1][2] * mass_upper + self.carbon_matrix[2][2] * mass_lower
         )
 
-    # def forcing(self, _forcing_co2_doubling, mass_atmosphere, forcing_ghg):
     def forcing(self, index, data):
         """
         F, Forcing, W/m^2
@@ -166,14 +171,11 @@ class CarbonModel(object):
         float
         """
         return (
-            self._params._forcing_co2_doubling *
+            self._forcing_co2_doubling *
             np.log(
                 data.mass_atmosphere[index] / self._mass_preindustrial
             ) + self.forcing_ghg[index]
         )
-        # return _forcing_co2_doubling * (np.log((
-        #     ((mass_atmosphere + ma_next) / 2) + .000001
-        # ) / _mass_preindustrial) / np.log(2)) + forcing_ghg
 
     def get_temperature_values(self, index, data):
         if index == 0:
@@ -181,12 +183,13 @@ class CarbonModel(object):
         i = index - 1
         return (
             self.temp_atmosphere(
-                data.temp_atmosphere[i], data.temp_lower[i], data.forcing[i],
-                self._params._forcing_co2_doubling, self._params.temp_co2_doubling,
-                self._params.thermal_transfer
+                data.temp_atmosphere[i], data.temp_lower[i], data.forcing[index],
+                self._params._forcing_co2_doubling,
+                self._params.temp_co2_doubling, self._params.thermal_transfer
             ),
             self.temp_lower(
-                data.temp_atmosphere[i], data.temp_lower[i], self._params.thermal_transfer
+                data.temp_atmosphere[i], data.temp_lower[i],
+                self._params.thermal_transfer
             ),
         )
 
