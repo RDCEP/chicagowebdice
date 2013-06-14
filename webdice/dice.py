@@ -263,49 +263,6 @@ class Dice2007():
             output += '%s %s\n' % (v, ' '.join(map(str, list(vv))))
         return output
 
-def verify_out(d, param=None, value=None):
-    if param is not None:
-        x = getattr(d, param)
-    d.loop()
-    filename = '../verify/gams_%s_%s.csv' % (param, value)
-    with open(filename, 'a') as f:
-        _vars = [
-            'miu', 'carbon_intensity', 'productivity', 'backstop_growth', 'capital',
-            'output', 'mass_atmosphere', 'mass_upper', 'mass_lower', 
-            'temp_atmosphere', 'temp_lower', 'investment', 'gross_output', 
-            'forcing', 'emissions_ind', 'emissions_total', 'carbon_emitted',
-            'participation', 'participation_markup', 'damages',
-            'abatement', 'consumption', 'consumption_pc', 'utility',
-            'utility_discounted', 'pref_fac',
-        ]
-        for i in range(d._tmax):
-            for v in range(len(_vars)):
-                if v + 1 == len(_vars):
-                    t = '\n'
-                else:
-                    t = ','
-                f.write(str(round(d.data['vars'][_vars[v]][i], 2)) + t)
 
 if __name__ == '__main__':
-    def run_verification():
-        d = Dice2007()
-        _params = [
-            'temp_co2_doubling', 'damages_exponent', 'productivity_decline',
-            'intensity_decline', 'abatement_exponent', 'backstop_decline',
-            'backstop_ratio', 'popasym', 'depreciation', 'savings',
-            'fosslim', 'elasmu', 'prstp',
-        ]
-        verify_out(d)
-        for p in _params:
-            verify_out(d, p, 'minimum')
-            verify_out(d, p, 'maximum')
-
-    d = Dice2007(optimize=False)
-    d.loop()
-    T = 'temp_atmosphere'
-    # print d.data.vars.loc[:20, 'mass_atmosphere':'mass_upper']
-    print d.data.vars.loc[:20, T]
-
-    # d.carbon_model = 'beam_carbon'
-    # d.loop(scc=False)
-    # print d.data.vars.loc[:20, 'mass_atmosphere':'mass_upper']
+    pass
