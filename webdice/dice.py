@@ -4,7 +4,7 @@ from params import Dice2007Params
 from equations.loop import Loop
 from equations import set_models
 
-class Dice2007(Dice2007Params):
+class Dice2007():
     """Variables, parameters, and step function for DICE 2007.
     ...
     Attributes
@@ -18,30 +18,6 @@ class Dice2007(Dice2007Params):
         Names of all parameters to DICE
     vars : list
         Names of all DICE variables
-    damages_terms : array
-        Values for damages function
-    population_growth: array
-        Population growth factor
-    population : array
-        Labor or population
-    productivity_growth : array
-        Growth rate of productivity
-    intensity_decline : array
-        Rate of carbon decline
-    backstop_growth : array
-        Growth of cost factor
-    emissions_deforest : array
-        Emission from deforestation
-    utility_discount : array
-        Average utility discount rate
-    emissions_cap : array
-        Emissions caps for treaty
-    participation : array
-        Participation in treaty
-    output_abate : array
-        Abatement as a percentage of output
-    user_tax_rate : array
-        Array of user-determined annual tax rates
     ...
     Methods
     -------
@@ -57,214 +33,25 @@ class Dice2007(Dice2007Params):
         Output text for Google Visualizer graph functions
     """
     def __init__(self, optimize=False):
-        self.eq = Loop()
-        Dice2007Params.__init__(self)
-        self.optimize = False
-        if optimize:
-            self.optimize = True
-        self.treaty = False
-        self.carbon_tax = False
+        self.params = Dice2007Params()
+        self.data = self.params._data
+        self.eq = Loop(self.params)
+        self.params._optimize = optimize
+        self.eps = self.params._eps
 
     @property
     def user_params(self):
         """
         List of model parameters to be included with output to graphs and CSV.
         """
-        return [
-            'temp_co2_doubling', 'damages_exponent', 'productivity_decline',
-            'intensity_decline_rate', 'e2050', 'e2100', 'e2150',
-            'p2050', 'p2100', 'p2150', 'popasym', 'depreciation',
-            'savings', 'fosslim', 'abatement_exponent', 'backstop_decline',
-            'backstop_ratio', 'elasmu', 'prstp',
-        ]
+        return [k for k, v in self.params.__dict__.iteritems() if k[0] != '_']
 
     @property
     def vars(self):
         """
         List of model variables to be included with output to graphs and CSV.
         """
-        return [
-            'capital', 'gross_output', 'emissions_ind',
-            'emissions_total', 'mass_atmosphere', 'mass_upper',
-            'mass_lower', 'forcing', 'temp_atmosphere',
-            'temp_lower', 'damages', 'abatement', 'output', 'output_abate',
-            'investment', 'carbon_emitted', 'consumption',
-            'consumption_pc', 'utility', 'utility_discounted',
-            'productivity', 'backstop_growth', 'carbon_intensity', 'miu', 'backstop',
-            'population', 'tax_rate', 'scc', 'consumption_discount',
-        ]
-
-    @property
-    def damages_terms(self):
-        """
-        temp coefficient; pi_2, temp squared coefficient;
-        epsilon, damages exponent
-        ...
-        Returns
-        -------
-        array
-        """
-        return np.array(
-            [self._a1, self._damages_coefficient, self.damages_exponent]
-        )
-
-    @property
-    def population_growth(self):
-        """
-        L_g, Population growth factor
-        ...
-        Returns
-        -------
-        array
-        """
-        return (
-            (np.exp(self._population_growth * self.t0) - 1) / 
-            (np.exp(self._population_growth * self.t0))
-        )
-
-    @property
-    def population(self):
-        """
-        L, Population.
-        ...
-        Returns
-        -------
-        array
-        """
-        return self._population_2005 * (1 - self.population_growth) + \
-               self.population_growth * self.popasym
-
-    @property
-    def productivity_growth(self):
-        """
-        A_g, Growth rate of total factor productivity.
-        ...
-        Returns
-        -------
-        array
-        """
-        return self._productivity_growth * np.exp(
-            -(self.productivity_decline / 100.) * 10 * self.t0
-        )
-
-    @property
-    def intensity_decline(self):
-        """
-        sigma_g, Rate of decline of carbon intensity
-        ...
-        Returns
-        -------
-        array
-        """
-        return (
-            self._intensity_growth * np.exp(
-                -(self.intensity_decline_rate / 100) * 10 *
-                self.t0 - self._intensity_quadratic * 10 * (self.t0 ** 2)
-            )
-        )
-
-    @property
-    def utility_discount(self):
-        """
-        R, Average utility discount rate
-        ...
-        Returns
-        -------
-        array
-        """
-        return 1 / ((1 + self.prstp) ** (10 * self.t0))
-
-    @property
-    def emissions_cap(self):
-        """
-        Emissions caps from treaty inputs
-        ...
-        Returns
-        -------
-        array
-        """
-        return np.concatenate((
-            np.ones(5),
-            (np.ones(5) * (100. - self.e2050)) / 100.,
-            (np.ones(5) * (100. - self.e2100)) / 100.,
-            (np.ones(45) * (100. - self.e2150)) / 100.,
-        ))
-
-    @property
-    def participation(self):
-        """
-        phi, Fraction of emissions in control regime
-        ...
-        Returns
-        -------
-        array
-        """
-        if not self.treaty:
-            return np.concatenate((
-                np.linspace(
-                    self._participation_2005, self._participation_2005, 1
-                ),
-                self._participation_2205 + (
-                    self._participation_2015 - self._participation_2205
-                ) * np.exp(
-                    -self._participation_decline * np.arange(23)
-                ),
-                np.linspace(
-                    self._participation_2205, self._participation_2205, 36
-                ),
-            ))
-        p = [self.p2050, self.p2050, self.p2100, self.p2150, self._pmax]
-        return np.concatenate((
-            (p[1] + (p[0] - p[1]) * np.exp(np.arange(5) * -.25)) / 100.,
-            (p[2] + (p[1] - p[2]) * np.exp(np.arange(5) * -.25)) / 100.,
-            (p[3] + (p[2] - p[3]) * np.exp(np.arange(5) * -.25)) / 100.,
-            (p[4] + (p[3] - p[4]) * np.exp(np.arange(45) * -.25)) / 100.,
-        ))
-
-    @property
-    def user_tax_rate(self):
-        """
-        Optional user-defined carbon tax
-        ...
-        Returns
-        -------
-        array
-        """
-        c = [0, self.c2050, self.c2100,
-             self.c2150, self._cmax]
-        return np.concatenate((
-            c[0] + ((c[1] - c[0]) / 5 * np.arange(5)),
-            c[1] + ((c[2] - c[1]) / 5 * np.arange(5)),
-            c[2] + ((c[3] - c[2]) / 5 * np.arange(5)),
-            c[3] + ((c[3] - c[2]) / 5 * np.arange(45)),
-        ))
-
-    @property
-    def output_abate(self):
-        """
-        Abatement as a percentage of output
-        ...
-        Returns
-        -------
-        array
-        """
-        # return self.data.vars.backstop_growth * self.data.vars.miu ** \
-        #        self.abatement_exponent
-        return self.data.vars.abatement / self.data.vars.gross_output * 100
-
-    @property
-    def backstop(self):
-        """
-        Cost of replacing clean energy
-        ...
-        Returns
-        -------
-        array
-        """
-        return self._backstop_2005 * (
-            (self.backstop_ratio - 1 + 
-             np.exp(-self.backstop_decline * self.t0)) / self.backstop_ratio
-        ) * (12.0 / 44.0)
+        return self.data.vars.columns.tolist()
 
     @property
     def welfare(self):
@@ -277,18 +64,19 @@ class Dice2007(Dice2007Params):
         """
         return np.sum(self.data.vars.utility_discounted)
 
-    def step(self, i, D, miu=None, deriv=False, epsilon=1e-3, f0=0.0,
-             emissions_shock=0.0):
+    def step(self, i, D, miu=None, deriv=False, f0=0.0, emissions_shock=0.0):
         """
         Single step for calculating endogenous variables
         ...
-        Accepts
-        -------
+        Args
+        ----
         i : int, index of current step
         D : object, pandas DataFrame of variables
+        ...
+        Kwargs
+        ------
         miu : array, values for miu
         deriv : boolean
-        epsilon : float
         f0 : float
         emissions_shock : float
         consumption_shock : float
@@ -298,95 +86,40 @@ class Dice2007(Dice2007Params):
         pandas.DataFrame : 60 steps of all variables in D
         """
         ii = i - 1
+        (
+            D.carbon_intensity[i], D.productivity[i], D.capital[i],
+            D.backstop_growth[i], D.gross_output[i]
+        ) = self.eq.productivity_model.get_model_values(i, D)
         if i > 0:
-            D.carbon_intensity[i] = D.carbon_intensity[ii] / (
-                1 - self.intensity_decline[i])
-            D.productivity[i] = D.productivity[ii] / (
-                1 - self.productivity_growth[ii])
-            D.capital[i] = self.eq.capital(
-                D.capital[ii], self.depreciation, D.investment[ii]
-            )
             D.productivity[i] *= self.eq.damages_model.get_production_factor(
-                self.damages_terms, D.temp_atmosphere[ii]
+                D.temp_atmosphere[ii]
             ) ** 10
-        D.backstop_growth[i] = (
-            self.backstop[i] * D.carbon_intensity[i] / self.abatement_exponent
-        )
-        D.gross_output[i] = self.eq.gross_output(
-            D.productivity[i], D.capital[i], self._output_elasticty,
-            self.population[i]
-        )
-        if self.optimize:
-            if miu is not None:
-                if deriv:
-                    D.miu = miu
-                    D.miu[i] = D.miu[i] + epsilon
-                else:
-                    D.miu[i] = miu[i]
-        else:
-            if i > 0:
-                if self.treaty:
-                    D.miu[i] = self.eq.miu(
-                        D.emissions_ind[ii], self.emissions_cap[ii],
-                        D.emissions_ind[0],
-                        D.carbon_intensity[i], D.gross_output[i]
-                    )
-                elif self.carbon_tax:
-                    D.miu[i] = (
-                        (self.user_tax_rate[i] / (self.backstop[i] * 1000)) **
-                        (1 / (self.abatement_exponent - 1))
-                    )
-                else:
-                    D.miu[i] = 0.
-                if D.carbon_emitted[ii] > self.fosslim:
-                    D.miu[i] = 1.0
-        D.carbon_emitted[i], D.emissions_ind[i], D.emissions_total[i] = (
-            self.eq.emissions_model.get_emissions_values(i, D)
-        )
+        (
+            D.miu[i], D.emissions_ind[i], D.emissions_total[i],
+            D.carbon_emitted[i], D.tax_rate[i]
+        ) = self.eq.emissions_model.get_emissions_values(i, D, deriv, miu)
         D.emissions_total[i] += emissions_shock
-        D.tax_rate[i] = self.eq.tax_rate(
-            self.backstop[i], D.miu[i], self.abatement_exponent
-        )
         D.mass_atmosphere[i], D.mass_upper[i], D.mass_lower[i] = (
             self.eq.carbon_model.get_carbon_values(i, D)
         )
         D.forcing[i] = self.eq.carbon_model.forcing(i, D)
         D.temp_atmosphere[i], D.temp_lower[i] = (
-            self.eq.carbon_model.get_temperature_values(
-                i, D, self.temp_co2_doubling, self.thermal_transfer
-            )
+            self.eq.carbon_model.get_temperature_values(i, D)
         )
-        D.abatement[i] = self.eq.abatement(
-            D.gross_output[i], D.miu[i], D.backstop_growth[i],
-            self.abatement_exponent, self.participation[i]
+        (
+            D.abatement[i], D.damages[i], D.output[i], D.consumption[i],
+            D.output_abate[i]
+        ) = self.eq.damages_model.get_model_values(i, D)
+        D.consumption_pc[i], D.consumption_discount[i], D.investment[i] = (
+            self.eq.consumption_model.get_model_values(i, D)
         )
-        D.damages[i], D.output[i], D.consumption[i] = \
-            self.eq.damages_model.get_model_values(
-                D.gross_output[i], D.temp_atmosphere[i],
-                self.damages_terms, D.abatement[i], self.savings
-            )
-        D.consumption_pc[i] = self.eq.consumption_pc(
-            D.consumption[i], self.population[i]
-        )
-        if i > 0:
-            D.consumption_discount[i] = self.eq.consumption_discount(
-                self.prstp, self.population, self.elasmu, D.consumption_pc[0],
-                D.consumption_pc[i], i
-            )
-        if i == 0:
-            D.investment[i] = self.savings * self._output_2005
-        else:
-            D.investment[i] = self.eq.investment(
-                self.savings, D.output[i]
-            )
-        D.utility[i] = self.eq.utility(
-            D.consumption_pc[i], self.elasmu, self.population[i]
-        )
-        D.utility_discounted[i] = self.eq.utility_discounted(
-            D.utility[i], self.utility_discount[i], self.population[i]
+        D.utility[i], D.utility_discounted[i] = (
+            self.eq.utility_model.get_model_values(i, D)
         )
         if deriv:
-            self.derivative.fprime[i] = (D.utility_discounted[i] - f0) / epsilon
+            self.params._derivative.fprime[i] = (
+                (D.utility_discounted[i] - f0) / self.eps
+            )
             D.miu = self.data.vars.miu
         return D
 
@@ -404,26 +137,25 @@ class Dice2007(Dice2007Params):
         -------
         DataFrame : self.data.vars
         """
-        set_models(self.eq, self.damages_model, self.carbon_model,
-                   self.prod_frac)
-        if self.optimize and miu is None:
+        set_models(self.eq, self.params.damages_model, self.params.carbon_model,
+                   self.params.prod_frac, self.params)
+        if self.params._optimize and miu is None:
             self.data.vars.miu = self.get_ipopt_mu()
-            self.data.vars.miu[0] = self._miu_2005
-        for i in range(self.tmax):
+            self.data.vars.miu[0] = self.params._miu_2005
+        for i in range(self.params._tmax):
             self.step(i, self.data.vars, miu)
-            if self.optimize and deriv:
+            if self.params._optimize and deriv:
                 f0 = np.atleast_1d(self.data.vars.utility_discounted[i])
                 self.step(
-                    i, self.data.deriv, miu=miu, epsilon=1e-4,
-                    deriv=True, f0=f0
+                    i, self.data.deriv, miu=miu, deriv=True, f0=f0
                 )
         if scc:
             self.get_scc(miu)
-        if self.optimize and miu is not None:
+        if self.params._optimize and miu is not None:
             if deriv:
-                return self.derivative.fprime.transpose()
+                return self.params._derivative.fprime.transpose()
             else:
-                return self.data.vars.utility_discounted.sum()
+                return self.welfare
         return self.data.vars
 
     def get_scc(self, miu):
@@ -448,7 +180,7 @@ class Dice2007(Dice2007Params):
         """
         x_range = 20
         for i in range(x_range):
-            future_indices = self.tmax - x_range
+            future_indices = self.params._tmax - x_range
             final_year = i + future_indices
             self.data.scc = self.data.vars.copy()
             for j in range(i, final_year):
@@ -490,12 +222,12 @@ class Dice2007(Dice2007Params):
         gu : array, upper bounds of constraints
 
         """
-        x0 = np.ones(self.tmax)
+        x0 = np.ones(self.params._tmax)
         M = 0
         nnzj = 0
         nnzh = 0
-        xl = np.zeros(self.tmax)
-        xu = np.ones(self.tmax)
+        xl = np.zeros(self.params._tmax)
+        xu = np.ones(self.params._tmax)
         gl = np.zeros(M)
         gu = np.ones(M) * 4.0
         def eval_f(x):
@@ -510,7 +242,7 @@ class Dice2007(Dice2007Params):
             else:
                 return np.empty(M)
         r = pyipopt.create(
-            self.tmax, xl, xu, M, gl, gu, nnzj, nnzh, eval_f,
+            self.params._tmax, xl, xu, M, gl, gu, nnzj, nnzh, eval_f,
             eval_grad_f, eval_g, eval_jac_g
         )
         x, zl, zu, obj, status = r.solve(x0)
@@ -521,13 +253,13 @@ class Dice2007(Dice2007Params):
         #TODO: This is sloppy as shit.
         output = ''
         for v in self.user_params:
-            vv = getattr(self, v)
+            vv = getattr(self.params, v)
             output += '%s %s\n' % (v, vv)
         for v in self.vars:
             try:
                 vv = getattr(self, v)
             except:
-                vv = getattr(self.data['vars'], v)
+                vv = getattr(self.data.vars, v)
             output += '%s %s\n' % (v, ' '.join(map(str, list(vv))))
         return output
 
@@ -546,7 +278,7 @@ def verify_out(d, param=None, value=None):
             'abatement', 'consumption', 'consumption_pc', 'utility',
             'utility_discounted', 'pref_fac',
         ]
-        for i in range(d.tmax):
+        for i in range(d._tmax):
             for v in range(len(_vars)):
                 if v + 1 == len(_vars):
                     t = '\n'
@@ -568,9 +300,12 @@ if __name__ == '__main__':
             verify_out(d, p, 'minimum')
             verify_out(d, p, 'maximum')
 
-    d = Dice2007()
-    d.loop(scc=False)
+    d = Dice2007(optimize=False)
+    d.loop()
+    T = 'temp_atmosphere'
     # print d.data.vars.loc[:20, 'mass_atmosphere':'mass_upper']
-    d.carbon_model = 'beam'
-    d.loop(scc=False)
+    print d.data.vars.loc[:20, T]
+
+    # d.carbon_model = 'beam_carbon'
+    # d.loop(scc=False)
     # print d.data.vars.loc[:20, 'mass_atmosphere':'mass_upper']

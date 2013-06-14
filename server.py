@@ -122,33 +122,33 @@ def graphs():
             p['disabled']
         except (KeyError, AttributeError):
             try:
-                getattr(this_dice, p['machine_name'])
+                getattr(this_dice.params, p['machine_name'])
             except AttributeError:
                 pass
             else:
                 try:
-                    this_dice.__dict__[p['machine_name']] = float(form[p['machine_name']])
+                    this_dice.params.__dict__[p['machine_name']] = float(form[p['machine_name']])
                 except (ValueError, AttributeError, KeyError):
                     pass
     try:
-        this_dice.damages_model = form['damages_model']
+        this_dice.params.damages_model = form['damages_model']
     except KeyError:
         pass
     try:
-        this_dice.carbon_model = form['carbon_model']
+        this_dice.params.carbon_model = form['carbon_model']
     except KeyError:
         pass
     policy = form['policy_type']
-    this_dice.treaty = False
-    this_dice.carbon_tax = False
+    this_dice.params._treaty = False
+    this_dice._carbon_tax = False
     if policy == 'treaty':
-        this_dice.treaty = True
+        this_dice.params._treaty = True
     elif policy == 'optimized':
-        this_dice.optimize = True
+        this_dice.params._optimize = True
     elif policy == 'carbon_tax':
-        this_dice.carbon_tax = True
+        this_dice.params._carbon_tax = True
     this_dice.loop()
-    this_dice.optimize = False
+    this_dice.params._optimize = False
     return this_dice.format_output()
 
 @app.route('/csv', methods=['POST',])
