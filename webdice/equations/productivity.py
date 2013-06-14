@@ -37,7 +37,7 @@ class ProductivityModel(object):
         return self._params._backstop_2005 * (
             (
                 self._params.backstop_ratio - 1 + np.exp(
-                    -self._params.backstop_decline * self._params.t0
+                    -self._params.backstop_decline * self._params._t0
                 )) / self._params.backstop_ratio
         ) * (12.0 / 44.0)
 
@@ -51,8 +51,8 @@ class ProductivityModel(object):
         array
         """
         return (
-            (np.exp(self._params._population_growth * self._params.t0) - 1) /
-            (np.exp(self._params._population_growth * self._params.t0))
+            (np.exp(self._params._population_growth * self._params._t0) - 1) /
+            (np.exp(self._params._population_growth * self._params._t0))
         )
 
     @property
@@ -77,7 +77,7 @@ class ProductivityModel(object):
         array
         """
         return self._params._productivity_growth * np.exp(
-            -(self._params.productivity_decline / 100.) * 10 * self._params.t0
+            -(self._params.productivity_decline / 100.) * 10 * self._params._t0
         )
 
     @property
@@ -92,7 +92,7 @@ class ProductivityModel(object):
         return (
             self._params._intensity_growth * np.exp(
                 -(self._params.intensity_decline_rate / 100) * 10 *
-                self._params.t0 - self._params._intensity_quadratic * 10 * (self._params.t0 ** 2)
+                self._params._t0 - self._params._intensity_quadratic * 10 * (self._params._t0 ** 2)
             )
         )
 

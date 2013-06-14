@@ -37,7 +37,7 @@ class EmissionsModel(object):
         -------
         array
         """
-        return self._params._emissions_deforest_2005 * (1 - .1) ** self._params.t0
+        return self._params._emissions_deforest_2005 * (1 - .1) ** self._params._t0
 
     @property
     def emissions_cap(self):

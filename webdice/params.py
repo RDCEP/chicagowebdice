@@ -86,8 +86,8 @@ class Dice2007Params(object):
         self._participation_decline = 0.
 
         self._tmax = 60  # Time periods, in decades (60 * 10 = 600 years)
-        self.t0 = np.arange(float(self._tmax))
-        self.t1 = self.t0 + 1
+        self._t0 = np.arange(float(self._tmax))
+        self._t1 = self._t0 + 1
 
         ## Scaling and inessential parameters
         self._scale1 = 194.  # Scaling coefficient in the objective function
@@ -95,8 +95,8 @@ class Dice2007Params(object):
 
 
         population_growth_rate = (
-            (np.exp(self._population_growth * self.t0) - 1) /
-            (np.exp(self._population_growth * self.t0))
+            (np.exp(self._population_growth * self._t0) - 1) /
+            (np.exp(self._population_growth * self._t0))
         )
 
         # Variables for initiating pandas array
