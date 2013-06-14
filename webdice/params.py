@@ -40,7 +40,7 @@ class Dice2007Params(object):
         self._population_growth = .35
         self._productivity = .02722
         self._productivity_growth = .092
-        self._output_elasticty = .300
+        self._output_elasticity = .300
         self._output_2005 = 61.1
         self._output_2005 = 55.667
         self._capital_2005 = 137.

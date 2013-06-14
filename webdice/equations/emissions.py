@@ -37,7 +37,9 @@ class EmissionsModel(object):
         -------
         array
         """
-        return self._params._emissions_deforest_2005 * (1 - .1) ** self._params._t0
+        return (
+            self._params._emissions_deforest_2005 * (1 - .1) ** self._params._t0
+        )
 
     @property
     def emissions_cap(self):
@@ -120,6 +122,23 @@ class EmissionsModel(object):
         return emissions_total * 10
 
     def get_miu(self, index, data, deriv=False, miu=None):
+        """
+        Return miu for optimized, treaty, tax, basic scenarios
+        ...
+        Args
+        ----
+        index : int, index of time step
+        data : pd.DataFrame
+        ...
+        Kwargs
+        ------
+        deriv : boolean
+        miu : array
+        ...
+        Returns
+        -------
+        float
+        """
         if self._params._optimize:
             if miu is not None:
                 if deriv:
@@ -133,14 +152,16 @@ class EmissionsModel(object):
                     return 1.0
                 if self._params._treaty:
                     return self.miu(
-                        data.emissions_ind[index - 1], self.emissions_cap[index - 1],
+                        data.emissions_ind[index - 1],
+                        self.emissions_cap[index - 1],
                         data.emissions_ind[0],
                         data.carbon_intensity[index], data.gross_output[index]
                     )
                 elif self._params._carbon_tax:
                     return (
-                        (self.user_tax_rate[index] / (data.backstop[index] * 1000)) **
-                        (1 / (self._params.abatement_exponent - 1))
+                        (self.user_tax_rate[index] / (
+                            data.backstop[index] * 1000)) ** (
+                            1 / (self._params.abatement_exponent - 1))
                     )
                 else:
                     return 0.

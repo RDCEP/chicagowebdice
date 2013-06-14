@@ -7,6 +7,10 @@ from equations import set_models
 class Dice2007():
     """Variables, parameters, and step function for DICE 2007.
     ...
+    Args
+    ----
+    optimize : boolean
+    ...
     Attributes
     ----------
     eq : object
@@ -79,7 +83,6 @@ class Dice2007():
         deriv : boolean
         f0 : float
         emissions_shock : float
-        consumption_shock : float
         ...
         Returns
         -------
@@ -127,15 +130,15 @@ class Dice2007():
         """
         Loop through step function for calculating endogenous variables
         ...
-        Accepts
-        -------
+        Kwargs
+        ------
         miu : array
         deriv : boolean
         scc : boolean
         ...
         Returns
         -------
-        DataFrame : self.data.vars
+        pd.DataFrame : self.data.vars
         """
         set_models(self.eq, self.params.damages_model, self.params.carbon_model,
                    self.params.prod_frac, self.params)
@@ -162,8 +165,8 @@ class Dice2007():
         """
         Calculate social cost of carbon
         ...
-        Accepts
-        -------
+        Args
+        ----
         miu : array, 60 values of miu
         ...
         Returns
@@ -201,8 +204,8 @@ class Dice2007():
         """
         Calculate optimal miu
         ...
-        Accepts
-        -------
+        Args
+        ----
         None
         ...
         Returns
@@ -219,7 +222,6 @@ class Dice2007():
         xu : array, upper bounds of objective
         gl : array, lower bounds of constraints
         gu : array, upper bounds of constraints
-
         """
         x0 = np.ones(self.params._tmax)
         M = 0
@@ -248,9 +250,18 @@ class Dice2007():
         return x
 
     def format_output(self):
-        """Output text for Google Visualizer graph functions."""
-        output = ['%s %s' % (p, getattr(self.params, p)) for p in self.user_params ]
-        output += ['%s %s' % (p, ' '.join(map(str, list(getattr(self.data.vars, p))))) for p in self.vars ]
+        """
+        Output text for Google Visualizer graph functions.
+        ...
+        Returns
+        -------
+        str
+        """
+        output = ['%s %s' % (
+            p, getattr(self.params, p)) for p in self.user_params]
+        output += ['%s %s' % (
+            p, ' '.join(map(str, list(getattr(self.data.vars, p))))
+        ) for p in self.vars ]
         return '\n'.join(output)
 
 

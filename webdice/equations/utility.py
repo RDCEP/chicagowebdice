@@ -45,7 +45,8 @@ class UtilityModel(object):
         float
         """
         return (
-            (1 / (1 - self._params.elasmu + .000001)) * consumption_pc ** (1 - self._params.elasmu) + 1
+            (1 / (1 - self._params.elasmu + .000001)) *
+            consumption_pc ** (1 - self._params.elasmu) + 1
         )
 
     def utility_discounted(self, utility, utility_discount, l):

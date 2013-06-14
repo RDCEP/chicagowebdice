@@ -64,8 +64,10 @@ class ProductivityModel(object):
         -------
         array
         """
-        return self._params._population_2005 * (1 - self.population_growth) + \
-               self.population_growth * self._params.popasym
+        return (
+            self._params._population_2005 * (1 - self.population_growth) +
+            self.population_growth * self._params.popasym
+        )
 
     @property
     def productivity_growth(self):
@@ -92,7 +94,8 @@ class ProductivityModel(object):
         return (
             self._params._intensity_growth * np.exp(
                 -(self._params.intensity_decline_rate / 100) * 10 *
-                self._params._t0 - self._params._intensity_quadratic * 10 * (self._params._t0 ** 2)
+                self._params._t0 - self._params._intensity_quadratic * 10 *
+                (self._params._t0 ** 2)
             )
         )
 
@@ -114,10 +117,11 @@ class ProductivityModel(object):
             productivity = self._params._productivity
             capital = self._params._capital_2005
         backstop_growth = (
-            data.backstop[index] * carbon_intensity / self._params.abatement_exponent
+            data.backstop[index] * carbon_intensity /
+            self._params.abatement_exponent
         )
         gross_output = self.gross_output(
-            productivity, capital, self._params._output_elasticty,
+            productivity, capital, self._params._output_elasticity,
             data.population[index]
         )
         return (
@@ -138,7 +142,7 @@ class ProductivityModel(object):
         """
         return capital * (1 - depreciation) ** 10 + 10 * investment
 
-    def gross_output(self, productivity, capital, output_elasticty, population):
+    def gross_output(self, productivity, capital, output_elasticity, population):
         """
         Gross output
         ...
@@ -147,8 +151,8 @@ class ProductivityModel(object):
         float
         """
         return (
-            productivity * capital ** output_elasticty *
-            population ** (1 - output_elasticty)
+            productivity * capital ** output_elasticity *
+            population ** (1 - output_elasticity)
         )
 
 class DiceProductivity(ProductivityModel):
