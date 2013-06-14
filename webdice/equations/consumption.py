@@ -1,24 +1,41 @@
-from webdice.params import Dice2007Params
-
-
-PARAMS = Dice2007Params()
-
-
 class ConsumptionModel(object):
+    """
+    ConsumptionModel base class
+    ...
+    Properties
+    ----------
+    initial_values : array
+        Values for consumption_discount and investment at t=0
+    ...
+    Methods
+    -------
+    get_model_values()
+    consumption_pc()
+    consumption_discount()
+    investment()
+    """
     def __init__(self, params):
         self._params = params
 
-    def get_model_values(self, index, data, prstp, elasmu, population, savings):
-        consumption_pc = self.consumption_pc(
-            data.consumption[index], population
+    @property
+    def initial_values(self):
+        return (
+            1,
+            self._params._output_2005 * self._params.savings,
         )
+
+    def get_model_values(self, index, data):
+        consumption_pc = self.consumption_pc(
+            data.consumption[index], data.population[index]
+        )
+        if index == 0:
+            return (consumption_pc,) + self.initial_values
         return (
             consumption_pc,
             self.consumption_discount(
-                prstp, population, elasmu,
                 data.consumption_pc[0], consumption_pc, index
             ),
-            self.investment(savings, data.output[index], index),
+            self.investment(self._params.savings, data.output[index]),
         )
 
     def consumption_pc(self, consumption, population):
@@ -31,12 +48,10 @@ class ConsumptionModel(object):
         """
         return 1000 * consumption / population
 
-    def consumption_discount(self, prstp, population, elasmu, c0, c1, i):
+    def consumption_discount(self, c0, c1, i):
         """Discount rate for consumption"""
-        if i == 0:
-            return 1
         return 1 / (
-            1 + (prstp * 100 + elasmu * (
+            1 + (self._params.prstp * 100 + self._params.elasmu * (
                 (c1 - c0) / 10 / c0
             )) / 100
         ) ** (10 * i)
@@ -48,7 +63,7 @@ class ConsumptionModel(object):
         # Constant rate from SCC paper
         # return 1 / ((1 + .03) ** (i * 10))
 
-    def investment(self, savings, output, i):
+    def investment(self, savings, output):
         """
         I, Investment, trillions $USD
         ...
@@ -56,7 +71,7 @@ class ConsumptionModel(object):
         -------
         float
         """
-        if i == 0:
-            return savings * self._params._output_2005
         return savings * output
 
+class DiceConsumption(ConsumptionModel):
+    pass
