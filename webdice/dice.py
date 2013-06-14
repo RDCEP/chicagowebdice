@@ -187,12 +187,11 @@ class Dice2007():
                 shock = 0
                 if j == i:
                     shock = 1.0
-                S = self.step(j, self.data.scc, miu=miu, emissions_shock=shock)
-            diff = 'consumption_pc'
+                self.step(j, self.data.scc, miu=miu, emissions_shock=shock)
             DIFF = (
                 (
-                    self.data.vars[diff][i:final_year].values -
-                    self.data.scc[diff][i:final_year].values
+                    self.data.vars.consumption_pc[i:final_year].values -
+                    self.data.scc.consumption_pc[i:final_year].values
                 ).clip(0) *
                 self.data.scc.consumption_discount[:future_indices].values
             )
@@ -250,18 +249,9 @@ class Dice2007():
 
     def format_output(self):
         """Output text for Google Visualizer graph functions."""
-        #TODO: This is sloppy as shit.
-        output = ''
-        for v in self.user_params:
-            vv = getattr(self.params, v)
-            output += '%s %s\n' % (v, vv)
-        for v in self.vars:
-            try:
-                vv = getattr(self, v)
-            except:
-                vv = getattr(self.data.vars, v)
-            output += '%s %s\n' % (v, ' '.join(map(str, list(vv))))
-        return output
+        output = ['%s %s' % (p, getattr(self.params, p)) for p in self.user_params ]
+        output += ['%s %s' % (p, ' '.join(map(str, list(getattr(self.data.vars, p))))) for p in self.vars ]
+        return '\n'.join(output)
 
 
 if __name__ == '__main__':
