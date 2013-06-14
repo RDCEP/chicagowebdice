@@ -2,8 +2,44 @@ import numpy as np
 
 
 class ProductivityModel(object):
+    """
+    ProductivityModel base class
+    ...
+    Properties
+    ----------
+    population_growth: array
+        Population growth factor
+    population : array
+        Labor or population
+    productivity_growth : array
+        Growth rate of productivity
+    intensity_decline : array
+        Rate of carbon decline
+    ...
+    Methods
+    -------
+    get_model_values()
+    capital()
+    gross_output()
+    """
     def __init__(self, params):
         self._params = params
+
+    @property
+    def backstop(self):
+        """
+        Cost of replacing clean energy
+        ...
+        Returns
+        -------
+        array
+        """
+        return self._params._backstop_2005 * (
+            (
+                self._params.backstop_ratio - 1 + np.exp(
+                    -self._params.backstop_decline * self._params.t0
+                )) / self._params.backstop_ratio
+        ) * (12.0 / 44.0)
 
     @property
     def population_growth(self):
@@ -60,7 +96,7 @@ class ProductivityModel(object):
             )
         )
 
-    def get_model_values(self, index, data, backstop):
+    def get_model_values(self, index, data):
         if index > 0:
             carbon_intensity = data.carbon_intensity[index - 1] / (
                 1 - self.intensity_decline[index]
@@ -72,15 +108,17 @@ class ProductivityModel(object):
                 data.investment[index - 1]
             )
         else:
+            data.backstop = self.backstop
+            data.population = self.population
             carbon_intensity = self._params._intensity_2005
             productivity = self._params._productivity
             capital = self._params._capital_2005
         backstop_growth = (
-            backstop * data.carbon_intensity[index] / self._params.abatement_exponent
+            data.backstop[index] * carbon_intensity / self._params.abatement_exponent
         )
         gross_output = self.gross_output(
-            data.productivity[index], data.capital[index], self._params._output_elasticty,
-            self.population[index]
+            productivity, capital, self._params._output_elasticty,
+            data.population[index]
         )
         return (
             carbon_intensity,
@@ -113,3 +151,5 @@ class ProductivityModel(object):
             population ** (1 - output_elasticty)
         )
 
+class DiceProductivity(ProductivityModel):
+    pass
