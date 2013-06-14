@@ -242,7 +242,9 @@ class BeamCarbon(CarbonModel):
     def __init__(self, params):
         CarbonModel.__init__(self, params)
         self.N = 20
-        self.initial_carbon = [808.9, 772.4, 38620.5]
+        # self.initial_carbon = [808.9, 772.4, 38620.5]  # from BEAM paper
+        # self.initial_carbon = [808.9, 571.5, 38620.5]  # M_UP at H = 10**-8.1
+        self.initial_carbon = [808.9, 585, 38620.5]  # Nate's guess
 
     def get_h(self, mass_upper):
         """
