@@ -1,6 +1,5 @@
-import damages
-import carbon
-import emissions
+import damages, carbon
+import emissions, consumption, productivity, utility
 
 
 def set_models(eq, damages_model, carbon_model, prod_frac, params):
@@ -24,3 +23,7 @@ def set_models(eq, damages_model, carbon_model, prod_frac, params):
     eq.carbon_model = getattr(
         carbon, "".join(x.capitalize() for x in carbon_model.split('_'))
     )(params)
+    eq.productivity_model = productivity.ProductivityModel(params)
+    eq.consumption_model = consumption.ConsumptionModel(params)
+    eq.utility_model = utility.UtilityModel(params)
+    eq.emissions_model = emissions.EmissionsModel(params)
