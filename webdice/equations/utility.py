@@ -1,7 +1,18 @@
-from webdice.params import Dice2007Params
-
-
 class UtilityModel(object):
+    """
+    UtilityModel base class
+    ...
+    Properties
+    ----------
+    utility_discount : array
+        Average utility discount rate
+    ...
+    Methods
+    -------
+    get_model_values()
+    utility()
+    utility_discounted()
+    """
     def __init__(self, params):
         self._params = params
 
@@ -16,12 +27,12 @@ class UtilityModel(object):
         """
         return 1 / ((1 + self._params.prstp) ** (10 * self._params.t0))
 
-    def get_model_values(self, index, data, population):
+    def get_model_values(self, index, data):
         utility = self.utility(data.consumption_pc[index])
         return (
             utility,
             self.utility_discounted(
-                utility, self.utility_discount[index], population
+                utility, self.utility_discount[index], data.population[index]
             )
         )
 
@@ -46,3 +57,7 @@ class UtilityModel(object):
         float
         """
         return utility_discount * l * utility
+
+
+class DiceUtility(UtilityModel):
+    pass
