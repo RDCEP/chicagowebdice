@@ -14,7 +14,52 @@ class DamagesModel(object):
         self.prod_frac = prod_frac
         self._params = params
 
-    def get_production_factor(self, damages_terms, temp_atmosphere):
+    @property
+    def participation(self):
+        """
+        phi, Fraction of emissions in control regime
+        ...
+        Returns
+        -------
+        array
+        """
+        if not self._params._treaty:
+            return np.concatenate((
+                np.linspace(
+                    self._params._participation_2005, self._params._participation_2005, 1
+                ),
+                self._params._participation_2205 + (
+                    self._params._participation_2015 - self._params._participation_2205
+                ) * np.exp(
+                    -self._params._participation_decline * np.arange(23)
+                ),
+                np.linspace(
+                    self._params._participation_2205, self._params._participation_2205, 36
+                ),
+            ))
+        p = [self._params.p2050, self._params.p2050, self._params.p2100, self._params.p2150, self._params._pmax]
+        return np.concatenate((
+            (p[1] + (p[0] - p[1]) * np.exp(np.arange(5) * -.25)) / 100.,
+            (p[2] + (p[1] - p[2]) * np.exp(np.arange(5) * -.25)) / 100.,
+            (p[3] + (p[2] - p[3]) * np.exp(np.arange(5) * -.25)) / 100.,
+            (p[4] + (p[3] - p[4]) * np.exp(np.arange(45) * -.25)) / 100.,
+        ))
+
+    @property
+    def damages_terms(self):
+        """
+        temp coefficient; pi_2, temp squared coefficient;
+        epsilon, damages exponent
+        ...
+        Returns
+        -------
+        array
+        """
+        return np.array(
+            [self._params._a1, self._params._damages_coefficient, self._params.damages_exponent]
+        )
+
+    def get_production_factor(self, temp_atmosphere):
         """
         Return default fraction of productivity
         """
@@ -34,8 +79,7 @@ class DamagesModel(object):
             backstop_growth * miu ** abatement_exponent
         )
 
-    def damages(self, gross_output, temp_atmosphere, damages_terms,
-               a_abatement=None, a_savings=None):
+    def damages(self, gross_output, temp_atmosphere, a_abatement=None, a_savings=None):
         """
         Omega, Damage, trillions $USD
         ...
@@ -44,8 +88,8 @@ class DamagesModel(object):
         float
         """
         return gross_output * (1 - 1 / (
-            1 + damages_terms[0] * temp_atmosphere +
-            damages_terms[1] * temp_atmosphere ** damages_terms[2]
+            1 + self._params._a1 * temp_atmosphere + self._params._damages_coefficient *
+            temp_atmosphere ** self._params.damages_exponent
         ))
 
     def output(self, gross_output, damages, abatement, a_savings=None,
@@ -72,9 +116,17 @@ class DamagesModel(object):
         """
         return output * (1.0 - savings)
 
+    def output_abate(self, abatement, gross_output):
+        """
+        Abatement as a percentage of output
+        ...
+        Returns
+        -------
+        array
+        """
+        return abatement / gross_output * 100
 
-    def get_model_values(self, index, data, damages_terms,
-                abatement_exponent, participation):
+    def get_model_values(self, index, data):
         """
         Calculate and return damages, output, and consumption
         ...
@@ -90,24 +142,27 @@ class DamagesModel(object):
         -------
         array
         """
-
+        if index == 0:
+            data.participation = self.participation
         abatement = self.abatement(
             data.gross_output[index], data.miu[index],
-            data.backstop_growth[index], abatement_exponent, participation
+            data.backstop_growth[index], self._params.abatement_exponent,
+            data.participation[index]
         )
         damages = self.damages(
             data.gross_output[index], data.temp_atmosphere[index],
-            damages_terms, abatement, self._params.savings
+            abatement, self._params.savings
         )
         output = self.output(
             data.gross_output[index], damages, abatement, self._params.savings,
-            data.temp_atmosphere[index], damages_terms
+            data.temp_atmosphere[index]
         )
         consumption = self.consumption(
-            data.output[index], self._params.savings, data.gross_output[index],
-            abatement, data.temp_atmosphere[index], damages_terms
+            output, self._params.savings, data.gross_output[index],
+            abatement, data.temp_atmosphere[index]
         )
-        return [abatement, damages, output, consumption]
+        output_abate = self.output_abate(abatement, data.gross_output[index])
+        return [abatement, damages, output, consumption, output_abate]
 
 
 class DiceDamages(DamagesModel):
@@ -121,11 +176,11 @@ class ExponentialMap(DamagesModel):
     """
     DICE2007 Damages with exponential mapping to output
     """
-    def damages(self, gross_output, temp_atmosphere, damages_terms,
+    def damages(self, gross_output, temp_atmosphere,
                 a_abatement=None, a_savings=0):
         return gross_output * (1 - np.exp(
-            -(damages_terms[0] * temp_atmosphere + damages_terms[1] *
-              temp_atmosphere ** damages_terms[2])
+            -(self._params._a1 * temp_atmosphere + self._params._damages_coefficient *
+              temp_atmosphere ** self._params.damages_exponent)
         ))
 
 
@@ -180,11 +235,11 @@ class AdditiveDamages(DamagesModel):
                                        a_temp_atmosphere, a_aa)
         return consumption / (1 - a_savings)
 
-    def damages(self, gross_output, temp_atmosphere, damages_terms,
+    def damages(self, gross_output, temp_atmosphere,
                 a_abatement=None, a_savings=0):
         output_no_damages = self.output_no_damages(gross_output, a_abatement)
         output = self.output(gross_output, 0, a_abatement, a_savings,
-                             temp_atmosphere, damages_terms)
+                             temp_atmosphere)
         return output_no_damages - output
 
 
@@ -192,8 +247,7 @@ class WeitzmanTippingPoint(DamagesModel):
     """
     Weitzman tipping point damages
     """
-    def damages(self, gross_output, temp_atmosphere, damages_terms,
-                a_abatement=None, a_savings=0):
+    def damages(self, gross_output, temp_atmosphere, a_abatement=None, a_savings=0):
         return gross_output * (1 - 1 / (
             1 + (temp_atmosphere / 20.46) ** 2 + (
                 (temp_atmosphere / 6.081) ** 6.754
@@ -204,18 +258,17 @@ class ProductivityFraction(DamagesModel):
     """
     Wiesbach and Moyer damages as a fraction of productivity
     """
-    def damages(self, gross_output, temp_atmosphere, damages_terms,
-                a_abatement=None, a_savings=0):
-        fD = self.get_production_factor(damages_terms, temp_atmosphere)
+    def damages(self, gross_output, temp_atmosphere, a_abatement=None, a_savings=0):
+        fD = self.get_production_factor(temp_atmosphere)
         damages_to_prod = 1 - (
             (1 - 1 / (
-                1 + damages_terms[0] * temp_atmosphere + damages_terms[1] *
-                temp_atmosphere ** damages_terms[2]
+                1 + self._params._a1 * temp_atmosphere + self._params._damages_coefficient *
+                temp_atmosphere ** self._params.damages_exponent
             )) / fD
         )
         return gross_output * (1. - damages_to_prod)
 
-    def get_production_factor(self, damages_terms, temp_atmosphere):
+    def get_production_factor(self, temp_atmosphere):
         """
         Calculate fraction of productivity
         ...
@@ -229,7 +282,7 @@ class ProductivityFraction(DamagesModel):
         float
         """
         D = 1 - 1 / (
-            1 + damages_terms[0] * temp_atmosphere + damages_terms[1] *
-            temp_atmosphere ** damages_terms[2]
+            1 + self._params._a1 * temp_atmosphere + self._params._damages_coefficient *
+            temp_atmosphere ** self._params.damages_exponent
         )
         return 1 - self.prod_frac * D
