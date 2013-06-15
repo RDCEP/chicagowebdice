@@ -38,7 +38,8 @@ class EmissionsModel(object):
         array
         """
         return (
-            self._params._emissions_deforest_2005 * (1 - .1) ** self._params._t0
+            self._params._emissions_deforest_2005 *
+            (1 - .1) ** self._params._t0
         )
 
     @property
