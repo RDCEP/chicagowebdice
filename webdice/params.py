@@ -52,6 +52,14 @@ class Dice2007Params(object):
         self._emissions_deforest_2005 = 1.1 #11.0
 
         ## Carbon Cycle
+        _b11, _b12, _b13 = .810712, .189288, 0
+        _b21, _b22, _b23 = .097213, .852787, .05
+        _b31, _b32, _b33 = 0, .003119, .996881
+        self._carbon_matrix = np.array([
+            _b11, _b12, _b13,
+            _b21, _b22, _b23,
+            _b31, _b32, _b33,
+        ]).reshape(3, 3)
         self._mass_atmosphere_2005 = 808.9
         self._mass_upper_2005 = 1255.
         self._mass_lower_2005 = 18365.

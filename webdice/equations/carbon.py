@@ -28,15 +28,8 @@ class CarbonModel(object):
         Calculate forcing at t
     """
     def __init__(self, params):
-        _b11, _b12, _b13 = .810712, .189288, 0
-        _b21, _b22, _b23 = .097213, .852787, .05
-        _b31, _b32, _b33 = 0, .003119, .996881
-        self._carbon_matrix = np.array([
-            _b11, _b12, _b13,
-            _b21, _b22, _b23,
-            _b31, _b32, _b33,
-        ]).reshape(3, 3)
         self._params = params
+        self._carbon_matrix = params._carbon_matrix
         self._mass_atmosphere_2005 = params._mass_atmosphere_2005
         self._mass_upper_2005 = params._mass_upper_2005
         self._mass_lower_2005 = params._mass_lower_2005
@@ -44,6 +37,8 @@ class CarbonModel(object):
         self._temp_atmosphere_2005 = params._temp_atmosphere_2000
         self._temp_lower_2005 = params._temp_lower_2000
         self._forcing_co2_doubling = params._forcing_co2_doubling
+        self._temp_atmosphere_2005 = params._temp_atmosphere_2000
+        self._temp_lower_2005 = params._temp_lower_2000
 
     @property
     def initial_carbon(self):
@@ -68,6 +63,15 @@ class CarbonModel(object):
         self._carbon_matrix = value
 
     @property
+    def initial_temps(self):
+        return [self._temp_atmosphere_2005, self._temp_lower_2005]
+
+    @initial_temps.setter
+    def initial_temps(self, value):
+        self._temp_atmosphere_2005 = value[0]
+        self._temp_lower_2005 = value[1]
+
+    @property
     def forcing_ghg(self):
         """
         F_EX, Exogenous forcing for other greenhouse gases
@@ -82,33 +86,6 @@ class CarbonModel(object):
             ) * np.arange(11),
             self._params._forcing_ghg_2000 + (np.ones(49) * .36),
         ))
-
-    def get_model_values(self, index, data):
-        """
-        Return values for M_AT, M_UP, M_LO
-        ...
-        Args
-        ----
-        emissions_total : float, E_total at t-1
-        mass_atmosphere : float, M_AT at t-1
-        mass_upper : float, M_UP at t-1
-        mass_lower : float, M_LO at t-1
-        ...
-        Returns
-        -------
-        tuple
-            M_AT, M_UP, M_LO at t
-        """
-        if index == 0:
-            return self.initial_carbon
-        i = index - 1
-        return (
-            self.mass_atmosphere(data.emissions_total[i],
-                                 data.mass_atmosphere[i], data.mass_upper[i]),
-            self.mass_upper(data.mass_atmosphere[i], data.mass_upper[i],
-                            data.mass_lower[i]),
-            self.mass_lower(data.mass_upper[i], data.mass_lower[i]),
-        )
 
     def mass_atmosphere(self, emissions_total, mass_atmosphere, mass_upper):
         """
@@ -161,6 +138,79 @@ class CarbonModel(object):
             np.log(
                 data.mass_atmosphere[index] / self._mass_preindustrial
             ) + self.forcing_ghg[index]
+        )
+
+    def temp_atmosphere(self, temp_atmosphere, temp_lower, forcing,
+                        _forcing_co2_doubling, temp_co2_doubling,
+                        thermal_transfer):
+        """
+        T_AT, Temperature of atmosphere, degrees C
+        ...
+        Returns
+        -------
+        float
+        """
+        return (
+            temp_atmosphere + thermal_transfer[0] * (
+                forcing - (_forcing_co2_doubling / temp_co2_doubling) *
+                temp_atmosphere - thermal_transfer[2] *
+                (temp_atmosphere - temp_lower)
+            )
+        )
+
+    def temp_lower(self, temp_atmosphere, temp_lower, thermal_transfer):
+        """
+        T_LO, Temperature of lower oceans, degrees C
+        ...
+        Returns
+        -------
+        float
+        """
+        return (
+            temp_lower + thermal_transfer[3] * (temp_atmosphere - temp_lower)
+        )
+
+    def get_carbon_values(self, index, data):
+        """
+        Return values for M_AT, M_UP, M_LO
+        ...
+        Args
+        ----
+        emissions_total : float, E_total at t-1
+        mass_atmosphere : float, M_AT at t-1
+        mass_upper : float, M_UP at t-1
+        mass_lower : float, M_LO at t-1
+        ...
+        Returns
+        -------
+        tuple
+            M_AT, M_UP, M_LO at t
+        """
+        if index == 0:
+            return self.initial_carbon
+        i = index - 1
+        return (
+            self.mass_atmosphere(data.emissions_total[i],
+                                 data.mass_atmosphere[i], data.mass_upper[i]),
+            self.mass_upper(data.mass_atmosphere[i], data.mass_upper[i],
+                            data.mass_lower[i]),
+            self.mass_lower(data.mass_upper[i], data.mass_lower[i]),
+        )
+
+    def get_temperature_values(self, index, data):
+        if index == 0:
+            return self.initial_temps
+        i = index - 1
+        return (
+            self.temp_atmosphere(
+                data.temp_atmosphere[i], data.temp_lower[i], data.forcing[index],
+                self._params._forcing_co2_doubling,
+                self._params.temp_co2_doubling, self._params.thermal_transfer
+            ),
+            self.temp_lower(
+                data.temp_atmosphere[i], data.temp_lower[i],
+                self._params.thermal_transfer
+            ),
         )
 
 
