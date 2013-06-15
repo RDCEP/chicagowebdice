@@ -102,11 +102,11 @@ class Dice2007():
         ) = self.eq.emissions_model.get_emissions_values(i, D, deriv, miu)
         D.emissions_total[i] += emissions_shock
         D.mass_atmosphere[i], D.mass_upper[i], D.mass_lower[i] = (
-            self.eq.carbon_model.get_carbon_values(i, D)
+            self.eq.carbon_model.get_model_values(i, D)
         )
         D.forcing[i] = self.eq.carbon_model.forcing(i, D)
         D.temp_atmosphere[i], D.temp_lower[i] = (
-            self.eq.carbon_model.get_temperature_values(i, D)
+            self.eq.temperature_model.get_model_values(i, D)
         )
         (
             D.abatement[i], D.damages[i], D.output[i], D.consumption[i],

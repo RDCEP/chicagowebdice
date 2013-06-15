@@ -3,6 +3,7 @@ from emissions import DiceEmissions
 from consumption import DiceConsumption
 from utility import DiceUtility
 from productivity import DiceProductivity
+from temperature import DiceTemperature
 
 class Loop(object):
     """
@@ -38,6 +39,7 @@ class Loop(object):
         self._consumption_model = DiceConsumption(params)
         self._utility_model = DiceUtility(params)
         self._productivity_model = DiceProductivity(params)
+        self._temperature_model = DiceTemperature(params)
 
     @property
     def damages_model(self):
@@ -54,6 +56,14 @@ class Loop(object):
     @carbon_model.setter
     def carbon_model(self, value):
         self._carbon_model = value
+
+    @property
+    def temperature_model(self):
+        return self._temperature_model
+
+    @temperature_model.setter
+    def temperature_model(self, value):
+        self._temperature_model = value
 
     @property
     def emissions_model(self):

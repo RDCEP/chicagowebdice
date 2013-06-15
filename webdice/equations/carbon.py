@@ -73,15 +73,6 @@ class CarbonModel(object):
         self._carbon_matrix = value
 
     @property
-    def initial_temps(self):
-        return [self._temp_atmosphere_2005, self._temp_lower_2005]
-
-    @initial_temps.setter
-    def initial_temps(self, value):
-        self._temp_atmosphere_2005 = value[0]
-        self._temp_lower_2005 = value[1]
-
-    @property
     def forcing_ghg(self):
         """
         F_EX, Exogenous forcing for other greenhouse gases
@@ -97,7 +88,7 @@ class CarbonModel(object):
             self._params._forcing_ghg_2000 + (np.ones(49) * .36),
         ))
 
-    def get_carbon_values(self, index, data):
+    def get_model_values(self, index, data):
         """
         Return values for M_AT, M_UP, M_LO
         ...
@@ -175,52 +166,6 @@ class CarbonModel(object):
             np.log(
                 data.mass_atmosphere[index] / self._mass_preindustrial
             ) + self.forcing_ghg[index]
-        )
-
-    def get_temperature_values(self, index, data):
-        if index == 0:
-            return self.initial_temps
-        i = index - 1
-        return (
-            self.temp_atmosphere(
-                data.temp_atmosphere[i], data.temp_lower[i], data.forcing[index],
-                self._params._forcing_co2_doubling,
-                self._params.temp_co2_doubling, self._params.thermal_transfer
-            ),
-            self.temp_lower(
-                data.temp_atmosphere[i], data.temp_lower[i],
-                self._params.thermal_transfer
-            ),
-        )
-
-    def temp_atmosphere(self, temp_atmosphere, temp_lower, forcing,
-                        _forcing_co2_doubling, temp_co2_doubling,
-                        thermal_transfer):
-        """
-        T_AT, Temperature of atmosphere, degrees C
-        ...
-        Returns
-        -------
-        float
-        """
-        return (
-            temp_atmosphere + thermal_transfer[0] * (
-                forcing - (_forcing_co2_doubling / temp_co2_doubling) *
-                temp_atmosphere - thermal_transfer[2] *
-                (temp_atmosphere - temp_lower)
-            )
-        )
-
-    def temp_lower(self, temp_atmosphere, temp_lower, thermal_transfer):
-        """
-        T_LO, Temperature of lower oceans, degrees C
-        ...
-        Returns
-        -------
-        float
-        """
-        return (
-            temp_lower + thermal_transfer[3] * (temp_atmosphere - temp_lower)
         )
 
 
