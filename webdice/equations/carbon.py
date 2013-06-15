@@ -13,24 +13,19 @@ class CarbonModel(object):
         Carbon transfer coefficients
     forcing_ghg : array
         Forcing for GHGs
-    initial_temps : array
-        Values for T_AT, T_OCEAN at t=0
     ...
     Methods
     -------
+    get_model_values()
+        Return values for M_AT, M_UP, M_LO
     mass_atmosphere()
         Calculate M_AT at t
     mass_upper()
         Calculate M_UP at t
     mass_lower()
         Calculate M_LO at t
-    get_carbon_values()
-        Return values for M_AT, M_UP, M_LO
     forcing()
         Calculate forcing at t
-    temp_atmosphere()
-    temp_lower()
-    get_temperature_values()
     """
     def __init__(self, params):
         _b11, _b12, _b13 = .810712, .189288, 0

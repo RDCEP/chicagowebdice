@@ -1,33 +1,20 @@
 class TemperatureModel(object):
     """
-    CarbonModel base class
+    TemperatureModel base class
     ...
     Properties
     ----------
-    initial_carbon : tuple
-        Values for M_AT, M_UP, and M_LO at t=0
-    carbon_matrix : array
-        Carbon transfer coefficients
-    forcing_ghg : array
-        Forcing for GHGs
     initial_temps : array
         Values for T_AT, T_OCEAN at t=0
     ...
     Methods
     -------
-    mass_atmosphere()
-        Calculate M_AT at t
-    mass_upper()
-        Calculate M_UP at t
-    mass_lower()
-        Calculate M_LO at t
-    get_carbon_values()
-        Return values for M_AT, M_UP, M_LO
-    forcing()
-        Calculate forcing at t
+    get_model_values()
+        Return values for T_AT, T_OCEAN
     temp_atmosphere()
+        Calculate T_AT at t
     temp_lower()
-    get_temperature_values()
+        Calculate T_OCEAN at t
     """
     def __init__(self, params):
         self._params = params
