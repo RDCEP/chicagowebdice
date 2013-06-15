@@ -2,7 +2,6 @@ import numpy as np
 import pyipopt
 from params import Dice2007Params
 from equations.loop import Loop
-from equations import set_models
 
 class Dice2007():
     """Variables, parameters, and step function for DICE 2007.
@@ -140,7 +139,7 @@ class Dice2007():
         -------
         pd.DataFrame : self.data.vars
         """
-        set_models(self.eq, self.params.damages_model, self.params.carbon_model,
+        self.eq.set_models(self.params.damages_model, self.params.carbon_model,
                    self.params.prod_frac, self.params)
         if self.params._optimize and miu is None:
             self.data.vars.miu = self.get_ipopt_mu()
