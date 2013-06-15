@@ -10,8 +10,7 @@ class DamagesModel(object):
     ----
     prod_frac : float
     """
-    def __init__(self, prod_frac, params):
-        self.prod_frac = prod_frac
+    def __init__(self, params):
         self._params = params
 
     @property
@@ -285,4 +284,4 @@ class ProductivityFraction(DamagesModel):
             1 + self._params._a1 * temp_atmosphere + self._params._damages_coefficient *
             temp_atmosphere ** self._params.damages_exponent
         )
-        return 1 - self.prod_frac * D
+        return 1 - self._params.prod_frac * D

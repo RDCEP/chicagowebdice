@@ -37,8 +37,6 @@ class CarbonModel(object):
         self._temp_atmosphere_2005 = params._temp_atmosphere_2000
         self._temp_lower_2005 = params._temp_lower_2000
         self._forcing_co2_doubling = params._forcing_co2_doubling
-        self._temp_atmosphere_2005 = params._temp_atmosphere_2000
-        self._temp_lower_2005 = params._temp_lower_2000
 
     @property
     def initial_carbon(self):
@@ -140,37 +138,7 @@ class CarbonModel(object):
             ) + self.forcing_ghg[index]
         )
 
-    def temp_atmosphere(self, temp_atmosphere, temp_lower, forcing,
-                        _forcing_co2_doubling, temp_co2_doubling,
-                        thermal_transfer):
-        """
-        T_AT, Temperature of atmosphere, degrees C
-        ...
-        Returns
-        -------
-        float
-        """
-        return (
-            temp_atmosphere + thermal_transfer[0] * (
-                forcing - (_forcing_co2_doubling / temp_co2_doubling) *
-                temp_atmosphere - thermal_transfer[2] *
-                (temp_atmosphere - temp_lower)
-            )
-        )
-
-    def temp_lower(self, temp_atmosphere, temp_lower, thermal_transfer):
-        """
-        T_LO, Temperature of lower oceans, degrees C
-        ...
-        Returns
-        -------
-        float
-        """
-        return (
-            temp_lower + thermal_transfer[3] * (temp_atmosphere - temp_lower)
-        )
-
-    def get_carbon_values(self, index, data):
+    def get_model_values(self, index, data):
         """
         Return values for M_AT, M_UP, M_LO
         ...
@@ -195,22 +163,6 @@ class CarbonModel(object):
             self.mass_upper(data.mass_atmosphere[i], data.mass_upper[i],
                             data.mass_lower[i]),
             self.mass_lower(data.mass_upper[i], data.mass_lower[i]),
-        )
-
-    def get_temperature_values(self, index, data):
-        if index == 0:
-            return self.initial_temps
-        i = index - 1
-        return (
-            self.temp_atmosphere(
-                data.temp_atmosphere[i], data.temp_lower[i], data.forcing[index],
-                self._params._forcing_co2_doubling,
-                self._params.temp_co2_doubling, self._params.thermal_transfer
-            ),
-            self.temp_lower(
-                data.temp_atmosphere[i], data.temp_lower[i],
-                self._params.thermal_transfer
-            ),
         )
 
 
@@ -252,7 +204,7 @@ class BeamCarbon(CarbonModel):
             6.25e+10 * mass_upper ** 2 - 7.68281e+13 * mass_upper + 2.36815e+16
         ) - 5.0e-7
 
-    def get_carbon_values(self, index, data):
+    def get_model_values(self, index, data):
         """
         Set BEAM transfer matrix, and return values for M_AT, M_UP, M_LO
         ...

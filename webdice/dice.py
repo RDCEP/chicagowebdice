@@ -102,11 +102,11 @@ class Dice2007():
         ) = self.eq.emissions_model.get_emissions_values(i, D, deriv, miu)
         D.emissions_total[i] += emissions_shock
         D.mass_atmosphere[i], D.mass_upper[i], D.mass_lower[i] = (
-            self.eq.carbon_model.get_carbon_values(i, D)
+            self.eq.carbon_model.get_model_values(i, D)
         )
         D.forcing[i] = self.eq.carbon_model.forcing(i, D)
         D.temp_atmosphere[i], D.temp_lower[i] = (
-            self.eq.carbon_model.get_temperature_values(i, D)
+            self.eq.temperature_model.get_model_values(i, D)
         )
         (
             D.abatement[i], D.damages[i], D.output[i], D.consumption[i],
@@ -139,8 +139,7 @@ class Dice2007():
         -------
         pd.DataFrame : self.data.vars
         """
-        self.eq.set_models(self.params.damages_model, self.params.carbon_model,
-                   self.params.prod_frac, self.params)
+        self.eq.set_models(self.params)
         if self.params._optimize and miu is None:
             self.data.vars.miu = self.get_ipopt_mu()
             self.data.vars.miu[0] = self.params._miu_2005
@@ -265,4 +264,17 @@ class Dice2007():
 
 
 if __name__ == '__main__':
-    pass
+    d = Dice2007()
+    d.params.carbon_model = 'dice_carbon'
+    d.loop()
+    print d.data.vars.temp_atmosphere[:10]
+    d.params.temperature_model = 'linear_temperature'
+    d.loop()
+    print d.data.vars.temp_atmosphere[:10]
+    d.params.carbon_model = 'beam_carbon'
+    d.params.temperature_model = 'dice_temperature'
+    d.loop()
+    print d.data.vars.temp_atmosphere[:10]
+    d.params.temperature_model = 'linear_temperature'
+    d.loop()
+    print d.data.vars.temp_atmosphere[:10]

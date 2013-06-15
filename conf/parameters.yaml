@@ -276,6 +276,14 @@ advanced_tabs:
                 machine_name: dice_carbon
               - name: BEAM
                 machine_name: beam_carbon
+          - name: Temperature Rise
+            machine_name: temperature_model
+            description: Function describing the rise of atmospheric tempeartures
+            options:
+              - name: DICE
+                machine_name: dice_temperature
+              - name: Linear (2°C / 1000 GtC)
+                machine_name: linear_temperature
           - name: Damages model
             machine_name: damages_model
             description: Way that climate change harms enter the economy

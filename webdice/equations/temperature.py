@@ -80,3 +80,21 @@ class TemperatureModel(object):
 
 class DiceTemperature(TemperatureModel):
     pass
+
+
+class LinearTemperature(TemperatureModel):
+    def get_model_values(self, index, data):
+        if index == 0:
+            return self.initial_temps
+        i = index - 1
+        temp_atmosphere = (
+            data.temp_atmosphere[0] +
+            (data.mass_atmosphere[index] - data.mass_atmosphere[0]) * .002
+        )
+        return (
+            temp_atmosphere,
+            self.temp_lower(
+                data.temp_atmosphere[i], data.temp_lower[i],
+                self._params.thermal_transfer
+            ),
+        )

@@ -130,14 +130,9 @@ def graphs():
                     this_dice.params.__dict__[p['machine_name']] = float(form[p['machine_name']])
                 except (ValueError, AttributeError, KeyError):
                     pass
-    try:
-        this_dice.params.damages_model = form['damages_model']
-    except KeyError:
-        pass
-    try:
-        this_dice.params.carbon_model = form['carbon_model']
-    except KeyError:
-        pass
+    this_dice.params.damages_model = form['damages_model']
+    this_dice.params.carbon_model = form['carbon_model']
+    this_dice.params.temperature_model = form['temperature_model']
     policy = form['policy_type']
     this_dice.params._treaty = False
     this_dice._carbon_tax = False

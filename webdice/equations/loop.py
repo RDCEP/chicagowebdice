@@ -1,9 +1,9 @@
-import carbon, damages
+import carbon, damages, temperature
 from emissions import DiceEmissions
 from consumption import DiceConsumption
 from utility import DiceUtility
 from productivity import DiceProductivity
-from temperature import DiceTemperature
+
 
 class Loop(object):
     """
@@ -31,15 +31,14 @@ class Loop(object):
     -------
     set_models()
     """
-    def __init__(self, params, damages_model=damages.DiceDamages,
-                 carbon_model=carbon.DiceCarbon):
-        self._damages_model = damages_model
-        self._carbon_model = carbon_model
+    def __init__(self, params):
+        self._damages_model = params.damages_model
+        self._carbon_model = params.carbon_model
+        self._temperature_model = params.temperature_model
         self._emissions_model = DiceEmissions(params)
         self._consumption_model = DiceConsumption(params)
         self._utility_model = DiceUtility(params)
         self._productivity_model = DiceProductivity(params)
-        self._temperature_model = DiceTemperature(params)
 
     @property
     def damages_model(self):
@@ -74,6 +73,14 @@ class Loop(object):
         self._emissions_model = value
 
     @property
+    def productivity_model(self):
+        return self._productivity_model
+
+    @productivity_model.setter
+    def productivity_model(self, value):
+        self._productivity_model = value
+
+    @property
     def consumption_model(self):
         return self._consumption_model
 
@@ -89,15 +96,7 @@ class Loop(object):
     def utility_model(self, value):
         self._utility_model = value
 
-    @property
-    def productivity_model(self):
-        return self._productivity_model
-
-    @productivity_model.setter
-    def productivity_model(self, value):
-        self._productivity_model = value
-
-    def set_models(self, damages_model, carbon_model, prod_frac, params):
+    def set_models(self, params):
         """
         Set the models used for damages and oceanic carbon transfer
         ...
@@ -113,10 +112,13 @@ class Loop(object):
         None
         """
         self.damages_model = getattr(
-            damages, "".join(x.capitalize() for x in damages_model.split('_'))
-        )(prod_frac, params)
+            damages, "".join(x.capitalize() for x in params.damages_model.split('_'))
+        )(params)
         self.carbon_model = getattr(
-            carbon, "".join(x.capitalize() for x in carbon_model.split('_'))
+            carbon, "".join(x.capitalize() for x in params.carbon_model.split('_'))
+        )(params)
+        self.temperature_model = getattr(
+            temperature, "".join(x.capitalize() for x in params.temperature_model.split('_'))
         )(params)
         self.productivity_model = DiceProductivity(params)
         self.consumption_model = DiceConsumption(params)
