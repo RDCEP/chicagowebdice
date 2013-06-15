@@ -158,11 +158,11 @@ class EmissionsModel(object):
                         data.carbon_intensity[index], data.gross_output[index]
                     )
                 elif self._params._carbon_tax:
-                    return (
+                    return min((
                         (self.user_tax_rate[index] / (
                             data.backstop[index] * 1000)) ** (
                             1 / (self._params.abatement_exponent - 1))
-                    )
+                    ), 1.)
                 else:
                     return 0.
             else:
