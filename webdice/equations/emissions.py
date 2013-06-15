@@ -89,7 +89,7 @@ class EmissionsModel(object):
             carbon_emitted = self._params.fosslim
         tax_rate = self.tax_rate(miu, data.backstop[index])
         return (
-            miu,
+            min(miu, 1.0),
             emissions_ind,
             emissions_total,
             carbon_emitted,
@@ -158,11 +158,11 @@ class EmissionsModel(object):
                         data.carbon_intensity[index], data.gross_output[index]
                     )
                 elif self._params._carbon_tax:
-                    return min((
+                    return (
                         (self.user_tax_rate[index] / (
                             data.backstop[index] * 1000)) ** (
                             1 / (self._params.abatement_exponent - 1))
-                    ), 1.)
+                    )
                 else:
                     return 0.
             else:
