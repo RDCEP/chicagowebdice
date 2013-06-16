@@ -144,10 +144,8 @@ class CarbonModel(object):
         ...
         Args
         ----
-        emissions_total : float, E_total at t-1
-        mass_atmosphere : float, M_AT at t-1
-        mass_upper : float, M_UP at t-1
-        mass_lower : float, M_LO at t-1
+        index : int
+        data : pd.DataFrame
         ...
         Returns
         -------
@@ -210,10 +208,8 @@ class BeamCarbon(CarbonModel):
         ...
         Args
         ----
-        emissions_total : float, E_total at t-1
-        mass_atmosphere : float, M_AT at t-1
-        mass_upper : float, M_UP at t-1
-        mass_lower : float, M_LO at t-1
+        index : int
+        data : pd.DataFrame
         ...
         Returns
         -------
