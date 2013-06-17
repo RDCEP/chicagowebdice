@@ -25,18 +25,30 @@ class ConsumptionModel(object):
         )
 
     def get_model_values(self, index, data):
+        consumption = self.consumption(data.output[index], self._params.savings)
         consumption_pc = self.consumption_pc(
-            data.consumption[index], data.population[index]
+            consumption, data.population[index]
         )
         if index == 0:
-            return (consumption_pc,) + self.initial_values
+            return (consumption, consumption_pc,) + self.initial_values
         return (
+            consumption,
             consumption_pc,
             self.consumption_discount(
                 data.consumption_pc[0], consumption_pc, index
             ),
             self.investment(self._params.savings, data.output[index]),
         )
+
+    def consumption(self, output, savings):
+        """
+        C, Consumption, trillions $USD
+        ...
+        Returns
+        -------
+        float
+        """
+        return output * (1.0 - savings)
 
     def consumption_pc(self, consumption, population):
         """
@@ -75,3 +87,37 @@ class ConsumptionModel(object):
 
 class DiceConsumption(ConsumptionModel):
     pass
+
+
+class AdditiveConsumption(ConsumptionModel):
+    def __init__(self, params):
+        ConsumptionModel.__init__(self, params)
+
+    def get_model_values(self, index, data):
+        _a = data.abatement[index]
+        _go = data.gross_output[index]
+        self.cnd = (
+            (_go - _a) - (_go - _a) * data.temp_atmosphere[index]
+        )
+
+        consumption = self.consumption(data.output[index], self._params.savings)
+        consumption_pc = self.consumption_pc(
+            consumption, data.population[index]
+        )
+        if index == 0:
+            return (consumption, consumption_pc,) + self.initial_values
+        return (
+            consumption,
+            consumption_pc,
+            self.consumption_discount(
+                data.consumption_pc[0], consumption_pc, index
+            ),
+            self.investment(self._params.savings, data.output[index]),
+        )
+
+    def consumption(self, output, savings):
+        C25d = 1.4797266368778764e-05
+        return self.cnd / (
+            1 + self.cnd * self._params.savings *
+            C25d ** self._params.damage_exponent[2]
+        )

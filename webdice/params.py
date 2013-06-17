@@ -18,6 +18,7 @@ class Dice2007Params(object):
         self.carbon_model = 'dice_carbon'
         self.damages_model = 'dice_damages'
         self.temperature_model = 'dice_temperature'
+        self.consumption_model = 'dice_consumption'
         self.prod_frac = .05
         self.elasmu = 2.
         self.prstp = .015

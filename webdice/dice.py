@@ -88,17 +88,15 @@ class Dice2007():
         pandas.DataFrame : 60 steps of all variables in D
         """
         ii = i - 1
-        (
-            D.carbon_intensity[i], D.productivity[i], D.capital[i],
-            D.backstop_growth[i], D.gross_output[i]
+        (D.carbon_intensity[i], D.productivity[i], D.capital[i],
+         D.backstop_growth[i], D.gross_output[i]
         ) = self.eq.productivity_model.get_model_values(i, D)
         if i > 0:
             D.productivity[i] *= self.eq.damages_model.get_production_factor(
                 D.temp_atmosphere[ii]
             ) ** 10
-        (
-            D.miu[i], D.emissions_ind[i], D.emissions_total[i],
-            D.carbon_emitted[i], D.tax_rate[i]
+        (D.miu[i], D.emissions_ind[i], D.emissions_total[i],
+         D.carbon_emitted[i], D.tax_rate[i]
         ) = self.eq.emissions_model.get_emissions_values(i, D, deriv, miu)
         D.emissions_total[i] += emissions_shock
         D.mass_atmosphere[i], D.mass_upper[i], D.mass_lower[i] = (
@@ -108,13 +106,11 @@ class Dice2007():
         D.temp_atmosphere[i], D.temp_lower[i] = (
             self.eq.temperature_model.get_model_values(i, D)
         )
-        (
-            D.abatement[i], D.damages[i], D.output[i], D.consumption[i],
-            D.output_abate[i]
-        ) = self.eq.damages_model.get_model_values(i, D)
-        D.consumption_pc[i], D.consumption_discount[i], D.investment[i] = (
-            self.eq.consumption_model.get_model_values(i, D)
+        D.abatement[i], D.damages[i], D.output[i], D.output_abate[i] = (
+            self.eq.damages_model.get_model_values(i, D)
         )
+        (D.consumption[i], D.consumption_pc[i], D.consumption_discount[i],
+         D.investment[i]) = self.eq.consumption_model.get_model_values(i, D)
         D.utility[i], D.utility_discounted[i] = (
             self.eq.utility_model.get_model_values(i, D)
         )
@@ -265,16 +261,17 @@ class Dice2007():
 
 if __name__ == '__main__':
     d = Dice2007()
-    d.params.carbon_model = 'dice_carbon'
+    d.params.damages_model = 'additive_damages'
     d.loop()
-    print d.data.vars.temp_atmosphere[:10]
-    d.params.temperature_model = 'linear_temperature'
-    d.loop()
-    print d.data.vars.temp_atmosphere[:10]
-    d.params.carbon_model = 'beam_carbon'
-    d.params.temperature_model = 'dice_temperature'
-    d.loop()
-    print d.data.vars.temp_atmosphere[:10]
-    d.params.temperature_model = 'linear_temperature'
-    d.loop()
-    print d.data.vars.temp_atmosphere[:10]
+    print d.params.consumption_model
+    print d.data.vars.consumption[:10]
+    # d.params.temperature_model = 'linear_temperature'
+    # d.loop()
+    # print d.data.vars.temp_atmosphere[:10]
+    # d.params.carbon_model = 'beam_carbon'
+    # d.params.temperature_model = 'dice_temperature'
+    # d.loop()
+    # print d.data.vars.temp_atmosphere[:10]
+    # d.params.temperature_model = 'linear_temperature'
+    # d.loop()
+    # print d.data.vars.temp_atmosphere[:10]

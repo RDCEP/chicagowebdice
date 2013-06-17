@@ -1,4 +1,5 @@
 import numpy as np
+from consumption import AdditiveConsumption
 
 
 class DamagesModel(object):
@@ -12,6 +13,8 @@ class DamagesModel(object):
     """
     def __init__(self, params):
         self._params = params
+        self._temp_atmosphere = None
+        self._aa = None
 
     @property
     def participation(self):
@@ -54,76 +57,17 @@ class DamagesModel(object):
         -------
         array
         """
-        return np.array(
-            [self._params._a1, self._params._damages_coefficient, self._params.damages_exponent]
-        )
+        return np.array([
+            self._params._a1,
+            self._params._damages_coefficient,
+            self._params.damages_exponent
+        ])
 
     def get_production_factor(self, temp_atmosphere):
         """
         Return default fraction of productivity
         """
         return 1.
-
-    def abatement(self, gross_output, miu, backstop_growth, abatement_exponent,
-                  participation):
-        """
-        Lambda, Abatement costs, trillions $USD
-        ...
-        Returns
-        -------
-        float
-        """
-        return (
-            gross_output * participation ** (1 - abatement_exponent) *
-            backstop_growth * miu ** abatement_exponent
-        )
-
-    def damages(self, gross_output, temp_atmosphere, a_abatement=None, a_savings=None):
-        """
-        Omega, Damage, trillions $USD
-        ...
-        Returns
-        -------
-        float
-        """
-        return gross_output * (1 - 1 / (
-            1 + self._params._a1 * temp_atmosphere + self._params._damages_coefficient *
-            temp_atmosphere ** self._params.damages_exponent
-        ))
-
-    def output(self, gross_output, damages, abatement, a_savings=None,
-               a_temp_atmosphere=None, a_aa=None):
-        """
-        Net output after abatement and damages, trillions $USD
-        ...
-        Returns
-        -------
-        float
-        """
-        return (
-            (gross_output - abatement) * (gross_output - damages)
-        ) / gross_output
-
-    def consumption(self, output, savings, a_gross_output=None,
-                    a_abatement=None, a_temp_atmosphere=None, a_aa=None):
-        """
-        C, Consumption, trillions $USD
-        ...
-        Returns
-        -------
-        float
-        """
-        return output * (1.0 - savings)
-
-    def output_abate(self, abatement, gross_output):
-        """
-        Abatement as a percentage of output
-        ...
-        Returns
-        -------
-        array
-        """
-        return abatement / gross_output * 100
 
     def get_model_values(self, index, data):
         """
@@ -143,25 +87,65 @@ class DamagesModel(object):
         """
         if index == 0:
             data.participation = self.participation
-        abatement = self.abatement(
-            data.gross_output[index], data.miu[index],
-            data.backstop_growth[index], self._params.abatement_exponent,
-            data.participation[index]
+        _go = data.gross_output[index]
+        _miu = data.miu[index]
+        _bg = data.backstop_growth[index]
+        _ta = data.temp_atmosphere[index]
+        _part = data.participation[index]
+        abatement = self.abatement(_go, _miu, _bg, _part)
+        damages = self.damages(_go, _ta, abatement)
+        output = self.output(_go, damages, abatement, _ta)
+        output_abate = self.output_abate(abatement, _go)
+        return [abatement, damages, output, output_abate]
+
+    def abatement(self, gross_output, miu, backstop_growth, participation):
+        """
+        Lambda, Abatement costs, trillions $USD
+        ...
+        Returns
+        -------
+        float
+        """
+        return (
+            gross_output * participation ** (1 - self._params.abatement_exponent) *
+            backstop_growth * miu ** self._params.abatement_exponent
         )
-        damages = self.damages(
-            data.gross_output[index], data.temp_atmosphere[index],
-            abatement, self._params.savings
-        )
-        output = self.output(
-            data.gross_output[index], damages, abatement, self._params.savings,
-            data.temp_atmosphere[index]
-        )
-        consumption = self.consumption(
-            output, self._params.savings, data.gross_output[index],
-            abatement, data.temp_atmosphere[index]
-        )
-        output_abate = self.output_abate(abatement, data.gross_output[index])
-        return [abatement, damages, output, consumption, output_abate]
+
+    def damages(self, gross_output, temp_atmosphere, abatement=None):
+        """
+        Omega, Damage, trillions $USD
+        ...
+        Returns
+        -------
+        float
+        """
+        return gross_output * (1 - 1 / (
+            1 + self.damages_terms[0] * temp_atmosphere +
+            self.damages_terms[1] * temp_atmosphere ** self.damages_terms[2]
+        ))
+
+    def output(self, gross_output, damages, abatement,
+               a_temp_atmosphere=None):
+        """
+        Net output after abatement and damages, trillions $USD
+        ...
+        Returns
+        -------
+        float
+        """
+        return (
+            (gross_output - abatement) * (gross_output - damages)
+        ) / gross_output
+
+    def output_abate(self, abatement, gross_output):
+        """
+        Abatement as a percentage of output
+        ...
+        Returns
+        -------
+        array
+        """
+        return abatement / gross_output * 100
 
 
 class DiceDamages(DamagesModel):
@@ -175,11 +159,10 @@ class ExponentialMap(DamagesModel):
     """
     DICE2007 Damages with exponential mapping to output
     """
-    def damages(self, gross_output, temp_atmosphere,
-                a_abatement=None, a_savings=0):
+    def damages(self, gross_output, temp_atmosphere, abatement=None):
         return gross_output * (1 - np.exp(
-            -(self._params._a1 * temp_atmosphere + self._params._damages_coefficient *
-              temp_atmosphere ** self._params.damages_exponent)
+            -(self.damages_terms[0] * temp_atmosphere +
+            self.damages_terms[1] * temp_atmosphere ** self.damages_terms[2])
         ))
 
 
@@ -187,57 +170,56 @@ class AdditiveDamages(DamagesModel):
     """
     Weitzman additive damages function
     """
-    def output_no_damages(self, gross_output, abatement):
-        """
-        Calculate output without damages
-        ...
-        Arguments
-        ---------
-        gross_output : float
-        abatement : float
-        ...
-        Returns
-        -------
-        float
-        """
-        return gross_output - abatement
+    def __init__(self, params):
+        DamagesModel.__init__(self, params)
+        self._abatement = 0
 
-    def consumption_no_damages(self, gross_output, abatement, savings):
+    def get_model_values(self, index, data):
         """
-        Calculate consumption without damages
+        Calculate and return damages, output, and consumption
         ...
         Arguments
         ---------
         gross_output : float
+        temp_atmosphere : float
+        damages_terms : array
         abatement : float
         savings : float
         ...
         Returns
         -------
-        float
+        array
         """
-        ond = self.output_no_damages(gross_output, abatement)
-        return ond - ond * savings
+        if index == 0:
+            data.participation = self.participation
+        _go = data.gross_output[index]
+        _miu = data.miu[index]
+        _bg = data.backstop_growth[index]
+        _ta = data.temp_atmosphere[index]
+        _part = data.participation[index]
+        abatement = self.abatement(_go, _miu, _bg, _part)
+        damages = self.damages(_go, _ta, abatement)
+        output = self.output(_go, damages, abatement, _ta)
+        output_abate = self.output_abate(abatement, _go)
+        return [abatement, damages, output, output_abate]
 
-    def consumption(self, output, savings, a_gross_output=None,
-                    a_abatement=None, a_temp_atmosphere=None, a_aa=None):
-        Ct0 = 6.3745142949735118e-05
-        C2d = 2.2337206076208615e-05
-        C25d = 1.4797266368778764e-05
-        C3d = 1.0102046050195233e-05
-        cnd = self.consumption_no_damages(a_gross_output, a_abatement, savings)
-        return cnd / (1 + cnd * C25d * a_temp_atmosphere ** a_aa[2])
+    def output(self, gross_output, damages, abatement, temp_atmosphere=None):
+        C25d = 1.4797e-05
+        output_no_damages = gross_output - abatement
+        consumption_no_damages = (
+            output_no_damages - output_no_damages * self._params.savings
+        )
+        consumption = (
+            consumption_no_damages / (
+                1 + consumption_no_damages * C25d *
+                temp_atmosphere ** self.damages_terms[2]
+            )
+        )
+        return consumption / (1 - self._params.savings)
 
-    def output(self, gross_output, damages, abatement, a_savings=None,
-               a_temp_atmosphere=None, a_aa=None):
-        consumption = self.consumption(0, a_savings, gross_output, abatement,
-                                       a_temp_atmosphere, a_aa)
-        return consumption / (1 - a_savings)
-
-    def damages(self, gross_output, temp_atmosphere,
-                a_abatement=None, a_savings=0):
-        output_no_damages = self.output_no_damages(gross_output, a_abatement)
-        output = self.output(gross_output, 0, a_abatement, a_savings,
+    def damages(self, gross_output, temp_atmosphere, abatement=None):
+        output_no_damages = gross_output - abatement
+        output = self.output(gross_output, 0, abatement,
                              temp_atmosphere)
         return output_no_damages - output
 
@@ -246,7 +228,7 @@ class WeitzmanTippingPoint(DamagesModel):
     """
     Weitzman tipping point damages
     """
-    def damages(self, gross_output, temp_atmosphere, a_abatement=None, a_savings=0):
+    def damages(self, gross_output, temp_atmosphere, a_abatement=None):
         return gross_output * (1 - 1 / (
             1 + (temp_atmosphere / 20.46) ** 2 + (
                 (temp_atmosphere / 6.081) ** 6.754
@@ -257,12 +239,12 @@ class ProductivityFraction(DamagesModel):
     """
     Wiesbach and Moyer damages as a fraction of productivity
     """
-    def damages(self, gross_output, temp_atmosphere, a_abatement=None, a_savings=0):
+    def damages(self, gross_output, temp_atmosphere, a_abatement=None):
         fD = self.get_production_factor(temp_atmosphere)
         damages_to_prod = 1 - (
             (1 - 1 / (
-                1 + self._params._a1 * temp_atmosphere + self._params._damages_coefficient *
-                temp_atmosphere ** self._params.damages_exponent
+                1 + self.damages_terms[0] * temp_atmosphere +
+                self.damages_terms[1] * temp_atmosphere ** self.damages_terms[2]
             )) / fD
         )
         return gross_output * (1. - damages_to_prod)
@@ -281,7 +263,7 @@ class ProductivityFraction(DamagesModel):
         float
         """
         D = 1 - 1 / (
-            1 + self._params._a1 * temp_atmosphere + self._params._damages_coefficient *
-            temp_atmosphere ** self._params.damages_exponent
+            1 + self.damages_terms[0] * temp_atmosphere +
+            self.damages_terms[1] * temp_atmosphere ** self.damages_terms[2]
         )
         return 1 - self._params.prod_frac * D
