@@ -263,7 +263,6 @@ if __name__ == '__main__':
     d = Dice2007()
     d.params.damages_model = 'additive_damages'
     d.loop()
-    print d.params.consumption_model
     print d.data.vars.consumption[:10]
     # d.params.temperature_model = 'linear_temperature'
     # d.loop()
