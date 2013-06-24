@@ -1,3 +1,6 @@
+import numpy as np
+
+
 class ConsumptionModel(object):
     """
     ConsumptionModel base class
@@ -62,18 +65,10 @@ class ConsumptionModel(object):
 
     def consumption_discount(self, c0, c1, i):
         """Discount rate for consumption"""
-        return 1 / (
-            1 + (self._params.prstp * 100 + self._params.elasmu * (
-                (c1 - c0) / 10 / c0
-            )) / 100
-        ) ** (10 * i)
-
-        # Ramsey discount from SCC paper
-        # return np.exp(-(elasmu / (i + .000001) * np.log(
-        #     c1 / c0) / 10 + prstp) * i * 10)
-
-        # Constant rate from SCC paper
-        # return 1 / ((1 + .03) ** (i * 10))
+        return np.exp(-(self._params.elasmu * np.log(c1 / c0) /
+                        (i * 10 + .000001) + self._params.prstp) * i * 10)
+        # RATE = .025
+        # return 1 / ((1 + RATE) ** (i * 10))
 
     def investment(self, savings, output):
         """

@@ -192,7 +192,7 @@ class Dice2007():
                 ).clip(0) *
                 self.data.scc.consumption_discount[:future_indices].values
             )
-            self.data.vars.scc[i] = np.sum(DIFF) * 10000. * (12. / 44.)
+            self.data.vars.scc[i] = np.sum(DIFF) * 1000 * 10 * (12. / 44.)
 
     def get_ipopt_mu(self):
         """
@@ -260,17 +260,4 @@ class Dice2007():
 
 
 if __name__ == '__main__':
-    d = Dice2007()
-    d.params.damages_model = 'additive_damages'
-    d.loop()
-    print d.data.vars.consumption[:10]
-    # d.params.temperature_model = 'linear_temperature'
-    # d.loop()
-    # print d.data.vars.temp_atmosphere[:10]
-    # d.params.carbon_model = 'beam_carbon'
-    # d.params.temperature_model = 'dice_temperature'
-    # d.loop()
-    # print d.data.vars.temp_atmosphere[:10]
-    # d.params.temperature_model = 'linear_temperature'
-    # d.loop()
-    # print d.data.vars.temp_atmosphere[:10]
+    pass
