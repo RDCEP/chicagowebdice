@@ -238,3 +238,11 @@ class BeamCarbon(CarbonModel):
             _mu += _mu_incr
             _ml += _ml_incr
         return _ma, _mu, _ml
+
+
+
+class LinearCarbon(CarbonModel):
+    def get_model_values(self, index, data):
+        return (
+            None, None, None
+        )

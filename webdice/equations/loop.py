@@ -1,8 +1,9 @@
-import carbon, damages, temperature
+import carbon, damages
 from emissions import DiceEmissions
 from consumption import DiceConsumption
 from utility import DiceUtility
 from productivity import DiceProductivity
+from temperature import DiceTemperature, LinearTemperature
 
 
 class Loop(object):
@@ -117,9 +118,10 @@ class Loop(object):
         self.carbon_model = getattr(
             carbon, "".join(x.capitalize() for x in params.carbon_model.split('_'))
         )(params)
-        self.temperature_model = getattr(
-            temperature, "".join(x.capitalize() for x in params.temperature_model.split('_'))
-        )(params)
+        if params.carbon_model == 'linear_carbon':
+            self.temperature_model = LinearTemperature(params)
+        else:
+            self.temperature_model = DiceTemperature(params)
         self.productivity_model = DiceProductivity(params)
         self.consumption_model = DiceConsumption(params)
         self.utility_model = DiceUtility(params)
