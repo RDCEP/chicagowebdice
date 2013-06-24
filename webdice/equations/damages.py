@@ -1,5 +1,4 @@
 import numpy as np
-from consumption import AdditiveConsumption
 
 
 class DamagesModel(object):
