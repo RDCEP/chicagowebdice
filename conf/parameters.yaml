@@ -276,14 +276,8 @@ advanced_tabs:
                 machine_name: dice_carbon
               - name: BEAM simplified
                 machine_name: beam_carbon
-          - name: Temperature rise
-            machine_name: temperature_model
-            description: Function describing the rise of atmospheric tempeartures
-            options:
-              - name: DICE
-                machine_name: dice_temperature
               - name: Linear (2°C / 1000 GtC)
-                machine_name: linear_temperature
+                machine_name: linear_carbon
           - name: Damages function
             machine_name: damages_model
             description: Way that climate change harms enter the economy
@@ -465,7 +459,7 @@ measurements:
             location: bottomright
       - name: Total Emissions per Year
         machine_name: emissions_total
-        unit: Gt of Carbon / 10 yr
+        unit: Gt of Carbon / Year
         description: Projected path of annual future carbon emissions
         graphs:
           - name: essential
