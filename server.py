@@ -103,7 +103,7 @@ def page(tabs, tpl='index'):
         now=now,
     )
 
-@app.route('/run', methods=['POST',])
+@app.route('/run', methods=['POST', ])
 def graphs():
     """
     Get data from <form>, run DICE loop.
@@ -130,9 +130,12 @@ def graphs():
                     this_dice.params.__dict__[p['machine_name']] = float(form[p['machine_name']])
                 except (ValueError, AttributeError, KeyError):
                     pass
-    this_dice.params.damages_model = form['damages_model']
-    this_dice.params.carbon_model = form['carbon_model']
-    this_dice.params.temperature_model = form['temperature_model']
+    try:
+        this_dice.params.damages_model = form['damages_model']
+        this_dice.params.carbon_model = form['carbon_model']
+        this_dice.params.temperature_model = form['temperature_model']
+    except KeyError:
+        pass
     policy = form['policy_type']
     this_dice.params._treaty = False
     this_dice._carbon_tax = False
