@@ -178,8 +178,8 @@ class Dice2007():
         """
         x_range = 20
         for i in range(x_range):
-            future_indices = self.params._tmax - x_range
-            final_year = i + future_indices
+            final_year = 29
+            future_indices = final_year - i
             self.data.scc = self.data.vars.copy()
             for j in range(i, final_year):
                 shock = 0
@@ -193,7 +193,7 @@ class Dice2007():
                 ).clip(0) *
                 self.data.scc.consumption_discount[:future_indices].values
             )
-            self.data.vars.scc[i] = np.sum(DIFF) * 10000. * (12. / 44.)
+            self.data.vars.scc[i] = np.sum(DIFF) * 1000 * 10 * (12 / 44)
 
     def get_ipopt_mu(self):
         """
