@@ -1,3 +1,4 @@
+from __future__ import division
 import numpy as np
 
 
@@ -40,10 +41,10 @@ class DamagesModel(object):
             ))
         p = [self._params.p2050, self._params.p2050, self._params.p2100, self._params.p2150, self._params._pmax]
         return np.concatenate((
-            (p[1] + (p[0] - p[1]) * np.exp(np.arange(5) * -.25)) / 100.,
-            (p[2] + (p[1] - p[2]) * np.exp(np.arange(5) * -.25)) / 100.,
-            (p[3] + (p[2] - p[3]) * np.exp(np.arange(5) * -.25)) / 100.,
-            (p[4] + (p[3] - p[4]) * np.exp(np.arange(45) * -.25)) / 100.,
+            (p[1] + (p[0] - p[1]) * np.exp(np.arange(5) * -.25)) / 100,
+            (p[2] + (p[1] - p[2]) * np.exp(np.arange(5) * -.25)) / 100,
+            (p[3] + (p[2] - p[3]) * np.exp(np.arange(5) * -.25)) / 100,
+            (p[4] + (p[3] - p[4]) * np.exp(np.arange(45) * -.25)) / 100,
         ))
 
     @property
@@ -246,7 +247,7 @@ class ProductivityFraction(DamagesModel):
                 self.damages_terms[1] * temp_atmosphere ** self.damages_terms[2]
             )) / fD
         )
-        return gross_output * (1. - damages_to_prod)
+        return gross_output * (1 - damages_to_prod)
 
     def get_production_factor(self, temp_atmosphere):
         """

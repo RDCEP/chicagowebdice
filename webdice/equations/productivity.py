@@ -1,3 +1,4 @@
+from __future__ import division
 import numpy as np
 
 
@@ -39,7 +40,7 @@ class ProductivityModel(object):
                 self._params.backstop_ratio - 1 + np.exp(
                     -self._params.backstop_decline * self._params._t0
                 )) / self._params.backstop_ratio
-        ) * (12.0 / 44.0)
+        ) * (12 / 44)
 
     @property
     def population_growth(self):

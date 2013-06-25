@@ -1,3 +1,4 @@
+from __future__ import division
 import numpy as np
 
 
@@ -53,9 +54,9 @@ class EmissionsModel(object):
         """
         return np.concatenate((
             np.ones(5),
-            (np.ones(5) * (100. - self._params.e2050)) / 100.,
-            (np.ones(5) * (100. - self._params.e2100)) / 100.,
-            (np.ones(45) * (100. - self._params.e2150)) / 100.,
+            (np.ones(5) * (100 - self._params.e2050)) / 100,
+            (np.ones(5) * (100 - self._params.e2100)) / 100,
+            (np.ones(45) * (100 - self._params.e2150)) / 100,
         ))
 
     @property
@@ -105,7 +106,7 @@ class EmissionsModel(object):
         -------
         float
         """
-        return intensity * (1. - miu) * gross_output
+        return intensity * (1 - miu) * gross_output
 
     def emissions_total(self, emissions_ind, etree):
         """
@@ -165,7 +166,7 @@ class EmissionsModel(object):
                             1 / (self._params.abatement_exponent - 1))
                     )
                 else:
-                    return 0.
+                    return 0
             else:
                 return self._params._miu_2005
         return data.miu[index]
@@ -180,9 +181,9 @@ class EmissionsModel(object):
         float
         """
         if emissions_cap == 0:
-            return 1.
+            return 1
         elif round(emissions_ind, 2) < round((_e2005 * emissions_cap), 2):
-            return 0.
+            return 0
         else: return 1 - ((_e2005 * emissions_cap) / (intensity * gross_output))
 
     def tax_rate(self, miu, backstop):

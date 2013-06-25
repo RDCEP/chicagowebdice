@@ -1,3 +1,6 @@
+from __future__ import division
+
+
 class UtilityModel(object):
     """
     UtilityModel base class
