@@ -193,7 +193,7 @@ class Dice2007():
                 ).clip(0) *
                 self.data.scc.consumption_discount[:future_indices].values
             )
-            self.data.vars.scc[i] = np.sum(DIFF) * 1000 * 10 * (12 / 44)
+            self.data.vars.scc[i] = np.sum(DIFF) * 10000. * (12. / 44.)
 
     def get_ipopt_mu(self):
         """
