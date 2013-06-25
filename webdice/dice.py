@@ -88,13 +88,12 @@ class Dice2007():
         -------
         pandas.DataFrame : 60 steps of all variables in D
         """
-        ii = i - 1
         (D.carbon_intensity[i], D.productivity[i], D.capital[i],
          D.backstop_growth[i], D.gross_output[i]
         ) = self.eq.productivity_model.get_model_values(i, D)
         if i > 0:
             D.productivity[i] *= self.eq.damages_model.get_production_factor(
-                D.temp_atmosphere[ii]
+                D.temp_atmosphere[i - 1]
             ) ** 10
         (D.miu[i], D.emissions_ind[i], D.emissions_total[i],
          D.carbon_emitted[i], D.tax_rate[i]
