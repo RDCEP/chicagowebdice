@@ -143,7 +143,8 @@ class ProductivityModel(object):
         """
         return capital * (1 - depreciation) ** 10 + 10 * investment
 
-    def gross_output(self, productivity, capital, output_elasticity, population):
+    def gross_output(self, productivity, capital, output_elasticity,
+                     population):
         """
         Gross output
         ...
