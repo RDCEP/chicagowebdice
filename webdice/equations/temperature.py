@@ -89,7 +89,6 @@ class LinearTemperature(TemperatureModel):
     def get_model_values(self, index, data):
         if index == 0:
             return self.initial_temps[0], None
-        i = index - 1
         temp_atmosphere = (
             self.initial_temps[0] +
             data.carbon_emitted[index - 1] * .002
