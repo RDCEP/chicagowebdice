@@ -138,7 +138,7 @@ def graphs():
         pass
     policy = form['policy_type']
     this_dice.params._treaty = False
-    this_dice._carbon_tax = False
+    this_dice.params._carbon_tax = False
     if policy == 'treaty':
         this_dice.params._treaty = True
     elif policy == 'optimized':
