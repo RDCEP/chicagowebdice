@@ -77,14 +77,15 @@ class EmissionsModel(object):
             c[3] + ((c[3] - c[2]) / 5 * np.arange(45)),
         ))
 
-    def get_emissions_values(self, index, data, deriv=False, miu=None):
+    def get_emissions_values(self, index, data, deriv=False, miu=None,
+                             emissions_shock=0):
         miu = self.get_miu(index, data, deriv=deriv, miu=miu)
         emissions_ind = self.emissions_ind(
             data.carbon_intensity[index], miu, data.gross_output[index]
         )
         emissions_total = self.emissions_total(
             emissions_ind, self.emissions_deforest[index]
-        )
+        ) + emissions_shock
         carbon_emitted = self.carbon_emitted(emissions_total, index, data)
         if carbon_emitted > self._params.fosslim:
             emissions_total = 0.0

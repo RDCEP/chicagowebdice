@@ -103,7 +103,6 @@ class Dice2007():
         ) = self.eq.emissions_model.get_emissions_values(
             i, D, deriv, miu, emissions_shock
         )
-        D.emissions_total[i] += emissions_shock
         D.mass_atmosphere[i], D.mass_upper[i], D.mass_lower[i] = (
             self.eq.carbon_model.get_model_values(i, D)
         )
