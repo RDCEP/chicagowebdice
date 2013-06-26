@@ -88,16 +88,21 @@ class Dice2007():
         -------
         pandas.DataFrame : 60 steps of all variables in D
         """
-        (D.carbon_intensity[i], D.productivity[i], D.capital[i],
-         D.backstop_growth[i], D.gross_output[i]
+        (
+            D.carbon_intensity[i], D.productivity[i], D.capital[i],
+            D.backstop_growth[i], D.gross_output[i]
         ) = self.eq.productivity_model.get_model_values(i, D)
         if i > 0:
             D.productivity[i] *= self.eq.damages_model.get_production_factor(
                 D.temp_atmosphere[i - 1]
             ) ** 10
-        (D.miu[i], D.emissions_ind[i], D.emissions_total[i],
-         D.carbon_emitted[i], D.tax_rate[i]
-        ) = self.eq.emissions_model.get_emissions_values(i, D, deriv, miu)
+        (
+            D.miu[i], D.emissions_ind[i],
+            D.emissions_total[i], D.carbon_emitted[i],
+            D.tax_rate[i]
+        ) = self.eq.emissions_model.get_emissions_values(
+            i, D, deriv, miu, emissions_shock
+        )
         D.emissions_total[i] += emissions_shock
         D.mass_atmosphere[i], D.mass_upper[i], D.mass_lower[i] = (
             self.eq.carbon_model.get_model_values(i, D)
@@ -172,23 +177,23 @@ class Dice2007():
         x_range : integer, number of periods in output graph
         future_indices : integer, number of periods to
             calculate future consumption
-        final_year : integer, last period of to calculate consumption
+        time_horizon : integer, last period of to calculate consumption
         shock : float, amount to 'shock' the emissions of the current period
         """
         x_range = 20
         for i in range(x_range):
-            final_year = 29
-            future_indices = final_year - i
+            time_horizon = 59
+            future_indices = time_horizon - i
             self.data.scc = self.data.vars.copy()
-            for j in range(i, final_year):
+            for j in range(i, time_horizon):
                 shock = 0
                 if j == i:
                     shock = 1.0
                 self.step(j, self.data.scc, miu=miu, emissions_shock=shock)
             DIFF = (
                 (
-                    self.data.vars.consumption_pc[i:final_year].values -
-                    self.data.scc.consumption_pc[i:final_year].values
+                    self.data.vars.consumption_pc[i:time_horizon].values -
+                    self.data.scc.consumption_pc[i:time_horizon].values
                 ).clip(0) *
                 self.data.scc.consumption_discount[:future_indices].values
             )
