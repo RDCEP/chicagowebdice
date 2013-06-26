@@ -247,3 +247,6 @@ class LinearCarbon(CarbonModel):
         return (
             None, None, None
         )
+
+    def forcing(self, index, data):
+        return None
