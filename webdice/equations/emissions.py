@@ -54,9 +54,9 @@ class EmissionsModel(object):
         """
         return np.concatenate((
             np.ones(5),
-            (np.ones(5) * (100 - self._params.e2050)) / 100,
-            (np.ones(5) * (100 - self._params.e2100)) / 100,
-            (np.ones(45) * (100 - self._params.e2150)) / 100,
+            (np.ones(5) * (1 - self._params.e2050)),
+            (np.ones(5) * (1 - self._params.e2100)),
+            (np.ones(45) * (1 - self._params.e2150)),
         ))
 
     @property

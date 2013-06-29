@@ -80,7 +80,7 @@ class ProductivityModel(object):
         array
         """
         return self._params._productivity_growth * np.exp(
-            -(self._params.productivity_decline / 100.) * 10 * self._params._t0
+            -self._params.productivity_decline * 10 * self._params._t0
         )
 
     @property
@@ -94,7 +94,7 @@ class ProductivityModel(object):
         """
         return (
             self._params._intensity_growth * np.exp(
-                -(self._params.intensity_decline_rate / 100) * 10 *
+                -self._params.intensity_decline_rate * 10 *
                 self._params._t0 - self._params._intensity_quadratic * 10 *
                 (self._params._t0 ** 2)
             )
