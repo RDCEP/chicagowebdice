@@ -32,7 +32,19 @@
             <label title="{{ parameter.description }}">{{ parameter.name }}
             {% if tab.name == 'Policy' %}
             <span class="label">
-              <span class="label-number">{% if parameter.class == 'reverse' %}{{ parameter.max - (parameter.default - parameter.min) }}{% else %}{{ parameter.default }}{% endif %}</span><span>{{ parameter.unit }}</span>
+              <span class="label-number">{% if parameter.class == 'reverse' -%}
+                {{ parameter.max - (parameter.default - parameter.min) }}
+              {%- elif parameter.class == 'percent' -%}
+                {%- if parameter.precision == 2 -%}
+                  {{ (parameter.default * 100)|int }}
+                {%- else -%}
+                  {{ parameter.default * 100 }}
+                {%- endif -%}
+              {%- elif parameter.class == 'reverse percent' or parameter.class == 'percent reverse' -%}
+                {{ ((parameter.max - (parameter.default - parameter.min)) * 100)|int }}
+              {%- else -%}
+                {{ parameter.default }}
+              {%- endif %}</span><span>{{ parameter.unit }}</span>
             </span>
             {% endif %}
             </label>

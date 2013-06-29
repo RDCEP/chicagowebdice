@@ -40,6 +40,8 @@
                 {%- else -%}
                   {{ parameter.default * 100 }}
                 {%- endif -%}
+              {%- elif parameter.class == 'reverse percent' or parameter.class == 'percent reverse' -%}
+                {{ ((parameter.max - (parameter.default - parameter.min)) * 100)|int }}
               {%- else -%}
                 {{ parameter.default }}
               {%- endif %}</span><span>{{ parameter.unit|safe }}</span>
