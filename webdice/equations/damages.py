@@ -27,19 +27,19 @@ class DamagesModel(object):
         """
         if not self._params._treaty:
             return np.concatenate((
-                np.linspace(
-                    self._params._participation_2005, self._params._participation_2005, 1
-                ),
+                np.linspace(self._params._participation_2005,
+                            self._params._participation_2005, 1),
                 self._params._participation_2205 + (
-                    self._params._participation_2015 - self._params._participation_2205
+                    self._params._participation_2015 -
+                    self._params._participation_2205
                 ) * np.exp(
                     -self._params._participation_decline * np.arange(23)
                 ),
-                np.linspace(
-                    self._params._participation_2205, self._params._participation_2205, 36
-                ),
+                np.linspace(self._params._participation_2205,
+                            self._params._participation_2205, 36),
             ))
-        p = [self._params.p2050, self._params.p2050, self._params.p2100, self._params.p2150, self._params._pmax]
+        p = [self._params.p2050, self._params.p2050, self._params.p2100,
+             self._params.p2150, self._params._pmax]
         return np.concatenate((
             (p[1] + (p[0] - p[1]) * np.exp(np.arange(5) * -.25)),
             (p[2] + (p[1] - p[2]) * np.exp(np.arange(5) * -.25)),
@@ -107,7 +107,8 @@ class DamagesModel(object):
         float
         """
         return (
-            gross_output * participation ** (1 - self._params.abatement_exponent) *
+            gross_output *
+            participation ** (1 - self._params.abatement_exponent) *
             backstop_growth * miu ** self._params.abatement_exponent
         )
 
