@@ -77,11 +77,12 @@ basic_tabs:
         radio: true
       - name: 'Limitations on emissions (as a percent of 2005 emissions)'
         min: 0
-        max: 100
-        step: 5
+        max: 1
+        step: .05
         default: 0
-        precision: 0
+        precision: 2
         unit: '%'
+        class: percent reverse
         init_disabled: true
         parameters:
           - name: 2050
@@ -89,26 +90,24 @@ basic_tabs:
             description: >
                 The mandated decrease in emissions by 2050 as a share of 2005
                 year emissions.
-            class: reverse
           - name: 2100
             machine_name: e2100
             description: >
                 The mandated decrease in emissions by 2100 as a share of 2005
                 year emissions.
-            class: reverse
           - name: 2150
             machine_name: e2150
             description: >
                 The mandated decrease in emissions by 2150 as a share of 2005
                 year emissions.
-            class: reverse
       - name: Participation
         min: 0
-        max: 100
-        step: 10
-        default: 100
-        precision: 0
+        max: 1
+        step: .05
+        default: 1
+        precision: 2
         unit: '%'
+        class: percent
         init_disabled: true
         parameters:
           - name: 2050
@@ -194,38 +193,37 @@ advanced_tabs:
         radio: true
       - name: 'Limitations on emissions (as a percent of 2005 emissions)'
         min: 0
-        max: 100
-        step: 5
+        max: 1
+        step: .05
         default: 0
-        precision: 0
+        precision: 2
         unit: '%'
+        class: percent reverse
         init_disabled: true
         parameters:
           - name: 2050
             machine_name: e2050
             description: >
-                The mandated decrease in emissions by 2050 as a share of
-                2005 year emissions.
-            class: reverse
+                The mandated decrease in emissions by 2050 as a share of 2005
+                year emissions.
           - name: 2100
             machine_name: e2100
             description: >
-                The mandated decrease in emissions by 2100 as a share of
-                2005 year emissions.
-            class: reverse
+                The mandated decrease in emissions by 2100 as a share of 2005
+                year emissions.
           - name: 2150
             machine_name: e2150
             description: >
-                The mandated decrease in emissions by 2150 as a share of
-                2005 year emissions.
-            class: reverse
+                The mandated decrease in emissions by 2150 as a share of 2005
+                year emissions.
       - name: Participation
         min: 0
-        max: 100
-        step: 10
-        default: 100
-        precision: 0
+        max: 1
+        step: .05
+        default: 1
+        precision: 2
         unit: '%'
+        class: percent
         init_disabled: true
         parameters:
           - name: 2050
@@ -300,6 +298,8 @@ advanced_tabs:
             precision: 2
             default: .05
             init_disabled: true
+            unit: '%'
+            class: percent
   - name: Economy
     sections:
       - name: Cost of reducing emissions
@@ -335,13 +335,14 @@ advanced_tabs:
         parameters:
           - name: Decline in rate of growth of productivity
             machine_name: productivity_decline
-            min: 0.05
-            max: 1.5
-            step: 0.05
-            default: 0.10
-            precision: 2
+            min: 0.0005
+            max: .015
+            step: 0.0005
+            default: 0.0010
+            precision: 4
             description: Decline in the rate of growth in productivity over time
             unit: '%'
+            class: percent
           - name: Depreciation rate
             machine_name: depreciation
             default: 0.10
@@ -351,15 +352,17 @@ advanced_tabs:
             precision: 2
             description: Rate of depreciation per year
             unit: '%'
+            class: percent
           - name: Savings rate
             machine_name: savings
             default: 0.2
             min: 0.15
             max: 0.25
-            step: 0.05
+            step: 0.01
             precision: 2
             description: Savings are per year
             unit: '%'
+            class: percent
           - name: Max population
             tab: Advanced
             section: Additional Parameters
@@ -377,13 +380,14 @@ advanced_tabs:
         parameters:
           - name: Reduction in energy intensity per decade
             machine_name: intensity_decline_rate
-            default: 0.3
+            default: 0.003
             min: 0.0
-            max: 6.0
-            step: 0.1
-            precision: 1
+            max: 0.06
+            step: 0.001
+            precision: 3
             description: Rate of decline in energy use per $ of GDP
             unit: '%'
+            class: percent
           - name: Fossil fuel reserves
             tab: Advanced
             section: Additional Parameters
