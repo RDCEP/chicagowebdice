@@ -924,8 +924,8 @@
               'damages_exponent': [1, 1.4, 2.0, 2.8, 4.0],
 //                            'productivity_decline': [0.0, 0.03, 0.1, 0.38, 1.5],
 //                            'intensity_decline_rate': [0.0, 0.06, 0.3, 1.3, 6.0],
-              'productivity_decline': [1.5, 0.38, 0.1, 0.03, 0.0],
-              'intensity_decline_rate': [6.0, 1.3, 0.3, 0.06, 0.0],
+              'productivity_decline': [.015, .0038, .001, .0003, 0.0],
+              'intensity_decline_rate': [.060, .013, .003, .0006, 0.0],
               'backstop_ratio': [1, 1.4, 2.0, 2.8, 4.0]
             }
           ;
