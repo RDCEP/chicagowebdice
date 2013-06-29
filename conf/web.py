@@ -26,7 +26,7 @@ def get_defaults(section):
     """
     defaults = {}
     for var in [
-        'min', 'max', 'step', 'default', 'precision', 'unit', 'init_disabled'
+        'min', 'max', 'step', 'default', 'precision', 'unit', 'init_disabled', 'class'
     ]:
         try:
             defaults[var] = section[var]
