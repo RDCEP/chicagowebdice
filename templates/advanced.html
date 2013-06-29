@@ -32,7 +32,17 @@
             {% if parameter.type == 'range' -%}
             <label title="{{ parameter.description }}">{{ parameter.name }}
             <span class="label">
-              <span class="label-number">{% if parameter.class == 'reverse' %}{{ parameter.max - (parameter.default - parameter.min) }}{% else %}{{ parameter.default }}{% endif %}</span><span>{{ parameter.unit|safe }}</span>
+              <span class="label-number">{% if parameter.class == 'reverse' -%}
+                {{ parameter.max - (parameter.default - parameter.min) }}
+              {%- elif parameter.class == 'percent' -%}
+                {%- if parameter.precision == 2 -%}
+                  {{ (parameter.default * 100)|int }}
+                {%- else -%}
+                  {{ parameter.default * 100 }}
+                {%- endif -%}
+              {%- else -%}
+                {{ parameter.default }}
+              {%- endif %}</span><span>{{ parameter.unit|safe }}</span>
             </span>
             </label>
             <input name="{{ parameter.machine_name }}" type="range" min="{{ parameter.min }}" max="{{ parameter.max }}" value="{{ parameter.default }}" step="{{ parameter.step }}" data-prec="{{ parameter.precision }}" {% if parameter.disabled or parameter.init_disabled %}disabled="disabled"{% endif %} {% if parameter.class %}class="{{ parameter.class }}"{% endif %}/>
