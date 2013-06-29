@@ -1027,7 +1027,7 @@
        */
       var value = parseFloat(this.value).toFixed(this.getAttribute("data-prec"));
       if ($(this).hasClass('percent')) {
-        Math.round(value = value * 100, 0);
+        value = parseFloat(value*100).toFixed(this.getAttribute('data-prec')-2);
       }
       /* This is a hack for the treaty sliders, so that they can move
        *'backwards' from 100 to 0.
@@ -1074,7 +1074,6 @@
     });
 
     $('select[name=damages_model]').change(function(e) {
-      console.log(1);
       var prod_frac = $('input[name=prod_frac]');
       if ($(this).val() == 'productivity_fraction') {
         prod_frac.removeAttr('disabled');
