@@ -79,7 +79,7 @@ class EmissionsModel(object):
 
     def get_emissions_values(self, index, data, deriv=False, miu=None,
                              emissions_shock=0):
-        miu = self.get_miu(index, data, deriv=deriv, miu=miu)
+        miu = min(self.get_miu(index, data, deriv=deriv, miu=miu), 1.0)
         emissions_ind = self.emissions_ind(
             data.carbon_intensity[index], miu, data.gross_output[index]
         )
@@ -92,7 +92,7 @@ class EmissionsModel(object):
             carbon_emitted = self._params.fosslim
         tax_rate = self.tax_rate(miu, data.backstop[index])
         return (
-            min(miu, 1.0),
+            miu,
             emissions_ind,
             emissions_total,
             carbon_emitted,
