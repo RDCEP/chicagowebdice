@@ -6,8 +6,8 @@ class Dice2007Params(object):
     def __init__(self):
         self.temp_co2_doubling = 3.
         self.damages_exponent = 2.
-        self.productivity_decline = .1
-        self.intensity_decline_rate = .3
+        self.productivity_decline = .001
+        self.intensity_decline_rate = .003
         self.abatement_exponent = 2.8
         self.backstop_decline = .05
         self.backstop_ratio = 2.
