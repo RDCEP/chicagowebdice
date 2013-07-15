@@ -1,10 +1,10 @@
 from __future__ import division
 import numpy as np
 import pyipopt
-from params import Dice2007Params
+from params import DiceParams
 from equations.loop import Loop
 
-class Dice2007():
+class Dice(object):
     """Variables, parameters, and step function for DICE 2007.
     ...
     Args
@@ -37,7 +37,7 @@ class Dice2007():
         Output text for Google Visualizer graph functions
     """
     def __init__(self, optimize=False):
-        self.params = Dice2007Params()
+        self.params = DiceParams()
         self.data = self.params._data
         self.eq = Loop(self.params)
         self.params._optimize = optimize
