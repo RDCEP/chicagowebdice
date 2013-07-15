@@ -168,6 +168,19 @@ class Dice2010(ProductivityModel):
             )
         )
 
+    @property
+    def productivity_growth(self):
+        """
+        A_g, Growth rate of total factor productivity.
+        ...
+        Returns
+        -------
+        array
+        """
+        return self._params._productivity_growth * np.exp(
+            -self._params.productivity_decline * 10 * self._params._t0
+        ) * np.exp(-.002 * 10 * self._params._t0)
+
     def carbon_intensity(self, index, data):
         intensity_decline = (
             data.intensity_decline[index - 1] * (1 - (
@@ -188,6 +201,7 @@ class Dice2010(ProductivityModel):
         array
         """
         return (
-            data.population[index - 1] *
-            (self._params.popasym / data.population[index - 1]) ** .485
+            data.population[index - 1] * (
+                self._params.popasym / data.population[index - 1]
+            ) ** self._params._population_growth
         )
