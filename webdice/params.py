@@ -113,8 +113,6 @@ class DiceParams(object):
             (np.exp(self._population_growth * self._t0))
         )
 
-        print population_growth_rate
-
         # Variables for initiating pandas array
         backstop_growth = np.zeros(self._tmax)
         carbon_intensity = np.empty(self._tmax)
@@ -171,6 +169,7 @@ class DiceParams(object):
             'tax_rate': np.zeros(self._tmax),
             'backstop': np.zeros(self._tmax),
             'population': population,
+            'population_growth': population_growth_rate,
             'output_abate': np.zeros(self._tmax),
         })
         self._data = pd.Panel({

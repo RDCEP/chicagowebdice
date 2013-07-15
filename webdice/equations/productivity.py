@@ -42,35 +42,6 @@ class ProductivityModel(object):
                 )) / self._params.backstop_ratio
         ) * (12 / 44)
 
-    @property
-    def population_growth(self):
-        """
-        L_g, Population growth factor
-        ...
-        Returns
-        -------
-        array
-        """
-        return (
-            (np.exp(self._params._population_growth * self._params._t0) - 1) /
-            (np.exp(self._params._population_growth * self._params._t0))
-        )
-    # TODO: This is in params
-
-    # @property
-    # def population(self):
-    #     """
-    #     L, Population.
-    #     ...
-    #     Returns
-    #     -------
-    #     array
-    #     """
-    #     return (
-    #         self._params._population_2005 * (1 - self.population_growth) +
-    #         self.population_growth * self._params.popasym
-    #     )
-
     def population(self, data, index):
         """
         L, Population.
@@ -80,8 +51,8 @@ class ProductivityModel(object):
         array
         """
         return (
-            self._params._population_2005 * (1 - self.population_growth[index]) +
-            self.population_growth[index] * self._params.popasym
+            self._params._population_2005 * (1 - data.population_growth[index]) +
+            data.population_growth[index] * self._params.popasym
         )
 
     @property
