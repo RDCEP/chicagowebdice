@@ -39,20 +39,14 @@ class TemperatureModel(object):
             return self.initial_temps
         i = index - 1
         return (
-            self.temp_atmosphere(
-                data.temp_atmosphere[i], data.temp_lower[i], data.forcing[index],
-                self._params._forcing_co2_doubling,
-                self._params.temp_co2_doubling, self._params.thermal_transfer
-            ),
+            self.temp_atmosphere(data, index),
             self.temp_lower(
                 data.temp_atmosphere[i], data.temp_lower[i],
                 self._params.thermal_transfer
             ),
         )
 
-    def temp_atmosphere(self, temp_atmosphere, temp_lower, forcing,
-                        _forcing_co2_doubling, temp_co2_doubling,
-                        thermal_transfer):
+    def temp_atmosphere(self, data, index):
         """
         T_AT, Temperature of atmosphere, degrees C
         ...
@@ -61,10 +55,13 @@ class TemperatureModel(object):
         float
         """
         return (
-            temp_atmosphere + thermal_transfer[0] * (
-                forcing - (_forcing_co2_doubling / temp_co2_doubling) *
-                temp_atmosphere - thermal_transfer[2] *
-                (temp_atmosphere - temp_lower)
+            data.temp_atmosphere[index - 1] +
+            self._params.thermal_transfer[0] * (
+                data.forcing[index] - (self._params._forcing_co2_doubling /
+                                       self._params.temp_co2_doubling) *
+                data.temp_atmosphere[index - 1] -
+                self._params.thermal_transfer[2] *
+                (data.temp_atmosphere[index - 1] - data.temp_lower[index - 1])
             )
         )
 
@@ -100,4 +97,24 @@ class LinearTemperature(TemperatureModel):
 
 
 class Dice2010(TemperatureModel):
-    pass
+    def temp_atmosphere(self, data, index):
+        """
+        T_AT, Temperature of atmosphere, degrees C
+        ...
+        Returns
+        -------
+        float
+        """
+        if index > 1:
+            return (
+                data.temp_atmosphere[index - 1] +
+                self._params.thermal_transfer[0] * (
+                    data.forcing[index] - (self._params._forcing_co2_doubling /
+                                           self._params.temp_co2_doubling) *
+                    data.temp_atmosphere[index - 1] -
+                    self._params.thermal_transfer[2] *
+                    (data.temp_atmosphere[index - 1] - data.temp_lower[index - 1])
+                )
+            )
+        else:
+            return data.temp_atmosphere[index]
