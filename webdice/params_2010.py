@@ -41,29 +41,32 @@ class Dice2010Params(DiceParams):
         self._mass_lower_2005 = 10100.
 
         ## Climate model
-        self._forcing_ghg_2000 = .83
-        self._temp_atmosphere_2000 = .7307  #TODO: see equations
+        self._forcing_ghg_2000 = .083
+        self._temp_atmosphere_2000 = .83
+        self._temp_atmosphere_2010 = .98
 
         self._damages_coefficient = .00204625800317896
 
         ## Abatement cost
         self._backstop_2005 = 1.26
 
-        population_growth_rate = (
-            (np.exp(self._population_growth * self._t0) - 1) /
-            (np.exp(self._population_growth * self._t0))
-        )  # TODO: see equations
-
-        self._data.vars['intensity_decline'] = np.zeros(self._tmax)
-        self._data.scc['intensity_decline'] = np.zeros(self._tmax)
         self._data.vars.intensity_decline[0] = .158
         self._data.scc.intensity_decline[0] = .158
         self._data.vars.population[0] = self._population_2005
         self._data.scc.population[0] = self._population_2005
-
+        self._data.vars.temp_atmosphere[0] = self._temp_atmosphere_2000
+        self._data.vars.temp_atmosphere[1] = self._temp_atmosphere_2010
+        self._data.scc.temp_atmosphere[0] = self._temp_atmosphere_2000
+        self._data.scc.temp_atmosphere[1] = self._temp_atmosphere_2010
         self._data.vars.carbon_intensity[0] = self._intensity_2005
+        self._data.scc.carbon_intensity[0] = self._intensity_2005
         self._data.vars.productivity[0] = self._productivity
+        self._data.scc.productivity[0] = self._productivity
         self._data.vars.output[0] = self._output_2005
+        self._data.scc.output[0] = self._output_2005
         self._data.vars.mass_atmosphere[0] = self._mass_atmosphere_2005
+        self._data.scc.mass_atmosphere[0] = self._mass_atmosphere_2005
         self._data.vars.mass_upper[0] = self._mass_upper_2005
+        self._data.scc.mass_upper[0] = self._mass_upper_2005
         self._data.vars.mass_lower[0] = self._mass_lower_2005
+        self._data.scc.mass_lower[0] = self._mass_lower_2005
