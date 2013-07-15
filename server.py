@@ -3,6 +3,8 @@ from datetime import datetime
 from flask import Flask
 from flask import render_template, request, make_response
 from flask_beaker import BeakerSession
+from flask_restful import Api, reqparse
+from uwsgi_app import app
 from webdice.dice import Dice2007
 from conf.web import get_measurements, paragraphs_html
 from conf.web import get_all_parameters, get_advanced_tabs, get_basic_tabs
@@ -16,7 +18,8 @@ session_opts = {
     'session.auto': True
 }
 
-app = Flask(__name__)
+api = Api(app)
+api_parser = reqparse.RequestParser()
 app.config['DEBUG'] = True
 app.config['SECRET_KEY'] = 'Ad78gii#$3979oklaklf'
 BeakerSession(app)
@@ -155,6 +158,38 @@ def csv_output():
     response =  make_response(data)
     response.headers['Content-Disposition'] = 'attachment; filename="WebDICE-Data.csv"'
     return response
+
+@app.route(
+    '/api/t2xco2/<temp_co2_doubling>/a3/<damages_exponent>/expcost2/<abatement_exponent>/gback/<backstop_decline>/backrat/<backstop_ratio>/dela/<productivity_decline>/dk/<depreciation>/savings/<savings>/popasym/<popasym>/dsig/<intensity_decline_rate>/fosslim/<fosslim>/elasmu/<elasmu>/prstp/<prstp>', methods=['GET']
+)
+def api_get(*args, **kwargs):
+    measurements = get_measurements()
+    all_parameters = get_all_parameters()
+    without_sections = []
+    for s in measurements:
+        for m in s['options']:
+            without_sections.append(m)
+    graph_locations = ['topleft', 'topright', 'bottomleft', 'bottomright', ]
+    graph_names = ['essential', 'climate', 'economy', 'policy']
+    m = json.JSONEncoder().encode(without_sections)
+    graph_locations = json.JSONEncoder().encode(graph_locations)
+    graph_names = json.JSONEncoder().encode(graph_names)
+    now = datetime.now().strftime('%Y%m%d%H%M%S')
+    tabs = get_advanced_tabs()
+    return render_template(
+        'api.html',
+        api=kwargs,
+        measurements=m,
+        graph_locations=graph_locations,
+        graph_names=graph_names,
+        tabs=tabs,
+        dropdowns=measurements,
+        paragraphs_html=paragraphs_html('advanced'),
+        all_parameters=all_parameters,
+        now=now,
+    )
+
+
 
 if __name__ == '__main__':
     app.run()
