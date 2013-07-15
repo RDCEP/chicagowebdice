@@ -42,22 +42,7 @@ class ProductivityModel(object):
                 )) / self._params.backstop_ratio
         ) * (12 / 44)
 
-    @property
-    def population_growth(self):
-        """
-        L_g, Population growth factor
-        ...
-        Returns
-        -------
-        array
-        """
-        return (
-            (np.exp(self._params._population_growth * self._params._t0) - 1) /
-            (np.exp(self._params._population_growth * self._params._t0))
-        )
-
-    @property
-    def population(self):
+    def population(self, data, index):
         """
         L, Population.
         ...
@@ -66,8 +51,8 @@ class ProductivityModel(object):
         array
         """
         return (
-            self._params._population_2005 * (1 - self.population_growth) +
-            self.population_growth * self._params.popasym
+            self._params._population_2005 * (1 - data.population_growth[index]) +
+            data.population_growth[index] * self._params.popasym
         )
 
     @property
@@ -100,20 +85,23 @@ class ProductivityModel(object):
             )
         )
 
+    def carbon_intensity(self, index, data):
+        return data.carbon_intensity[index - 1] / (
+            1 - self.intensity_decline[index]
+        )
+
     def get_model_values(self, index, data):
         if index > 0:
-            carbon_intensity = data.carbon_intensity[index - 1] / (
-                1 - self.intensity_decline[index]
-            )
+            carbon_intensity = self.carbon_intensity(index, data)
             productivity = data.productivity[index - 1] / (
                 1 - self.productivity_growth[index - 1])
             capital = self.capital(
                 data.capital[index - 1], self._params.depreciation,
                 data.investment[index - 1]
             )
+            data.population[index] = self.population(data, index)
         else:
             data.backstop = self.backstop
-            data.population = self.population
             carbon_intensity = self._params._intensity_2005
             productivity = self._params._productivity
             capital = self._params._capital_2005
@@ -157,5 +145,63 @@ class ProductivityModel(object):
             population ** (1 - output_elasticity)
         )
 
-class DiceProductivity(ProductivityModel):
+
+class Dice2007(ProductivityModel):
     pass
+
+
+class Dice2010(ProductivityModel):
+    @property
+    def intensity_decline(self):
+        """
+        sigma_g, Rate of decline of carbon intensity
+        ...
+        Returns
+        -------
+        array
+        """
+        return (
+            self._params._intensity_growth * np.exp(
+                -self._params.intensity_decline_rate * 10 *
+                self._params._t0 - self._params._intensity_quadratic * 10 *
+                (self._params._t0 ** 2)
+            )
+        )
+
+    @property
+    def productivity_growth(self):
+        """
+        A_g, Growth rate of total factor productivity.
+        ...
+        Returns
+        -------
+        array
+        """
+        return self._params._productivity_growth * np.exp(
+            -self._params.productivity_decline * 10 * self._params._t0
+        ) * np.exp(-.002 * 10 * self._params._t0)
+
+    def carbon_intensity(self, index, data):
+        intensity_decline = (
+            data.intensity_decline[index - 1] * (1 - (
+                self._params.intensity_decline_rate * np.exp(
+                    -self._params._intensity_quadratic * 10 * index
+                )
+            )) ** 10
+        )
+        data.intensity_decline[index] = intensity_decline
+        return data.carbon_intensity[index - 1] * (1 - intensity_decline)
+
+    def population(self, data, index):
+        """
+        L, Population.
+        ...
+        Returns
+        -------
+        array
+        """
+        return (
+            data.population[index - 1] * (
+                self._params.popasym / data.population[index - 1]
+            ) ** self._params._population_growth
+        )

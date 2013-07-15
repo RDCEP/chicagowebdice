@@ -165,7 +165,7 @@ class CarbonModel(object):
         )
 
 
-class DiceCarbon(CarbonModel):
+class Dice2007(CarbonModel):
     pass
 
 
@@ -241,7 +241,6 @@ class BeamCarbon(CarbonModel):
         return _ma, _mu, _ml
 
 
-
 class LinearCarbon(CarbonModel):
     def get_model_values(self, index, data):
         return (
@@ -250,3 +249,7 @@ class LinearCarbon(CarbonModel):
 
     def forcing(self, index, data):
         return None
+
+
+class Dice2010(CarbonModel):
+    pass

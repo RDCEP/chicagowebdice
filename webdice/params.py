@@ -2,8 +2,9 @@ import numpy as np
 import pandas as pd
 
 
-class Dice2007Params(object):
+class DiceParams(object):
     def __init__(self):
+        dice_version = '2007'
         self.temp_co2_doubling = 3.
         self.damages_exponent = 2.
         self.productivity_decline = .001
@@ -15,10 +16,13 @@ class Dice2007Params(object):
         self.depreciation = .1
         self.savings = .2
         self.fosslim = 6000.
-        self.carbon_model = 'dice_carbon'
-        self.damages_model = 'dice_damages'
-        self.temperature_model = 'dice_temperature'
-        self.consumption_model = 'dice_consumption'
+        self.carbon_model = 'dice_%s' % dice_version
+        self.consumption_model = 'dice_%s' % dice_version
+        self.damages_model = 'dice_%s' % dice_version
+        self.emissions_model = 'dice_%s' % dice_version
+        self.productivity_model = 'dice_%s' % dice_version
+        self.temperature_model = 'dice_%s' % dice_version
+        self.utility_model = 'dice_%s' % dice_version
         self.prod_frac = .05
         self.elasmu = 2.
         self.prstp = .015
@@ -131,6 +135,8 @@ class Dice2007Params(object):
         temp_lower[:] = self._temp_lower_2000
         investment = np.empty(self._tmax)
         investment[:] = self.savings * self._output_2005
+        population = np.empty(self._tmax)
+        population[:] = self._population_2005
         miu = np.empty(self._tmax)
         miu[:] = self._miu_2005
         data = pd.DataFrame({
@@ -162,7 +168,8 @@ class Dice2007Params(object):
             'consumption_discount': np.ones(self._tmax),
             'tax_rate': np.zeros(self._tmax),
             'backstop': np.zeros(self._tmax),
-            'population': np.zeros(self._tmax),
+            'population': population,
+            'population_growth': population_growth_rate,
             'output_abate': np.zeros(self._tmax),
         })
         self._data = pd.Panel({
