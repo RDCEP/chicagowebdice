@@ -5,7 +5,7 @@ from flask import render_template, request, make_response
 from flask_beaker import BeakerSession
 from flask_restful import Api, reqparse
 from uwsgi_app import app
-from webdice.dice import Dice2007
+from webdice.dice_2010 import Dice2010
 from conf.web import get_measurements, paragraphs_html
 from conf.web import get_all_parameters, get_advanced_tabs, get_basic_tabs
 
@@ -44,7 +44,7 @@ def do_session(request, newdice=False):
         dice = newdice
         s['dice'] = dice
     if 'dice' not in s: 
-        dice = Dice2007()
+        dice = Dice2010()
         s['dice'] = dice
     return s
 
