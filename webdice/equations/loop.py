@@ -1,9 +1,10 @@
-import carbon, damages
-from emissions import DiceEmissions
-from consumption import DiceConsumption
-from utility import DiceUtility
-from productivity import DiceProductivity
-from temperature import DiceTemperature, LinearTemperature
+import carbon
+import damages
+import emissions
+import consumption
+import utility
+import productivity
+import temperature
 
 
 class Loop(object):
@@ -36,10 +37,10 @@ class Loop(object):
         self._damages_model = params.damages_model
         self._carbon_model = params.carbon_model
         self._temperature_model = params.temperature_model
-        self._emissions_model = DiceEmissions(params)
-        self._consumption_model = DiceConsumption(params)
-        self._utility_model = DiceUtility(params)
-        self._productivity_model = DiceProductivity(params)
+        self._emissions_model = params.emissions_model
+        self._consumption_model = params.consumption_model
+        self._utility_model = params.utility_model
+        self._productivity_model = params.productivity_model
 
     @property
     def damages_model(self):
@@ -119,10 +120,19 @@ class Loop(object):
             carbon, "".join(x.capitalize() for x in params.carbon_model.split('_'))
         )(params)
         if params.carbon_model == 'linear_carbon':
-            self.temperature_model = LinearTemperature(params)
-        else:
-            self.temperature_model = DiceTemperature(params)
-        self.productivity_model = DiceProductivity(params)
-        self.consumption_model = DiceConsumption(params)
-        self.utility_model = DiceUtility(params)
-        self.emissions_model = DiceEmissions(params)
+            params.temperature_model = 'linear_temperature'
+        self.temperature_model = getattr(
+            temperature, "".join(x.capitalize() for x in params.temperature_model.split('_'))
+        )(params)
+        self.productivity_model = getattr(
+            productivity, "".join(x.capitalize() for x in params.productivity_model.split('_'))
+        )(params)
+        self.consumption_model = getattr(
+            consumption, "".join(x.capitalize() for x in params.consumption_model.split('_'))
+        )(params)
+        self.utility_model = getattr(
+            utility, "".join(x.capitalize() for x in params.utility_model.split('_'))
+        )(params)
+        self.emissions_model = getattr(
+            emissions, "".join(x.capitalize() for x in params.emissions_model.split('_'))
+        )(params)
