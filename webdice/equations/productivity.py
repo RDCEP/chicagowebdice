@@ -68,26 +68,9 @@ class ProductivityModel(object):
             -self._params.productivity_decline * 10 * self._params._t0
         )
 
-    @property
-    def intensity_decline(self):
-        """
-        sigma_g, Rate of decline of carbon intensity
-        ...
-        Returns
-        -------
-        array
-        """
-        return (
-            self._params._intensity_growth * np.exp(
-                -self._params.intensity_decline_rate * 10 *
-                self._params._t0 - self._params._intensity_quadratic * 10 *
-                (self._params._t0 ** 2)
-            )
-        )
-
     def carbon_intensity(self, index, data):
         return data.carbon_intensity[index - 1] / (
-            1 - self.intensity_decline[index]
+            1 - data.intensity_decline[index]
         )
 
     def get_model_values(self, index, data):
@@ -151,8 +134,7 @@ class Dice2007(ProductivityModel):
 
 
 class Dice2010(ProductivityModel):
-    @property
-    def intensity_decline(self):
+    def intensity_decline(self, data, index):
         """
         sigma_g, Rate of decline of carbon intensity
         ...
@@ -160,13 +142,11 @@ class Dice2010(ProductivityModel):
         -------
         array
         """
-        return (
-            self._params._intensity_growth * np.exp(
-                -self._params.intensity_decline_rate * 10 *
-                self._params._t0 - self._params._intensity_quadratic * 10 *
-                (self._params._t0 ** 2)
+        return data.intensity_decline[index - 1] * (
+            1 - (self._params.intensity_decline_rate *
+                 np.exp(-self._params._intensity_quadratic * 10 * index)
             )
-        )
+        ) ** 10
 
     @property
     def productivity_growth(self):
@@ -182,13 +162,7 @@ class Dice2010(ProductivityModel):
         ) * np.exp(-.002 * 10 * self._params._t0)
 
     def carbon_intensity(self, index, data):
-        intensity_decline = (
-            data.intensity_decline[index - 1] * (1 - (
-                self._params.intensity_decline_rate * np.exp(
-                    -self._params._intensity_quadratic * 10 * index
-                )
-            )) ** 10
-        )
+        intensity_decline = self.intensity_decline(data, index)
         data.intensity_decline[index] = intensity_decline
         return data.carbon_intensity[index - 1] * (1 - intensity_decline)
 
