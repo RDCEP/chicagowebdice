@@ -4,7 +4,7 @@ import re
 
 
 htmlp = HTMLParser.HTMLParser()
-YAML = file('parameters.yaml', 'r')
+YAML = file('parameters_2010.yaml', 'r')
 CONF_FILE = yaml.load(YAML)
 YAML.close()
 
