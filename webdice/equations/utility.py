@@ -63,5 +63,9 @@ class UtilityModel(object):
         return utility_discount * l * utility
 
 
-class DiceUtility(UtilityModel):
+class Dice2007(UtilityModel):
+    pass
+
+
+class Dice2010(UtilityModel):
     pass

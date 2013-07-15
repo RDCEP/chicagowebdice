@@ -81,7 +81,7 @@ class TemperatureModel(object):
         )
 
 
-class DiceTemperature(TemperatureModel):
+class Dice2007(TemperatureModel):
     pass
 
 
@@ -97,3 +97,7 @@ class LinearTemperature(TemperatureModel):
             temp_atmosphere,
             None
         )
+
+
+class Dice2010(TemperatureModel):
+    pass

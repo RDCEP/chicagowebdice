@@ -149,7 +149,7 @@ class DamagesModel(object):
         return abatement / gross_output * 100
 
 
-class DiceDamages(DamagesModel):
+class Dice2007(DamagesModel):
     """
     Standard DICE2007 damages function
     """
@@ -268,3 +268,7 @@ class ProductivityFraction(DamagesModel):
             self.damages_terms[1] * temp_atmosphere ** self.damages_terms[2]
         )
         return 1 - self._params.prod_frac * D
+
+
+class Dice2010(DamagesModel):
+    pass
