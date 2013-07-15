@@ -107,10 +107,17 @@ class DiceParams(object):
         self._scale1 = 194.  # Scaling coefficient in the objective function
         self._scale2 = 381800.  # Scaling coefficient in the objective function
 
-
         population_growth_rate = (
             (np.exp(self._population_growth * self._t0) - 1) /
             (np.exp(self._population_growth * self._t0))
+        )
+
+        intensity_decline = (
+            self._intensity_growth * np.exp(
+                -self.intensity_decline_rate * 10 *
+                self._t0 - self._intensity_quadratic * 10 *
+                (self._t0 ** 2)
+            )
         )
 
         # Variables for initiating pandas array
@@ -142,6 +149,7 @@ class DiceParams(object):
         data = pd.DataFrame({
             'miu': miu,
             'carbon_intensity': carbon_intensity,
+            'intensity_decline': intensity_decline,
             'productivity': productivity,
             'backstop_growth': backstop_growth,
             'capital': capital,
