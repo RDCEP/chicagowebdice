@@ -2,8 +2,9 @@ from dice import Dice
 
 
 class Dice2007(Dice):
-    def __init__(self):
+    def __init__(self, optimized=False):
         super(Dice2007, self).__init__()
+        self.params._optimize = optimized
 
 
 if __name__ == '__main__':
