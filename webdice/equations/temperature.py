@@ -97,6 +97,9 @@ class LinearTemperature(TemperatureModel):
 
 
 class Dice2010(TemperatureModel):
+    def __init__(self, params):
+        super(Dice2010, self).__init__(params)
+
     def temp_atmosphere(self, data, index):
         """
         T_AT, Temperature of atmosphere, degrees C
@@ -105,16 +108,15 @@ class Dice2010(TemperatureModel):
         -------
         float
         """
-        if index > 1:
-            return (
-                data.temp_atmosphere[index - 1] +
-                self._params.thermal_transfer[0] * (
-                    data.forcing[index] - (self._params._forcing_co2_doubling /
-                                           self._params.temp_co2_doubling) *
-                    data.temp_atmosphere[index - 1] -
-                    self._params.thermal_transfer[2] *
-                    (data.temp_atmosphere[index - 1] - data.temp_lower[index - 1])
-                )
+        if index == 1:
+            return .98
+        return (
+            data.temp_atmosphere[index - 1] +
+            self._params.thermal_transfer[0] * (
+                data.forcing[index] - (self._params._forcing_co2_doubling /
+                                       self._params.temp_co2_doubling) *
+                data.temp_atmosphere[index - 1] -
+                self._params.thermal_transfer[2] *
+                (data.temp_atmosphere[index - 1] - data.temp_lower[index - 1])
             )
-        else:
-            return data.temp_atmosphere[index]
+        )
