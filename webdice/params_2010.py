@@ -1,3 +1,4 @@
+from __future__ import division
 from params import DiceParams
 import numpy as np
 
@@ -20,7 +21,7 @@ class Dice2010Params(DiceParams):
         self.elasmu = 1.5
         ## Population and technology
         self._population_2005 = 6411.
-        self._population_growth = .485  # This is called Population adjustment in Dice2010
+        self._population_growth = .5  # This is called Population adjustment in Dice2010
         self._productivity = .0303220
         self._productivity_growth = .16
         self._output_2005 = 55.34
@@ -36,7 +37,8 @@ class Dice2010Params(DiceParams):
             _b21, _b22, _b23,
             _b31, _b32, _b33,
         ]).reshape(3, 3)
-        self._mass_atmosphere_2005 = 829.
+        # self._mass_atmosphere_2005 = (787 + 829) / 2
+        self._mass_atmosphere_2005 = 787.
         self._mass_upper_2005 = 1600.
         self._mass_lower_2005 = 10100.
 
@@ -44,8 +46,10 @@ class Dice2010Params(DiceParams):
         self._forcing_ghg_2000 = .083
         self._temp_atmosphere_2000 = .83
         self._temp_atmosphere_2010 = .98
+        self.thermal_transfer[0] = .208
+        self.thermal_transfer[2] = .310
 
-        self._damages_coefficient = .00204625800317896
+        # self._damages_coefficient = .00204625800317896
 
         ## Abatement cost
         self._backstop_2005 = 1.26
