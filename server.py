@@ -5,6 +5,7 @@ from flask import render_template, request, make_response
 from flask_beaker import BeakerSession
 from flask_restful import Api, reqparse
 from uwsgi_app import app
+from webdice.dice_2007 import Dice2007
 from webdice.dice_2010 import Dice2010
 from conf.web import get_measurements, paragraphs_html
 from conf.web import get_all_parameters, get_advanced_tabs, get_basic_tabs
