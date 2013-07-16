@@ -204,4 +204,16 @@ class Dice2007(EmissionsModel):
 
 
 class Dice2010(EmissionsModel):
-    pass
+    @property
+    def emissions_deforest(self):
+        """
+        E_land, Emissions from deforestation
+        ...
+        Returns
+        -------
+        array
+        """
+        return (
+            self._params._emissions_deforest_2005 *
+            .8 ** self._params._t0
+        )
