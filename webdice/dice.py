@@ -1,7 +1,7 @@
 from __future__ import division
 import numpy as np
 import pyipopt
-from params import DiceParams
+from params import DiceParams, Dice2010Params
 from equations.loop import Loop
 
 class Dice(object):
@@ -261,6 +261,20 @@ class Dice(object):
             p, ' '.join(map(str, list(getattr(self.data.vars, p))))
         ) for p in self.vars ]
         return '\n'.join(output)
+
+
+class Dice2010(Dice):
+    def __init__(self, optimize=False):
+        super(Dice2010, self).__init__()
+        self.params = Dice2010Params()
+        self.data = self.params._data
+        self.params._optimize = optimize
+
+
+class Dice2007(Dice):
+    def __init__(self, optimized=False):
+        super(Dice2007, self).__init__()
+        self.params._optimize = optimized
 
 
 if __name__ == '__main__':
