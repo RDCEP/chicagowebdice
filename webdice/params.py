@@ -69,7 +69,7 @@ class DiceParams(object):
         self._mass_atmosphere_2005 = 808.9
         self._mass_upper_2005 = 1255.
         self._mass_lower_2005 = 18365.
-        self._mass_preindustrial = 278. * 2.13
+        self._mass_preindustrial = 592.14  # 278. * 2.13
 
         ## Climate model
         self._forcing_ghg_2000 = -.06
@@ -107,23 +107,12 @@ class DiceParams(object):
         self._scale1 = 194.  # Scaling coefficient in the objective function
         self._scale2 = 381800.  # Scaling coefficient in the objective function
 
-        population_growth_rate = (
-            (np.exp(self._population_growth * self._t0) - 1) /
-            (np.exp(self._population_growth * self._t0))
-        )
-
-        intensity_decline = (
-            self._intensity_growth * np.exp(
-                -self.intensity_decline_rate * 10 *
-                self._t0 - self._intensity_quadratic * 10 *
-                (self._t0 ** 2)
-            )
-        )
-
         # Variables for initiating pandas array
         backstop_growth = np.zeros(self._tmax)
         carbon_intensity = np.empty(self._tmax)
         carbon_intensity[:] = self._intensity_2005
+        intensity_decline = np.zeros(self._tmax)
+        intensity_decline[:] = self.intensity_decline_rate
         productivity = np.empty(self._tmax)
         productivity[:] = self._productivity
         capital = np.empty(self._tmax)
