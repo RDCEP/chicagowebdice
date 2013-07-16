@@ -83,7 +83,7 @@ class CarbonModel(object):
             self._params._forcing_ghg_2000 + .1 * (
                 self._params._forcing_ghg_2100 - self._params._forcing_ghg_2000
             ) * np.arange(11),
-            self._params._forcing_ghg_2000 + (np.ones(49) * .36),
+            self._params._forcing_ghg_2100 * np.ones(49),
         ))
 
     def mass_atmosphere(self, emissions_total, mass_atmosphere, mass_upper):
@@ -134,9 +134,9 @@ class CarbonModel(object):
         """
         return (
             self._forcing_co2_doubling *
-            np.log(
+            (np.log(
                 data.mass_atmosphere[index] / self._mass_preindustrial
-            ) + self.forcing_ghg[index]
+            ) / np.log(2)) + self.forcing_ghg[index]
         )
 
     def get_model_values(self, index, data):
@@ -252,4 +252,18 @@ class LinearCarbon(CarbonModel):
 
 
 class Dice2010(CarbonModel):
-    pass
+    @property
+    def forcing_ghg(self):
+        """
+        F_EX, Exogenous forcing for other greenhouse gases
+        ...
+        Returns
+        -------
+        array
+        """
+        return np.concatenate((
+            self._params._forcing_ghg_2000 + .1 * (
+                self._params._forcing_ghg_2100 - self._params._forcing_ghg_2000
+            ) * np.arange(11),
+            self._params._forcing_ghg_2000 * np.ones(49),
+        ))
