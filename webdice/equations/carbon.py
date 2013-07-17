@@ -134,9 +134,8 @@ class CarbonModel(object):
         """
         return (
             self._forcing_co2_doubling *
-            (np.log(
-                data.mass_atmosphere[index] / self._mass_preindustrial
-            ) / np.log(2)) + self.forcing_ghg[index]
+            (np.log(data.mass_atmosphere[index] / self._mass_preindustrial) /
+             np.log(2)) + self.forcing_ghg[index]
         )
 
     def get_model_values(self, index, data):
@@ -265,5 +264,5 @@ class Dice2010(CarbonModel):
             self._params._forcing_ghg_2000 + .1 * (
                 self._params._forcing_ghg_2100 - self._params._forcing_ghg_2000
             ) * np.arange(11),
-            self._params._forcing_ghg_2000 * np.ones(49),
+            self._params._forcing_ghg_2100 * np.ones(49),
         ))
