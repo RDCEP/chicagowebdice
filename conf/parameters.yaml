@@ -271,7 +271,7 @@ advanced_tabs:
             disabled: false
             options:
               - name: DICE
-                machine_name: dice_carbon
+                machine_name: dice_2007
               - name: BEAM simplified
                 machine_name: beam_carbon
               - name: Linear (2°C / 1000 GtC)
@@ -281,7 +281,7 @@ advanced_tabs:
             description: Way that climate change harms enter the economy
             options:
               - name: DICE damages to output
-                machine_name: dice_damages
+                machine_name: dice_2007
               - name: Incomensurable environmental goods
                 machine_name: incomensurable_damages
               - name: Weitzman tipping point
