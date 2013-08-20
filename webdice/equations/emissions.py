@@ -199,6 +199,7 @@ class EmissionsModel(object):
             backstop * miu ** (self._params.abatement_exponent - 1) * 1000
         )
 
+
 class Dice2007(EmissionsModel):
     pass
 
