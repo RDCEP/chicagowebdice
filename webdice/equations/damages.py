@@ -25,27 +25,17 @@ class DamagesModel(object):
         -------
         array
         """
-        if not self._params._treaty:
+        if self._params._treaty:
+            p = [self._params.p2050, self._params.p2050, self._params.p2100,
+                self._params.p2150, self._params._pmax]
             return np.concatenate((
-                np.linspace(self._params._participation_2005,
-                            self._params._participation_2005, 1),
-                self._params._participation_2205 + (
-                    self._params._participation_2015 -
-                    self._params._participation_2205
-                ) * np.exp(
-                    -self._params._participation_decline * np.arange(23)
-                ),
-                np.linspace(self._params._participation_2205,
-                            self._params._participation_2205, 36),
+                (p[1] + (p[0] - p[1]) * np.exp(np.arange(5) * -.25)),
+                (p[2] + (p[1] - p[2]) * np.exp(np.arange(5) * -.25)),
+                (p[3] + (p[2] - p[3]) * np.exp(np.arange(5) * -.25)),
+                (p[4] + (p[3] - p[4]) * np.exp(np.arange(45) * -.25)),
             ))
-        p = [self._params.p2050, self._params.p2050, self._params.p2100,
-             self._params.p2150, self._params._pmax]
-        return np.concatenate((
-            (p[1] + (p[0] - p[1]) * np.exp(np.arange(5) * -.25)),
-            (p[2] + (p[1] - p[2]) * np.exp(np.arange(5) * -.25)),
-            (p[3] + (p[2] - p[3]) * np.exp(np.arange(5) * -.25)),
-            (p[4] + (p[3] - p[4]) * np.exp(np.arange(45) * -.25)),
-        ))
+        return np.ones(self._params._tmax)
+
 
     @property
     def damages_terms(self):
