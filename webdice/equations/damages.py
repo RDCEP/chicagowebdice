@@ -149,6 +149,7 @@ class Dice2007(DamagesModel):
 class ExponentialMap(DamagesModel):
     """
     DICE2007 Damages with exponential mapping to output
+    NB: This is currently unused.
     """
     def damages(self, gross_output, temp_atmosphere, abatement=None):
         return gross_output * (1 - np.exp(
