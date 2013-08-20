@@ -157,7 +157,7 @@ class ExponentialMap(DamagesModel):
         ))
 
 
-class AdditiveDamages(DamagesModel):
+class IncomensurableDamages(DamagesModel):
     """
     Weitzman additive damages function
     """
