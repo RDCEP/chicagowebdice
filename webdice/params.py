@@ -28,7 +28,7 @@ class DiceParams(object):
         self.prstp = .015
         self._treaty = False
         self._optimize = False
-        self._eps = 1e-8
+        self._eps = 1e-4
         self._carbon_tax = False
         self.e2050 = 1.
         self.e2100 = 1.
