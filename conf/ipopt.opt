@@ -1,10 +1,10 @@
 print_level 5
-tol 1e-2
-acceptable_tol 2e-02
-acceptable_iter 3
+tol 1e-4
+acceptable_tol 1e-3
+acceptable_iter 6
 obj_scaling_factor -1e-4
 constr_viol_tol 1e-3
-max_iter 30
+max_iter 10
 max_cpu_time 20
 start_with_resto no
 check_derivatives_for_naninf no
