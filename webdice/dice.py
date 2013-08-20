@@ -118,19 +118,6 @@ class Dice(object):
         D.utility[i], D.utility_discounted[i] = (
             self.eq.utility_model.get_model_values(i, D)
         )
-        if deriv:
-            if i == 1:
-                self.params._derivative.fprime[0] = (
-                    D.utility_discounted[i] - D.utility_discounted[0]
-                )
-            if i == 59:
-                self.params._derivative.fprime[i] = (
-                    D.utility_discounted[i] - D.utility_discounted[i-1]
-                )
-            if i > 1:
-                self.params._derivative.fprime[i-1] = (
-                    (D.utility_discounted[i] - D.utility_discounted[i-2]) / 2
-                )
         return D
 
     def loop(self, miu=None, deriv=False, scc=True):
@@ -148,12 +135,21 @@ class Dice(object):
         pd.DataFrame : self.data.vars
         """
         self.eq.set_models(self.params)
+        if deriv:
+            miu_deriv = miu
         if self.params._optimize and miu is None:
             self.data.vars.miu = self.get_ipopt_mu()
             self.data.vars.miu[0] = self.params._miu_2005
-
-        for i in range(self.params._tmax):
+        for i in xrange(self.params._tmax):
             self.step(i, self.data.vars, miu, deriv=deriv)
+            if deriv:
+                self.data.deriv = self.data.vars.copy()
+                miu_deriv[i] += self.eps
+                self.step(i, self.data.deriv, miu_deriv, deriv=deriv)
+                self.params._derivative.fprime[i] = (
+                    self.data.deriv.utility_discounted[i] -
+                    self.data.vars.utility_discounted[i]
+                ) / self.eps
         if scc:
             self.get_scc(miu)
         if self.params._optimize and miu is not None:
@@ -184,11 +180,11 @@ class Dice(object):
         shock : float, amount to 'shock' the emissions of the current period
         """
         x_range = 20
-        for i in range(x_range):
+        for i in xrange(x_range):
             time_horizon = 59
             future_indices = time_horizon - i
             self.data.scc = self.data.vars.copy()
-            for j in range(i, time_horizon):
+            for j in xrange(i, time_horizon):
                 shock = 0
                 if j == i:
                     shock = 1.0
@@ -225,8 +221,62 @@ class Dice(object):
         gl : array, lower bounds of constraints
         gu : array, upper bounds of constraints
         """
-        N = 20
-        x0 = np.linspace(.3, 1, N)
+        x0 = np.ones(self.params._tmax)
+        M = 0
+        nnzj = 0
+        nnzh = 0
+        xl = np.zeros(self.params._tmax)
+        xu = np.ones(self.params._tmax)
+        gl = np.zeros(M)
+        gu = np.ones(M) * 4.0
+        def eval_f(x):
+            return self.loop(x, scc=False)
+        def eval_grad_f(x):
+            return self.loop(x, deriv=True, scc=False)
+        def eval_g(x):
+            return np.zeros(M)
+        def eval_jac_g(x, flag):
+            if flag:
+                return [], []
+            else:
+                return np.empty(M)
+        pyipopt.set_loglevel(0)
+        r = pyipopt.create(
+            self.params._tmax, xl, xu, M, gl, gu, nnzj, nnzh, eval_f,
+            eval_grad_f, eval_g, eval_jac_g
+        )
+        # x, zl, zu, obj, status = r.solve(x0)
+        x = r.solve(x0)[0]
+        return x
+
+    def get_ipopt_mu2(self):
+        """
+        Calculate optimal miu
+        ...
+        Args
+        ----
+        None
+        ...
+        Returns
+        -------
+        array : optimal miu
+        ...
+        Internal Variables
+        ------------------
+        x0 : array, initial guess
+        M : integer, size of constraints
+        nnzj : integer, number of non-zero values in Jacobian
+        nnzh : integer, number of non-zero values in Hessian
+        xl : array, lower bounds of objective
+        xu : array, upper bounds of objective
+        gl : array, lower bounds of constraints
+        gu : array, upper bounds of constraints
+        """
+        N = 59
+        x0 = np.ones(N)
+        # x0 = np.linspace(0, 1, N)
+        # N = 30
+        # x0 = np.ones(N)
         M = 0
         nnzj = 0
         nnzh = 0
@@ -290,12 +340,63 @@ class Dice2010(Dice):
 
 
 class Dice2007(Dice):
-    def __init__(self, optimized=False):
+    def __init__(self, optimize=False):
         super(Dice2007, self).__init__()
-        self.params._optimize = optimized
+        self.params._optimize = optimize
+
+    def get_ipopt_mu(self):
+        """
+        Calculate optimal miu
+        ...
+        Args
+        ----
+        None
+        ...
+        Returns
+        -------
+        array : optimal miu
+        ...
+        Internal Variables
+        ------------------
+        x0 : array, initial guess
+        M : integer, size of constraints
+        nnzj : integer, number of non-zero values in Jacobian
+        nnzh : integer, number of non-zero values in Hessian
+        xl : array, lower bounds of objective
+        xu : array, upper bounds of objective
+        gl : array, lower bounds of constraints
+        gu : array, upper bounds of constraints
+        """
+        x0 = np.ones(self.params._tmax)
+        M = 0
+        nnzj = 0
+        nnzh = 0
+        xl = np.zeros(self.params._tmax)
+        xu = np.ones(self.params._tmax)
+        gl = np.zeros(M)
+        gu = np.ones(M) * 4.0
+        def eval_f(x):
+            return self.loop(x, scc=False)
+        def eval_grad_f(x):
+            return self.loop(x, deriv=True, scc=False)
+        def eval_g(x):
+            return np.zeros(M)
+        def eval_jac_g(x, flag):
+            if flag:
+                return [], []
+            else:
+                return np.empty(M)
+        pyipopt.set_loglevel(0)
+        r = pyipopt.create(
+            self.params._tmax, xl, xu, M, gl, gu, nnzj, nnzh, eval_f,
+            eval_grad_f, eval_g, eval_jac_g
+        )
+        # x, zl, zu, obj, status = r.solve(x0)
+        x = r.solve(x0)[0]
+        return x
 
 
 if __name__ == '__main__':
-    d = Dice2010()
-    d.params._optimize = True
+    d = Dice2010(optimize=True)
     d.loop()
+    print d.data.vars['miu']
