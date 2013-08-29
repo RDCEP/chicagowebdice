@@ -282,10 +282,8 @@ advanced_tabs:
             options:
               - name: DICE damages to output
                 machine_name: dice_2010
-              - name: Exponential mapping to output
-                machine_name: exponential_map
-              - name: Additive to output
-                machine_name: additive_damages
+              - name: Incomensurable environmental goods
+                machine_name: incomensurable_damages
               - name: Weitzman tipping point
                 machine_name: weitzman_tipping_point
               - name: Fraction of productivity

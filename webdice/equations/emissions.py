@@ -145,10 +145,8 @@ class EmissionsModel(object):
         if self._params._optimize:
             if miu is not None:
                 if deriv:
-                    data.miu = miu
-                    return data.miu[index] + self.eps
-                else:
-                    return miu[index]
+                    miu[index] += self.eps
+                return miu[index]
         else:
             if index > 0:
                 if data.carbon_emitted[index - 1] > self._params.fosslim:
@@ -198,6 +196,7 @@ class EmissionsModel(object):
         return (
             backstop * miu ** (self._params.abatement_exponent - 1) * 1000
         )
+
 
 class Dice2007(EmissionsModel):
     pass

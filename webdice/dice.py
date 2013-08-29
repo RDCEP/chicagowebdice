@@ -42,6 +42,7 @@ class Dice(object):
         self.eq = Loop(self.params)
         self.params._optimize = optimize
         self.eps = self.params._eps
+        self.dice_version = 2007
 
     @property
     def user_params(self):
@@ -68,7 +69,7 @@ class Dice(object):
         """
         return np.sum(self.data.vars.utility_discounted)
 
-    def step(self, i, D, miu=None, deriv=False, f0=0.0, emissions_shock=0.0):
+    def step(self, i, D, miu=None, deriv=False, emissions_shock=0.0):
         """
         Single step for calculating endogenous variables
         ...
@@ -101,7 +102,7 @@ class Dice(object):
             D.emissions_total[i], D.carbon_emitted[i],
             D.tax_rate[i]
         ) = self.eq.emissions_model.get_emissions_values(
-            i, D, deriv, miu, emissions_shock
+            i, D, miu=miu, emissions_shock=emissions_shock, deriv=deriv
         )
         D.mass_atmosphere[i], D.mass_upper[i], D.mass_lower[i] = (
             self.eq.carbon_model.get_model_values(i, D)
@@ -118,11 +119,6 @@ class Dice(object):
         D.utility[i], D.utility_discounted[i] = (
             self.eq.utility_model.get_model_values(i, D)
         )
-        if deriv:
-            self.params._derivative.fprime[i] = (
-                (D.utility_discounted[i] - f0) / self.eps
-            )
-            D.miu = self.data.vars.miu
         return D
 
     def loop(self, miu=None, deriv=False, scc=True):
@@ -144,12 +140,16 @@ class Dice(object):
             self.data.vars.miu = self.get_ipopt_mu()
             self.data.vars.miu[0] = self.params._miu_2005
         for i in range(self.params._tmax):
-            self.step(i, self.data.vars, miu)
-            if self.params._optimize and deriv:
-                f0 = np.atleast_1d(self.data.vars.utility_discounted[i])
-                self.step(
-                    i, self.data.deriv, miu=miu, deriv=True, f0=f0
-                )
+            if not deriv:
+                self.step(i, self.data.vars, miu)
+            else:
+                self.data.deriv = self.data.vars.copy()
+                for j in xrange(i, self.params._tmax):
+                    self.step(j, self.data.deriv, miu, deriv=i==j)
+                self.params._derivative.fprime[i] = (
+                    np.sum(self.data.deriv.utility_discounted) -
+                    np.sum(self.data.vars.utility_discounted)
+                ) / self.eps
         if scc:
             self.get_scc(miu)
         if self.params._optimize and miu is not None:
@@ -180,11 +180,11 @@ class Dice(object):
         shock : float, amount to 'shock' the emissions of the current period
         """
         x_range = 20
-        for i in range(x_range):
+        for i in xrange(x_range):
             time_horizon = 59
             future_indices = time_horizon - i
             self.data.scc = self.data.vars.copy()
-            for j in range(i, time_horizon):
+            for j in xrange(i, time_horizon):
                 shock = 0
                 if j == i:
                     shock = 1.0
@@ -231,7 +231,8 @@ class Dice(object):
         gu = np.ones(M) * 4.0
         def eval_f(x):
             return self.loop(x, scc=False)
-        def eval_grad_f(x):
+        def eval_grad_f(x, *args, **kwargs):
+            # print('0:', x[0], '35:', x[35])
             return self.loop(x, deriv=True, scc=False)
         def eval_g(x):
             return np.zeros(M)
@@ -240,11 +241,13 @@ class Dice(object):
                 return [], []
             else:
                 return np.empty(M)
+        pyipopt.set_loglevel(0)
         r = pyipopt.create(
             self.params._tmax, xl, xu, M, gl, gu, nnzj, nnzh, eval_f,
             eval_grad_f, eval_g, eval_jac_g
         )
-        x, zl, zu, obj, status = r.solve(x0)
+        # x, zl, zu, obj, status = r.solve(x0)
+        x = r.solve(x0)[0]
         return x
 
     def format_output(self):
@@ -269,12 +272,14 @@ class Dice2010(Dice):
         self.params = Dice2010Params()
         self.data = self.params._data
         self.params._optimize = optimize
+        self.dice_version = 2010
 
 
 class Dice2007(Dice):
-    def __init__(self, optimized=False):
+    def __init__(self, optimize=False):
         super(Dice2007, self).__init__()
-        self.params._optimize = optimized
+        self.params._optimize = optimize
+        self.dice_version = 2007
 
 
 if __name__ == '__main__':

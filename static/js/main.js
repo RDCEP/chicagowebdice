@@ -927,7 +927,7 @@
         $('html, body').animate({scrollTop:$(document).height()}, 'slow');
         $.ajax({ //Now we are going to actually execute the run
           type : 'POST',
-          url : '/run',
+          url : '/run/' + Options.dice_version,
           data : data,
           success : function(data, textStatus, xhr) {
             var runObject = addRunFromCSV("Run #" + (getNumberOfRuns() + 1),
