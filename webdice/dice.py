@@ -42,6 +42,7 @@ class Dice(object):
         self.eq = Loop(self.params)
         self.params._optimize = optimize
         self.eps = self.params._eps
+        self.dice_version = 2007
 
     @property
     def user_params(self):
@@ -68,7 +69,7 @@ class Dice(object):
         """
         return np.sum(self.data.vars.utility_discounted)
 
-    def step(self, i, D, miu=None, deriv=False, f0=0.0, emissions_shock=0.0):
+    def step(self, i, D, miu=None, deriv=False, emissions_shock=0.0):
         """
         Single step for calculating endogenous variables
         ...
@@ -101,7 +102,7 @@ class Dice(object):
             D.emissions_total[i], D.carbon_emitted[i],
             D.tax_rate[i]
         ) = self.eq.emissions_model.get_emissions_values(
-            i, D, miu=miu, emissions_shock=emissions_shock,
+            i, D, miu=miu, emissions_shock=emissions_shock, deriv=deriv
         )
         D.mass_atmosphere[i], D.mass_upper[i], D.mass_lower[i] = (
             self.eq.carbon_model.get_model_values(i, D)
@@ -135,20 +136,19 @@ class Dice(object):
         pd.DataFrame : self.data.vars
         """
         self.eq.set_models(self.params)
-        if deriv:
-            miu_deriv = miu
         if self.params._optimize and miu is None:
             self.data.vars.miu = self.get_ipopt_mu()
             self.data.vars.miu[0] = self.params._miu_2005
-        for i in xrange(self.params._tmax):
-            self.step(i, self.data.vars, miu, deriv=deriv)
-            if deriv:
+        for i in range(self.params._tmax):
+            if not deriv:
+                self.step(i, self.data.vars, miu)
+            else:
                 self.data.deriv = self.data.vars.copy()
-                miu_deriv[i] += self.eps
-                self.step(i, self.data.deriv, miu_deriv, deriv=deriv)
+                for j in xrange(i, self.params._tmax):
+                    self.step(j, self.data.deriv, miu, deriv=i==j)
                 self.params._derivative.fprime[i] = (
-                    self.data.deriv.utility_discounted[i] -
-                    self.data.vars.utility_discounted[i]
+                    np.sum(self.data.deriv.utility_discounted) -
+                    np.sum(self.data.vars.utility_discounted)
                 ) / self.eps
         if scc:
             self.get_scc(miu)
@@ -231,7 +231,8 @@ class Dice(object):
         gu = np.ones(M) * 4.0
         def eval_f(x):
             return self.loop(x, scc=False)
-        def eval_grad_f(x):
+        def eval_grad_f(x, *args, **kwargs):
+            # print('0:', x[0], '35:', x[35])
             return self.loop(x, deriv=True, scc=False)
         def eval_g(x):
             return np.zeros(M)
@@ -248,72 +249,6 @@ class Dice(object):
         # x, zl, zu, obj, status = r.solve(x0)
         x = r.solve(x0)[0]
         return x
-
-    def get_ipopt_mu2(self):
-        """
-        Calculate optimal miu
-        ...
-        Args
-        ----
-        None
-        ...
-        Returns
-        -------
-        array : optimal miu
-        ...
-        Internal Variables
-        ------------------
-        x0 : array, initial guess
-        M : integer, size of constraints
-        nnzj : integer, number of non-zero values in Jacobian
-        nnzh : integer, number of non-zero values in Hessian
-        xl : array, lower bounds of objective
-        xu : array, upper bounds of objective
-        gl : array, lower bounds of constraints
-        gu : array, upper bounds of constraints
-        """
-        N = 59
-        x0 = np.ones(N)
-        # x0 = np.linspace(0, 1, N)
-        # N = 30
-        # x0 = np.ones(N)
-        M = 0
-        nnzj = 0
-        nnzh = 0
-        xl = np.zeros(N)
-        xu = np.ones(N)
-        gl = np.zeros(M)
-        gu = np.ones(M) * 4.0
-        def build_miu(x):
-            return np.concatenate((
-                np.array([self.params._miu_2005]),
-                x,
-                np.ones(self.params._tmax - (N + 1))
-            ))
-
-        def eval_f(x):
-            return self.loop(build_miu(x), scc=False)
-
-        def eval_grad_f(x):
-            return self.loop(build_miu(x), scc=False, deriv=True)
-
-        def eval_g(x):
-            return np.zeros(M)
-
-        def eval_jac_g(x, flag):
-            rows = np.array([], dtype=int)
-            cols = np.array([], dtype=int)
-            if flag:
-                return (rows, cols)
-            else:
-                return np.empty(M)
-        pyipopt.set_loglevel(0)
-        r = pyipopt.create(
-           N, xl, xu, M, gl, gu, nnzj, nnzh, eval_f,
-           eval_grad_f, eval_g, eval_jac_g
-        )
-        x = r.solve(x0)[0]
-        return build_miu(x)
 
     def format_output(self):
         """
@@ -337,66 +272,15 @@ class Dice2010(Dice):
         self.params = Dice2010Params()
         self.data = self.params._data
         self.params._optimize = optimize
+        self.dice_version = 2010
 
 
 class Dice2007(Dice):
     def __init__(self, optimize=False):
         super(Dice2007, self).__init__()
         self.params._optimize = optimize
-
-    def get_ipopt_mu(self):
-        """
-        Calculate optimal miu
-        ...
-        Args
-        ----
-        None
-        ...
-        Returns
-        -------
-        array : optimal miu
-        ...
-        Internal Variables
-        ------------------
-        x0 : array, initial guess
-        M : integer, size of constraints
-        nnzj : integer, number of non-zero values in Jacobian
-        nnzh : integer, number of non-zero values in Hessian
-        xl : array, lower bounds of objective
-        xu : array, upper bounds of objective
-        gl : array, lower bounds of constraints
-        gu : array, upper bounds of constraints
-        """
-        x0 = np.ones(self.params._tmax)
-        M = 0
-        nnzj = 0
-        nnzh = 0
-        xl = np.zeros(self.params._tmax)
-        xu = np.ones(self.params._tmax)
-        gl = np.zeros(M)
-        gu = np.ones(M) * 4.0
-        def eval_f(x):
-            return self.loop(x, scc=False)
-        def eval_grad_f(x):
-            return self.loop(x, deriv=True, scc=False)
-        def eval_g(x):
-            return np.zeros(M)
-        def eval_jac_g(x, flag):
-            if flag:
-                return [], []
-            else:
-                return np.empty(M)
-        pyipopt.set_loglevel(0)
-        r = pyipopt.create(
-            self.params._tmax, xl, xu, M, gl, gu, nnzj, nnzh, eval_f,
-            eval_grad_f, eval_g, eval_jac_g
-        )
-        # x, zl, zu, obj, status = r.solve(x0)
-        x = r.solve(x0)[0]
-        return x
+        self.dice_version = 2007
 
 
 if __name__ == '__main__':
-    d = Dice2010(optimize=True)
-    d.loop()
-    print d.data.vars['miu']
+    pass
