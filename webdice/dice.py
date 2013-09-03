@@ -144,7 +144,7 @@ class Dice(object):
         if deriv:
             self.params.deriv_work.values[:,:] = self.data.vars.values[:]
             D = self.params.deriv_work.transpose(2,0,1)
-        for i in range(self.params._tmax):
+        for i in range(np.atleast_1d(miu).size if np.any(miu) else self.params._tmax):
             if deriv:
                 if i < self.opt_vars:
                     D.miu[i][i] += self.eps
@@ -237,9 +237,9 @@ class Dice(object):
                 np.ones(self.params._tmax - self.opt_vars),
             ))
         def eval_f(x):
-            return self.loop(build_x(x), scc=False)
+            return self.loop(x, scc=False)
         def eval_grad_f(x, *args, **kwargs):
-            return self.loop(build_x(x), deriv=True, scc=False)
+            return self.loop(x, deriv=True, scc=False)
         def eval_g(x):
             return np.zeros(M)
         def eval_jac_g(x, flag):
