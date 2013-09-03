@@ -174,28 +174,35 @@ class DiceParams(object):
             'deriv': data,
             'scc': data,
         })
+        d_V = {}
+        for i in xrange(self._tmax):
+            d_V[i] = data
+        self.deriv_work = pd.Panel(d_V)
         self._derivative = pd.DataFrame({
             'fprime': np.empty(self._tmax),
         })
-        self._hessian = pd.Series(np.empty(self._tmax))
+        # self._hessian = pd.Series(np.empty(self._tmax))
 
 
 class Dice2010Params(DiceParams):
     def __init__(self):
         super(Dice2010Params, self).__init__(2010)
         self.temp_co2_doubling = 3.2
-        self.damages_exponent = 2.
+        self.damages_exponent = 2.  # TODO: see equations
         self.productivity_decline = .009  # TODO: Add second parameter?
         self.intensity_decline_rate = .00646
         self.popasym = 8700.
         self.elasmu = 1.5
+        ## Population and technology
         self._population_2005 = 6411.
         self._population_growth = .5  # This is called Population adjustment in Dice2010
         self._productivity = .0303220
         self._productivity_growth = .16
         self._output_2005 = 55.34
+        ## Emissions
         self._intensity_2005 = .14452
         self._intensity_growth = .158
+        ## Carbon Cycle
         _b11, _b12, _b13 = .88, .12, 0
         _b21, _b22, _b23 = .04704, .94796, .005
         _b31, _b32, _b33 = 0, .00075, .99925
@@ -204,14 +211,21 @@ class Dice2010Params(DiceParams):
             _b21, _b22, _b23,
             _b31, _b32, _b33,
         ]).reshape(3, 3)
+        # self._mass_atmosphere_2005 = (787 + 829) / 2
+        self._mass_atmosphere_2005 = 787.
         self._mass_upper_2005 = 1600.
         self._mass_lower_2005 = 10100.
+
+        ## Climate model
         self._forcing_ghg_2000 = .83
         self._temp_atmosphere_2000 = .83
         self._temp_atmosphere_2010 = .98
         self.thermal_transfer[0] = .208
         self.thermal_transfer[2] = .310
+
         # self._damages_coefficient = .00204625800317896
+
+        ## Abatement cost
         self._backstop_2005 = 1.26
 
         self._data.vars.intensity_decline[0] = .158

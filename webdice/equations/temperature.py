@@ -36,7 +36,9 @@ class TemperatureModel(object):
 
     def get_model_values(self, index, data):
         if index == 0:
-            return self.initial_temps
+            return (data.temp_atmosphere.ix[:][index] / data.temp_atmosphere.ix[:][index] * self.initial_temps[0],
+                data.temp_atmosphere.ix[:][index] / data.temp_atmosphere.ix[:][index] * self.initial_temps[1])
+            # return self.initial_temps
         i = index - 1
         return (
             self.temp_atmosphere(data, index),
@@ -85,7 +87,9 @@ class Dice2007(TemperatureModel):
 class LinearTemperature(TemperatureModel):
     def get_model_values(self, index, data):
         if index == 0:
-            return self.initial_temps[0], None
+            return (data.temp_atmosphere.ix[:][index] / data.temp_atmosphere.ix[:][index] * self.initial_temps[0],
+                None)
+            # return self.initial_temps[0], None
         temp_atmosphere = (
             self.initial_temps[0] +
             data.carbon_emitted[index - 1] * .002
@@ -97,6 +101,9 @@ class LinearTemperature(TemperatureModel):
 
 
 class Dice2010(TemperatureModel):
+    def __init__(self, params):
+        super(Dice2010, self).__init__(params)
+
     def temp_atmosphere(self, data, index):
         """
         T_AT, Temperature of atmosphere, degrees C

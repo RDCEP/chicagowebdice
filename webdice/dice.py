@@ -43,6 +43,7 @@ class Dice(object):
         self.params._optimize = optimize
         self.eps = self.params._eps
         self.dice_version = 2007
+        self.opt_vars = 30
 
     @property
     def user_params(self):
@@ -135,26 +136,27 @@ class Dice(object):
         -------
         pd.DataFrame : self.data.vars
         """
+        D = self.data.vars
         self.eq.set_models(self.params)
         if self.params._optimize and miu is None:
             self.data.vars.miu = self.get_ipopt_mu()
             self.data.vars.miu[0] = self.params._miu_2005
+        if deriv:
+            self.params.deriv_work.values[:,:] = self.data.vars.values[:]
+            D = self.params.deriv_work.transpose(2,0,1)
         for i in range(self.params._tmax):
-            if not deriv:
-                self.step(i, self.data.vars, miu)
-            else:
-                self.data.deriv = self.data.vars.copy()
-                for j in xrange(i, self.params._tmax):
-                    self.step(j, self.data.deriv, miu, deriv=i==j)
-                self.params._derivative.fprime[i] = (
-                    np.sum(self.data.deriv.utility_discounted) -
-                    np.sum(self.data.vars.utility_discounted)
-                ) / self.eps
+            if deriv:
+                if i < self.opt_vars:
+                    D.miu[i][i] += self.eps
+                miu = D.miu[i]
+            self.step(i, D, miu, deriv=deriv)
         if scc:
             self.get_scc(miu)
         if self.params._optimize and miu is not None:
             if deriv:
-                return self.params._derivative.fprime.transpose()
+                return (
+                    D.utility_discounted.sum(axis=1).values -
+                    self.data.vars.utility_discounted.sum()) / self.eps
             else:
                 return self.welfare
         return self.data.vars
@@ -221,7 +223,7 @@ class Dice(object):
         gl : array, lower bounds of constraints
         gu : array, upper bounds of constraints
         """
-        x0 = np.ones(self.params._tmax)
+        x0 = np.linspace(0, 1, self.opt_vars)
         M = 0
         nnzj = 0
         nnzh = 0
@@ -229,11 +231,15 @@ class Dice(object):
         xu = np.ones(self.params._tmax)
         gl = np.zeros(M)
         gu = np.ones(M) * 4.0
+        def build_x(x):
+            return np.concatenate((
+                x,
+                np.ones(self.params._tmax - self.opt_vars),
+            ))
         def eval_f(x):
-            return self.loop(x, scc=False)
+            return self.loop(build_x(x), scc=False)
         def eval_grad_f(x, *args, **kwargs):
-            # print('0:', x[0], '35:', x[35])
-            return self.loop(x, deriv=True, scc=False)
+            return self.loop(build_x(x), deriv=True, scc=False)
         def eval_g(x):
             return np.zeros(M)
         def eval_jac_g(x, flag):
@@ -243,12 +249,12 @@ class Dice(object):
                 return np.empty(M)
         pyipopt.set_loglevel(0)
         r = pyipopt.create(
-            self.params._tmax, xl, xu, M, gl, gu, nnzj, nnzh, eval_f,
+            self.opt_vars, xl, xu, M, gl, gu, nnzj, nnzh, eval_f,
             eval_grad_f, eval_g, eval_jac_g
         )
         # x, zl, zu, obj, status = r.solve(x0)
         x = r.solve(x0)[0]
-        return x
+        return build_x(x)
 
     def format_output(self):
         """
@@ -283,4 +289,34 @@ class Dice2007(Dice):
 
 
 if __name__ == '__main__':
-    pass
+    # d = Dice2007()
+    # d.loop()
+    # W = d.welfare
+    # d = Dice2007(optimize=True)
+    # d.loop()
+    # print(d.welfare, d.welfare - W)
+    d = Dice2010()
+    d.params.carbon_model = 'beam_carbon'
+    d.loop()
+    W = d.welfare
+    print(W)
+    d = Dice2010(optimize=True)
+    d.params.carbon_model = 'beam_carbon'
+    d.loop()
+    print(d.welfare, d.welfare - W)
+    # print(d.data.vars.miu)
+
+    # import cProfile
+    # d = Dice2007(optimize=True)
+    # cProfile.run('d.loop()')
+
+    # d.params.deriv_work.values[:,:] = d.data.vars.values[:]
+    # a = d.params.deriv_work.transpose(2,0,1)
+    # b = d.data.vars
+    # i = ':,0'
+    # print(a.temp_lower[1])
+    # print(b.temp_lower[1])
+    # a.temp_lower[1] = a.temp_lower[1] + a.temp_atmosphere[1]
+    # print(a.temp_lower)
+    # a.miu[4][4] = 5.
+    # print(a.miu[4])

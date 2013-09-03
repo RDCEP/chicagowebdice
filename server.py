@@ -44,8 +44,8 @@ def do_session(request, year=None):
             dice = Dice2010()
         else:
             dice = Dice2007()
+        s['dice'] = dice
     if year is not None and s['dice'].dice_version != year:
-        print('NOT IN SESSION')
         if year == 2007:
             dice = Dice2007()
         elif year == 2010:

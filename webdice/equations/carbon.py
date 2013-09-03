@@ -154,7 +154,10 @@ class CarbonModel(object):
             M_AT, M_UP, M_LO at t
         """
         if index == 0:
-            return self.initial_carbon
+            return (data.mass_atmosphere.ix[:][index] / data.mass_atmosphere.ix[:][index] * self.initial_carbon[0],
+                data.mass_upper.ix[:][index] / data.mass_upper.ix[:][index] * self.initial_carbon[1],
+                data.mass_lower.ix[:][index] / data.mass_lower.ix[:][index] * self.initial_carbon[2])
+            # return self.initial_carbon
         i = index - 1
         return (
             self.mass_atmosphere(data.emissions_total[i],
@@ -186,6 +189,17 @@ class BeamCarbon(CarbonModel):
         # self.initial_carbon = [808.9, 772.4, 38620.5]  # from BEAM paper
         # self.initial_carbon = [808.9, 571.5, 38620.5]  # M_UP at H = 10**-8.1
         self.initial_carbon = [808.9, 585, 38620.5]  # Nate's guess
+        self._carbon_matrix_skel = np.array([
+            -.2,
+            .2,
+            0,
+            0, #_b * b_ones
+            0, # (-_b - .05) * b_ones,
+            .05,
+            0,
+            .001,
+            -.001,
+        ]).reshape((3, 3, 1))
 
     def get_h(self, mass_upper):
         """
@@ -203,6 +217,44 @@ class BeamCarbon(CarbonModel):
             6.25e+10 * mass_upper ** 2 - 7.68281e+13 * mass_upper + 2.36815e+16
         ) - 5.0e-7
 
+    def mass_atmosphere(self, emissions_total, mass_atmosphere, mass_upper):
+        """
+        M_AT, Carbon concentration in atmosphere, GtC
+        ...
+        Returns
+        -------
+        float
+        """
+        return (
+            self.carbon_matrix[0][0] * mass_atmosphere + self.carbon_matrix[1][0] *
+            mass_upper + (10 * emissions_total)
+        )
+
+    def mass_upper(self, mass_atmosphere, mass_upper, mass_lower):
+        """
+        M_UP, Carbon concentration in shallow oceans, GtC
+        ...
+        Returns
+        -------
+        float
+        """
+        return (
+            self.carbon_matrix[0][1] * mass_atmosphere + self.carbon_matrix[1][1] *
+            mass_upper + (self.carbon_matrix[2][1] * mass_lower)
+        )
+
+    def mass_lower(self, mass_upper, mass_lower):
+        """
+        M_LO, Carbon concentration in lower oceans, GtC
+        ...
+        Returns
+        -------
+        float
+        """
+        return (
+            self.carbon_matrix[1][2] * mass_upper + self.carbon_matrix[2][2] * mass_lower
+        )
+
     def get_model_values(self, index, data):
         """
         Set BEAM transfer matrix, and return values for M_AT, M_UP, M_LO
@@ -218,7 +270,10 @@ class BeamCarbon(CarbonModel):
             M_AT, M_UP, M_LO at t
         """
         if index == 0:
-            return self.initial_carbon
+            return (data.mass_atmosphere.ix[:][index] / data.mass_atmosphere.ix[:][index] * self.initial_carbon[0],
+                data.mass_upper.ix[:][index] / data.mass_upper.ix[:][index] * self.initial_carbon[1],
+                data.mass_lower.ix[:][index] / data.mass_lower.ix[:][index] * self.initial_carbon[2])
+            # return self.initial_carbon
         i = index - 1
         _ma, _mu, _ml = (
             data.mass_atmosphere[i], data.mass_upper[i], data.mass_lower[i]
@@ -226,15 +281,14 @@ class BeamCarbon(CarbonModel):
         for x in range(self.N):
             _h = self.get_h(_mu)
             _b = (28.944 * _h ** 2) / (_h ** 2 + _h * 1e-6 + 7.53e-16)
-            self.carbon_matrix = np.array([
-                -.2, .2, 0,
-                _b, -_b - .05, .05,
-                0, .001, -.001,
-            ]).reshape(3, 3)
+            self.carbon_matrix = np.tile(self._carbon_matrix_skel, _b.size)
+            self.carbon_matrix[1][0] = _b
+            self.carbon_matrix[1][1] = -_b - .05
             _ma_incr = self.mass_atmosphere(
                 data.emissions_total[i], _ma, _mu) / self.N
             _mu_incr = self.mass_upper(_ma, _mu, _ml) / self.N
             _ml_incr = self.mass_lower(_mu, _ml) / self.N
+
             _ma += _ma_incr
             _mu += _mu_incr
             _ml += _ml_incr
@@ -265,5 +319,5 @@ class Dice2010(CarbonModel):
             self._params._forcing_ghg_2000 + .1 * (
                 self._params._forcing_ghg_2100 - self._params._forcing_ghg_2000
             ) * np.arange(11),
-            self._params._forcing_ghg_2000 * np.ones(49),
+            self._params._forcing_ghg_2000 * (np.ones(49) * .36),
         ))

@@ -1,5 +1,6 @@
 from __future__ import division
 import numpy as np
+import pandas as pd
 
 
 class EmissionsModel(object):
@@ -79,7 +80,8 @@ class EmissionsModel(object):
 
     def get_emissions_values(self, index, data, deriv=False, miu=None,
                              emissions_shock=0):
-        miu = min(self.get_miu(index, data, deriv=deriv, miu=miu), 1.0)
+        # miu = min(self.get_miu(index, data, deriv=deriv, miu=miu), 1.0)
+        miu = self.get_miu(index, data, deriv=deriv, miu=miu)
         emissions_ind = self.emissions_ind(
             data.carbon_intensity[index], miu, data.gross_output[index]
         )
@@ -87,7 +89,7 @@ class EmissionsModel(object):
             emissions_ind, self.emissions_deforest[index]
         ) + emissions_shock
         carbon_emitted = self.carbon_emitted(emissions_total, index, data)
-        if carbon_emitted > self._params.fosslim:
+        if np.max(carbon_emitted) > self._params.fosslim:
             emissions_total = 0.0
             carbon_emitted = self._params.fosslim
         tax_rate = self.tax_rate(miu, data.backstop[index])
@@ -145,30 +147,34 @@ class EmissionsModel(object):
         if self._params._optimize:
             if miu is not None:
                 if deriv:
-                    miu[index] += self.eps
+                    return pd.DataFrame({
+                        'miu': miu,
+                        'ones': np.ones(self._params._tmax),
+                    }).min(axis=1)
                 return miu[index]
         else:
             if index > 0:
                 if data.carbon_emitted[index - 1] > self._params.fosslim:
                     return 1.0
                 if self._params._treaty:
-                    return self.miu(
+                    return min(self.miu(
                         data.emissions_ind[index - 1],
                         self.emissions_cap[index - 1],
                         data.emissions_ind[0],
                         data.carbon_intensity[index], data.gross_output[index]
-                    )
+                    ), 1.0)
                 elif self._params._carbon_tax:
-                    return (
+                    return min(
                         (self.user_tax_rate[index] / (
                             data.backstop[index] * 1000)) ** (
-                            1 / (self._params.abatement_exponent - 1))
+                            1 / (self._params.abatement_exponent - 1)),
+                        1.0
                     )
                 else:
                     return 0
             else:
                 return self._params._miu_2005
-        return data.miu[index]
+        return min(data.miu[index], 1.0)
 
     def miu(self, emissions_ind, emissions_cap, _e2005, intensity,
             gross_output):
