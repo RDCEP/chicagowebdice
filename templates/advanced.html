@@ -9,7 +9,12 @@
   </script>
   <script type="text/javascript" src="/static/js/main.js?{{ now }}"></script>
 {%- endblock %}
-{% block mainlink %}<div id="back-to-rdcep"><a href="/basic">Switch to Basic</a></div>{% endblock %}
+{% block mainlink %}<div id="back-to-rdcep">Switch to:
+  <a href="/basic">Basic</a>
+  {%- for v in other_versions -%}
+  <a href="/advanced/{{ v }}">Advanced {{ v }}</a>
+  {%- endfor -%}
+  </div>{% endblock %}
 {% block sidebar -%}
   <form id="submission" method="post" action="/">
     <div id="parameters" class="has-tabs">

@@ -81,7 +81,7 @@ def advanced(year):
 def basic():
     s, parser = do_session(request, 2007)
     tabs = parser.get_basic_tabs()
-    return page(tabs, parser, 2007, 'basic')
+    return page(tabs, parser, None, 'basic')
 
 def page(tabs, parser, year, tpl='index'):
     """
@@ -116,6 +116,7 @@ def page(tabs, parser, year, tpl='index'):
         all_parameters=all_parameters,
         now=now,
         dice_version=year,
+        other_versions=[x for x in [2007, 2010] if x != year],
     )
 
 @app.route('/run/<int:year>', methods=['POST', ])

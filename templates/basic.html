@@ -10,7 +10,11 @@
   <script type="text/javascript" src="/static/js/basic_tab_2010.js"></script>
   <script type="text/javascript" src="/static/js/main.js?{{ now }}"></script>
 {% endblock %}
-{% block mainlink %}<div id="back-to-rdcep"><a href="/advanced">Switch to Advanced</a></div>{% endblock %}
+{% block mainlink %}<div id="back-to-rdcep">Switch to:
+  {%- for v in other_versions -%}
+  <a href="/advanced/{{ v }}">Advanced {{ v }}</a>
+  {%- endfor -%}
+  </div>{% endblock %}
 {% block sidebar %}
   <form id="submission" method="post" class="basic" action="/">
     <div id="parameters" class="has-tabs">

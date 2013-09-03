@@ -23,7 +23,7 @@ h1 span a, h1 a {color:#fff;text-decoration:none;}
     /*width:19em;*/width:25em;}
 #back-to-rdcep{position:absolute;height:2.5em;top:7em;left:0;right:0;background-color:#596D26;}
 #back-to-rdcep{border-top:1px solid #697E33;border-bottom:1px solid #697E33;margin-top:-2px;padding-left:18.5em;}
-#back-to-rdcep a{color:#eee;font:0.9em/2.8em Helvetica,sans-serif;text-decoration:none;}
+#back-to-rdcep a{color:#eee;font:0.9em/2.8em Helvetica,sans-serif;text-decoration:none;margin-left:1em; }
 #back-to-rdcep a:hover{color:white;}
 #submission{position:absolute;top:0;left:0;right:0;bottom:0px;}
 #parameters{position:absolute;top:0;left:0;right:0;bottom:1.8em;overflow:auto;
