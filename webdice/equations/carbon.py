@@ -190,15 +190,9 @@ class BeamCarbon(CarbonModel):
         # self.initial_carbon = [808.9, 571.5, 38620.5]  # M_UP at H = 10**-8.1
         self.initial_carbon = [808.9, 585, 38620.5]  # Nate's guess
         self._carbon_matrix_skel = np.array([
-            -.2,
-            .2,
-            0,
-            0, #_b * b_ones
-            0, # (-_b - .05) * b_ones,
-            .05,
-            0,
-            .001,
-            -.001,
+            -.2, .2, 0,
+            0, 0, .05,  # _b * b_ones, (-_b - .05) * b_ones, .05
+            0, .001, -.001,
         ]).reshape((3, 3, 1))
 
     def get_h(self, mass_upper):
@@ -269,29 +263,32 @@ class BeamCarbon(CarbonModel):
         tuple
             M_AT, M_UP, M_LO at t
         """
+        # if opt: self.N = 2
+        _dims = 61 if data.ndim > 2 else 1
         if index == 0:
-            return (data.mass_atmosphere.ix[:][index] / data.mass_atmosphere.ix[:][index] * self.initial_carbon[0],
-                data.mass_upper.ix[:][index] / data.mass_upper.ix[:][index] * self.initial_carbon[1],
-                data.mass_lower.ix[:][index] / data.mass_lower.ix[:][index] * self.initial_carbon[2])
-            # return self.initial_carbon
+            return (
+                self.initial_carbon[0] * np.ones(_dims),
+                self.initial_carbon[1] * np.ones(_dims),
+                self.initial_carbon[2] * np.ones(_dims),
+            )
+        self.carbon_matrix = np.tile(self._carbon_matrix_skel, _dims)
         i = index - 1
         _ma, _mu, _ml = (
             data.mass_atmosphere[i], data.mass_upper[i], data.mass_lower[i]
         )
-        for x in range(self.N):
-            _h = self.get_h(_mu)
+        for x in xrange(self.N):
+            _h = (
+                8.11054e-10 * _mu + 3.24421e-15 * np.sqrt(
+                    6.25e+10 * _mu ** 2 - 7.68281e+13 * _mu + 2.36815e+16
+                ) - 5.0e-7
+            )
             _b = (28.944 * _h ** 2) / (_h ** 2 + _h * 1e-6 + 7.53e-16)
-            self.carbon_matrix = np.tile(self._carbon_matrix_skel, _b.size)
             self.carbon_matrix[1][0] = _b
             self.carbon_matrix[1][1] = -_b - .05
-            _ma_incr = self.mass_atmosphere(
+            _ma += self.mass_atmosphere(
                 data.emissions_total[i], _ma, _mu) / self.N
-            _mu_incr = self.mass_upper(_ma, _mu, _ml) / self.N
-            _ml_incr = self.mass_lower(_mu, _ml) / self.N
-
-            _ma += _ma_incr
-            _mu += _mu_incr
-            _ml += _ml_incr
+            _mu += self.mass_upper(_ma, _mu, _ml) / self.N
+            _ml += self.mass_lower(_mu, _ml) / self.N
         return _ma, _mu, _ml
 
 

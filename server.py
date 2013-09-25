@@ -152,17 +152,17 @@ def graphs(year):
         this_dice.params.temperature_model = form['temperature_model']
     except KeyError:
         pass
+    opt = False
     policy = form['policy_type']
     this_dice.params._treaty = False
     this_dice.params._carbon_tax = False
     if policy == 'treaty':
         this_dice.params._treaty = True
     elif policy == 'optimized':
-        this_dice.params._optimize = True
+        opt = True
     elif policy == 'carbon_tax':
         this_dice.params._carbon_tax = True
-    this_dice.loop()
-    this_dice.params._optimize = False
+    this_dice.loop(opt=opt)
     return this_dice.format_output()
 
 @app.route('/csv', methods=['POST',])

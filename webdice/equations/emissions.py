@@ -78,10 +78,10 @@ class EmissionsModel(object):
             c[3] + ((c[3] - c[2]) / 5 * np.arange(45)),
         ))
 
-    def get_emissions_values(self, index, data, deriv=False, miu=None,
-                             emissions_shock=0):
+    def get_emissions_values(self, index, data, deriv=False, opt=False,
+                             miu=None, emissions_shock=0):
         # miu = min(self.get_miu(index, data, deriv=deriv, miu=miu), 1.0)
-        miu = self.get_miu(index, data, deriv=deriv, miu=miu)
+        miu = self.get_miu(index, data, deriv=deriv, opt=opt, miu=miu)
         emissions_ind = self.emissions_ind(
             data.carbon_intensity[index], miu, data.gross_output[index]
         )
@@ -126,7 +126,7 @@ class EmissionsModel(object):
             return data.carbon_emitted[index - 1] + emissions_total * 10
         return emissions_total * 10
 
-    def get_miu(self, index, data, deriv=False, miu=None):
+    def get_miu(self, index, data, deriv=False, opt=False, miu=None):
         """
         Return miu for optimized, treaty, tax, basic scenarios
         ...
@@ -144,13 +144,10 @@ class EmissionsModel(object):
         -------
         float
         """
-        if self._params._optimize:
+        if opt:
             if miu is not None:
                 if deriv:
-                    return pd.DataFrame({
-                        'miu': miu,
-                        'ones': np.ones(self._params._tmax),
-                    }).min(axis=1)
+                    return miu
                 return miu[index]
         else:
             if index > 0:

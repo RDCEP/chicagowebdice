@@ -27,8 +27,7 @@ class DiceParams(object):
         self.elasmu = 2.
         self.prstp = .015
         self._treaty = False
-        self._optimize = False
-        self._eps = 1e-4
+        self._eps = 1e-8
         self._carbon_tax = False
         self.e2050 = 1.
         self.e2100 = 1.
@@ -171,15 +170,13 @@ class DiceParams(object):
         })
         self._data = pd.Panel({
             'vars': data,
-            'deriv': data,
             'scc': data,
         })
-        d_V = {}
-        for i in xrange(self._tmax):
-            d_V[i] = data
-        self.deriv_work = pd.Panel(d_V)
+        self._derivation_panel = None
+        self._grad_f = None
+        self._opt_welfare = None
         self._derivative = pd.DataFrame({
-            'fprime': np.empty(self._tmax),
+            'f_prime': np.empty(self._tmax),
         })
         # self._hessian = pd.Series(np.empty(self._tmax))
 
