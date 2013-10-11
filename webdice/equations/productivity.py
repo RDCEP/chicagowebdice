@@ -58,8 +58,10 @@ class ProductivityModel(object):
         array
         """
         return (
-            self._params._population_2005 * (1 - data.population_growth[index]) +
-            data.population_growth[index] * self._params.popasym
+            #self._params._population_2005 * (1 - data.population_growth[index]) +
+            #data.population_growth[index] * self._params.popasym
+            self._params._population_2005 * (1 - self.population_growth_rate[index]) +
+            self.population_growth_rate[index] * self._params.popasym
         )
 
     @property
