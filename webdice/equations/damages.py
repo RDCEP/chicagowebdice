@@ -216,7 +216,7 @@ class IncomensurableDamages(DamagesModel):
         return output_no_damages - output
 
 
-class WeitzmanTippingPoint(DamagesModel):
+class TippingPoint(DamagesModel):
     """
     Weitzman tipping point damages
     """

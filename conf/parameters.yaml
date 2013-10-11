@@ -282,10 +282,10 @@ advanced_tabs:
             options:
               - name: DICE damages to output
                 machine_name: dice_2007
-              - name: Incomensurable environmental goods
-                machine_name: incomensurable_damages
-              - name: Weitzman tipping point
-                machine_name: weitzman_tipping_point
+              - name: Incommensurable environmental goods
+                machine_name: incommensurable_damages
+              - name: tipping point
+                machine_name: tipping_point
               - name: Fraction of productivity
                 machine_name: productivity_fraction
           - name: Fraction of damages to productivity
