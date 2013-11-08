@@ -1,7 +1,6 @@
 from __future__ import division
 import numpy as np
 import pandas as pd
-import pyipopt
 from params import DiceParams, Dice2010Params
 from equations.loop import Loop
 
@@ -263,6 +262,10 @@ class Dice(object):
         gl : array, lower bounds of constraints
         gu : array, upper bounds of constraints
         """
+        try:
+            import pyipopt
+        except ImportError:
+            print('OPTIMIZATION ERROR: It appears that you do not have pyipopt installed. Please install it before running optimization.')
         _n = 3
         x0 = np.concatenate((
             np.linspace(.5, 1, _n),
@@ -345,10 +348,10 @@ class Dice2007(Dice):
 
 
 if __name__ == '__main__':
-    pass
-    # import cProfile
-    # d = Dice2010()
+    #pass
+    import cProfile
+    d = Dice2007()
     # d.params.carbon_model = 'beam_carbon'
-    # cProfile.run('d.loop(opt=True)', 'dice_stats')
-    # import pstats
-    # p = pstats.Stats('dice_stats')
+    cProfile.run('d.loop(opt=True)', 'dice_stats')
+    import pstats
+    p = pstats.Stats('dice_stats')
