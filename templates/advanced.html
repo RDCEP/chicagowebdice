@@ -15,6 +15,11 @@
   <a href="/advanced/{{ v }}">Advanced {{ v }}</a>
   {%- endfor -%}
   </div>{% endblock %}
+{% block doclinks %}
+  <li><a target="_blank" href="/static/docs/webdice_advanced_faq.pdf">Basic</a></li>
+  <li><a target="_blank" href="/static/docs/webdice_advanced_manual.pdf">Intermediate</a></li>
+  <li><a target="_blank" href="/static/docs/webdice_equation_help.pdf">Equations</a></li>
+{% endblock %}
 {% block sidebar -%}
   <form id="submission" method="post" action="/">
     <div id="parameters" class="has-tabs">
