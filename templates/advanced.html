@@ -1,14 +1,25 @@
 {% extends 'base.html' %}
 {% block headjs -%}
-    <script type="text/javascript">
-        Options = window.Options || { };
-        Options.measurements = {{ measurements|safe }};
-        Options.locations = {{ graph_locations|safe }};
-        Options.graphs = {{  graph_names|safe }};
-    </script>
-    <script type="text/javascript" src="/static/js/main.js?{{ now }}"></script>
+  <script type="text/javascript">
+    Options = window.Options || { };
+    Options.measurements = {{ measurements|safe }};
+    Options.locations = {{ graph_locations|safe }};
+    Options.graphs = {{  graph_names|safe }};
+    Options.dice_version = {% if dice_version %}{{ dice_version|safe }}{% else %}2007{% endif %};
+  </script>
+  <script type="text/javascript" src="/static/js/main.js?{{ now }}"></script>
 {%- endblock %}
-{% block mainlink %}<div id="back-to-rdcep"><a href="/basic">Switch to Basic</a></div>{% endblock %}
+{% block mainlink %}<div id="back-to-rdcep">Switch to:
+  <a href="/basic">Basic</a>
+  {%- for v in other_versions -%}
+  <a href="/advanced/{{ v }}">Advanced {{ v }}</a>
+  {%- endfor -%}
+  </div>{% endblock %}
+{% block doclinks %}
+  <li><a target="_blank" href="/static/docs/webdice_advanced_faq.pdf">Basic</a></li>
+  <li><a target="_blank" href="/static/docs/webdice_advanced_manual.pdf">Intermediate</a></li>
+  <li><a target="_blank" href="/static/docs/webdice_equation_help.pdf">Equations</a></li>
+{% endblock %}
 {% block sidebar -%}
   <form id="submission" method="post" action="/">
     <div id="parameters" class="has-tabs">
@@ -32,7 +43,19 @@
             {% if parameter.type == 'range' -%}
             <label title="{{ parameter.description }}">{{ parameter.name }}
             <span class="label">
-              <span class="label-number">{% if parameter.class == 'reverse' %}{{ parameter.max - (parameter.default - parameter.min) }}{% else %}{{ parameter.default }}{% endif %}</span><span>{{ parameter.unit|safe }}</span>
+              <span class="label-number">{% if parameter.class == 'reverse' -%}
+                {{ parameter.max - (parameter.default - parameter.min) }}
+              {%- elif parameter.class == 'percent' -%}
+                {%- if parameter.precision == 2 -%}
+                  {{ (parameter.default * 100)|int }}
+                {%- else -%}
+                  {{ parameter.default * 100 }}
+                {%- endif -%}
+              {%- elif parameter.class == 'reverse percent' or parameter.class == 'percent reverse' -%}
+                {{ ((parameter.max - (parameter.default - parameter.min)) * 100)|int }}
+              {%- else -%}
+                {{ parameter.default }}
+              {%- endif %}</span><span>{{ parameter.unit|safe }}</span>
             </span>
             </label>
             <input name="{{ parameter.machine_name }}" type="range" min="{{ parameter.min }}" max="{{ parameter.max }}" value="{{ parameter.default }}" step="{{ parameter.step }}" data-prec="{{ parameter.precision }}" {% if parameter.disabled or parameter.init_disabled %}disabled="disabled"{% endif %} {% if parameter.class %}class="{{ parameter.class }}"{% endif %}/>

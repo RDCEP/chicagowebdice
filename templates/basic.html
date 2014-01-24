@@ -5,10 +5,20 @@
     Options.measurements = {{ measurements|safe }};
     Options.locations = {{ graph_locations|safe }};
     Options.graphs = {{  graph_names|safe }};
+    Options.dice_version = {% if dice_version %}{{ dice_version|safe }}{% else %}2007{% endif %};
   </script>
+  <script type="text/javascript" src="/static/js/basic_tab_2010.js"></script>
   <script type="text/javascript" src="/static/js/main.js?{{ now }}"></script>
 {% endblock %}
-{% block mainlink %}<div id="back-to-rdcep"><a href="/advanced">Switch to Advanced</a></div>{% endblock %}
+{% block mainlink %}<div id="back-to-rdcep">Switch to:
+  {%- for v in other_versions -%}
+  <a href="/advanced/{{ v }}">Advanced {{ v }}</a>
+  {%- endfor -%}
+  </div>{% endblock %}
+{% block doclinks %}
+  <li><a target="_blank" href="/static/docs/webdice_basc_faq.pdf">Basic</a></li>
+  <li><a target="_blank" href="/static/docs/webdice_equation_help.pdf">Equations</a></li>
+{% endblock %}
 {% block sidebar %}
   <form id="submission" method="post" class="basic" action="/">
     <div id="parameters" class="has-tabs">
@@ -32,7 +42,19 @@
             <label title="{{ parameter.description }}">{{ parameter.name }}
             {% if tab.name == 'Policy' %}
             <span class="label">
-              <span class="label-number">{% if parameter.class == 'reverse' %}{{ parameter.max - (parameter.default - parameter.min) }}{% else %}{{ parameter.default }}{% endif %}</span><span>{{ parameter.unit }}</span>
+              <span class="label-number">{% if parameter.class == 'reverse' -%}
+                {{ parameter.max - (parameter.default - parameter.min) }}
+              {%- elif parameter.class == 'percent' -%}
+                {%- if parameter.precision == 2 -%}
+                  {{ (parameter.default * 100)|int }}
+                {%- else -%}
+                  {{ parameter.default * 100 }}
+                {%- endif -%}
+              {%- elif parameter.class == 'reverse percent' or parameter.class == 'percent reverse' -%}
+                {{ ((parameter.max - (parameter.default - parameter.min)) * 100)|int }}
+              {%- else -%}
+                {{ parameter.default }}
+              {%- endif %}</span><span>{{ parameter.unit }}</span>
             </span>
             {% endif %}
             </label>
@@ -64,6 +86,8 @@
       <input type="submit" id="delete-all" value="Clear Graphs" disabled="disabled"/>
       <input type="submit" value="Run Model"/>
     </div>
+    <input type="hidden" name="carbon_model" value="dice_carbon">
+    <input type="hidden" name="damages_model" value="dice_damages">
   </form>
   <ul id="runs"></ul>
 {% endblock %}

@@ -246,8 +246,8 @@ advanced_tabs:
             machine_name: temp_co2_doubling
             min: 1
             max: 5
-            step: 0.5
-            default: 3.0
+            step: 0.2
+            default: 3.2
             precision: 1
             description: >
                 Temperature increase in degrees C from doubling of
@@ -271,7 +271,7 @@ advanced_tabs:
             disabled: false
             options:
               - name: DICE
-                machine_name: dice_2007
+                machine_name: dice_2010
               - name: BEAM simplified
                 machine_name: beam_carbon
               - name: Linear (2°C / 1000 GtC)
@@ -281,10 +281,10 @@ advanced_tabs:
             description: Way that climate change harms enter the economy
             options:
               - name: DICE damages to output
-                machine_name: dice_2007
+                machine_name: dice_2010
               - name: Incommensurable environmental goods
                 machine_name: incommensurable_damages
-              - name: tipping point
+              - name: Tipping point
                 machine_name: tipping_point
               - name: Fraction of productivity
                 machine_name: productivity_fraction
@@ -333,10 +333,10 @@ advanced_tabs:
         parameters:
           - name: Decline in rate of growth of productivity
             machine_name: productivity_decline
-            min: 0.0005
+            min: 0.001
             max: .015
-            step: 0.0005
-            default: 0.0010
+            step: 0.001
+            default: 0.009
             precision: 4
             description: Decline in the rate of growth in productivity over time
             unit: '%'
@@ -365,10 +365,10 @@ advanced_tabs:
             tab: Advanced
             section: Additional Parameters
             machine_name: popasym
-            min: 8000
-            max: 12000
+            min: 7900
+            max: 12100
             step: 200
-            default: 8600
+            default: 8700
             precision: 0
             description: >
                 Number, in millions, that the population grows asymptotically
@@ -378,10 +378,10 @@ advanced_tabs:
         parameters:
           - name: Reduction in energy intensity per decade
             machine_name: intensity_decline_rate
-            default: 0.003
+            default: 0.0065
             min: 0.0
             max: 0.06
-            step: 0.001
+            step: 0.0005
             precision: 3
             description: Rate of decline in energy use per $ of GDP
             unit: '%'
@@ -402,7 +402,7 @@ advanced_tabs:
           - name: Elasticity of marg. consump.
             machine_name: elasmu
             min: 1
-            default: 2.0
+            default: 1.5
             max: 3
             step: 0.1
             precision: 1

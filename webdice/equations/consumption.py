@@ -86,5 +86,9 @@ class ConsumptionModel(object):
         """
         return savings * output
 
-class DiceConsumption(ConsumptionModel):
+class Dice2007(ConsumptionModel):
+    pass
+
+
+class Dice2010(ConsumptionModel):
     pass

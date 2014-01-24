@@ -1,13 +1,14 @@
+from __future__ import division
 import numpy as np
 import pandas as pd
 
 
-class Dice2007Params(object):
-    def __init__(self):
+class DiceParams(object):
+    def __init__(self, model=2007):
         self.temp_co2_doubling = 3.
         self.damages_exponent = 2.
-        self.productivity_decline = .1
-        self.intensity_decline_rate = .3
+        self.productivity_decline = .001
+        self.intensity_decline_rate = .003
         self.abatement_exponent = 2.8
         self.backstop_decline = .05
         self.backstop_ratio = 2.
@@ -15,24 +16,26 @@ class Dice2007Params(object):
         self.depreciation = .1
         self.savings = .2
         self.fosslim = 6000.
-        self.carbon_model = 'dice_carbon'
-        self.damages_model = 'dice_damages'
-        self.temperature_model = 'dice_temperature'
-        self.consumption_model = 'dice_consumption'
+        self.carbon_model = 'dice_%s' % model
+        self.consumption_model = 'dice_%s' % model
+        self.damages_model = 'dice_%s' % model
+        self.emissions_model = 'dice_%s' % model
+        self.productivity_model = 'dice_%s' % model
+        self.temperature_model = 'dice_%s' % model
+        self.utility_model = 'dice_%s' % model
         self.prod_frac = .05
         self.elasmu = 2.
         self.prstp = .015
         self._treaty = False
-        self._optimize = False
-        self._eps = 1e-4
+        self._eps = 1e-8
         self._carbon_tax = False
-        self.e2050 = 100.
-        self.e2100 = 100.
-        self.e2150 = 100.
-        self.p2050 = 100.
-        self.p2100 = 100.
-        self.p2150 = 100.
-        self._pmax = 100.
+        self.e2050 = 1.
+        self.e2100 = 1.
+        self.e2150 = 1.
+        self.p2050 = 1.
+        self.p2100 = 1.
+        self.p2150 = 1.
+        self._pmax = 1.
         self.c2050 = 0.
         self.c2100 = 0.
         self.c2150 = 0.
@@ -65,7 +68,7 @@ class Dice2007Params(object):
         self._mass_atmosphere_2005 = 808.9
         self._mass_upper_2005 = 1255.
         self._mass_lower_2005 = 18365.
-        self._mass_preindustrial = 278. * 2.13
+        self._mass_preindustrial = 592.14  # 278. * 2.13
 
         ## Climate model
         self._forcing_ghg_2000 = -.06
@@ -103,16 +106,12 @@ class Dice2007Params(object):
         self._scale1 = 194.  # Scaling coefficient in the objective function
         self._scale2 = 381800.  # Scaling coefficient in the objective function
 
-
-        population_growth_rate = (
-            (np.exp(self._population_growth * self._t0) - 1) /
-            (np.exp(self._population_growth * self._t0))
-        )
-
         # Variables for initiating pandas array
         backstop_growth = np.zeros(self._tmax)
         carbon_intensity = np.empty(self._tmax)
         carbon_intensity[:] = self._intensity_2005
+        intensity_decline = np.zeros(self._tmax)
+        intensity_decline[:] = self.intensity_decline_rate
         productivity = np.empty(self._tmax)
         productivity[:] = self._productivity
         capital = np.empty(self._tmax)
@@ -131,11 +130,14 @@ class Dice2007Params(object):
         temp_lower[:] = self._temp_lower_2000
         investment = np.empty(self._tmax)
         investment[:] = self.savings * self._output_2005
+        population = np.empty(self._tmax)
+        population[:] = self._population_2005
         miu = np.empty(self._tmax)
         miu[:] = self._miu_2005
         data = pd.DataFrame({
             'miu': miu,
             'carbon_intensity': carbon_intensity,
+            'intensity_decline': intensity_decline,
             'productivity': productivity,
             'backstop_growth': backstop_growth,
             'capital': capital,
@@ -162,15 +164,84 @@ class Dice2007Params(object):
             'consumption_discount': np.ones(self._tmax),
             'tax_rate': np.zeros(self._tmax),
             'backstop': np.zeros(self._tmax),
-            'population': np.zeros(self._tmax),
+            'population': population,
+            'population_growth': np.zeros(self._tmax),
             'output_abate': np.zeros(self._tmax),
         })
         self._data = pd.Panel({
             'vars': data,
-            'deriv': data,
             'scc': data,
         })
+        self._derivation_panel = None
+        self._grad_f = None
+        self._opt_welfare = None
         self._derivative = pd.DataFrame({
-            'fprime': np.empty(self._tmax),
+            'f_prime': np.empty(self._tmax),
         })
-        self._hessian = pd.Series(np.empty(self._tmax))
+        # self._hessian = pd.Series(np.empty(self._tmax))
+
+
+class Dice2010Params(DiceParams):
+    def __init__(self):
+        super(Dice2010Params, self).__init__(2010)
+        self.temp_co2_doubling = 3.2
+        self.damages_exponent = 2.  # TODO: see equations
+        self.productivity_decline = .009  # TODO: Add second parameter?
+        self.intensity_decline_rate = .00646
+        self.popasym = 8700.
+        self.elasmu = 1.5
+        ## Population and technology
+        self._population_2005 = 6411.
+        self._population_growth = .5  # This is called Population adjustment in Dice2010
+        self._productivity = .0303220
+        self._productivity_growth = .16
+        self._output_2005 = 55.34
+        ## Emissions
+        self._intensity_2005 = .14452
+        self._intensity_growth = .158
+        ## Carbon Cycle
+        _b11, _b12, _b13 = .88, .12, 0
+        _b21, _b22, _b23 = .04704, .94796, .005
+        _b31, _b32, _b33 = 0, .00075, .99925
+        self._carbon_matrix = np.array([
+            _b11, _b12, _b13,
+            _b21, _b22, _b23,
+            _b31, _b32, _b33,
+        ]).reshape(3, 3)
+        # self._mass_atmosphere_2005 = (787 + 829) / 2
+        self._mass_atmosphere_2005 = 787.
+        self._mass_upper_2005 = 1600.
+        self._mass_lower_2005 = 10100.
+
+        ## Climate model
+        self._forcing_ghg_2000 = .83
+        self._temp_atmosphere_2000 = .83
+        self._temp_atmosphere_2010 = .98
+        self.thermal_transfer[0] = .208
+        self.thermal_transfer[2] = .310
+
+        # self._damages_coefficient = .00204625800317896
+
+        ## Abatement cost
+        self._backstop_2005 = 1.26
+
+        self._data.vars.intensity_decline[0] = .158
+        self._data.scc.intensity_decline[0] = .158
+        self._data.vars.population[0] = self._population_2005
+        self._data.scc.population[0] = self._population_2005
+        self._data.vars.temp_atmosphere[0] = self._temp_atmosphere_2000
+        self._data.vars.temp_atmosphere[1] = self._temp_atmosphere_2010
+        self._data.scc.temp_atmosphere[0] = self._temp_atmosphere_2000
+        self._data.scc.temp_atmosphere[1] = self._temp_atmosphere_2010
+        self._data.vars.carbon_intensity[0] = self._intensity_2005
+        self._data.scc.carbon_intensity[0] = self._intensity_2005
+        self._data.vars.productivity[0] = self._productivity
+        self._data.scc.productivity[0] = self._productivity
+        self._data.vars.output[0] = self._output_2005
+        self._data.scc.output[0] = self._output_2005
+        self._data.vars.mass_atmosphere[0] = self._mass_atmosphere_2005
+        self._data.scc.mass_atmosphere[0] = self._mass_atmosphere_2005
+        self._data.vars.mass_upper[0] = self._mass_upper_2005
+        self._data.scc.mass_upper[0] = self._mass_upper_2005
+        self._data.vars.mass_lower[0] = self._mass_lower_2005
+        self._data.scc.mass_lower[0] = self._mass_lower_2005

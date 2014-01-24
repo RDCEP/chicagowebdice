@@ -919,24 +919,7 @@
          serialize()
          */
         if ($(form).hasClass('basic')) {
-          var new_values = {
-              'temp_co2_doubling': [1,2,3,4,5],
-              'damages_exponent': [1, 1.4, 2.0, 2.8, 4.0],
-//                            'productivity_decline': [0.0, 0.03, 0.1, 0.38, 1.5],
-//                            'intensity_decline_rate': [0.0, 0.06, 0.3, 1.3, 6.0],
-              'productivity_decline': [1.5, 0.38, 0.1, 0.03, 0.0],
-              'intensity_decline_rate': [6.0, 1.3, 0.3, 0.06, 0.0],
-              'backstop_ratio': [1, 1.4, 2.0, 2.8, 4.0]
-            }
-          ;
-          data = data.slice(0,data.search('temp_co2_doubling'));
-          $('#tab-beliefs').find('input').each(function() {
-            $(this).val(function(i, v) {
-              data += '&' + $(this).attr('name') + '=';
-              data += new_values[$(this).attr('name')][v-1];
-              return v;
-            });
-          });
+          data = basic_tab(data);
         }
         /*
          End value mapping for basic form
@@ -944,7 +927,7 @@
         $('html, body').animate({scrollTop:$(document).height()}, 'slow');
         $.ajax({ //Now we are going to actually execute the run
           type : 'POST',
-          url : '/run',
+          url : '/run/' + Options.dice_version,
           data : data,
           success : function(data, textStatus, xhr) {
             var runObject = addRunFromCSV("Run #" + (getNumberOfRuns() + 1),
@@ -1027,7 +1010,7 @@
        */
       var value = parseFloat(this.value).toFixed(this.getAttribute("data-prec"));
       if ($(this).hasClass('percent')) {
-        Math.round(value = value * 100, 0);
+        value = parseFloat(value*100).toFixed(this.getAttribute('data-prec')-2);
       }
       /* This is a hack for the treaty sliders, so that they can move
        *'backwards' from 100 to 0.
@@ -1074,7 +1057,6 @@
     });
 
     $('select[name=damages_model]').change(function(e) {
-      console.log(1);
       var prod_frac = $('input[name=prod_frac]');
       if ($(this).val() == 'productivity_fraction') {
         prod_frac.removeAttr('disabled');
