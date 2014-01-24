@@ -85,7 +85,7 @@
     <div id="controls">
       <input type="reset" id="reset-inputs" value="Reset Inputs"/>
       <input type="submit" id="delete-all" value="Clear Graphs" disabled="disabled"/>
-      <input type="submit" value="Run Model"/>
+      <input type="submit" value="Run Model" onclick="_gaq.push(['_trackEvent', 'Models', 'Run', 'Run webDICE {{  year }} Model']);"/>
     </div>
   </form>
   <ul id="runs"></ul>
