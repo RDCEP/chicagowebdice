@@ -149,7 +149,7 @@ class EmissionsModel(object):
                 if deriv:
                     return miu
                 return miu[index]
-        else:
+        elif miu is None:
             if index > 0:
                 if data.carbon_emitted[index - 1] > self._params.fosslim:
                     return 1.0
@@ -171,6 +171,8 @@ class EmissionsModel(object):
                     return 0
             else:
                 return self._params._miu_2005
+        else:
+            return min(miu[index], 1.0)
         return min(data.miu[index], 1.0)
 
     def miu(self, emissions_ind, emissions_cap, _e2005, intensity,
