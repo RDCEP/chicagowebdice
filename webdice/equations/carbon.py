@@ -186,12 +186,10 @@ class BeamCarbon(CarbonModel):
     def __init__(self, params):
         CarbonModel.__init__(self, params)
         self.N = 20
-        # self.initial_carbon = [808.9, 772.4, 38620.5]  # from BEAM paper
-        # self.initial_carbon = [808.9, 571.5, 38620.5]  # M_UP at H = 10**-8.1
-        self.initial_carbon = [808.9, 585, 38620.5]  # Nate's guess
+        self.initial_carbon = [808.9, 604, 29595]  # Nate's guess
         self._carbon_matrix_skel = np.array([
             -.2, .2, 0,
-            0, 0, .05,  # _b * b_ones, (-_b - .05) * b_ones, .05
+            0, 0, .05,
             0, .001, -.001,
         ]).reshape((3, 3, 1))
 
@@ -277,11 +275,9 @@ class BeamCarbon(CarbonModel):
             data.mass_atmosphere[i], data.mass_upper[i], data.mass_lower[i]
         )
         for x in xrange(self.N):
-            _h = (
-                8.11054e-10 * _mu + 3.24421e-15 * np.sqrt(
-                    6.25e+10 * _mu ** 2 - 7.68281e+13 * _mu + 2.36815e+16
-                ) - 5.0e-7
-            )
+            _h = 7.54489e-10 * _mu + 8.20881e-18 * np.sqrt(
+                8.44785e15 * _mu ** 2 - 1.11631e19 * _mu + 3.69888e21
+            ) - 5e-7
             _b = (28.944 * _h ** 2) / (_h ** 2 + _h * 1e-6 + 7.53e-16)
             self.carbon_matrix[1][0] = _b
             self.carbon_matrix[1][1] = -_b - .05
