@@ -351,16 +351,11 @@ if __name__ == '__main__':
     #pass
     profile = False
     d = Dice2007()
-    d.params.carbon_model = 'beam_carbon'
-
     if profile:
         import cProfile
-
         cProfile.run('d.loop(opt=True)', 'dice_stats')
         import pstats
         p = pstats.Stats('dice_stats')
     else:
         d.loop()
-        print(d.data.vars.mass_upper[:5])
-        print(d.data.vars.mass_upper[-5:-1])
-        print(d.data.vars.mass_lower[-5:-1])
+        print(d.data.vars)
