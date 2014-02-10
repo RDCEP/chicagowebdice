@@ -178,8 +178,6 @@ class BeamCarbon(CarbonModel):
     ...
     Methods
     -------
-    get_h()
-        Calculate H based on M_UP
     get_model_values()
         Set BEAM transfer matrix, and return values for M_AT, M_UP, M_LO
     """
@@ -192,60 +190,6 @@ class BeamCarbon(CarbonModel):
             0, 0, .05,
             0, .001, -.001,
         ]).reshape((3, 3, 1))
-
-    def get_h(self, mass_upper):
-        """
-        Calculate H based on M_UP
-        ...
-        Args
-        ----
-        mass_upper : float, M_UP at t-1
-        ...
-        Returns
-        -------
-        float
-        """
-        return 8.11054e-10 * mass_upper + 3.24421e-15 * np.sqrt(
-            6.25e+10 * mass_upper ** 2 - 7.68281e+13 * mass_upper + 2.36815e+16
-        ) - 5.0e-7
-
-    def mass_atmosphere(self, emissions_total, mass_atmosphere, mass_upper):
-        """
-        M_AT, Carbon concentration in atmosphere, GtC
-        ...
-        Returns
-        -------
-        float
-        """
-        return (
-            self.carbon_matrix[0][0] * mass_atmosphere + self.carbon_matrix[1][0] *
-            mass_upper + (10 * emissions_total)
-        )
-
-    def mass_upper(self, mass_atmosphere, mass_upper, mass_lower):
-        """
-        M_UP, Carbon concentration in shallow oceans, GtC
-        ...
-        Returns
-        -------
-        float
-        """
-        return (
-            self.carbon_matrix[0][1] * mass_atmosphere + self.carbon_matrix[1][1] *
-            mass_upper + (self.carbon_matrix[2][1] * mass_lower)
-        )
-
-    def mass_lower(self, mass_upper, mass_lower):
-        """
-        M_LO, Carbon concentration in lower oceans, GtC
-        ...
-        Returns
-        -------
-        float
-        """
-        return (
-            self.carbon_matrix[1][2] * mass_upper + self.carbon_matrix[2][2] * mass_lower
-        )
 
     def get_model_values(self, index, data):
         """
