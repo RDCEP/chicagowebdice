@@ -95,8 +95,9 @@ class CarbonModel(object):
         float
         """
         return (
-            self.carbon_matrix[0][0] * mass_atmosphere + self.carbon_matrix[1][0] *
-            mass_upper + (10 * emissions_total)
+            self.carbon_matrix[0][0] * mass_atmosphere +
+            self.carbon_matrix[1][0] * mass_upper +
+            10 * emissions_total
         )
 
     def mass_upper(self, mass_atmosphere, mass_upper, mass_lower):
@@ -108,8 +109,9 @@ class CarbonModel(object):
         float
         """
         return (
-            self.carbon_matrix[0][1] * mass_atmosphere + self.carbon_matrix[1][1] *
-            mass_upper + (self.carbon_matrix[2][1] * mass_lower)
+            self.carbon_matrix[0][1] * mass_atmosphere +
+            self.carbon_matrix[1][1] * mass_upper +
+            self.carbon_matrix[2][1] * mass_lower
         )
 
     def mass_lower(self, mass_upper, mass_lower):
@@ -121,7 +123,8 @@ class CarbonModel(object):
         float
         """
         return (
-            self.carbon_matrix[1][2] * mass_upper + self.carbon_matrix[2][2] * mass_lower
+            self.carbon_matrix[1][2] * mass_upper +
+            self.carbon_matrix[2][2] * mass_lower
         )
 
     def forcing(self, index, data):
@@ -184,10 +187,10 @@ class BeamCarbon(CarbonModel):
     def __init__(self, params):
         CarbonModel.__init__(self, params)
         self.N = 20
-        self.initial_carbon = [808.9, 604, 29595]  # Nate's guess
+        self.initial_carbon = [808.9, 604, 29595]
         self._carbon_matrix_skel = np.array([
             -.2, .2, 0,
-            0, 0, .05,
+            .2, -.2, .05,
             0, .001, -.001,
         ]).reshape((3, 3, 1))
 
@@ -204,6 +207,20 @@ class BeamCarbon(CarbonModel):
         -------
         tuple
             M_AT, M_UP, M_LO at t
+        ...
+        -----------------------------------
+        Background regarding BEAM equations
+        -----------------------------------
+        k_a = .2       /yr
+        k_d = .05      /yr
+        delta = 50
+        k_h = 1.91e3
+        k_1 = 1e-6     mol/kg
+        k_2 = 7.53e-10 mol/kg
+        AM = 1.77e20   mol
+        OM = 7.8e22    mol
+        Alk = 662.7    GtC
+        _a = k_h * (AM / (OM * (delta + 1)))
         """
         # if opt: self.N = 2
         _dims = 61 if data.ndim > 2 else 1
@@ -222,9 +239,9 @@ class BeamCarbon(CarbonModel):
             _h = 7.54489e-10 * _mu + 8.20881e-18 * np.sqrt(
                 8.44785e15 * _mu ** 2 - 1.11631e19 * _mu + 3.69888e21
             ) - 5e-7
-            _b = (28.944 * _h ** 2) / (_h ** 2 + _h * 1e-6 + 7.53e-16)
-            self.carbon_matrix[1][0] = _b
-            self.carbon_matrix[1][1] = -_b - .05
+            _b = 221.046 / (1 + 1e-6 / _h + 7.53e-16 / _h ** 2)
+            self.carbon_matrix[1][0] = _b * .2
+            self.carbon_matrix[1][1] = _b * -.2 - .05
             _ma += self.mass_atmosphere(
                 data.emissions_total[i], _ma, _mu) / self.N
             _mu += self.mass_upper(_ma, _mu, _ml) / self.N
