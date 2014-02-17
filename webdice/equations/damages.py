@@ -235,7 +235,7 @@ class ProductivityFraction(DamagesModel):
             1 + self.damages_terms[0] * temp_atmosphere +
             self.damages_terms[1] * temp_atmosphere ** self.damages_terms[2]
         ))) / fD
-        return gross_output * (damages_to_prod)
+        return gross_output * (1 - damages_to_prod)
 
     def get_production_factor(self, temp_atmosphere):
         """
