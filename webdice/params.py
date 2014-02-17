@@ -49,7 +49,6 @@ class DiceParams(object):
         self._output_2005 = 61.1
         self._output_2005 = 55.667
         self._capital_2005 = 137.
-        self._subsistence = .25001
 
         ## Emissions
         self._intensity_2005 = .13418

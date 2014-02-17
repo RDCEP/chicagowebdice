@@ -25,7 +25,6 @@ class ProductivityModel(object):
     """
     def __init__(self, params):
         self._params = params
-        self.productivity_floor = None
 
     @property
     def backstop(self):
@@ -59,11 +58,10 @@ class ProductivityModel(object):
         array
         """
         return (
-            data.population[index - 1] * (
-                self._params.popasym / data.population[index - 1]
-            ) ** self._params._population_growth
-            # self._params._population_2005 * (1 - self.population_growth_rate[index]) +
-            # self.population_growth_rate[index] * self._params.popasym
+            #self._params._population_2005 * (1 - data.population_growth[index]) +
+            #data.population_growth[index] * self._params.popasym
+            self._params._population_2005 * (1 - self.population_growth_rate[index]) +
+            self.population_growth_rate[index] * self._params.popasym
         )
 
     @property
@@ -88,32 +86,19 @@ class ProductivityModel(object):
             )
         )
 
-    def productivity(self, index, data):
-        if data.consumption_pc[index - 1] > self._params._subsistence:
-            return data.productivity[index - 1] / (
-                1 - self.productivity_growth[index - 1]
-            )
-        return data.productivity[index - 1]
-        # TODO: fancier minimum productivity
-        # if self.productivity_floor is None:
-        #     self.productivity_floor = data.productivity[index - 1] / (
-        #         1 - self.productivity_growth[index - 1])
-        #     print(index, self.productivity_floor)
-        # return (
-        #     data.productivity[index - 1] * self.productivity_floor
-        # ) ** .5
-
     def carbon_intensity(self, index, data):
         intensity_decline = self.intensity_decline(index, data)
         data.intensity_decline[index] = intensity_decline
         return data.carbon_intensity[index - 1] / (
+            # 1 - data.intensity_decline[index]
             1 - intensity_decline
         )
 
     def get_model_values(self, index, data):
         if index > 0:
             carbon_intensity = self.carbon_intensity(index, data)
-            productivity = self.productivity(index, data)
+            productivity = data.productivity[index - 1] / (
+                1 - self.productivity_growth[index - 1])
             capital = self.capital(
                 data.capital[index - 1], self._params.depreciation,
                 data.investment[index - 1]

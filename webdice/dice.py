@@ -98,7 +98,7 @@ class Dice(object):
             D.carbon_intensity[i], D.productivity[i], D.capital[i],
             D.backstop_growth[i], D.gross_output[i]
         ) = self.eq.productivity_model.get_model_values(i, D)
-        if i > 0 and D.consumption_pc[i - 1] > self.params._subsistence:
+        if i > 0:
             D.productivity[i] *= self.eq.damages_model.get_production_factor(
                 D.temp_atmosphere[i - 1]
             ) ** 10
@@ -119,10 +119,8 @@ class Dice(object):
         D.abatement[i], D.damages[i], D.output[i], D.output_abate[i] = (
             self.eq.damages_model.get_model_values(i, D)
         )
-        (
-            D.consumption[i], D.consumption_pc[i], D.consumption_discount[i],
-            D.investment[i], D.population[i]
-        ) = self.eq.consumption_model.get_model_values(i, D)
+        (D.consumption[i], D.consumption_pc[i], D.consumption_discount[i],
+         D.investment[i]) = self.eq.consumption_model.get_model_values(i, D)
         D.utility[i], D.utility_discounted[i] = (
             self.eq.utility_model.get_model_values(i, D)
         )
@@ -146,6 +144,7 @@ class Dice(object):
         self.eq.set_models(self.params)
         _miu = None
         if opt:
+            print(1)
             if miu is not None:
                 D = pd.Panel(
                     {i: self.data.vars for i in xrange(self.params._tmax + 1)}
@@ -352,21 +351,11 @@ if __name__ == '__main__':
     #pass
     profile = False
     d = Dice2007()
-    d.params.carbon_model = 'beam_carbon'
-    d.params.damages_model = 'productivity_fraction'
-    d.params.prod_frac = .5
-    d.params.damages_exponent = 4
-    d.params.temp_co2_doubling = 5
-
     if profile:
         import cProfile
         cProfile.run('d.loop(opt=True)', 'dice_stats')
         import pstats
         p = pstats.Stats('dice_stats')
     else:
-        d.loop(opt=False)
-        print(d.data.vars.loc[:,
-              ['damages',
-               'productivity', 'gross_output', 'output',
-               'consumption_pc',
-               'population']])
+        d.loop()
+        print(d.data.vars)

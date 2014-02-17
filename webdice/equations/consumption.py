@@ -29,22 +29,22 @@ class ConsumptionModel(object):
         )
 
     def get_model_values(self, index, data):
-        consumption, population = self.consumption(
-            data.output[index], self._params.savings, data.population[index])
-        consumption_pc = self.consumption_pc(consumption, population)
+        consumption = self.consumption(data.output[index], self._params.savings)
+        consumption_pc = self.consumption_pc(
+            consumption, data.population[index]
+        )
         if index == 0:
-            return (consumption, consumption_pc,) + self.initial_values + \
-                   (population,)
+            return (consumption, consumption_pc,) + self.initial_values
         return (
             consumption,
             consumption_pc,
-            self.consumption_discount(data.consumption_pc[0],
-                                      consumption_pc, index),
+            self.consumption_discount(
+                data.consumption_pc[0], consumption_pc, index
+            ),
             self.investment(self._params.savings, data.output[index]),
-            population
         )
 
-    def consumption(self, output, savings, population):
+    def consumption(self, output, savings):
         """
         C, Consumption, trillions $USD
         ...
@@ -52,9 +52,7 @@ class ConsumptionModel(object):
         -------
         float
         """
-        c = output * (1.0 - savings)
-        mc = 250e-6 * population
-        return c, np.maximum(population * np.minimum(c, mc) / mc, 0)
+        return output * (1.0 - savings)
 
     def consumption_pc(self, consumption, population):
         """
@@ -64,14 +62,14 @@ class ConsumptionModel(object):
         -------
         float
         """
-        return 1e3 * consumption / population
+        return 1000 * consumption / population
 
     def consumption_discount(self, c0, c1, i, discount_type='ramsey'):
     # def consumption_discount(self, c0, c1, i, discount_type='constant'):
         """Discount rate for consumption"""
         if discount_type == 'ramsey':
             return np.exp(-(
-                self._params.elasmu * np.log(c1 / c0) / (i * 10 + 1e-6) +
+                self._params.elasmu * np.log(c1 / c0) / (i * 10 + .000001) +
                 self._params.prstp
             ) * i * 10)
         if discount_type == 'constant':
