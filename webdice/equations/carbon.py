@@ -194,7 +194,6 @@ class BeamCarbon(CarbonModel):
             0, .001, -.001,
         ]).reshape((3, 3, 1))
 
-
     def get_model_values(self, index, data):
         """
         Set BEAM transfer matrix, and return values for M_AT, M_UP, M_LO
