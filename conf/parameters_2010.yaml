@@ -319,6 +319,7 @@ advanced_tabs:
             precision: 2
             description: Rate of decline in costs of reduction emissions
             unit: "%"
+            class: percent
           - name: How low will the costs of renewables go?
             machine_name: backstop_ratio
             default: 2.0

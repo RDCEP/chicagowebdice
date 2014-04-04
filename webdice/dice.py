@@ -144,7 +144,6 @@ class Dice(object):
         self.eq.set_models(self.params)
         _miu = None
         if opt:
-            print(1)
             if miu is not None:
                 D = pd.Panel(
                     {i: self.data.vars for i in xrange(self.params._tmax + 1)}
@@ -349,9 +348,13 @@ class Dice2007(Dice):
 
 if __name__ == '__main__':
     #pass
-    import cProfile
+    profile = False
     d = Dice2007()
-    # d.params.carbon_model = 'beam_carbon'
-    cProfile.run('d.loop(opt=True)', 'dice_stats')
-    import pstats
-    p = pstats.Stats('dice_stats')
+    if profile:
+        import cProfile
+        cProfile.run('d.loop(opt=True)', 'dice_stats')
+        import pstats
+        p = pstats.Stats('dice_stats')
+    else:
+        d.loop()
+        print(d.data.vars)

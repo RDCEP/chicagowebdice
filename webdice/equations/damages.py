@@ -36,7 +36,6 @@ class DamagesModel(object):
             ))
         return np.ones(self._params._tmax)
 
-
     @property
     def damages_terms(self):
         """
@@ -77,15 +76,14 @@ class DamagesModel(object):
         """
         if index == 0:
             data.participation = self.participation
-        _go = data.gross_output[index]
-        _miu = data.miu[index]
-        _bg = data.backstop_growth[index]
-        _ta = data.temp_atmosphere[index]
-        _part = data.participation[index]
-        abatement = self.abatement(_go, _miu, _bg, _part)
-        damages = self.damages(_go, _ta, abatement)
-        output = self.output(_go, damages, abatement, _ta)
-        output_abate = self.output_abate(abatement, _go)
+        abatement = self.abatement(data.gross_output[index], data.miu[index],
+                                   data.backstop_growth[index],
+                                   data.participation[index])
+        damages = self.damages(data.gross_output[index],
+                               data.temp_atmosphere[index], abatement)
+        output = self.output(data.gross_output[index], damages, abatement,
+                             data.temp_atmosphere[index])
+        output_abate = self.output_abate(abatement, data.gross_output[index])
         return [abatement, damages, output, output_abate]
 
     def abatement(self, gross_output, miu, backstop_growth, participation):
@@ -233,12 +231,10 @@ class ProductivityFraction(DamagesModel):
     """
     def damages(self, gross_output, temp_atmosphere, a_abatement=None):
         fD = self.get_production_factor(temp_atmosphere)
-        damages_to_prod = 1 - (
-            (1 - 1 / (
-                1 + self.damages_terms[0] * temp_atmosphere +
-                self.damages_terms[1] * temp_atmosphere ** self.damages_terms[2]
-            )) / fD
-        )
+        damages_to_prod = (1 - (1 - 1 / (
+            1 + self.damages_terms[0] * temp_atmosphere +
+            self.damages_terms[1] * temp_atmosphere ** self.damages_terms[2]
+        ))) / fD
         return gross_output * (1 - damages_to_prod)
 
     def get_production_factor(self, temp_atmosphere):
