@@ -144,7 +144,6 @@ class Dice(object):
         self.eq.set_models(self.params)
         _miu = None
         if opt:
-            print(1)
             if miu is not None:
                 D = pd.Panel(
                     {i: self.data.vars for i in xrange(self.params._tmax + 1)}
