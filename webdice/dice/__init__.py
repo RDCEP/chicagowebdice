@@ -1,7 +1,9 @@
 from __future__ import division
+
 import numpy as np
 import pandas as pd
-from params import DiceParams, Dice2010Params
+
+from webdice.dice.params import DiceParams, Dice2010Params
 from equations.loop import Loop
 
 
