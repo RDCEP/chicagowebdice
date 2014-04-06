@@ -14,12 +14,12 @@
   {%- for v in other_versions -%}
   <a href="/advanced/{{ v }}">Advanced {{ v }}</a>
   {%- endfor -%}
-  </div>{% endblock %}
-{% block doclinks %}
-  <li><a target="_blank" href="/static/docs/webdice_advanced_faq.pdf">Basic</a></li>
-  <li><a target="_blank" href="/static/docs/webdice_advanced_manual.pdf">Intermediate</a></li>
-  <li><a target="_blank" href="/static/docs/webdice_equation_help.pdf">Equations</a></li>
-{% endblock %}
+</div>{% endblock %}              
+{% block doclinks %}<li id="display-help">Documentation<ul>
+<li><a target="_blank" href="/static/docs/webdice_advanced_faq.pdf">Basic</a></li>
+<li><a target="_blank" href="/static/docs/webdice_advanced_manual.pdf">Intermediate</a></li>
+<li><a target="_blank" href="/static/docs/webdice_equation_help.pdf">Equations</a></li>
+</ul></li>{% endblock %}
 {% block sidebar -%}
   <form id="submission" method="post" action="/">
     <div id="parameters" class="has-tabs">
@@ -85,7 +85,7 @@
     <div id="controls">
       <input type="reset" id="reset-inputs" value="Reset Inputs"/>
       <input type="submit" id="delete-all" value="Clear Graphs" disabled="disabled"/>
-      <input type="submit" value="Run Model" onclick="_gaq.push(['_trackEvent', 'Models', 'Run', 'Run webDICE {{  year }} Model']);"/>
+      <input type="submit" value="Run Model" onclick="_gaq.push(['_trackEvent', 'Models', 'Run', 'Run webDICE {{ year }} Model']);"/>
     </div>
   </form>
   <ul id="runs"></ul>

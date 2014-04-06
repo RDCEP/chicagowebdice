@@ -15,10 +15,10 @@
   <a href="/advanced/{{ v }}">Advanced {{ v }}</a>
   {%- endfor -%}
   </div>{% endblock %}
-{% block doclinks %}
-  <li><a target="_blank" href="/static/docs/webdice_basc_faq.pdf">Basic</a></li>
-  <li><a target="_blank" href="/static/docs/webdice_equation_help.pdf">Equations</a></li>
-{% endblock %}
+{% block doclinks %}<li id="display-help">Documentation<ul>
+<li><a target="_blank" href="/static/docs/webdice_basic_faq.pdf">Basic</a></li>
+<li><a target="_blank" href="/static/docs/webdice_equation_help.pdf">Equations</a></li>
+</ul></li>{% endblock %}
 {% block sidebar %}
   <form id="submission" method="post" class="basic" action="/">
     <div id="parameters" class="has-tabs">
@@ -84,7 +84,7 @@
     <div id="controls">
       <input type="reset" id="reset-inputs" value="Reset Inputs"/>
       <input type="submit" id="delete-all" value="Clear Graphs" disabled="disabled"/>
-      <input type="submit" value="Run Model" onclick="_gaq.push(['_trackEvent', 'Models', 'Run', 'Run webDICE Basic Model']);"/>
+      <input type="submit" value="Run Model"  onclick="_gaq.push(['_trackEvent', 'Models', 'Run', 'Run webDICE Basic Model']);"/>
     </div>
     <input type="hidden" name="carbon_model" value="dice_carbon">
     <input type="hidden" name="damages_model" value="dice_damages">
