@@ -187,7 +187,7 @@ class BeamCarbon(CarbonModel):
     def __init__(self, params):
         CarbonModel.__init__(self, params)
         self.N = 20
-        self.initial_carbon = [808.9, 725, 35641]
++        self.initial_carbon = [808.9, 604, 29595]
         self._carbon_matrix_skel = np.array([
             -.2, .2, 0,
             .2, -.2, .05,
@@ -215,11 +215,16 @@ class BeamCarbon(CarbonModel):
         k_d = .05      /yr
         delta = 50
         k_h = 1.91e3
-        k_1 = 1e-6     mol/kg
-        k_2 = 7.53e-10 mol/kg
+        --k_1 = 1e-6     mol/kg--
+        --k_2 = 7.53e-10 mol/kg--
         AM = 1.77e20   mol
         OM = 7.8e22    mol
-        Alk = 662.7    GtC
+        --Alk = 662.7    GtC--
+
+        k_1 = 8e-7
+        k_2 = 4.53e-10
+        Alk = 767.0
+
         _a = k_h * (AM / (OM * (delta + 1)))
         """
         # if opt: self.N = 2
@@ -236,10 +241,12 @@ class BeamCarbon(CarbonModel):
             data.mass_atmosphere[i], data.mass_upper[i], data.mass_lower[i]
         )
         for x in xrange(self.N):
+
             _h = 5.21512e-10 * _mu + 7.32749e-18 * np.sqrt(
                 5.06546e15 * _mu ** 2 - 7.75282e18 * _mu + 2.97321e21
             ) - 4e-7
             _b = 142.349 / (1 + 8e-7 / _h + 8e-7 * 4.53e-10 / _h)
+
             self.carbon_matrix[1][0] = _b * .2
             self.carbon_matrix[1][1] = _b * -.2 - .05
             _ma += self.mass_atmosphere(

@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block headjs -%}
+{% block headjs %}
   <script type="text/javascript">
     Options = window.Options || { };
     Options.measurements = {{ measurements|safe }};
@@ -7,30 +7,28 @@
     Options.graphs = {{  graph_names|safe }};
     Options.dice_version = {% if dice_version %}{{ dice_version|safe }}{% else %}2007{% endif %};
   </script>
-  <script type="text/javascript" src="/static/js/main.js?{{ now }}"></script>
-{%- endblock %}
+  <script type="text/javascript" src="/webdice/static/js/basic_tab_2010.js"></script>
+  <script type="text/javascript" src="/webdice/static/js/main.js?{{ now }}"></script>
+{% endblock %}
 {% block mainlink %}<div id="back-to-rdcep">Switch to:
-  <a href="/basic">Basic</a>
   {%- for v in other_versions -%}
   <a href="/advanced/{{ v }}">Advanced {{ v }}</a>
   {%- endfor -%}
   </div>{% endblock %}
 {% block doclinks %}
-  <li><a target="_blank" href="/static/docs/webdice_advanced_faq.pdf">Basic</a></li>
-  <li><a target="_blank" href="/static/docs/webdice_advanced_manual.pdf">Intermediate</a></li>
-  <li><a target="_blank" href="/static/docs/webdice_equation_help.pdf">Equations</a></li>
+  <li><a target="_blank" href="/webdice/static/docs/webdice_basc_faq.pdf">Basic</a></li>
+  <li><a target="_blank" href="/webdice/static/docs/webdice_equation_help.pdf">Equations</a></li>
 {% endblock %}
-{% block sidebar -%}
-  <form id="submission" method="post" action="/">
+{% block sidebar %}
+  <form id="submission" method="post" class="basic" action="/">
     <div id="parameters" class="has-tabs">
       <div id="sidebar-tabs" class="tabs">
         <a href="" class="selected" id="link-to-tab-policy">Policy</a>
-        <a href="" id="link-to-tab-climate">Climate</a>
-        <a href="" id="link-to-tab-economy">Economy</a>
+        <a href="" id="link-to-tab-beliefs">Beliefs</a>
       </div>
-      {% for tab in tabs -%}
+      {% for tab in tabs %}
       <div id="tab-{{ tab.name|lower }}" class="tab {% if tab.name|lower != 'policy' %}not{% endif %}selected">
-        {% for section in tab.sections -%}
+        {% for section in tab.sections %}
         <h2>{% if section.radio -%}{{ section.radio|safe }}
           {% if section.help -%}
             <span class="help-button">?</span>
@@ -38,10 +36,11 @@
         {%- endif %}{{ section.name }}</h2>
         {% if section.parameters -%}
         <ul>
-          {% for parameter in section.parameters -%}
+          {% for parameter in section.parameters %}
           <li{% if parameter.disabled or parameter.init_disabled %} class="disabled init-disabled" {% endif %}>
-            {% if parameter.type == 'range' -%}
+            {% if parameter.type == 'range' %}
             <label title="{{ parameter.description }}">{{ parameter.name }}
+            {% if tab.name == 'Policy' %}
             <span class="label">
               <span class="label-number">{% if parameter.class == 'reverse' -%}
                 {{ parameter.max - (parameter.default - parameter.min) }}
@@ -55,64 +54,59 @@
                 {{ ((parameter.max - (parameter.default - parameter.min)) * 100)|int }}
               {%- else -%}
                 {{ parameter.default }}
-              {%- endif %}</span><span>{{ parameter.unit|safe }}</span>
+              {%- endif %}</span><span>{{ parameter.unit }}</span>
             </span>
+            {% endif %}
             </label>
             <input name="{{ parameter.machine_name }}" type="range" min="{{ parameter.min }}" max="{{ parameter.max }}" value="{{ parameter.default }}" step="{{ parameter.step }}" data-prec="{{ parameter.precision }}" {% if parameter.disabled or parameter.init_disabled %}disabled="disabled"{% endif %} {% if parameter.class %}class="{{ parameter.class }}"{% endif %}/>
+            {% if tab.name|lower == 'policy' %}
             <div class="tick-wrap">
               <span class="tick" style="left:{{ parameter.tick }}" >&bullet;</span>
             </div>
-            {%- endif %}
-            {% if parameter.type == 'select' -%}
+            {% else %}
+            <div class="minimum-range-value">{{ parameter.min_legend }}</div>
+            <div class="maximum-range-value">{{ parameter.max_legend }}</div>
+            {% endif %}
+            {% endif %}
+            {% if parameter.type == 'select' %}
             <label title="{{ parameter.description }}">{{ parameter.name }}</label>
-              <select name="{{ parameter.machine_name }}"{% if parameter.disabled or parameter.init_disabled %} disabled="disabled"{% endif %}>
-              {% for option in parameter.options -%}
+            <select name="{{ parameter.machine_name }}"{% if parameter.disabled or parameter.init_disabled %} disabled="disabled"{% endif %}>
+              {% for option in parameter.options %}
               <option value="{{ option.machine_name }}" title="{{ option.description }}">{{ option.name }}</option>
-              {%- endfor %}
-            </select>
-            {%- endif %}
-            {% if parameter.help -%}
-            <span class="help-button">?</span>
-            {%- endif %}
-          </li>
-          {%- endfor %}
-        </ul>
-        {%- endif %}
-        {%- endfor %}
+              {% endfor %}
+              </select>
+            {% endif %}
+            {% if parameter.help %}<span class="help-button">?</span>{% endif %}
+            </li>{% endfor %}</ul>{% endif %}{% endfor %}
       </div>
-      {%- endfor %}
+    {% endfor %}
     </div>
     <div id="controls">
       <input type="reset" id="reset-inputs" value="Reset Inputs"/>
       <input type="submit" id="delete-all" value="Clear Graphs" disabled="disabled"/>
-      <input type="submit" value="Run Model" onclick="_gaq.push(['_trackEvent', 'Models', 'Run', 'Run webDICE {{  year }} Model']);"/>
+      <input type="submit" value="Run Model" onclick="_gaq.push(['_trackEvent', 'Models', 'Run', 'Run webDICE Basic Model']);"/>
     </div>
+    <input type="hidden" name="carbon_model" value="dice_carbon">
+    <input type="hidden" name="damages_model" value="dice_damages">
   </form>
   <ul id="runs"></ul>
-{%- endblock %}
-{% block text -%}
-  {# paragraphs_html|safe #}
-{%- endblock %}
-{% block xaxis -%}
-{% for group in dropdowns -%}
-<optgroup label="-- {{ group.name }} --"></optgroup>
-{% for option in group.options -%}
-<option value="{{ option.machine_name }}">{{ option.name }}</option>
-{% endfor %}
-{%- endfor %}
-{%- endblock %}
-{% block yaxis -%}
-{% for group in dropdowns -%}
-<optgroup label="-- {{ group.name }} --"></optgroup>
-{% for option in group.options -%}
-<option value="{{ option.machine_name }}">{{ option.name }}</option>
-{%- endfor %}
-{%- endfor %}
-{%- endblock %}
-{% block help %}{% for parameter in all_parameters %}{% if parameter.help %}
-  <div class="help-text" id="{{ parameter.machine_name }}-help">{{ parameter.help|safe }}
-  </div>{% endif %}{% endfor %}
+{% endblock %}
+{% block text -%}{# paragraphs_html|safe #}{%- endblock %}
+{% block xaxis %}{% for group in dropdowns %}<optgroup label="-- {{ group.name }} --"></optgroup>
+  {% for option in group.options %}<option value="{{ option.machine_name }}">{{ option.name }}</option>
+  {% endfor %}{% endfor %}{% endblock %}
+{% block yaxis %}{% for group in dropdowns %}<optgroup label="-- {{ group.name }} --"></optgroup>
+  {% for option in group.options %}<option value="{{ option.machine_name }}">{{ option.name }}</option>
+  {% endfor %}{% endfor %}{% endblock %}
+{% block help %}
+  {% for parameter in all_parameters %}
+    {% if parameter.help %}
+      <div class="help-text" id="{{ parameter.machine_name }}-help">
+        {{ parameter.help|safe }}
+      </div>
+    {% endif %}
+  {% endfor %}
 {% endblock %}
 {% block bodyjs %}
-  <script src="/static/js/webdice_help.js"></script>
+  <script src="/webdice/static/js/webdice_help.js"></script>
 {% endblock %}

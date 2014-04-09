@@ -1,7 +1,9 @@
 from __future__ import division
+
 import numpy as np
 import pandas as pd
-from params import DiceParams, Dice2010Params
+
+from webdice.dice.params import DiceParams, Dice2010Params
 from equations.loop import Loop
 
 
@@ -144,7 +146,6 @@ class Dice(object):
         self.eq.set_models(self.params)
         _miu = None
         if opt:
-            print(1)
             if miu is not None:
                 D = pd.Panel(
                     {i: self.data.vars for i in xrange(self.params._tmax + 1)}

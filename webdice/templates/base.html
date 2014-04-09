@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+  <meta charset="utf-8">
   <title>RDCEP :: WebDICE</title>
-  <link rel="stylesheet" href="/static/css/styles.css?{{ now }}" type="text/css" media="screen" title="Default Stylesheet"/>
-  <link rel="stylesheet" type="text/css" media="screen, projection" href="/static/css/fd-slider.min.css" />
-  <script src="/static/js/fd-slider.min.js"></script>
-  <script src="/static/js/jquery.min.js"></script>
-  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>
-  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+  <link rel="stylesheet" href="{{ url_for('webdice.static', filename='css/styles.css') }}?{{ now }}" media="screen" title="Default Stylesheet">
+  <link rel="stylesheet" media="screen, projection" href="{{ url_for('webdice.static', filename='css/fd-slider.min.css') }}">
+  <script src="{{ url_for('webdice.static', filename='js/fd-slider.min.js') }}"></script>
+  <script src="{{ url_for('webdice.static', filename='js/jquery.min.js') }}"></script>
+  <script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>
+  <script src="https://www.google.com/jsapi"></script>
   {% block headcss %}{% endblock %}
   {% block headjs %}{% endblock %}
 </head>
@@ -17,9 +17,9 @@
 {% block mainlink %}<div id="back-to-rdcep"><a href="http://www.rdcep.org/">Back to RDCEP</a></div>{% endblock %}
 <ul id="help-menu">
   <li id="display-help">Documentation<ul>{% block doclinks %}
-    <li><a target="_blank" href="/static/docs/webdice_basic_help.pdf">Basic</a></li>
-    <li><a target="_blank" href="/static/docs/webdice_intermediate_help.pdf">Intermediate</a></li>
-    <li><a target="_blank" href="/static/docs/webdice_equation_help.pdf">Equations</a></li>
+    <li><a target="_blank" href="/webdice/static/docs/webdice_basic_help.pdf">Basic</a></li>
+    <li><a target="_blank" href="/webdice/static/docs/webdice_intermediate_help.pdf">Intermediate</a></li>
+    <li><a target="_blank" href="/webdice/static/docs/webdice_equation_help.pdf">Equations</a></li>
   {% endblock %}</ul></li>
   <li id="view-source"><a href="https://www.github.com/RDCEP/chicagowebdice/" target="_blank">View Source</a></li>
 </ul>
