@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'base_page.html' %}
 {% block headjs -%}
   <script type="text/javascript">
     Options = window.Options || { };
@@ -7,19 +7,8 @@
     Options.graphs = {{  graph_names|safe }};
     Options.dice_version = {% if dice_version %}{{ dice_version|safe }}{% else %}2007{% endif %};
   </script>
-  <script type="text/javascript" src="/webdice/static/js/main.js?{{ now }}"></script>
 {%- endblock %}
-{% block mainlink %}<div id="back-to-rdcep">Switch to:
-  <a href="/basic">Basic</a>
-  {%- for v in other_versions -%}
-  <a href="/advanced/{{ v }}">Advanced {{ v }}</a>
-  {%- endfor -%}
-  </div>{% endblock %}
-{% block doclinks %}
-  <li><a target="_blank" href="/webdice/static/docs/webdice_advanced_faq.pdf">Basic</a></li>
-  <li><a target="_blank" href="/webdice/static/docs/webdice_advanced_manual.pdf">Intermediate</a></li>
-  <li><a target="_blank" href="/webdice/static/docs/webdice_equation_help.pdf">Equations</a></li>
-{% endblock %}
+
 {% block sidebar -%}
   <form id="submission" method="post" action="/">
     <div id="parameters" class="has-tabs">
@@ -85,7 +74,7 @@
     <div id="controls">
       <input type="reset" id="reset-inputs" value="Reset Inputs"/>
       <input type="submit" id="delete-all" value="Clear Graphs" disabled="disabled"/>
-      <input type="submit" value="Run Model" onclick="_gaq.push(['_trackEvent', 'Models', 'Run', 'Run webDICE {{  year }} Model']);"/>
+      <input type="submit" value="Run Model" onclick="_gaq.push(['_trackEvent', 'Models', 'Run', 'Run webDICE {{ year }} Model']);"/>
     </div>
   </form>
   <ul id="runs"></ul>
@@ -114,5 +103,6 @@
   </div>{% endif %}{% endfor %}
 {% endblock %}
 {% block bodyjs %}
-  <script src="/webdice/static/js/webdice_help.js"></script>
+  {{ super() }}
+  <script src="/static/js/webdice_help.js"></script>
 {% endblock %}

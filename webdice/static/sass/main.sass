@@ -1,0 +1,283 @@
+@import globals
+@import old
+@import colors
+
+$top_font: .9em
+$top_pad: .75
+$bottom_font: .9em
+$bottom_pad: .75em
+
+@mixin columns($c, $g)
+  -moz-column-count: $c /* Firefox */
+  -webkit-column-count: $c /* Safari and Chrome */
+  column-count: $c
+  -moz-column-gap: $g
+  -webkit-column-gap: $g
+  column-gap: $g
+
+*
+  margin: 0
+  padding: 0
+body, html
+  height: 100%
+body
+  background-color: #eeeeee
+  font-family: Helveltica, Arial, sans-serif
+  color: #222222
+  overflow: hidden
+a
+  text-decoration: none
+  color: #666666
+  &:hover
+    color: #ccc !important
+
+h1, h2
+  margin-bottom: .5em
+#wrapper
+  height: 100%
+  width: 100%
+
+path, circle
+  fill: none
+
+//MENUS
+#main_nav, #title_legend_wrap
+  width: 100%
+  position: fixed
+  top: 0
+  z-index: 999
+  -webkit-transform: translateZ(0)
+  li
+    display:  inline-block
+  nav
+    background-color: black
+    opacity: .8
+    padding: .75em 0
+    position: relative
+    z-index: 5
+#title_legend_wrap
+  position: absolute
+  top: 2.3em
+  background-color: #ffffff
+  opacity: .8
+  height: 2em
+  z-index: 1
+  #title_legend
+    width: 960px
+    margin: 0 auto
+    .tabs
+      height: 2.4em
+      font-size: 0.8em
+      margin-left: -1em
+      li
+        text-decoration: none
+        color: #000
+        display: block
+        float: left
+        padding: 0.8em
+        border-right: 1px solid transparent
+        border-left: 1px solid transparent
+        cursor: pointer
+        &.selected
+          background-color: #eee
+      &.notselected
+        display: none
+#top_nav
+  font-size: .9em
+  width: 960px
+  margin: 0 auto
+  line-height: 1em
+  position: relative
+  z-index: 999
+  .dead-hover
+    cursor: pointer
+  ul
+    list-style-type: none
+  & > li
+    border: none
+    display: inline-block
+    margin: 0
+    & + li
+      padding: 0 0 0 1em
+      position: relative
+      ul
+        //@include columns(2, 2em)
+        border: none
+        display: none
+        position: absolute
+        top: 99%
+        left: 0
+        background-color: black
+        z-index: 999
+        padding: 0 1em
+        height: 0
+        margin: 0
+      li
+        margin-bottom: .5em
+        //position: relative
+        height: 0
+        font-size: 1em
+        overflow: hidden
+        &.active
+          position: absolute
+          height: auto
+          font-size: .8em
+          font-weight: bold
+          top: 1.65em
+          a
+            color: black
+        &:hover
+          overflow: visible
+          height: auto
+      &:hover ul
+        display: block
+        height: auto
+        padding: .75em 1em .5em
+        z-index: 5
+        li
+          height: auto
+          position: relative
+          &.active
+            position: static
+            font-size: 1em
+            font-weight: normal
+            a
+              color: #cccccc
+        ul
+          position: absolute
+          left: 100%
+          top: -.81em
+
+#main_content
+  width: 1110px
+  margin: 0 auto
+  position: relative
+  height: 100%
+
+
+.tab
+  //visibility: hidden
+  z-index: 0
+  background-color: #eeeeee
+  &.selected
+    display: block
+    z-index: 2
+  .small-chart
+    float: left
+    position: relative
+    h3
+      font-size: 1em
+      position: absolute
+      top: 0
+      padding: 1em 0 0 100px
+  &.chart-pane
+    position: absolute
+    top: 4.2em
+    left: 0
+    right: 0
+    bottom: 0
+.chart-line
+  stroke-width: 2
+.chart-legend
+  display: none
+.grid-line
+  stroke: white
+  stroke-width: 1
+.axis
+  .domain
+    stroke: #222222
+    stroke-width: .5
+  text
+    font-size: .66em
+    font-weight: normal
+    letter-spacing: .02em
+    fill: #545454
+.data-point
+  stroke-width: 3
+  cursor: ns-resize
+  stroke: transparent
+  fill: transparent
+  pointer-events: none //TODO: only for draggable points
+  .loose
+    stroke-width: 5
+    pointer-events: all
+  &.active
+    fill: $light-gray
+    stroke: black //$red
+  &.draggable
+    pointer-events: all
+    &.hovered
+      fill: black
+
+
+
+
+
+#menu_glossary
+  margin-left: 2em!important
+
+#sidebar
+  display: none
+
+
+.world-boundary
+  stroke: #eeeeee
+  stroke-width: .5
+  fill: #cccccc
+  &.active
+    stroke: red
+    stroke-width: 3px
+.grid-boundary
+  fill: transparent
+  stroke: transparent
+  stroke-width: 0
+.data-line
+  stroke: red
+  stroke-width: 2px
+  fill: transparent
+#corner_legend
+  position: absolute
+  top: 50px
+  left: 20px
+  font-size: .8em
+  dt
+    font-weight: bold
+#hover_legend
+  background-color: black
+  opacity: .8
+  padding: .5em
+  color: white
+  display: none
+  position: absolute
+  font-size: .8em
+  pointer-events: none
+.y.axis line
+  stroke-dasharray: 2,2
+  fill: transparent
+  stroke-width: .5
+  stroke: #999999
+#graph_cursor
+  stroke: #999999
+  stroke-width: 1
+.domain
+  stroke: transparent
+  fill: transparent
+
+.nowrap
+  white-space: nowrap
+
+
+.tool_tip
+  position: absolute
+  //position: fixed
+  visibility: hidden
+  padding: 2px 5px
+  color: white
+  background-color: black
+  opacity: .8
+  font-size: .7em
+  pointer-events: none
+  &.active
+    visibility: visible
+
+@import helpers

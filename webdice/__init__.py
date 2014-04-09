@@ -3,7 +3,7 @@ from flask import Flask, render_template, g
 from flask import render_template, request, make_response
 
 from flask_beaker import BeakerSession
-from flask_restful import Api, reqparse
+# from flask_restful import Api, reqparse
 from webdice.dice import Dice2007, Dice2010
 from webdice.html_parser.web import DiceWebParser
 
@@ -37,13 +37,13 @@ def not_found(error):
     return render_template('errors/500.html'), 500
 
 
-@app.context_processor
-def context_globals():
-    pass
+# @app.context_processor
+# def context_globals():
+#     pass
 
 
-api = Api(app)
-api_parser = reqparse.RequestParser()
+# api = Api(app)
+# api_parser = reqparse.RequestParser()
 app.config['DEBUG'] = True
 app.config['SECRET_KEY'] = 'Ad78gii#$3979oklaklf'
 BeakerSession(app)

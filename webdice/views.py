@@ -105,7 +105,7 @@ def page(tabs, parser, year, tpl='index'):
     )
 
 
-@mod.route('/run/<int:year>', methods=['POST', ])
+@mod.route('/runold/<int:year>', methods=['POST', ])
 def graphs(year):
     """
     Get data from <form>, run DICE loop.
@@ -150,6 +150,55 @@ def graphs(year):
         this_dice.params._carbon_tax = True
     this_dice.loop(opt=opt)
     return this_dice.format_output()
+
+
+@mod.route('/run/<int:year>', methods=['POST', 'GET'])
+def graphs_d3(year):
+    """
+    Get data from <form>, run DICE loop.
+    ...
+    Args:
+        None
+    Returns:
+        Formatted step values
+    """
+    s, parser = do_session(request, year)
+    this_dice = s['dice']
+    this_dice.loop()
+    return this_dice.format_output()
+    # form = request.form
+    # all_parameters = parser.get_all_parameters()
+    # for p in all_parameters:
+    #     try:
+    #         p['disabled']
+    #     except (KeyError, AttributeError):
+    #         try:
+    #             getattr(this_dice.params, p['machine_name'])
+    #         except AttributeError:
+    #             pass
+    #         else:
+    #             try:
+    #                 this_dice.params.__dict__[p['machine_name']] = float(form[p['machine_name']])
+    #             except (ValueError, AttributeError, KeyError):
+    #                 pass
+    # try:
+    #     this_dice.params.damages_model = form['damages_model']
+    #     this_dice.params.carbon_model = form['carbon_model']
+    #     this_dice.params.temperature_model = form['temperature_model']
+    # except KeyError:
+    #     pass
+    # opt = False
+    # policy = form['policy_type']
+    # this_dice.params._treaty = False
+    # this_dice.params._carbon_tax = False
+    # if policy == 'treaty':
+    #     this_dice.params._treaty = True
+    # elif policy == 'optimized':
+    #     opt = True
+    # elif policy == 'carbon_tax':
+    #     this_dice.params._carbon_tax = True
+    # this_dice.loop(opt=opt)
+    # return this_dice.format_output()
 
 
 @mod.route('/csv', methods=['POST',])

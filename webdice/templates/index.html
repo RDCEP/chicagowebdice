@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block headcss %}<link rel="stylesheet" href="/webdice/static/css/home.css">{% endblock %}
+{% block headcss %}<link rel="stylesheet" href="/static/css/home.css">{% endblock %}
 {% block page %}
   <div id="home-wrapper" class="clearfix">
     <div class="home-column">
@@ -38,7 +38,8 @@
         <p>The advanced inputs section is designed for more experienced users.
           The complete set of adjustable variables has been made available,
           allowing the user to assess the effect their beliefs have on the model.</p>
-        <p><a href="/advanced">Go to advanced inputs</a></p>
+        <p><a href="/advanced/2007">Go to advanced 2007 inputs</a></p>
+        <p><a href="/advanced/2010">Go to advanced 2010 inputs</a></p>
       </div>
       <!--<div class="home-cell home-image-cell">
         <img class="home-head-image" src="../static/images/home/polar-bear.jpg">
@@ -57,7 +58,7 @@
   </div>
 {% endblock %}
 {% block bodyjs -%}
-<script src="/webdice/static/js/vendor/jwplayer/jwplayer.js"></script>
+<script src="/static/js/vendor/jwplayer/jwplayer.js"></script>
 <script>
   jwplayer("tutorial-flv").setup({
     playlist: [{

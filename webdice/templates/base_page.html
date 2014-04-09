@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% block page %}
+  <header id="main_nav">
+    <nav>
+      <ul id="top_nav" class="clearfix">
+        <li><a href="{{ url_for('webdice.index') }}">WebDICE</a></li>
+        <li id="advanced_pages">
+          <a class="dead-hover">Advanced</a>
+          <ul>
+            <li><a href="{{ url_for('webdice.advanced', year=2007) }}">2007</a></li>
+            <li><a href="{{ url_for('webdice.advanced', year=2010) }}">2010</a></li>
+          </ul>
+        </li>
+        <li><a href="{{ url_for('webdice.basic') }}">Basic</a></li>
+        <li><a href>Documentation</a><ul>
+          <!-- switch help forbasic and advanced -->
+          <li><a target="_blank" href="{{ url_for('webdice.static', filename='docs/webdice_basic_help.pdf') }}">Basic</a></li>
+          <li><a target="_blank" href="{{ url_for('webdice.static', filename='docs/webdice_intermediate_help.pdf') }}">Intermediate</a></li>
+          <li><a target="_blank" href="{{ url_for('webdice.static', filename='docs/webdice_equation_help.pdf') }}">Equations</a></li>
+          <li><a target="_blank" href="https://www.github.com/RDCEP/chicagowebdice/">View source</a></li>
+        </ul></li>
+      </ul>
+    </nav>
+    <div id="title_legend_wrap">
+      <div id="title_legend">
+        <ul class="tabs">
+          <li id="link-to-essential" data-pane="essential_graphs" class="selected">Essential</li>
+          <li id="link-to-climate" data-pane="climate_graphs">Climate</li>
+          <li id="link-to-economy" data-pane="economy_graphs">Economy</li>
+          <li id="link-to-policy" data-pane="policy_graphs">Policy</li>
+          <li id="link-to-custom" data-pane="custom_graphs">Customizable</li>
+          <li id="link-to-scc-graph" data-pane="scc_graphs">SCC</li>
+        </ul>
+      </div>
+    </div>
+  </header>
+
+  <article id="main_content">
+
+  <div id="sidebar">
+  {% block sidebar %}{% endblock %}
+  </div>
+
+  {% block content %}
+    <div id="essential_graphs" class="tab chart-pane selected">
+      <div class="small-chart" id="temp_atmosphere_chart"></div>
+      <div class="small-chart" id="consumption_pc_chart"></div>
+      <div class="small-chart" id="mass_atmosphere_chart"></div>
+      <div class="small-chart" id="emissions_chart"></div>
+    </div>
+    <div id="climate_graphs" class="tab chart-pane">
+      <div class="small-chart" id="mass_upper_chart"></div>
+      <div class="small-chart" id="mass_lower_chart"></div>
+      <div class="small-chart" id="temp_lower_chart"></div>
+    </div>
+    <div id="economy_graphs" class="tab chart-pane">
+      <div class="small-chart" id="productivity_chart"></div>
+      <div class="small-chart" id="backstop_growth_chart"></div>
+      <div class="small-chart" id="carbon_intensity_chart"></div>
+      <div class="small-chart" id="damages_chart"></div>
+    </div>
+    <div id="policy_graphs" class="tab chart-pane">
+      <div class="small-chart" id="tax_rate_chart"></div>
+      <div class="small-chart" id="abatement_chart"></div>
+      <div class="small-chart" id="scc_chart"></div>
+      <div class="small-chart" id="output_abate_chart"></div>
+    </div>
+    <div id="custom_graph" class="tab chart-pane">
+      <div id="large-graph">
+        <div id="large-graph-chart" style="height:90%;"></div>
+        <div id="large-graph-zoom" style="height:10%;"></div>
+      </div>
+      <div id="graph-controls">
+        <div>
+          <h2>X-Axis</h2>
+          <select id="select-x-axis">
+            <option value="year">Year</option>
+            {% block xaxis %}{% endblock %}
+           </select>
+           <label><input type="checkbox" id="logarithmic-x"> Logarithmic</label>
+        </div>
+        <div>
+          <h2>Y-Axis</h2>
+          <select id="select-y-axis">
+            {% block yaxis %}{% endblock %}
+          </select>
+          <label><input type="checkbox" id="logarithmic-y"> Logarithmic</label>
+        </div>
+        <div>
+          <h2>Labels</h2>
+          <select id="series-labels">
+            <option value="none">None</option>
+            <option value="years">Years</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div id="scc_graph" class="tab chart-pane"></div>
+  {% endblock %}
+  </article>
+
+
+
+  <form method="post" id="download-data" action="/csv" target="_blank">
+    <textarea name="data" id="download-textarea"></textarea>
+    <input type="submit" value="Download Selected Runs as CSV">
+  </form>
+
+  <div id="help-wrapper">
+  {% block help %}{% endblock %}
+  </div>
+
+{% block bodyjs %}
+<script src="{{ url_for('webdice.static', filename='js/stacked_chart.js') }}?{{ now }}"></script>
+<script src="{{ url_for('webdice.static', filename='js/main.js') }}?{{ now }}"></script>
+
+{% endblock %}
+{% endblock %}
