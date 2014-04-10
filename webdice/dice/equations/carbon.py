@@ -187,7 +187,7 @@ class BeamCarbon(CarbonModel):
     def __init__(self, params):
         CarbonModel.__init__(self, params)
         self.N = 20
-+        self.initial_carbon = [808.9, 604, 29595]
+        self.initial_carbon = [808.9, 604, 29595]
         self._carbon_matrix_skel = np.array([
             -.2, .2, 0,
             .2, -.2, .05,
