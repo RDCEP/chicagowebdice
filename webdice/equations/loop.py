@@ -121,6 +121,8 @@ class Loop(object):
         )(params)
         if params.carbon_model == 'linear_carbon':
             params.temperature_model = 'linear_temperature'
+        else:
+            params.temperature_model = 'dice_%s' % params.dice_version
         self.temperature_model = getattr(
             temperature, "".join(x.capitalize() for x in params.temperature_model.split('_'))
         )(params)
