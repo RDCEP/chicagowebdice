@@ -9,9 +9,9 @@
     sidebar_div = d3.select('#sidebar'),
     runsBeingDisplayed = [],
     nextRunNumber = 1,
-    charts = {
-    },
+    charts = {},
     data = [],
+
     handlersForViewportChanged = [],
     handlersForDataChanged = [],
     color_list = [
@@ -45,7 +45,7 @@
     t.classed('selected', true);
     d3.selectAll('.chart-pane').classed('selected', false);
     d3.select('#' + t.attr('data-pane')).classed('selected', true);
-  })
+  });
 
   var active_tab = function() {
     d3.selectAll('.tabs').each(function() {
@@ -69,26 +69,29 @@
 
   var resize_charts = function() {
 
-    for (var chart in charts) {
-      var visible_chart_wrap = d3.select('.chart-pane.selected'),
+    var visible_chart_wrap = d3.select('.chart-pane.selected'),
         width = visible_chart_wrap.node().clientWidth,
         height = visible_chart_wrap.node().clientHeight;
-      if (chart.small) {
-        charts[chart].chart.width(width / 2 - 1).height(height / 2).redraw(); }
-      else { chart.width(width - 1).height(height).redraw(); }
+    for (var chart in charts) {
+      if (charts.hasOwnProperty(chart)) {
+        if (chart.small) {
+          charts[chart].chart.width(width / 2 - 1).height(height / 2).redraw();
+        } else {
+          chart.width(width - 1).height(height).redraw();
+        }
+      }
     }
-
 
   };
 
   var initialize_charts = function(_data, _params, _metadata) {
 
-    console.log(_metadata);
+    console.log(_data);
 
-    for (var p in _data) {
-      if (_data.hasOwnProperty(p)) {
+    for (var dice_variable in _data) {
+      if (_data.hasOwnProperty(dice_variable)) {
         var this_data = [];
-        _data[p].forEach(function(d, i) {
+        _data[dice_variable].forEach(function(d, i) {
           if (i < graph_periods) {
             this_data.push({
               y: d,
@@ -98,28 +101,30 @@
           }
         });
 
-
-
-        var chart_wrap = d3.select('#'+p+'_chart');
+        /*
+         Draw small chart for important variables
+         */
+        var chart_wrap = d3.select('#'+dice_variable+'_chart');
         if (!chart_wrap.empty()) {
 
           var ext = d3.extent(this_data, function(d, i) { return d.y; }),
             min = ext[0] == 0 ? 0 : ext[0] - (ext[1] - ext[0]) / 10,
             max = ext[1] + (ext[1] - ext[0]) / 10;
 
-          charts[p] = {
+          charts[dice_variable] = {
             chart: new WebDICEGraph()
               .padding(padding[0], padding[1], padding[2], padding[3])
-//              .width(0).height(0)
-              .select(p+'_chart')
+              .select(dice_variable+'_chart')
               .x(d3.time.scale())
               .y(d3.scale.linear())
-              .domain([new Date(start_year, 0, 1), new Date(start_year + (graph_periods - 1) * period_length, 0, 1)],
+              .domain(
+                [new Date(start_year, 0, 1),
+                 new Date(start_year + (graph_periods - 1) * period_length, 0, 1)],
                 [min, max])
               .format_x(function(x) { return x.getFullYear(); })
               .format_y(function(y) { return d3.format('.1f')(y); })
-              .data([{data: this_data, type: p}])
-              .title(_metadata[p].title || '')
+              .data([{data: this_data, type: dice_variable}])
+              .title(_metadata[dice_variable].title || '')
               .h_grid(true)
               .hoverable(true)
               .legend(true)
@@ -129,8 +134,15 @@
             small: chart_wrap.classed('small-chart')
           };
         }
+
+
+
       }
     }
+
+    /*
+     Draw customizable chart
+     */
 
     resize_charts();
 
@@ -142,11 +154,11 @@
 
   d3.select(window).on('resize', function() {
     resize_charts();
-  })
+  });
 
   d3.json('/run/'+Options.dice_version, function(error, _data) {
 
-    d3.json('/static/js/meta_data.json', function(error, _metadata) {
+    d3.json('/static/js/meta_data.json?4', function(error, _metadata) {
 
       initialize_charts(_data.data, _data.parameters, _metadata);
 
