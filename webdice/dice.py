@@ -224,7 +224,7 @@ class Dice(object):
             time_horizon = 59
             future_indices = time_horizon - i
             self.data.scc = self.data.vars.copy()
-            for j in range(i, time_horizon):
+            for j in range(i, time_horizon + 1):
                 shock = 0
                 if j == i:
                     shock = 1.0
@@ -265,17 +265,17 @@ class Dice(object):
             import pyipopt
         except ImportError:
             print('OPTIMIZATION ERROR: It appears that you do not have pyipopt installed. Please install it before running optimization.')
-        _n = 3
-        x0 = np.concatenate((
-            np.linspace(.5, 1, _n),
-            np.ones(self.opt_vars - _n),
-        ))
-        x0 = np.ones(self.opt_vars)
+        x0 = np.concatenate(
+            (np.linspace(0, 1, 40) ** (1 - np.linspace(0, 1, 40)), np.ones(20))
+        )
         M = 0
         nnzj = 0
         nnzh = 0
         xl = np.zeros(self.params._tmax)
         xu = np.ones(self.params._tmax)
+        xl[0] = .005
+        xu[0] = .005
+        xl[-20:] = 1
         gl = np.zeros(M)
         gu = np.ones(M) * 4.0
         def eval_f(_x0):
@@ -298,21 +298,18 @@ class Dice(object):
             else:
                 return np.empty(M)
         pyipopt.set_loglevel(1)
-        # nlp.num_option('tol', self.opt_tol)
         nlp = pyipopt.create(
             self.opt_vars, xl, xu, M, gl, gu, nnzj, nnzh, eval_f,
             eval_grad_f, eval_g, eval_jac_g,
         )
-        nlp.num_option('tol', self.opt_tol)
-        nlp.num_option('acceptable_tol', self.opt_tol * 5)
-        nlp.int_option('acceptable_iter', 4)
-        nlp.num_option('obj_scaling_factor', -1e-5)
-        nlp.int_option('print_level', 5)
-        nlp.str_option('linear_solver', 'ma27')
-        # x, zl, zu, multiplier, obj, status = nlp.solve(x0)
-        x = nlp.solve(x0)[0]
+        # nlp.num_option('tol', self.opt_tol)
+        # nlp.num_option('tol', 1e-5)
+        # nlp.num_option('obj_scaling_factor', -1e-5)
+        # nlp.int_option('print_level', 5)
+        # nlp.str_option('linear_solver', 'ma57')
+        result = nlp.solve(x0)
         nlp.close()
-        return x
+        return result[0]
 
     def format_output(self):
         """
@@ -347,7 +344,6 @@ class Dice2007(Dice):
 
 
 if __name__ == '__main__':
-    #pass
     profile = False
     d = Dice2007()
     if profile:
@@ -356,5 +352,7 @@ if __name__ == '__main__':
         import pstats
         p = pstats.Stats('dice_stats')
     else:
-        d.loop()
-        print(d.data.vars)
+        pass
+        # d.loop()
+        # d.data.vars[20:] = 0
+        # print(d.data.vars.emissions_total[:])

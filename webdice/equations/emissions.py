@@ -200,7 +200,7 @@ class EmissionsModel(object):
         """
         return (
             backstop * miu ** (self._params.abatement_exponent - 1) * 1000
-        )
+        ) * (12 / 44)
 
 
 class Dice2007(EmissionsModel):
