@@ -1,26 +1,12 @@
 import json
 from datetime import datetime
-from flask import render_template, request, make_response
-from flask_beaker import BeakerSession
-from flask_restful import Api, reqparse
-from uwsgi_app import app
+from flask import render_template, request, make_response, Blueprint
 from webdice.dice import Dice2007, Dice2010
-from conf.web import DiceWebParser
+from webdice.html_parser.web import DiceWebParser
 
-session_opts = {
-    'session.type': 'ext:memcached',
-    'session.cookie_expires': True,
-    'session.lock_dir': './data',
-    'session.url': '127.0.0.1:11211',
-    'session.memcache_module': 'pylibmc',
-    'session.auto': True
-}
 
-api = Api(app)
-api_parser = reqparse.RequestParser()
-app.config['DEBUG'] = True
-app.config['SECRET_KEY'] = 'Ad78gii#$3979oklaklf'
-BeakerSession(app)
+mod = Blueprint('webdice', __name__, static_folder='static')
+
 
 def validate_number(n):
     """Currently unused. This is a stub for number validation
@@ -28,6 +14,7 @@ def validate_number(n):
     try: float(n)
     except ValueError: raise Exception('Input needs to be a number.')
     else: return n
+
 
 def do_session(request, year=None):
     """
@@ -52,9 +39,10 @@ def do_session(request, year=None):
             print('2010')
             dice = Dice2010()
     s['dice'] = dice if dice else s['dice']
-    return (s, DiceWebParser(year))
+    return s, DiceWebParser(year)
 
-@app.route('/')
+
+@mod.route('/')
 def index():
     """Returns index page."""
     s, parser = do_session(request, 2007)
@@ -65,23 +53,20 @@ def index():
         paragraphs_html=parser.paragraphs_html('index'),
     )
 
-# @app.route('/advanced')
-# def advanced():
-#     s, parser = do_session(request, 2007)
-#     tabs = parser.get_advanced_tabs()
-#     return page(tabs, parser, 'advanced')
 
-@app.route('/advanced/<int:year>')
+@mod.route('/advanced/<int:year>')
 def advanced(year):
     s, parser = do_session(request, year)
     tabs = parser.get_advanced_tabs()
     return page(tabs, parser, year, 'advanced')
 
-@app.route('/basic')
+
+@mod.route('/basic')
 def basic():
     s, parser = do_session(request, 2007)
     tabs = parser.get_basic_tabs()
     return page(tabs, parser, None, 'basic')
+
 
 def page(tabs, parser, year, tpl='index'):
     """
@@ -119,7 +104,8 @@ def page(tabs, parser, year, tpl='index'):
         other_versions=[x for x in [2007, 2010] if x != year],
     )
 
-@app.route('/run/<int:year>', methods=['POST', ])
+
+@mod.route('/run/<int:year>', methods=['POST', ])
 def graphs(year):
     """
     Get data from <form>, run DICE loop.
@@ -165,44 +151,10 @@ def graphs(year):
     this_dice.loop(opt=opt)
     return this_dice.format_output()
 
-@app.route('/csv', methods=['POST',])
+
+@mod.route('/csv', methods=['POST',])
 def csv_output():
     data = request.form['data']
     response =  make_response(data)
     response.headers['Content-Disposition'] = 'attachment; filename="WebDICE-Data.csv"'
     return response
-
-@app.route(
-    '/api/t2xco2/<temp_co2_doubling>/a3/<damages_exponent>/expcost2/<abatement_exponent>/gback/<backstop_decline>/backrat/<backstop_ratio>/dela/<productivity_decline>/dk/<depreciation>/savings/<savings>/popasym/<popasym>/dsig/<intensity_decline_rate>/fosslim/<fosslim>/elasmu/<elasmu>/prstp/<prstp>', methods=['GET']
-)
-def api_get(*args, **kwargs):
-    measurements = get_measurements()
-    all_parameters = get_all_parameters()
-    without_sections = []
-    for s in measurements:
-        for m in s['options']:
-            without_sections.append(m)
-    graph_locations = ['topleft', 'topright', 'bottomleft', 'bottomright', ]
-    graph_names = ['essential', 'climate', 'economy', 'policy']
-    m = json.JSONEncoder().encode(without_sections)
-    graph_locations = json.JSONEncoder().encode(graph_locations)
-    graph_names = json.JSONEncoder().encode(graph_names)
-    now = datetime.now().strftime('%Y%m%d%H%M%S')
-    tabs = get_advanced_tabs()
-    return render_template(
-        'api.html',
-        api=kwargs,
-        measurements=m,
-        graph_locations=graph_locations,
-        graph_names=graph_names,
-        tabs=tabs,
-        dropdowns=measurements,
-        paragraphs_html=paragraphs_html('advanced'),
-        all_parameters=all_parameters,
-        now=now,
-    )
-
-
-
-if __name__ == '__main__':
-    app.run()

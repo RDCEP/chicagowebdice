@@ -1,14 +1,18 @@
 import yaml
 import HTMLParser
 import re
+import os
+from webdice.constants import BASE_DIR
 
 
 class DiceWebParser(object):
     def __init__(self, year=2010):
         self.htmlp = HTMLParser.HTMLParser()
-        YAML = file('parameters_2010.yaml', 'r')
+        YAML = file(os.path.join(BASE_DIR, 'html_parser',
+                                 'parameters_2010.yaml'), 'r')
         if year == 2007:
-            YAML = file('parameters.yaml', 'r')
+            YAML = file(os.path.join(BASE_DIR, 'html_parser',
+                                     'parameters.yaml'), 'r')
         self.CONF_FILE = yaml.load(YAML)
         YAML.close()
 
@@ -196,9 +200,9 @@ class DiceWebParser(object):
         Returns:
             HTML
         """
-        initial_help = self.CONF_FILE['initial_help'][t]
+        # initial_help = self.CONF_FILE['initial_help'][t]
         html = ''
-        paragraphs = initial_help.split('\n')
+        paragraphs = self.CONF_FILE['initial_help'][t].split('\n')
         for paragraph in paragraphs:
             html += '<p>%s</p>\n' % paragraph
         return html
