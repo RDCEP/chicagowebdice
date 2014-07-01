@@ -1,5 +1,6 @@
 from __future__ import division
 import numpy as np
+import numexpr as ne
 
 
 class CarbonModel(object):
@@ -184,7 +185,7 @@ class BeamCarbon(CarbonModel):
     def __init__(self, params):
         CarbonModel.__init__(self, params)
         self.N = 20
-+        self.initial_carbon = [808.9, 604, 29595]
+        self.initial_carbon = [808.9, 725, 35641]
         self._carbon_matrix_skel = np.array([
             -.2, .2, 0,
             .2, -.2, .05,
@@ -238,11 +239,10 @@ class BeamCarbon(CarbonModel):
             data.mass_atmosphere[i], data.mass_upper[i], data.mass_lower[i]
         )
         for x in xrange(self.N):
-
-            _h = 5.21512e-10 * _mu + 7.32749e-18 * np.sqrt(
-                5.06546e15 * _mu ** 2 - 7.75282e18 * _mu + 2.97321e21
-            ) - 4e-7
-            _b = 142.349 / (1 + 8e-7 / _h + 8e-7 * 4.53e-10 / _h)
+            a = np.sqrt(ne.evaluate(
+                '5.06546e15 * _mu ** 2 - 7.75282e18 * _mu + 2.97321e21'))
+            _h = ne.evaluate('5.21512e-10 * _mu + 7.32749e-18 * a - 4e-7')
+            _b = ne.evaluate('142.349 / (1 + 8e-7 / _h + 8e-7 * 4.53e-10 / _h)')
 
             self.carbon_matrix[1][0] = _b * .2
             self.carbon_matrix[1][1] = _b * -.2 - .05
