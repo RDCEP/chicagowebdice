@@ -1,9 +1,7 @@
 from __future__ import division
-
 import numpy as np
 import pandas as pd
-
-from webdice.dice.params import DiceParams, Dice2010Params
+from params import DiceParams, Dice2010Params
 from equations.loop import Loop
 
 
@@ -151,7 +149,7 @@ class Dice(object):
                     {i: self.data.vars for i in xrange(self.params._tmax + 1)}
                 ).transpose(2, 0, 1)
             else:
-                _miu = self.get_ipopt_mu()
+                _miu = self.get_ipopt_miu()
                 _miu[0] = self.params._miu_2005
         for i in range(self.params._tmax):
             if opt and miu is not None:
@@ -182,8 +180,8 @@ class Dice(object):
             self.step(i, D, _miu, deriv=True, opt=True)
         self.opt_grad_f = ((
             D.utility_discounted.ix[:59,:].sum(axis=1) -
-            D.utility_discounted.ix[60,:].sum(axis=1)) / self.eps)
-        self.opt_obj = D.utility_discounted.ix[60,:].sum(axis=1)
+            D.utility_discounted.ix[60,:].sum(axis=1)) * 1e-4 / self.eps)
+        self.opt_obj = D.utility_discounted.ix[60,:].sum(axis=1) * 1e-4
         return self.opt_obj
 
     def grad_loop(self, miu):
@@ -197,8 +195,8 @@ class Dice(object):
             self.step(i, D, _miu, deriv=True, opt=True)
         self.opt_grad_f = ((
             D.utility_discounted.ix[:59,:].sum(axis=1) -
-            D.utility_discounted.ix[60,:].sum(axis=1)) / self.eps)
-        self.opt_obj = D.utility_discounted.ix[60,:].sum(axis=1) * -1e-5
+            D.utility_discounted.ix[60,:].sum(axis=1)) * 1e-4 / self.eps)
+        self.opt_obj = D.utility_discounted.ix[60, :].sum(axis=1) * 1e-4
         return self.opt_grad_f
 
     def get_scc(self, miu):
@@ -240,7 +238,7 @@ class Dice(object):
             )
             self.data.vars.scc[i] = np.sum(DIFF) * 1000 * 10 * (12 / 44)
 
-    def get_ipopt_mu(self):
+    def get_ipopt_miu(self):
         """
         Calculate optimal miu
         ...
@@ -304,14 +302,18 @@ class Dice(object):
             self.opt_vars, xl, xu, M, gl, gu, nnzj, nnzh, eval_f,
             eval_grad_f, eval_g, eval_jac_g,
         )
-        # nlp.num_option('tol', self.opt_tol)
-        # nlp.num_option('tol', 1e-5)
-        # nlp.num_option('obj_scaling_factor', -1e-5)
-        # nlp.int_option('print_level', 5)
-        # nlp.str_option('linear_solver', 'ma57')
-        result = nlp.solve(x0)
+        nlp.num_option('constr_viol_tol', 8e-7)
+        nlp.int_option('max_iter', 30)
+        nlp.num_option('max_cpu_time', 60)
+        nlp.num_option('tol', 1e-5)
+        # nlp.num_option('acceptable_tol', 1e-4)
+        # nlp.int_option('acceptable_iter', 4)
+        nlp.num_option('obj_scaling_factor', -1e+0)
+        nlp.int_option('print_level', 5)
+        nlp.str_option('linear_solver', 'ma57')
+        x = nlp.solve(x0)[0]
         nlp.close()
-        return result[0]
+        return x
 
     def format_output(self):
         """
@@ -354,7 +356,5 @@ if __name__ == '__main__':
         import pstats
         p = pstats.Stats('dice_stats')
     else:
-        pass
-        # d.loop()
-        # d.data.vars[20:] = 0
-        # print(d.data.vars.emissions_total[:])
+        d.loop()
+        print(d.data.vars)

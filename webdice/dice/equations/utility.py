@@ -47,9 +47,10 @@ class UtilityModel(object):
         -------
         float
         """
+        denom = -0.0001 if self._params.elasmu == 1 else 1.0 - self._params.elasmu
         return (
-            (1 / (1 - self._params.elasmu + .000001)) *
-            consumption_pc ** (1 - self._params.elasmu) + 1
+            (1 / denom) *
+            consumption_pc ** denom + 1
         )
 
     def utility_discounted(self, utility, utility_discount, l):

@@ -32,7 +32,7 @@ def do_session(request, year=None):
         else:
             dice = Dice2007()
         s['dice'] = dice
-    if year is not None and s['dice'].dice_version != year:
+    if year is not None and s['dice'].params.dice_version != year:
         if year == 2007:
             dice = Dice2007()
         elif year == 2010:
