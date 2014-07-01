@@ -27,8 +27,8 @@ class EmissionsModel(object):
     tax_rate()
     """
     def __init__(self, params):
-        self._params = params
-        self.eps = params._eps
+        self.params = params
+        self.eps = params.eps
 
     @property
     def emissions_deforest(self):
@@ -40,8 +40,8 @@ class EmissionsModel(object):
         array
         """
         return (
-            self._params._emissions_deforest_2005 *
-            (1 - .1) ** self._params._t0
+            self.params.emissions_deforest_2005 *
+            (1 - .1) ** self.params.t0
         )
 
     @property
@@ -55,9 +55,9 @@ class EmissionsModel(object):
         """
         return np.concatenate((
             np.ones(5),
-            (np.ones(5) * (1 - self._params.e2050)),
-            (np.ones(5) * (1 - self._params.e2100)),
-            (np.ones(45) * (1 - self._params.e2150)),
+            (np.ones(5) * (1 - self.params.e2050)),
+            (np.ones(5) * (1 - self.params.e2100)),
+            (np.ones(45) * (1 - self.params.e2150)),
         ))
 
     @property
@@ -69,8 +69,8 @@ class EmissionsModel(object):
         -------
         array
         """
-        c = [0, self._params.c2050, self._params.c2100,
-             self._params.c2150, self._params._cmax]
+        c = [0, self.params.c2050, self.params.c2100,
+             self.params.c2150, self.params.cmax]
         return np.concatenate((
             c[0] + ((c[1] - c[0]) / 5 * np.arange(5)),
             c[1] + ((c[2] - c[1]) / 5 * np.arange(5)),
@@ -89,9 +89,9 @@ class EmissionsModel(object):
             emissions_ind, self.emissions_deforest[index]
         ) + emissions_shock
         carbon_emitted = self.carbon_emitted(emissions_total, index, data)
-        if np.max(carbon_emitted) > self._params.fosslim:
+        if np.max(carbon_emitted) > self.params.fosslim:
             emissions_total = 0.0
-            carbon_emitted = self._params.fosslim
+            carbon_emitted = self.params.fosslim
         tax_rate = self.tax_rate(miu, data.backstop[index])
         return (
             miu,
@@ -151,26 +151,26 @@ class EmissionsModel(object):
                 return miu[index]
         elif miu is None:
             if index > 0:
-                if data.carbon_emitted[index - 1] > self._params.fosslim:
+                if data.carbon_emitted[index - 1] > self.params.fosslim:
                     return 1.0
-                if self._params._treaty:
+                if self.params.treaty:
                     return min(self.miu(
                         data.emissions_ind[index - 1],
                         self.emissions_cap[index - 1],
                         data.emissions_ind[0],
                         data.carbon_intensity[index], data.gross_output[index]
                     ), 1.0)
-                elif self._params._carbon_tax:
+                elif self.params.carbon_tax:
                     return min(
                         (self.user_tax_rate[index] / (
                             data.backstop[index] * 1000)) ** (
-                            1 / (self._params.abatement_exponent - 1)),
+                            1 / (self.params.abatement_exponent - 1)),
                         1.0
                     )
                 else:
                     return 0
             else:
-                return self._params._miu_2005
+                return self.params.miu_2005
         else:
             return min(miu[index], 1.0)
         return min(data.miu[index], 1.0)
@@ -199,7 +199,7 @@ class EmissionsModel(object):
         float
         """
         return (
-            backstop * miu ** (self._params.abatement_exponent - 1) * 1000
+            backstop * miu ** (self.params.abatement_exponent - 1) * 1000
         ) * (12 / 44)
 
 
@@ -218,6 +218,6 @@ class Dice2010(EmissionsModel):
         array
         """
         return (
-            self._params._emissions_deforest_2005 *
-            .8 ** self._params._t0
+            self.params.emissions_deforest_2005 *
+            .8 ** self.params.t0
         )

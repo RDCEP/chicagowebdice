@@ -140,14 +140,14 @@ def graphs(year):
         pass
     opt = False
     policy = form['policy_type']
-    this_dice.params._treaty = False
-    this_dice.params._carbon_tax = False
+    this_dice.params.treaty = False
+    this_dice.params.carbon_tax = False
     if policy == 'treaty':
-        this_dice.params._treaty = True
+        this_dice.params.treaty = True
     elif policy == 'optimized':
         opt = True
     elif policy == 'carbon_tax':
-        this_dice.params._carbon_tax = True
+        this_dice.params.carbon_tax = True
     this_dice.loop(opt=opt)
     return this_dice.format_output()
 

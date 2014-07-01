@@ -19,17 +19,17 @@ class ConsumptionModel(object):
     investment()
     """
     def __init__(self, params):
-        self._params = params
+        self.params = params
 
     @property
     def initial_values(self):
         return (
             1,
-            self._params._output_2005 * self._params.savings,
+            self.params.output_2005 * self.params.savings,
         )
 
     def get_model_values(self, index, data):
-        consumption = self.consumption(data.output[index], self._params.savings)
+        consumption = self.consumption(data.output[index], self.params.savings)
         consumption_pc = self.consumption_pc(
             consumption, data.population[index]
         )
@@ -41,7 +41,7 @@ class ConsumptionModel(object):
             self.consumption_discount(
                 data.consumption_pc[0], consumption_pc, index
             ),
-            self.investment(self._params.savings, data.output[index]),
+            self.investment(self.params.savings, data.output[index]),
         )
 
     def consumption(self, output, savings):
@@ -69,8 +69,8 @@ class ConsumptionModel(object):
         """Discount rate for consumption"""
         if discount_type == 'ramsey':
             return np.exp(-(
-                self._params.elasmu * np.log(c1 / c0) / (i * 10 + .000001) +
-                self._params.prstp
+                self.params.elasmu * np.log(c1 / c0) / (i * 10 + .000001) +
+                self.params.prstp
             ) * i * 10)
         if discount_type == 'constant':
             RATE = .03

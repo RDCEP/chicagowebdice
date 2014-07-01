@@ -12,7 +12,7 @@ class DamagesModel(object):
     prod_frac : float
     """
     def __init__(self, params):
-        self._params = params
+        self.params = params
         self._temp_atmosphere = None
         self._aa = None
 
@@ -25,16 +25,16 @@ class DamagesModel(object):
         -------
         array
         """
-        if self._params._treaty:
-            p = [self._params.p2050, self._params.p2050, self._params.p2100,
-                self._params.p2150, self._params._pmax]
+        if self.params.treaty:
+            p = [self.params.p2050, self.params.p2050, self.params.p2100,
+                self.params.p2150, self.params.pmax]
             return np.concatenate((
                 (p[1] + (p[0] - p[1]) * np.exp(np.arange(5) * -.25)),
                 (p[2] + (p[1] - p[2]) * np.exp(np.arange(5) * -.25)),
                 (p[3] + (p[2] - p[3]) * np.exp(np.arange(5) * -.25)),
                 (p[4] + (p[3] - p[4]) * np.exp(np.arange(45) * -.25)),
             ))
-        return np.ones(self._params._tmax)
+        return np.ones(self.params.tmax)
 
     @property
     def damages_terms(self):
@@ -47,9 +47,9 @@ class DamagesModel(object):
         array
         """
         return np.array([
-            self._params._a1,
-            self._params._damages_coefficient,
-            self._params.damages_exponent
+            self.params.a1,
+            self.params.damages_coefficient,
+            self.params.damages_exponent
         ])
 
     def get_production_factor(self, temp_atmosphere):
@@ -97,8 +97,8 @@ class DamagesModel(object):
         return np.minimum(
             gross_output,
             gross_output *
-            participation ** (1 - self._params.abatement_exponent) *
-            backstop_growth * miu ** self._params.abatement_exponent
+            participation ** (1 - self.params.abatement_exponent) *
+            backstop_growth * miu ** self.params.abatement_exponent
         )
 
     def damages(self, gross_output, temp_atmosphere, abatement=None):
@@ -198,7 +198,7 @@ class IncommensurableDamages(DamagesModel):
         C25d = 1.4797e-05
         output_no_damages = gross_output - abatement
         consumption_no_damages = (
-            output_no_damages - output_no_damages * self._params.savings
+            output_no_damages - output_no_damages * self.params.savings
         )
         consumption = (
             consumption_no_damages / (
@@ -206,7 +206,7 @@ class IncommensurableDamages(DamagesModel):
                 temp_atmosphere ** self.damages_terms[2]
             )
         )
-        return consumption / (1 - self._params.savings)
+        return consumption / (1 - self.params.savings)
 
     def damages(self, gross_output, temp_atmosphere, abatement=None):
         output_no_damages = gross_output - abatement
@@ -255,7 +255,7 @@ class ProductivityFraction(DamagesModel):
             1 + self.damages_terms[0] * temp_atmosphere +
             self.damages_terms[1] * temp_atmosphere ** self.damages_terms[2]
         )
-        return 1 - self._params.prod_frac * D
+        return 1 - self.params.prod_frac * D
 
 
 class Dice2010(DamagesModel):

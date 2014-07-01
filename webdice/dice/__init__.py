@@ -40,9 +40,9 @@ class Dice(object):
     """
     def __init__(self, optimize=False):
         self.params = DiceParams()
-        self.data = self.params._data
+        self.data = self.params.data
         self.eq = Loop(self.params)
-        self.eps = self.params._eps
+        self.eps = self.params.eps
         self.dice_version = 2007
         self.opt_vars = 60
         self.opt_x = np.arange(self.opt_vars)
@@ -147,12 +147,12 @@ class Dice(object):
         if opt:
             if miu is not None:
                 df = pd.Panel(
-                    {i: self.data.vars for i in xrange(self.params._tmax + 1)}
+                    {i: self.data.vars for i in xrange(self.params.tmax + 1)}
                 ).transpose(2, 0, 1)
             else:
                 _miu = self.get_ipopt_miu()
-                _miu[0] = self.params._miu_2005
-        for i in range(self.params._tmax):
+                _miu[0] = self.params.miu_2005
+        for i in range(self.params.tmax):
             if opt and miu is not None:
                 df.miu.ix[:][i] = miu[i]
                 df.miu.ix[i][i] += self.eps
@@ -187,9 +187,9 @@ class Dice(object):
         ...
         """
         df = pd.Panel(
-            {i: self.data.vars for i in xrange(self.params._tmax + 1)}
+            {i: self.data.vars for i in xrange(self.params.tmax + 1)}
         ).transpose(2, 0, 1)
-        for i in xrange(self.params._tmax):
+        for i in xrange(self.params.tmax):
             df.miu.ix[:][i] = miu[i]
             df.miu.ix[i][i] += self.eps
             _miu = df.miu[i]
@@ -211,9 +211,9 @@ class Dice(object):
         ...
         """
         df = pd.Panel(
-            {i: self.data.vars for i in xrange(self.params._tmax + 1)}
+            {i: self.data.vars for i in xrange(self.params.tmax + 1)}
         ).transpose(2, 0, 1)
-        for i in xrange(self.params._tmax):
+        for i in xrange(self.params.tmax):
             df.miu.ix[:][i] = miu[i]
             df.miu.ix[i][i] += self.eps
             _miu = df.miu[i]
@@ -293,8 +293,8 @@ class Dice(object):
         M = 0
         nnzj = 0
         nnzh = 0
-        xl = np.zeros(self.params._tmax)
-        xu = np.ones(self.params._tmax)
+        xl = np.zeros(self.params.tmax)
+        xu = np.ones(self.params.tmax)
         xl[0] = .005
         xu[0] = .005
         xl[-20:] = 1
@@ -357,7 +357,7 @@ class Dice2010(Dice):
     def __init__(self, optimize=False):
         super(Dice2010, self).__init__()
         self.params = Dice2010Params()
-        self.data = self.params._data
+        self.data = self.params.data
         self.dice_version = 2010
         self.opt_tol = 1e-6
 
