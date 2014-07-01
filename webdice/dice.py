@@ -149,7 +149,7 @@ class Dice(object):
                     {i: self.data.vars for i in xrange(self.params._tmax + 1)}
                 ).transpose(2, 0, 1)
             else:
-                _miu = self.get_ipopt_mu()
+                _miu = self.get_ipopt_miu()
                 _miu[0] = self.params._miu_2005
         for i in range(self.params._tmax):
             if opt and miu is not None:
@@ -180,8 +180,8 @@ class Dice(object):
             self.step(i, D, _miu, deriv=True, opt=True)
         self.opt_grad_f = ((
             D.utility_discounted.ix[:59,:].sum(axis=1) -
-            D.utility_discounted.ix[60,:].sum(axis=1)) / self.eps)
-        self.opt_obj = D.utility_discounted.ix[60,:].sum(axis=1)
+            D.utility_discounted.ix[60,:].sum(axis=1)) * 1e-4 / self.eps)
+        self.opt_obj = D.utility_discounted.ix[60,:].sum(axis=1) * 1e-4
         return self.opt_obj
 
     def grad_loop(self, miu):
@@ -195,8 +195,8 @@ class Dice(object):
             self.step(i, D, _miu, deriv=True, opt=True)
         self.opt_grad_f = ((
             D.utility_discounted.ix[:59,:].sum(axis=1) -
-            D.utility_discounted.ix[60,:].sum(axis=1)) / self.eps)
-        self.opt_obj = D.utility_discounted.ix[60,:].sum(axis=1) * -1e-5
+            D.utility_discounted.ix[60,:].sum(axis=1)) * 1e-4 / self.eps)
+        self.opt_obj = D.utility_discounted.ix[60, :].sum(axis=1) * 1e-4
         return self.opt_grad_f
 
     def get_scc(self, miu):
@@ -221,10 +221,11 @@ class Dice(object):
         """
         x_range = 20
         for i in xrange(x_range):
-            time_horizon = 59
+            # time_horizon = 59
+            time_horizon = 29
             future_indices = time_horizon - i
             self.data.scc = self.data.vars.copy()
-            for j in range(i, time_horizon):
+            for j in range(i, time_horizon + 1):
                 shock = 0
                 if j == i:
                     shock = 1.0
@@ -238,7 +239,7 @@ class Dice(object):
             )
             self.data.vars.scc[i] = np.sum(DIFF) * 1000 * 10 * (12 / 44)
 
-    def get_ipopt_mu(self):
+    def get_ipopt_miu(self):
         """
         Calculate optimal miu
         ...
@@ -265,17 +266,17 @@ class Dice(object):
             import pyipopt
         except ImportError:
             print('OPTIMIZATION ERROR: It appears that you do not have pyipopt installed. Please install it before running optimization.')
-        _n = 3
-        x0 = np.concatenate((
-            np.linspace(.5, 1, _n),
-            np.ones(self.opt_vars - _n),
-        ))
-        x0 = np.ones(self.opt_vars)
+        x0 = np.concatenate(
+            (np.linspace(0, 1, 40) ** (1 - np.linspace(0, 1, 40)), np.ones(20))
+        )
         M = 0
         nnzj = 0
         nnzh = 0
         xl = np.zeros(self.params._tmax)
         xu = np.ones(self.params._tmax)
+        xl[0] = .005
+        xu[0] = .005
+        xl[-20:] = 1
         gl = np.zeros(M)
         gu = np.ones(M) * 4.0
         def eval_f(_x0):
@@ -298,18 +299,19 @@ class Dice(object):
             else:
                 return np.empty(M)
         pyipopt.set_loglevel(1)
-        # nlp.num_option('tol', self.opt_tol)
         nlp = pyipopt.create(
             self.opt_vars, xl, xu, M, gl, gu, nnzj, nnzh, eval_f,
             eval_grad_f, eval_g, eval_jac_g,
         )
-        nlp.num_option('tol', self.opt_tol)
-        nlp.num_option('acceptable_tol', self.opt_tol * 5)
-        nlp.int_option('acceptable_iter', 4)
-        nlp.num_option('obj_scaling_factor', -1e-5)
+        nlp.num_option('constr_viol_tol', 8e-7)
+        nlp.int_option('max_iter', 30)
+        nlp.num_option('max_cpu_time', 60)
+        nlp.num_option('tol', 1e-5)
+        # nlp.num_option('acceptable_tol', 1e-4)
+        # nlp.int_option('acceptable_iter', 4)
+        nlp.num_option('obj_scaling_factor', -1e+0)
         nlp.int_option('print_level', 5)
-        nlp.str_option('linear_solver', 'ma27')
-        # x, zl, zu, multiplier, obj, status = nlp.solve(x0)
+        nlp.str_option('linear_solver', 'ma57')
         x = nlp.solve(x0)[0]
         nlp.close()
         return x
@@ -347,7 +349,6 @@ class Dice2007(Dice):
 
 
 if __name__ == '__main__':
-    #pass
     profile = False
     d = Dice2007()
     if profile:
@@ -356,5 +357,15 @@ if __name__ == '__main__':
         import pstats
         p = pstats.Stats('dice_stats')
     else:
-        d.loop()
-        print(d.data.vars)
+        d.params.savings = .22
+        d.params.elasmu = 2
+        d.params.prstp = .015
+        # d.params.damages_model = 'productivity_fraction'
+        d.params.prod_frac = .25
+        # d.params.carbon_model = 'beam_carbon'
+        d.loop(opt=True)
+        # d.loop(opt=False)
+        print(d.data.vars.scc[:2].mean())
+        print(d.data.vars.tax_rate[:2].mean())
+        print(d.data.vars.tax_rate[20:30])
+        print(d.data.vars.miu[:30].values)

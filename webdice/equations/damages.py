@@ -94,7 +94,8 @@ class DamagesModel(object):
         -------
         float
         """
-        return (
+        return np.minimum(
+            gross_output,
             gross_output *
             participation ** (1 - self._params.abatement_exponent) *
             backstop_growth * miu ** self._params.abatement_exponent

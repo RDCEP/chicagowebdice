@@ -15,7 +15,7 @@ class DiceParams(object):
         self.backstop_ratio = 2.
         self.popasym = 8600.
         self.depreciation = .1
-        self.savings = .2
+        self.savings = .22
         self.fosslim = 6000.
         self.carbon_model = 'dice_%s' % model
         self.consumption_model = 'dice_%s' % model
