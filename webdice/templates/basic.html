@@ -7,17 +7,18 @@
     Options.graphs = {{  graph_names|safe }};
     Options.dice_version = {% if dice_version %}{{ dice_version|safe }}{% else %}2007{% endif %};
   </script>
-  <script type="text/javascript" src="/static/js/basic_tab_2010.js"></script>
+  <script type="text/javascript" src="/webdice/static/js/basic_tab_2010.js"></script>
+  <script type="text/javascript" src="/webdice/static/js/main.js?{{ now }}"></script>
 {% endblock %}
 {% block mainlink %}<div id="back-to-rdcep">Switch to:
   {%- for v in other_versions -%}
   <a href="/advanced/{{ v }}">Advanced {{ v }}</a>
   {%- endfor -%}
   </div>{% endblock %}
-{% block doclinks %}<li id="display-help">Documentation<ul>
-<li><a target="_blank" href="/static/docs/webdice_basic_faq.pdf">Basic</a></li>
-<li><a target="_blank" href="/static/docs/webdice_equation_help.pdf">Equations</a></li>
-</ul></li>{% endblock %}
+{% block doclinks %}
+  <li><a target="_blank" href="/webdice/static/docs/webdice_basc_faq.pdf">Basic</a></li>
+  <li><a target="_blank" href="/webdice/static/docs/webdice_equation_help.pdf">Equations</a></li>
+{% endblock %}
 {% block sidebar %}
   <form id="submission" method="post" class="basic" action="/">
     <div id="parameters" class="has-tabs">
@@ -83,7 +84,7 @@
     <div id="controls">
       <input type="reset" id="reset-inputs" value="Reset Inputs"/>
       <input type="submit" id="delete-all" value="Clear Graphs" disabled="disabled"/>
-      <input type="submit" value="Run Model"  onclick="_gaq.push(['_trackEvent', 'Models', 'Run', 'Run webDICE Basic Model']);"/>
+      <input type="submit" value="Run Model" onclick="_gaq.push(['_trackEvent', 'Models', 'Run', 'Run webDICE Basic Model']);"/>
     </div>
     <input type="hidden" name="carbon_model" value="dice_carbon">
     <input type="hidden" name="damages_model" value="dice_damages">
@@ -107,5 +108,5 @@
   {% endfor %}
 {% endblock %}
 {% block bodyjs %}
-  <script src="/static/js/webdice_help.js"></script>
+  <script src="/webdice/static/js/webdice_help.js"></script>
 {% endblock %}

@@ -157,10 +157,7 @@ class CarbonModel(object):
             M_AT, M_UP, M_LO at t
         """
         if index == 0:
-            return (data.mass_atmosphere.ix[:][index] / data.mass_atmosphere.ix[:][index] * self.initial_carbon[0],
-                data.mass_upper.ix[:][index] / data.mass_upper.ix[:][index] * self.initial_carbon[1],
-                data.mass_lower.ix[:][index] / data.mass_lower.ix[:][index] * self.initial_carbon[2])
-            # return self.initial_carbon
+            return self.initial_carbon
         i = index - 1
         return (
             self.mass_atmosphere(data.emissions_total[i],

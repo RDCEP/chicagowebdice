@@ -5,6 +5,7 @@ import pandas as pd
 
 class DiceParams(object):
     def __init__(self, model=2007):
+        self.dice_version = '2007'
         self.temp_co2_doubling = 3.
         self.damages_exponent = 2.
         self.productivity_decline = .001
@@ -14,7 +15,7 @@ class DiceParams(object):
         self.backstop_ratio = 2.
         self.popasym = 8600.
         self.depreciation = .1
-        self.savings = .2
+        self.savings = .22
         self.fosslim = 6000.
         self.carbon_model = 'dice_%s' % model
         self.consumption_model = 'dice_%s' % model
@@ -184,6 +185,7 @@ class DiceParams(object):
 class Dice2010Params(DiceParams):
     def __init__(self):
         super(Dice2010Params, self).__init__(2010)
+        self.dice_year = '2010'
         self.temp_co2_doubling = 3.2
         self.damages_exponent = 2.  # TODO: see equations
         self.productivity_decline = .009  # TODO: Add second parameter?

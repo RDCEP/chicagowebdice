@@ -117,7 +117,7 @@ class ProductivityModel(object):
         backstop_growth = (
             data.backstop[index] * carbon_intensity /
             self._params.abatement_exponent
-        )
+        ) * (44 / 12)
 
 
         return (
