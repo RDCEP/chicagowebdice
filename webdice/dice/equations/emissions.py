@@ -28,7 +28,6 @@ class EmissionsModel(object):
     """
     def __init__(self, params):
         self.params = params
-        self.eps = params.eps
 
     @property
     def emissions_deforest(self):

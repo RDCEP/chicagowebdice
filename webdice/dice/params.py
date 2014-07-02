@@ -28,7 +28,6 @@ class DiceParams(object):
         self.elasmu = 2.
         self.prstp = .015
         self.treaty = False
-        self.eps = 1e-8
         self.carbon_tax = False
         self.e2050 = 1.
         self.e2100 = 1.
@@ -41,6 +40,7 @@ class DiceParams(object):
         self.c2100 = 0.
         self.c2150 = 0.
         self.cmax = 500.
+
         ## Population and technology
         self.population_2005 = 6514.
         self.population_growth = .35
@@ -55,7 +55,7 @@ class DiceParams(object):
         self.intensity_2005 = .13418
         self.intensity_growth = -.0730
         self.intensity_quadratic = .000
-        self.emissions_deforest_2005 = 1.1 #11.0
+        self.emissions_deforest_2005 = 1.1
 
         ## Carbon Cycle
         _b11, _b12, _b13 = .810712, .189288, 0
@@ -69,7 +69,7 @@ class DiceParams(object):
         self.mass_atmosphere_2005 = 808.9
         self.mass_upper_2005 = 1255.
         self.mass_lower_2005 = 18365.
-        self.mass_preindustrial = 592.14  # 278. * 2.13
+        self.mass_preindustrial = 592.14
 
         ## Climate model
         self.forcing_ghg_2000 = -.06
@@ -84,13 +84,13 @@ class DiceParams(object):
             self.c1, self.c2, self.c3, self.c4
         ])
         self.forcing_co2_doubling = 3.8
+
         # Climate damage parameters, calibrated for quadratic at 2.5 C for 2105
         self.a1 = 0
         self.damages_coefficient = 0.0028388
 
         ## Abatement cost
         self.backstop_2005 = 1.17
-        self.miu_upper = 1.  # Upper limit on control rate
         self.miu_2005 = .005
 
         ## Participation
@@ -99,13 +99,9 @@ class DiceParams(object):
         self.participation_2205 = 1.
         self.participation_decline = 0.
 
-        self.tmax = 60  # Time periods, in decades (60 * 10 = 600 years)
-        self.t0 = np.arange(float(self.tmax))
+        self.tmax = 60
+        self.t0 = np.arange(self.tmax)
         self.t1 = self.t0 + 1
-
-        ## Scaling and inessential parameters
-        self.scale1 = 194.  # Scaling coefficient in the objective function
-        self.scale2 = 381800.  # Scaling coefficient in the objective function
 
         # Variables for initiating pandas array
         backstop_growth = np.zeros(self.tmax)
@@ -135,6 +131,7 @@ class DiceParams(object):
         population[:] = self.population_2005
         miu = np.empty(self.tmax)
         miu[:] = self.miu_2005
+
         data = pd.DataFrame({
             'miu': miu,
             'carbon_intensity': carbon_intensity,
@@ -169,17 +166,11 @@ class DiceParams(object):
             'population_growth': np.zeros(self.tmax),
             'output_abate': np.zeros(self.tmax),
         })
+
         self.data = pd.Panel({
             'vars': data,
             'scc': data,
         })
-        self.derivation_panel = None
-        self.grad_f = None
-        self.opt_welfare = None
-        self.derivative = pd.DataFrame({
-            'f_prime': np.empty(self.tmax),
-        })
-        # self.hessian = pd.Series(np.empty(self.tmax))
 
 
 class Dice2010Params(DiceParams):
@@ -192,15 +183,18 @@ class Dice2010Params(DiceParams):
         self.intensity_decline_rate = .00646
         self.popasym = 8700.
         self.elasmu = 1.5
+
         ## Population and technology
         self.population_2005 = 6411.
         self.population_growth = .5  # This is called Population adjustment in Dice2010
         self.productivity = .0303220
         self.productivity_growth = .16
         self.output_2005 = 55.34
+
         ## Emissions
         self.intensity_2005 = .14452
         self.intensity_growth = .158
+
         ## Carbon Cycle
         _b11, _b12, _b13 = .88, .12, 0
         _b21, _b22, _b23 = .04704, .94796, .005
@@ -210,7 +204,6 @@ class Dice2010Params(DiceParams):
             _b21, _b22, _b23,
             _b31, _b32, _b33,
         ]).reshape(3, 3)
-        # self.mass_atmosphere_2005 = (787 + 829) / 2
         self.mass_atmosphere_2005 = 787.
         self.mass_upper_2005 = 1600.
         self.mass_lower_2005 = 10100.

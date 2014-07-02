@@ -42,7 +42,7 @@ class Dice(object):
         self.params = DiceParams()
         self.data = self.params.data
         self.eq = Loop(self.params)
-        self.eps = self.params.eps
+        self.eps = 1e-8
         self.dice_version = 2007
         self.opt_vars = 60
         self.opt_x = np.arange(self.opt_vars)
@@ -170,7 +170,7 @@ class Dice(object):
     def set_opt_values(self, df):
         self.opt_grad_f = ((
             df.utility_discounted.ix[:59, :].sum(axis=1) -
-            df.utility_discounted.ix[60, :].sum(axis=1)) * 1e-4 / 1e-8)
+            df.utility_discounted.ix[60, :].sum(axis=1)) * 1e-4 / self.eps)
         self.opt_obj = df.utility_discounted.ix[60, :].sum(axis=1) * 1e-4
 
     def obj_loop(self, miu):
