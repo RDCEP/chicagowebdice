@@ -34,19 +34,18 @@ class TemperatureModel(object):
         self._temp_atmosphere_2005 = value[0]
         self._temp_lower_2005 = value[1]
 
-    def get_model_values(self, index, data):
-        if index == 0:
+    def get_model_values(self, i, df):
+        if i == 0:
             return self.initial_temps
-        i = index - 1
         return (
-            self.temp_atmosphere(data, index),
+            self.temp_atmosphere(df, i),
             self.temp_lower(
-                data.temp_atmosphere[i], data.temp_lower[i],
+                df.temp_atmosphere[i - 1], df.temp_lower[i - 1],
                 self.params.thermal_transfer
             ),
         )
 
-    def temp_atmosphere(self, data, index):
+    def temp_atmosphere(self, df, i):
         """
         T_AT, Temperature of atmosphere, degrees C
         ...
@@ -55,13 +54,13 @@ class TemperatureModel(object):
         float
         """
         return (
-            data.temp_atmosphere[index - 1] +
+            df.temp_atmosphere[i - 1] +
             self.params.thermal_transfer[0] * (
-                data.forcing[index] - (self.params.forcing_co2_doubling /
-                                       self.params.temp_co2_doubling) *
-                data.temp_atmosphere[index - 1] -
+                df.forcing[i] - (self.params.forcing_co2_doubling /
+                                 self.params.temp_co2_doubling) *
+                df.temp_atmosphere[i - 1] -
                 self.params.thermal_transfer[2] *
-                (data.temp_atmosphere[index - 1] - data.temp_lower[index - 1])
+                (df.temp_atmosphere[i - 1] - df.temp_lower[i - 1])
             )
         )
 
@@ -83,12 +82,12 @@ class Dice2007(TemperatureModel):
 
 
 class LinearTemperature(TemperatureModel):
-    def get_model_values(self, index, data):
-        if index == 0:
+    def get_model_values(self, i, df):
+        if i == 0:
             return self.initial_temps[0], None
         temp_atmosphere = (
             self.initial_temps[0] +
-            data.carbon_emitted[index - 1] * .002
+            df.carbon_emitted[i - 1] * .002
         )
         return (
             temp_atmosphere,
@@ -100,7 +99,7 @@ class Dice2010(TemperatureModel):
     def __init__(self, params):
         super(Dice2010, self).__init__(params)
 
-    def temp_atmosphere(self, data, index):
+    def temp_atmosphere(self, df, i):
         """
         T_AT, Temperature of atmosphere, degrees C
         ...
@@ -109,12 +108,12 @@ class Dice2010(TemperatureModel):
         float
         """
         return (
-            data.temp_atmosphere[index - 1] +
+            df.temp_atmosphere[i - 1] +
             self.params.thermal_transfer[0] * (
-                data.forcing[index] - (self.params.forcing_co2_doubling /
-                                       self.params.temp_co2_doubling) *
-                data.temp_atmosphere[index - 1] -
+                df.forcing[i] - (self.params.forcing_co2_doubling /
+                                 self.params.temp_co2_doubling) *
+                df.temp_atmosphere[i - 1] -
                 self.params.thermal_transfer[2] *
-                (data.temp_atmosphere[index - 1] - data.temp_lower[index - 1])
+                (df.temp_atmosphere[i - 1] - df.temp_lower[i - 1])
             )
         )

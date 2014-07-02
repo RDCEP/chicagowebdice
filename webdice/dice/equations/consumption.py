@@ -28,10 +28,10 @@ class ConsumptionModel(object):
             self.params.output_2005 * self.params.savings,
         )
 
-    def get_model_values(self, index, data):
-        consumption = self.consumption(data.output[index], self.params.savings)
+    def get_model_values(self, index, df):
+        consumption = self.consumption(df.output[index], self.params.savings)
         consumption_pc = self.consumption_pc(
-            consumption, data.population[index]
+            consumption, df.population[index]
         )
         if index == 0:
             return (consumption, consumption_pc,) + self.initial_values
@@ -39,9 +39,9 @@ class ConsumptionModel(object):
             consumption,
             consumption_pc,
             self.consumption_discount(
-                data.consumption_pc[0], consumption_pc, index
+                df.consumption_pc[0], consumption_pc, index
             ),
-            self.investment(self.params.savings, data.output[index]),
+            self.investment(self.params.savings, df.output[index]),
         )
 
     def consumption(self, output, savings):

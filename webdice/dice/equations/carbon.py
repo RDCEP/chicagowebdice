@@ -31,45 +31,45 @@ class CarbonModel(object):
     """
     def __init__(self, params):
         self.params = params
-        self.carbon_matrix = params.carbon_matrix
-        self.mass_atmosphere_2005 = params.mass_atmosphere_2005
-        self.mass_upper_2005 = params.mass_upper_2005
-        self.mass_lower_2005 = params.mass_lower_2005
-        self.mass_preindustrial = params.mass_preindustrial
-        self.temp_atmosphere_2005 = params.temp_atmosphere_2000
-        self.temp_lower_2005 = params.temp_lower_2000
-        self.forcing_co2_doubling = params.forcing_co2_doubling
+        self._carbon_matrix = params.carbon_matrix
+        self._mass_atmosphere_2005 = params.mass_atmosphere_2005
+        self._mass_upper_2005 = params.mass_upper_2005
+        self._mass_lower_2005 = params.mass_lower_2005
+        self._mass_preindustrial = params.mass_preindustrial
+        self._temp_atmosphere_2005 = params.temp_atmosphere_2000
+        self._temp_lower_2005 = params.temp_lower_2000
+        self._forcing_co2_doubling = params.forcing_co2_doubling
 
     @property
     def initial_carbon(self):
         return (
-            self.mass_atmosphere_2005,
-            self.mass_upper_2005,
-            self.mass_lower_2005,
+            self._mass_atmosphere_2005,
+            self._mass_upper_2005,
+            self._mass_lower_2005,
         )
 
     @initial_carbon.setter
     def initial_carbon(self, value):
-        self.mass_atmosphere_2005 = value[0]
-        self.mass_upper_2005 = value[1]
-        self.mass_lower_2005 = value[2]
+        self._mass_atmosphere_2005 = value[0]
+        self._mass_upper_2005 = value[1]
+        self._mass_lower_2005 = value[2]
 
     @property
     def carbon_matrix(self):
-        return self.carbon_matrix
+        return self._carbon_matrix
 
     @carbon_matrix.setter
     def carbon_matrix(self, value):
-        self.carbon_matrix = value
+        self._carbon_matrix = value
 
     @property
     def initial_temps(self):
-        return [self.temp_atmosphere_2005, self.temp_lower_2005]
+        return [self._temp_atmosphere_2005, self._temp_lower_2005]
 
     @initial_temps.setter
     def initial_temps(self, value):
-        self.temp_atmosphere_2005 = value[0]
-        self.temp_lower_2005 = value[1]
+        self._temp_atmosphere_2005 = value[0]
+        self._temp_lower_2005 = value[1]
 
     @property
     def forcing_ghg(self):
@@ -128,7 +128,7 @@ class CarbonModel(object):
             self.carbon_matrix[2][2] * mass_lower
         )
 
-    def forcing(self, index, data):
+    def forcing(self, index, df):
         """
         F, Forcing, W/m^2
         ...
@@ -137,13 +137,13 @@ class CarbonModel(object):
         float
         """
         return (
-            self.forcing_co2_doubling *
+            self.params.forcing_co2_doubling *
             (np.log(
-                data.mass_atmosphere[index] / self.mass_preindustrial
+                df.mass_atmosphere[index] / self.params.mass_preindustrial
             ) / np.log(2)) + self.forcing_ghg[index]
         )
 
-    def get_model_values(self, index, data):
+    def get_model_values(self, index, df):
         """
         Return values for M_AT, M_UP, M_LO
         ...
@@ -161,11 +161,11 @@ class CarbonModel(object):
             return self.initial_carbon
         i = index - 1
         return (
-            self.mass_atmosphere(data.emissions_total[i],
-                                 data.mass_atmosphere[i], data.mass_upper[i]),
-            self.mass_upper(data.mass_atmosphere[i], data.mass_upper[i],
-                            data.mass_lower[i]),
-            self.mass_lower(data.mass_upper[i], data.mass_lower[i]),
+            self.mass_atmosphere(df.emissions_total[i],
+                                 df.mass_atmosphere[i], df.mass_upper[i]),
+            self.mass_upper(df.mass_atmosphere[i], df.mass_upper[i],
+                            df.mass_lower[i]),
+            self.mass_lower(df.mass_upper[i], df.mass_lower[i]),
         )
 
 
@@ -192,7 +192,7 @@ class BeamCarbon(CarbonModel):
             0, .001, -.001,
         ]).reshape((3, 3, 1))
 
-    def get_model_values(self, index, data):
+    def get_model_values(self, index, df):
         """
         Set BEAM transfer matrix, and return values for M_AT, M_UP, M_LO
         ...
@@ -225,8 +225,7 @@ class BeamCarbon(CarbonModel):
 
         _a = k_h * (AM / (OM * (delta + 1)))
         """
-        # if opt: self.N = 2
-        _dims = 61 if data.ndim > 2 else 1
+        _dims = 61 if df.ndim > 2 else 1
         if index == 0:
             return (
                 self.initial_carbon[0] * np.ones(_dims),
@@ -236,7 +235,7 @@ class BeamCarbon(CarbonModel):
         self.carbon_matrix = np.tile(self.carbon_matrix_skel, _dims)
         i = index - 1
         _ma, _mu, _ml = (
-            data.mass_atmosphere[i], data.mass_upper[i], data.mass_lower[i]
+            df.mass_atmosphere[i], df.mass_upper[i], df.mass_lower[i]
         )
         for x in xrange(self.N):
             a = np.sqrt(ne.evaluate(
@@ -247,19 +246,19 @@ class BeamCarbon(CarbonModel):
             self.carbon_matrix[1][0] = _b * .2
             self.carbon_matrix[1][1] = _b * -.2 - .05
             _ma += self.mass_atmosphere(
-                data.emissions_total[i], _ma, _mu) / self.N
+                df.emissions_total[i], _ma, _mu) / self.N
             _mu += self.mass_upper(_ma, _mu, _ml) / self.N
             _ml += self.mass_lower(_mu, _ml) / self.N
         return _ma, _mu, _ml
 
 
 class LinearCarbon(CarbonModel):
-    def get_model_values(self, index, data):
+    def get_model_values(self, index, df):
         return (
             None, None, None
         )
 
-    def forcing(self, index, data):
+    def forcing(self, index, df):
         return None
 
 

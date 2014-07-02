@@ -27,7 +27,7 @@ class DamagesModel(object):
         """
         if self.params.treaty:
             p = [self.params.p2050, self.params.p2050, self.params.p2100,
-                self.params.p2150, self.params.pmax]
+                 self.params.p2150, self.params.pmax]
             return np.concatenate((
                 (p[1] + (p[0] - p[1]) * np.exp(np.arange(5) * -.25)),
                 (p[2] + (p[1] - p[2]) * np.exp(np.arange(5) * -.25)),
@@ -58,7 +58,7 @@ class DamagesModel(object):
         """
         return 1.
 
-    def get_model_values(self, index, data):
+    def get_model_values(self, index, df):
         """
         Calculate and return damages, output, and consumption
         ...
@@ -75,15 +75,15 @@ class DamagesModel(object):
         array
         """
         if index == 0:
-            data.participation = self.participation
-        abatement = self.abatement(data.gross_output[index], data.miu[index],
-                                   data.backstop_growth[index],
-                                   data.participation[index])
-        damages = self.damages(data.gross_output[index],
-                               data.temp_atmosphere[index], abatement)
-        output = self.output(data.gross_output[index], damages, abatement,
-                             data.temp_atmosphere[index])
-        output_abate = self.output_abate(abatement, data.gross_output[index])
+            df.participation = self.participation
+        abatement = self.abatement(df.gross_output[index], df.miu[index],
+                                   df.backstop_growth[index],
+                                   df.participation[index])
+        damages = self.damages(df.gross_output[index],
+                               df.temp_atmosphere[index], abatement)
+        output = self.output(df.gross_output[index], damages, abatement,
+                             df.temp_atmosphere[index])
+        output_abate = self.output_abate(abatement, df.gross_output[index])
         return [abatement, damages, output, output_abate]
 
     def abatement(self, gross_output, miu, backstop_growth, participation):
@@ -165,7 +165,7 @@ class IncommensurableDamages(DamagesModel):
         DamagesModel.__init__(self, params)
         self._abatement = 0
 
-    def get_model_values(self, index, data):
+    def get_model_values(self, index, df):
         """
         Calculate and return damages, output, and consumption
         ...
@@ -182,12 +182,12 @@ class IncommensurableDamages(DamagesModel):
         array
         """
         if index == 0:
-            data.participation = self.participation
-        _go = data.gross_output[index]
-        _miu = data.miu[index]
-        _bg = data.backstop_growth[index]
-        _ta = data.temp_atmosphere[index]
-        _part = data.participation[index]
+            df.participation = self.participation
+        _go = df.gross_output[index]
+        _miu = df.miu[index]
+        _bg = df.backstop_growth[index]
+        _ta = df.temp_atmosphere[index]
+        _part = df.participation[index]
         abatement = self.abatement(_go, _miu, _bg, _part)
         damages = self.damages(_go, _ta, abatement)
         output = self.output(_go, damages, abatement, _ta)
