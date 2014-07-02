@@ -48,7 +48,8 @@ class Dice(object):
         self.opt_x = np.arange(self.opt_vars)
         self.opt_grad_f = None
         self.opt_obj = None
-        self.opt_tol = 1e-4
+        self.opt_tol = 1e-5
+        self.opt_scale = 1e-4
 
     @property
     def user_params(self):
@@ -168,10 +169,12 @@ class Dice(object):
         return df
 
     def set_opt_values(self, df):
-        self.opt_grad_f = ((
+        self.opt_grad_f = (
             df.utility_discounted.ix[:59, :].sum(axis=1) -
-            df.utility_discounted.ix[60, :].sum(axis=1)) * 1e-4 / self.eps)
-        self.opt_obj = df.utility_discounted.ix[60, :].sum(axis=1) * 1e-4
+            df.utility_discounted.ix[60, :].sum(axis=1)
+        ) * self.opt_scale / self.eps
+        self.opt_obj = (
+            df.utility_discounted.ix[60, :].sum(axis=1) * self.opt_scale)
 
     def obj_loop(self, miu):
         """
@@ -327,7 +330,7 @@ class Dice(object):
         nlp.num_option('constr_viol_tol', 8e-7)
         nlp.int_option('max_iter', 30)
         nlp.num_option('max_cpu_time', 60)
-        nlp.num_option('tol', 1e-5)
+        nlp.num_option('tol', self.opt_tol)
         # nlp.num_option('acceptable_tol', 1e-4)
         # nlp.int_option('acceptable_iter', 4)
         nlp.num_option('obj_scaling_factor', -1e+0)
@@ -359,14 +362,14 @@ class Dice2010(Dice):
         self.params = Dice2010Params()
         self.data = self.params.data
         self.dice_version = 2010
-        self.opt_tol = 1e-6
+        self.opt_tol = 1e-5
 
 
 class Dice2007(Dice):
     def __init__(self, optimize=False):
         super(Dice2007, self).__init__()
         self.dice_version = 2007
-        self.opt_tol = 1e-6
+        self.opt_tol = 1e-5
 
 
 if __name__ == '__main__':
@@ -384,11 +387,11 @@ if __name__ == '__main__':
         d.params.fosslim = 100000
         d.params.elasmu = 2
         d.params.prstp = .01
-        # d.params.damages_model = 'productivity_fraction'
-        d.params.carbon_model = 'beam_carbon'
+        d.params.damages_model = 'productivity_fraction'
+        # d.params.carbon_model = 'beam_carbon'
         d.params.prod_frac = .25
-        d.loop(opt=True)
-        print(d.data.vars.miu[:10])
+        d.loop(opt=False)
+        print(d.data.vars.scc[:2].mean())
 
         # import timeit
         # t = timeit.Timer('d = Dice2007(); d.loop(opt=True)', 'from webdice import Dice2007')
