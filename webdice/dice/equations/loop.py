@@ -1,5 +1,10 @@
-from webdice.dice.equations import utility, damages, carbon, consumption, \
-    productivity, temperature, emissions
+import utility
+import carbon
+import damages
+import consumption
+import emissions
+import productivity
+import temperature
 
 
 class Loop(object):
