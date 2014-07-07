@@ -84,7 +84,6 @@ class Dice(object):
         """
         return np.sum(self.data.vars.utility_discounted)
 
-    @profile
     def step(self, i, df, miu=None, deriv=False, opt=False, emissions_shock=0.0):
         """
         Single step for calculating endogenous variables
@@ -138,7 +137,6 @@ class Dice(object):
         )
         return df
 
-    # @profile
     def loop(self, miu=None, deriv=False, scc=True, opt=False):
         """
         Loop through step function for calculating endogenous variables
@@ -156,7 +154,6 @@ class Dice(object):
         df = self.data.vars
         if opt:
             self.eq = LoopOpt(self.params)
-            # self.eq = Loop(self.params)
         else:
             self.eq = Loop(self.params)
         self.eq.set_models(self.params)
@@ -397,9 +394,11 @@ if __name__ == '__main__':
         # d.params.damages_model = 'productivity_fraction'
         # d.params.carbon_model = 'beam_carbon'
         d.params.prod_frac = .25
-        d.loop(opt=True, scc=True)
-        # print(d.data.vars.scc[:2].mean())
-        print(d.data.vars.miu[:12])
+        # d.loop(opt=True, scc=True)
+        d.loop(opt=False)
+        print(d.data.vars.scc[:2].mean())
+        print(d.data.vars.consumption_pc[:12] - d.data.scc.consumption_pc[:12])
+        print(d.data.vars.emissions_total[:12] - d.data.scc.emissions_total[:12])
     t1 = datetime.now()
     print t1 - t0
         # import timeit

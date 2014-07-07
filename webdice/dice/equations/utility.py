@@ -28,7 +28,7 @@ class UtilityModel(object):
         -------
         array
         """
-        return 1 / ((1 + self._params.prstp) ** (10 * self._params._t0))
+        return 1 / ((1 + self._params.prstp) ** (10 * self._params.t0))
 
     def get_model_values(self, index, data):
         utility = self.utility(data.consumption_pc[index])
