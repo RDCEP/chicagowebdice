@@ -151,23 +151,19 @@ class Dice(object):
         -------
         pd.DataFrame : self.data.vars
         """
-        df = self.data.vars
-        if opt:
-            self.eq = LoopOpt(self.params)
-        else:
-            self.eq = Loop(self.params)
-        self.eq.set_models(self.params)
         _miu = None
         if opt:
+            self.eq = LoopOpt(self.params)
+            self.eq.set_models(self.params)
             _miu = self.get_ipopt_miu()
             _miu[0] = self.params.miu_2005
         self.eq = Loop(self.params)
         self.eq.set_models(self.params)
         for i in range(self.params.tmax):
-            self.step(i, df, _miu, deriv=deriv, opt=opt)
+            self.step(i, self.data.vars, _miu, deriv=deriv, opt=opt)
         if scc:
             self.get_scc(_miu)
-        return df
+        return self.data.vars
 
     def set_opt_values(self, df):
         self.opt_grad_f = (
@@ -378,9 +374,6 @@ if __name__ == '__main__':
     if profile:
         import cProfile
         cProfile.run('d.loop(opt=True)', 'dice_stats')
-        print pd.Panel(
-            {i: d.data.vars for i in xrange(d.params.tmax + 1)}
-        ).transpose(2, 0, 1)
         import pstats
         p = pstats.Stats('dice_stats').sort_stats('cumtime')
         p.print_stats(20)
@@ -391,14 +384,15 @@ if __name__ == '__main__':
         d.params.fosslim = 100000
         d.params.elasmu = 2
         d.params.prstp = .01
-        # d.params.damages_model = 'productivity_fraction'
-        # d.params.carbon_model = 'beam_carbon'
+        d.params.damages_model = 'productivity_fraction'
+        d.params.carbon_model = 'beam_carbon'
         d.params.prod_frac = .25
-        # d.loop(opt=True, scc=True)
+        # d.loop(opt=True)
         d.loop(opt=False)
+
         print(d.data.vars.scc[:2].mean())
-        print(d.data.vars.consumption_pc[:12] - d.data.scc.consumption_pc[:12])
-        print(d.data.vars.emissions_total[:12] - d.data.scc.emissions_total[:12])
+        print(d.data.vars.consumption[55:])
+        # print(d.data.vars.ix[i, :] - d.data.scc.ix[i, :])
     t1 = datetime.now()
     print t1 - t0
         # import timeit

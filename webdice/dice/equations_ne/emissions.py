@@ -78,7 +78,6 @@ class EmissionsModel(object):
             c[3] + ((c[3] - c[2]) / 5 * np.arange(45)),
         ))
 
-    # @profile
     def get_model_values(self, i, df, deriv=False, opt=False,
                          miu=None, emissions_shock=0):
         miu = self.get_miu(i, df, deriv=deriv, opt=opt, miu=miu)
