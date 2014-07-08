@@ -38,19 +38,13 @@ class TemperatureModel(object):
     def get_model_values(self, i, df):
         if i == 0:
             return self.initial_temps
+        i -= 1
         return (
-            # self.temp_atmosphere(df, i),
-            self.temp_atmosphere(df.temp_atmosphere[i - 1],
-                                 df.temp_lower[i - 1],
-                                 df.forcing[i],
-                                 ),
-            self.temp_lower(
-                df.temp_atmosphere[i - 1], df.temp_lower[i - 1],
-                self.params.thermal_transfer
-            ),
+            self.temp_atmosphere(i, df),
+            self.temp_lower(i, df),
         )
 
-    def temp_atmosphere(self, temp_atmosphere, temp_lower, forcing):
+    def temp_atmosphere(self, i, df):
         """
         T_AT, Temperature of atmosphere, degrees C
         ...
@@ -58,12 +52,15 @@ class TemperatureModel(object):
         -------
         float
         """
-        f = (self.params.forcing_co2_doubling / self.params.temp_co2_doubling)
+        ff = (self.params.forcing_co2_doubling / self.params.temp_co2_doubling)
         c1 = self.params.thermal_transfer[0]
         c3 = self.params.thermal_transfer[2]
-        return ne.evaluate('temp_atmosphere + c1 * (forcing - f * temp_atmosphere - c3 * (temp_atmosphere - temp_lower))')
+        ta = df.temp_atmosphere[i]
+        tl = df.temp_lower[i]
+        f = df.forcing[i + 1]
+        return ne.evaluate('ta + c1 * (f - ff * ta - c3 * (ta - tl))')
 
-    def temp_lower(self, temp_atmosphere, temp_lower, thermal_transfer):
+    def temp_lower(self, i, df):
         """
         T_LO, Temperature of lower oceans, degrees C
         ...
@@ -71,8 +68,10 @@ class TemperatureModel(object):
         -------
         float
         """
-        c4 = thermal_transfer[3]
-        return ne.evaluate('temp_lower + c4 * (temp_atmosphere - temp_lower)')
+        c4 = self.params.thermal_transfer[3]
+        ta = df.temp_atmosphere[i]
+        tl = df.temp_lower[i]
+        return ne.evaluate('tl + c4 * (ta - tl)')
 
 
 class Dice2007(TemperatureModel):
