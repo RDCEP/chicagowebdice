@@ -107,7 +107,7 @@ class ProductivityModel(object):
                 population
             )
         else:
-            intensity_decline = self.params.intensity_decline_rate
+            intensity_decline = self.params.intensity_growth
             df.backstop = self.backstop
             carbon_intensity = self.params.intensity_2005
             productivity = self.params.productivity

@@ -104,7 +104,7 @@ class ProductivityModel(object):
             population = self.population(i, df)
             gross_output = self.gross_output(
                 productivity, capital, self.params.output_elasticity,
-                df.population[i]
+                population
             )
         else:
             df.backstop = self.backstop
@@ -112,7 +112,7 @@ class ProductivityModel(object):
             productivity = self.params.productivity
             capital = self.params.capital_2005
             gross_output = self.params.output_2005
-            intensity_decline = self.params.intensity_decline_rate
+            intensity_decline = self.params.intensity_growth
             population = self.params._population_2005
 
         backstop_growth = (
