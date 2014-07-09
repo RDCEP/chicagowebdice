@@ -131,7 +131,7 @@ class CarbonModel(object):
         b33 = self.carbon_matrix[2][2]
         return ne.evaluate('b32 * mass_upper + b33 * mass_lower')
 
-    def forcing(self, index, df):
+    def forcing(self, i, df):
         """
         F, Forcing, W/m^2
         ...
@@ -140,9 +140,9 @@ class CarbonModel(object):
         float
         """
         fco2 = self.params.forcing_co2_doubling
-        ma = df.mass_atmosphere[index]
+        ma = df.mass_atmosphere[i]
         mpi = self.params.mass_preindustrial
-        fg = self.forcing_ghg[index]
+        fg = self.forcing_ghg[i]
         return ne.evaluate('fco2 * (log(ma / mpi) / log(2)) + fg')
 
     def get_model_values(self, i, df):
@@ -162,12 +162,13 @@ class CarbonModel(object):
         if i == 0:
             return self.initial_carbon
         i -= 1
+        ma = df.mass_atmosphere[i]
+        mu = df.mass_upper[i]
+        ml = df.mass_lower[i]
         return (
-            self.mass_atmosphere(df.emissions_total[i],
-                                 df.mass_atmosphere[i], df.mass_upper[i]),
-            self.mass_upper(df.mass_atmosphere[i], df.mass_upper[i],
-                            df.mass_lower[i]),
-            self.mass_lower(df.mass_upper[i], df.mass_lower[i]),
+            self.mass_atmosphere(df.emissions_total[i], ma, mu),
+            self.mass_upper(ma, mu, ml),
+            self.mass_lower(mu, ml),
         )
 
 
@@ -246,21 +247,21 @@ class BeamCarbon(CarbonModel):
             self.carbon_matrix[1][1] = b * -.2 - .05
             _ma = self.mass_atmosphere(
                 df.emissions_total[i], ma, mu)
-            _mu = self.mass_upper(ma, mu, ml)
-            _ml = self.mass_lower(mu, ml)
             ma = ne.evaluate('ma + _ma / n')
+            _mu = self.mass_upper(ma, mu, ml)
             mu = ne.evaluate('mu + _mu / n')
+            _ml = self.mass_lower(mu, ml)
             ml = ne.evaluate('ml + _ml / n')
         return ma, mu, ml
 
 
 class LinearCarbon(CarbonModel):
-    def get_model_values(self, index, df):
+    def get_model_values(self, i, df):
         return (
             None, None, None
         )
 
-    def forcing(self, index, df):
+    def forcing(self, i, df):
         return None
 
 

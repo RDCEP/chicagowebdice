@@ -128,7 +128,7 @@ class CarbonModel(object):
             self.carbon_matrix[2][2] * mass_lower
         )
 
-    def forcing(self, index, df):
+    def forcing(self, i, df):
         """
         F, Forcing, W/m^2
         ...
@@ -139,8 +139,8 @@ class CarbonModel(object):
         return (
             self.params.forcing_co2_doubling *
             (np.log(
-                df.mass_atmosphere[index] / self.params.mass_preindustrial
-            ) / np.log(2)) + self.forcing_ghg[index]
+                df.mass_atmosphere[i] / self.params.mass_preindustrial
+            ) / np.log(2)) + self.forcing_ghg[i]
         )
 
     def get_model_values(self, i, df):
@@ -160,12 +160,13 @@ class CarbonModel(object):
         if i == 0:
             return self.initial_carbon
         i -= 1
+        ma = df.mass_atmosphere[i]
+        mu = df.mass_upper[i]
+        ml = df.mass_lower[i]
         return (
-            self.mass_atmosphere(df.emissions_total[i],
-                                 df.mass_atmosphere[i], df.mass_upper[i]),
-            self.mass_upper(df.mass_atmosphere[i], df.mass_upper[i],
-                            df.mass_lower[i]),
-            self.mass_lower(df.mass_upper[i], df.mass_lower[i]),
+            self.mass_atmosphere(df.emissions_total[i], ma, mu),
+            self.mass_upper(ma, mu, ml),
+            self.mass_lower(mu, ml),
         )
 
 
@@ -251,12 +252,12 @@ class BeamCarbon(CarbonModel):
 
 
 class LinearCarbon(CarbonModel):
-    def get_model_values(self, index, df):
+    def get_model_values(self, i, df):
         return (
             None, None, None
         )
 
-    def forcing(self, index, df):
+    def forcing(self, i, df):
         return None
 
 
