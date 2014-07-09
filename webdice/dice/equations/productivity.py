@@ -188,8 +188,8 @@ class Dice2010(ProductivityModel):
         np.exp(-.002 * 10 * self.params.t0))
 
     def carbon_intensity(self, i, df):
-        df.intensity_decline[i] = self.intensity_decline(i, df)
-        return (
+        intensity_decline = self.intensity_decline(i, df)
+        return intensity_decline, (
             df.carbon_intensity[i - 1] *
             (1 - df.intensity_decline[i - 1])
         )
