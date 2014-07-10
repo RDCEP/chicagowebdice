@@ -1,4 +1,5 @@
 from __future__ import division
+import numpy as np
 
 
 class UtilityModel(object):
@@ -47,11 +48,10 @@ class UtilityModel(object):
         -------
         float
         """
-        denom = -0.0001 if self._params.elasmu == 1 else 1.0 - self._params.elasmu
-        return (
-            (1 / denom) *
-            consumption_pc ** denom + 1
-        )
+        if self._params.elasmu == 1:
+            return np.log(consumption_pc)
+        denom = 1.0 - self._params.elasmu
+        return (1 / denom) * (consumption_pc ** denom - 1)
 
     def utility_discounted(self, utility, utility_discount, l):
         """

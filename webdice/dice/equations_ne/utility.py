@@ -48,8 +48,10 @@ class UtilityModel(object):
         -------
         float
         """
-        d = -0.0001 if self.params.elasmu == 1 else 1.0 - self.params.elasmu
-        return ne.evaluate('(1 / d) * consumption_pc ** d + 1')
+        if self.params.elasmu == 1:
+            return ne.evaluate('log(consumption_pc)')
+        d = 1.0 - self.params.elasmu
+        return ne.evaluate('(1 / d) * consumption_pc ** d - 1')
 
     def utility_discounted(self, utility, utility_discount, l):
         """
