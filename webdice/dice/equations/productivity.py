@@ -113,7 +113,7 @@ class ProductivityModel(object):
             capital = self.params.capital_2005
             gross_output = self.params.output_2005
             intensity_decline = self.params.intensity_growth
-            population = self.params._population_2005
+            population = self.params.population_2005
 
         backstop_growth = (
             df.backstop[i] * carbon_intensity /

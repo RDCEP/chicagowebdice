@@ -113,7 +113,7 @@ class ProductivityModel(object):
             productivity = self.params.productivity
             capital = self.params.capital_2005
             gross_output = self.params.output_2005
-            population = self.params._population_2005
+            population = self.params.population_2005
 
         bs = df.backstop[i]
         ae = self.params.abatement_exponent
