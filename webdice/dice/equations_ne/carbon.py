@@ -1,6 +1,13 @@
 from __future__ import division
 import numpy as np
 import numexpr as ne
+import __builtin__
+
+try:
+    __builtin__.profile
+except AttributeError:
+    def profile(func): return func
+    __builtin__.profile = profile
 
 
 class CarbonModel(object):
@@ -95,11 +102,9 @@ class CarbonModel(object):
         -------
         float
         """
-        return (
-            self.carbon_matrix[0][0] * mass_atmosphere +
-            self.carbon_matrix[1][0] * mass_upper +
-            10 * emissions_total
-        )
+        b11 = self.carbon_matrix[0][0]
+        b12 = self.carbon_matrix[1][0]
+        return ne.evaluate('b11 * mass_atmosphere + b12 * mass_upper + 10 * emissions_total')
 
     def mass_upper(self, mass_atmosphere, mass_upper, mass_lower):
         """
@@ -109,11 +114,10 @@ class CarbonModel(object):
         -------
         float
         """
-        return (
-            self.carbon_matrix[0][1] * mass_atmosphere +
-            self.carbon_matrix[1][1] * mass_upper +
-            self.carbon_matrix[2][1] * mass_lower
-        )
+        b21 = self.carbon_matrix[0][1]
+        b22 = self.carbon_matrix[1][1]
+        b23 = self.carbon_matrix[2][1]
+        return ne.evaluate('b21 * mass_atmosphere + b22 * mass_upper + b23 * mass_lower')
 
     def mass_lower(self, mass_upper, mass_lower):
         """
@@ -123,10 +127,9 @@ class CarbonModel(object):
         -------
         float
         """
-        return (
-            self.carbon_matrix[1][2] * mass_upper +
-            self.carbon_matrix[2][2] * mass_lower
-        )
+        b32 = self.carbon_matrix[1][2]
+        b33 = self.carbon_matrix[2][2]
+        return ne.evaluate('b32 * mass_upper + b33 * mass_lower')
 
     def forcing(self, i, df):
         """
@@ -136,12 +139,11 @@ class CarbonModel(object):
         -------
         float
         """
-        return (
-            self.params.forcing_co2_doubling *
-            (np.log(
-                df.mass_atmosphere[i] / self.params.mass_preindustrial
-            ) / np.log(2)) + self.forcing_ghg[i]
-        )
+        fco2 = self.params.forcing_co2_doubling
+        ma = df.mass_atmosphere[i]
+        mpi = self.params.mass_preindustrial
+        fg = self.forcing_ghg[i]
+        return ne.evaluate('fco2 * (log(ma / mpi) / log(2)) + fg')
 
     def get_model_values(self, i, df):
         """
@@ -193,7 +195,6 @@ class BeamCarbon(CarbonModel):
             0, .001, -.001,
         ]).reshape((3, 3, 1))
 
-    # @profile
     def get_model_values(self, i, df):
         """
         Set BEAM transfer matrix, and return values for M_AT, M_UP, M_LO
@@ -236,18 +237,21 @@ class BeamCarbon(CarbonModel):
             )
         i -= 1
         self.carbon_matrix = np.tile(self.carbon_matrix_skel, _dims)
-        ma, mu, ml = (df.mass_atmosphere[i], df.mass_upper[i],
-                         df.mass_lower[i])
-        for x in xrange(self.N):
+        ma, mu, ml = (df.mass_atmosphere[i], df.mass_upper[i], df.mass_lower[i])
+        n = self.N
+        for x in xrange(n):
             h = ne.evaluate('5.21512e-10 * mu + 7.32749e-18 * sqrt(5.06546e15 * mu ** 2 - 7.75282e18 * mu + 2.97321e21) - 4e-7')
             b = ne.evaluate('142.349 / (1 + 8e-7 / h + 8e-7 * 4.53e-10 / h)')
 
             self.carbon_matrix[1][0] = b * .2
             self.carbon_matrix[1][1] = b * -.2 - .05
-            ma += self.mass_atmosphere(
-                df.emissions_total[i], ma, mu) / self.N
-            mu += self.mass_upper(ma, mu, ml) / self.N
-            ml += self.mass_lower(mu, ml) / self.N
+            _ma = self.mass_atmosphere(
+                df.emissions_total[i], ma, mu)
+            ma = ne.evaluate('ma + _ma / n')
+            _mu = self.mass_upper(ma, mu, ml)
+            mu = ne.evaluate('mu + _mu / n')
+            _ml = self.mass_lower(mu, ml)
+            ml = ne.evaluate('ml + _ml / n')
         return ma, mu, ml
 
 

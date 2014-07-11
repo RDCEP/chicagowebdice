@@ -104,10 +104,10 @@ class DiceParams(object):
         self.t1 = self.t0 + 1
 
         # Variables for initiating pandas array
-        backstop_growth = np.zeros(self.tmax)
-        carbon_intensity = np.empty(self.tmax)
-        carbon_intensity[:] = self.intensity_2005
-        intensity_decline = np.zeros(self.tmax)
+        backstop_growth = np.zeros(self._tmax)
+        carbon_intensity = np.empty(self._tmax)
+        carbon_intensity[:] = self._intensity_2005
+        intensity_decline = np.zeros(self._tmax)
         intensity_decline[:] = self.intensity_decline_rate
         productivity = np.empty(self.tmax)
         productivity[:] = self.productivity

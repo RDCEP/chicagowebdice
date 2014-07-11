@@ -4,6 +4,7 @@ import numexpr as ne
 import pandas as pd
 from params import DiceParams, Dice2010Params
 from equations.loop import Loop
+from equations_ne.loop import LoopOpt
 
 
 class Dice(object):
@@ -98,7 +99,8 @@ class Dice(object):
         """
         (
             df.carbon_intensity[i], df.productivity[i], df.capital[i],
-            df.backstop_growth[i], df.gross_output[i]
+            df.backstop_growth[i], df.gross_output[i], df.intensity_decline[i],
+            df.population[i],
         ) = self.eq.productivity_model.get_model_values(i, df)
         if i > 0:
             df.productivity[i] *= self.eq.damages_model.get_production_factor(
@@ -108,7 +110,7 @@ class Dice(object):
             df.miu[i], df.emissions_ind[i],
             df.emissions_total[i], df.carbon_emitted[i],
             df.tax_rate[i]
-        ) = self.eq.emissions_model.get_emissions_values(
+        ) = self.eq.emissions_model.get_model_values(
             i, df, miu=miu, emissions_shock=emissions_shock, deriv=deriv, opt=opt
         )
         df.mass_atmosphere[i], df.mass_upper[i], df.mass_lower[i] = (
@@ -142,31 +144,19 @@ class Dice(object):
         -------
         pd.DataFrame : self.data.vars
         """
-        df = self.data.vars
-        self.eq.set_models(self.params)
         _miu = None
         if opt:
-            if miu is not None:
-                df = pd.Panel(
-                    {i: self.data.vars for i in xrange(self.params.tmax + 1)}
-                ).transpose(2, 0, 1)
-            else:
-                _miu = self.get_ipopt_miu()
-                _miu[0] = self.params.miu_2005
+            self.eq = LoopOpt(self.params)
+            self.eq.set_models(self.params)
+            _miu = self.get_ipopt_miu()
+            _miu[0] = self.params.miu_2005
+        self.eq = Loop(self.params)
+        self.eq.set_models(self.params)
         for i in range(self.params.tmax):
-            if opt and miu is not None:
-                df.miu.ix[:][i] = miu[i]
-                df.miu.ix[i][i] += self.eps
-                _miu = df.miu[i]
-            self.step(i, df, _miu, deriv=deriv, opt=opt)
+            self.step(i, self.data.vars, _miu, deriv=deriv, opt=opt)
         if scc:
             self.get_scc(_miu)
-        if opt and miu is not None:
-            self.set_opt_values(df)
-            if deriv:
-                return self.opt_grad_f
-            return self.opt_obj
-        return df
+        return self.data.vars
 
     def set_opt_values(self, df):
         self.opt_grad_f = (
@@ -246,22 +236,19 @@ class Dice(object):
         """
         x_range = 20
         for i in xrange(x_range):
-            time_horizon = 59
-            future_indices = time_horizon - i
+            th = self.params.scc_horizon
+            future = th - i
             self.data.scc = self.data.vars.copy()
-            for j in range(i, time_horizon + 1):
+            for j in range(i, th + 1):
                 shock = 0
                 if j == i:
                     shock = 1.0
                 self.step(j, self.data.scc, miu=miu, emissions_shock=shock)
-            DIFF = (
-                (
-                    self.data.vars.consumption_pc[i:time_horizon].values -
-                    self.data.scc.consumption_pc[i:time_horizon].values
-                ).clip(0) *
-                self.data.scc.consumption_discount[:future_indices].values
-            )
-            self.data.vars.scc[i] = np.sum(DIFF) * 1000 * 10 * (12 / 44)
+            diff = (
+                self.data.vars.consumption_pc[i:th].values -
+                self.data.scc.consumption_pc[i:th].values
+            ).clip(0) * self.data.scc.consumption_discount[:future].values
+            self.data.vars.scc[i] = np.sum(diff) * 1000 * 10 * (12 / 44)
 
     def get_ipopt_miu(self):
         """
@@ -334,7 +321,7 @@ class Dice(object):
         # nlp.num_option('acceptable_tol', 1e-4)
         # nlp.int_option('acceptable_iter', 4)
         nlp.num_option('obj_scaling_factor', -1e+0)
-        nlp.int_option('print_level', 5)
+        nlp.int_option('print_level', 0)
         nlp.str_option('linear_solver', 'ma57')
         x = nlp.solve(x0)[0]
         nlp.close()
@@ -373,13 +360,16 @@ class Dice2007(Dice):
 
 
 if __name__ == '__main__':
+    from datetime import datetime
+    t0 = datetime.now()
     profile = False
     d = Dice2007()
     if profile:
         import cProfile
         cProfile.run('d.loop(opt=True)', 'dice_stats')
         import pstats
-        p = pstats.Stats('dice_stats')
+        p = pstats.Stats('dice_stats').sort_stats('cumtime')
+        p.print_stats(20)
     else:
         # d.loop()
         # print(d.data.vars)
@@ -388,11 +378,16 @@ if __name__ == '__main__':
         d.params.elasmu = 2
         d.params.prstp = .01
         d.params.damages_model = 'productivity_fraction'
-        # d.params.carbon_model = 'beam_carbon'
+        d.params.carbon_model = 'beam_carbon'
         d.params.prod_frac = .25
+        # d.loop(opt=True)
         d.loop(opt=False)
-        print(d.data.vars.scc[:2].mean())
 
+        print(d.data.vars.scc[:2].mean())
+        print(d.data.vars.consumption[55:])
+        # print(d.data.vars.ix[i, :] - d.data.scc.ix[i, :])
+    t1 = datetime.now()
+    print t1 - t0
         # import timeit
         # t = timeit.Timer('d = Dice2007(); d.loop(opt=True)', 'from webdice import Dice2007')
         # print t.repeat(1, 2)

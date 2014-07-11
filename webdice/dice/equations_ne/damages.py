@@ -1,5 +1,6 @@
 from __future__ import division
 import numpy as np
+import numexpr as ne
 
 
 class DamagesModel(object):
@@ -94,11 +95,10 @@ class DamagesModel(object):
         -------
         float
         """
+        ae = self.params.abatement_exponent
         return np.minimum(
             gross_output,
-            gross_output *
-            participation ** (1 - self.params.abatement_exponent) *
-            backstop_growth * miu ** self.params.abatement_exponent
+            ne.evaluate('gross_output * participation ** (1 - ae) * backstop_growth * miu ** ae')
         )
 
     def damages(self, gross_output, temp_atmosphere, abatement=None):
@@ -109,10 +109,10 @@ class DamagesModel(object):
         -------
         float
         """
-        return gross_output * (1 - 1 / (
-            1 + self.damages_terms[0] * temp_atmosphere +
-            self.damages_terms[1] * temp_atmosphere ** self.damages_terms[2]
-        ))
+        a1 = self.damages_terms[0]
+        a2 = self.damages_terms[1]
+        a3 = self.damages_terms[2]
+        return ne.evaluate('gross_output * (1 - 1 / (1 + a1 * temp_atmosphere + a2 * temp_atmosphere ** a3))')
 
     def output(self, gross_output, damages, abatement,
                a_temp_atmosphere=None):
@@ -123,9 +123,7 @@ class DamagesModel(object):
         -------
         float
         """
-        return (
-            (gross_output - abatement) * (gross_output - damages)
-        ) / gross_output
+        return ne.evaluate('((gross_output - abatement) * (gross_output - damages)) / gross_output')
 
     def output_abate(self, abatement, gross_output):
         """
@@ -135,7 +133,7 @@ class DamagesModel(object):
         -------
         array
         """
-        return abatement / gross_output * 100
+        return ne.evaluate('abatement / gross_output * 100')
 
 
 class Dice2007(DamagesModel):
@@ -196,23 +194,14 @@ class IncommensurableDamages(DamagesModel):
 
     def output(self, gross_output, damages, abatement, temp_atmosphere=None):
         C25d = 1.4797e-05
-        output_no_damages = gross_output - abatement
-        consumption_no_damages = (
-            output_no_damages - output_no_damages * self.params.savings
-        )
-        consumption = (
-            consumption_no_damages / (
-                1 + consumption_no_damages * C25d *
-                temp_atmosphere ** self.damages_terms[2]
-            )
-        )
-        return consumption / (1 - self.params.savings)
+        savings = self.params.savings
+        a3 = self.damages_terms[2]
+        return ne.evaluate('(((gross_output - abatement) - (gross_output - abatement) * savings) / (1 + ((gross_output - abatement) - (gross_output - abatement) * savings) * C25d * temp_atmosphere ** a3)) / (1 - savings)')
 
     def damages(self, gross_output, temp_atmosphere, abatement=None):
-        output_no_damages = gross_output - abatement
         output = self.output(gross_output, 0, abatement,
                              temp_atmosphere)
-        return output_no_damages - output
+        return ne.evaluate('(gross_output - abatement) - output')
 
 
 class TippingPoint(DamagesModel):
@@ -220,10 +209,7 @@ class TippingPoint(DamagesModel):
     Weitzman tipping point damages
     """
     def damages(self, gross_output, temp_atmosphere, a_abatement=None):
-        return gross_output * (1 - 1 / (
-            1 + (temp_atmosphere / 20.46) ** 2 + (
-                (temp_atmosphere / 6.081) ** 6.754
-            )))
+        return ne.evaluate('gross_output * (1 - 1 / (1 + (temp_atmosphere / 20.46) ** 2 + ((temp_atmosphere / 6.081) ** 6.754)))')
 
 
 class ProductivityFraction(DamagesModel):
@@ -232,11 +218,10 @@ class ProductivityFraction(DamagesModel):
     """
     def damages(self, gross_output, temp_atmosphere, a_abatement=None):
         fD = self.get_production_factor(temp_atmosphere)
-        damages_to_prod = (1 - (1 - 1 / (
-            1 + self.damages_terms[0] * temp_atmosphere +
-            self.damages_terms[1] * temp_atmosphere ** self.damages_terms[2]
-        ))) / fD
-        return gross_output * (1 - damages_to_prod)
+        a1 = self.damages_terms[0]
+        a2 = self.damages_terms[1]
+        a3 = self.damages_terms[2]
+        return ne.evaluate('gross_output * (1 - ((1 - (1 - 1 / (1 + a1 * temp_atmosphere + a2 * temp_atmosphere ** a3))) / fD))')
 
     def get_production_factor(self, temp_atmosphere):
         """
@@ -251,11 +236,11 @@ class ProductivityFraction(DamagesModel):
         -------
         float
         """
-        D = 1 - 1 / (
-            1 + self.damages_terms[0] * temp_atmosphere +
-            self.damages_terms[1] * temp_atmosphere ** self.damages_terms[2]
-        )
-        return 1 - self.params.prod_frac * D
+        a1 = self.damages_terms[0]
+        a2 = self.damages_terms[1]
+        a3 = self.damages_terms[2]
+        pf = self.params.prod_frac
+        return ne.evaluate('1 - pf * (1 - 1 / (1 + a1 * temp_atmosphere + a2 * temp_atmosphere ** a3))')
 
 
 class Dice2010(DamagesModel):

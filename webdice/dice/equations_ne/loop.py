@@ -7,7 +7,7 @@ import productivity
 import temperature
 
 
-class Loop(object):
+class LoopOpt(object):
     """
     Provide getters and setters for model equations
     ...

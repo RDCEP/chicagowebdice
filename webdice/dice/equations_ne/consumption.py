@@ -1,5 +1,6 @@
 from __future__ import division
 import numpy as np
+import numexpr as ne
 
 
 class ConsumptionModel(object):
@@ -52,7 +53,7 @@ class ConsumptionModel(object):
         -------
         float
         """
-        return output * (1.0 - savings)
+        return ne.evaluate('output * (1.0 - savings)')
 
     def consumption_pc(self, consumption, population):
         """
@@ -62,16 +63,15 @@ class ConsumptionModel(object):
         -------
         float
         """
-        return 1000 * consumption / population
+        return ne.evaluate('1000 * consumption / population')
 
     def consumption_discount(self, c0, c1, i, discount_type='ramsey'):
     # def consumption_discount(self, c0, c1, i, discount_type='constant'):
         """Discount rate for consumption"""
         if discount_type == 'ramsey':
-            return np.exp(-(
-                self.params.elasmu * np.log(c1 / c0) / (i * 10 + .000001) +
-                self.params.prstp
-            ) * i * 10)
+            eta = self.params.elasmu
+            rho = self.params.prstp
+            return ne.evaluate('exp(-(eta * log(c1 / c0) / (i * 10 + .000001) + rho) * i * 10)')
         if discount_type == 'constant':
             RATE = .03
             return 1 / (1 + RATE) ** (i * 10)
@@ -84,7 +84,7 @@ class ConsumptionModel(object):
         -------
         float
         """
-        return savings * output
+        return ne.evaluate('savings * output')
 
 
 class Dice2007(ConsumptionModel):

@@ -110,7 +110,7 @@ class EmissionsModel(object):
         -------
         float
         """
-        return intensity * (1 - miu) * gross_output
+        return ne.evaluate('intensity * (1 - miu) * gross_output')
 
     def emissions_total(self, emissions_ind, etree):
         """
@@ -120,10 +120,10 @@ class EmissionsModel(object):
         -------
         float
         """
-        return emissions_ind + etree
+        return ne.evaluate('emissions_ind + etree')
 
     def carbon_emitted(self, emissions_total, carbon_emitted):
-        return carbon_emitted + emissions_total * 10
+        return ne.evaluate('carbon_emitted + emissions_total * 10')
 
     def get_miu(self, i, df, deriv=False, opt=False, miu=None):
         """
@@ -187,7 +187,7 @@ class EmissionsModel(object):
             return 1
         elif round(emissions_ind, 2) < round((_e2005 * emissions_cap), 2):
             return 0
-        else: return 1 - ((_e2005 * emissions_cap) / (intensity * gross_output))
+        else: return ne.evaluate('1 - ((_e2005 * emissions_cap) / (intensity * gross_output))')
 
     def tax_rate(self, miu, backstop):
         """
@@ -197,9 +197,8 @@ class EmissionsModel(object):
         -------
         float
         """
-        return (
-            backstop * miu ** (self.params.abatement_exponent - 1) * 1000
-        ) * (12 / 44)
+        ae = self.params.abatement_exponent
+        return ne.evaluate('backstop * miu ** (ae - 1) * 1000 * 12 / 44')
 
 
 class Dice2007(EmissionsModel):

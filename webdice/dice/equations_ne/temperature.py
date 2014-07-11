@@ -1,4 +1,5 @@
 from __future__ import division
+import numexpr as ne
 
 
 class TemperatureModel(object):
@@ -20,7 +21,7 @@ class TemperatureModel(object):
         Calculate T_OCEAN at t
     """
     def __init__(self, params):
-        self._params = params
+        self.params = params
         self._temp_atmosphere_2005 = params.temp_atmosphere_2000
         self._temp_lower_2005 = params.temp_lower_2000
         self._forcing_co2_doubling = params.forcing_co2_doubling
@@ -34,19 +35,16 @@ class TemperatureModel(object):
         self._temp_atmosphere_2005 = value[0]
         self._temp_lower_2005 = value[1]
 
-    def get_model_values(self, index, data):
-        if index == 0:
+    def get_model_values(self, i, df):
+        if i == 0:
             return self.initial_temps
-        i = index - 1
+        i -= 1
         return (
-            self.temp_atmosphere(data, index),
-            self.temp_lower(
-                data.temp_atmosphere[i], data.temp_lower[i],
-                self._params.thermal_transfer
-            ),
+            self.temp_atmosphere(i, df),
+            self.temp_lower(i, df),
         )
 
-    def temp_atmosphere(self, data, index):
+    def temp_atmosphere(self, i, df):
         """
         T_AT, Temperature of atmosphere, degrees C
         ...
@@ -54,18 +52,15 @@ class TemperatureModel(object):
         -------
         float
         """
-        return (
-            data.temp_atmosphere[index - 1] +
-            self._params.thermal_transfer[0] * (
-                data.forcing[index] - (self._params.forcing_co2_doubling /
-                                       self._params.temp_co2_doubling) *
-                data.temp_atmosphere[index - 1] -
-                self._params.thermal_transfer[2] *
-                (data.temp_atmosphere[index - 1] - data.temp_lower[index - 1])
-            )
-        )
+        ff = (self.params.forcing_co2_doubling / self.params.temp_co2_doubling)
+        c1 = self.params.thermal_transfer[0]
+        c3 = self.params.thermal_transfer[2]
+        ta = df.temp_atmosphere[i]
+        tl = df.temp_lower[i]
+        f = df.forcing[i + 1]
+        return ne.evaluate('ta + c1 * (f - ff * ta - c3 * (ta - tl))')
 
-    def temp_lower(self, temp_atmosphere, temp_lower, thermal_transfer):
+    def temp_lower(self, i, df):
         """
         T_LO, Temperature of lower oceans, degrees C
         ...
@@ -73,9 +68,10 @@ class TemperatureModel(object):
         -------
         float
         """
-        return (
-            temp_lower + thermal_transfer[3] * (temp_atmosphere - temp_lower)
-        )
+        c4 = self.params.thermal_transfer[3]
+        ta = df.temp_atmosphere[i]
+        tl = df.temp_lower[i]
+        return ne.evaluate('tl + c4 * (ta - tl)')
 
 
 class Dice2007(TemperatureModel):
@@ -83,12 +79,12 @@ class Dice2007(TemperatureModel):
 
 
 class LinearTemperature(TemperatureModel):
-    def get_model_values(self, index, data):
-        if index == 0:
+    def get_model_values(self, i, df):
+        if i == 0:
             return self.initial_temps[0], None
         temp_atmosphere = (
             self.initial_temps[0] +
-            data.carbon_emitted[index - 1] * .002
+            df.carbon_emitted[i - 1] * .002
         )
         return (
             temp_atmosphere,
@@ -100,7 +96,7 @@ class Dice2010(TemperatureModel):
     def __init__(self, params):
         super(Dice2010, self).__init__(params)
 
-    def temp_atmosphere(self, data, index):
+    def temp_atmosphere(self, temp_atmosphere, temp_lower, forcing):
         """
         T_AT, Temperature of atmosphere, degrees C
         ...
@@ -108,13 +104,15 @@ class Dice2010(TemperatureModel):
         -------
         float
         """
+        f = (self.params.forcing_co2_doubling / self.params.temp_co2_doubling)
+        c1 = self.params.thermal_transfer[0]
+        c3 = self.params.thermal_transfer[2]
         return (
-            data.temp_atmosphere[index - 1] +
-            self._params.thermal_transfer[0] * (
-                data.forcing[index] - (self._params._forcing_co2_doubling /
-                                       self._params.temp_co2_doubling) *
-                data.temp_atmosphere[index - 1] -
-                self._params.thermal_transfer[2] *
-                (data.temp_atmosphere[index - 1] - data.temp_lower[index - 1])
+            temp_atmosphere +
+            c1 * (
+                forcing - f *
+                temp_atmosphere -
+                c3 *
+                (temp_atmosphere - temp_lower)
             )
         )

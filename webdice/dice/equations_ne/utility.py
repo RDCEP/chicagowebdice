@@ -1,5 +1,5 @@
 from __future__ import division
-import numpy as np
+import numexpr as ne
 
 
 class UtilityModel(object):
@@ -18,7 +18,7 @@ class UtilityModel(object):
     utility_discounted()
     """
     def __init__(self, params):
-        self._params = params
+        self.params = params
 
     @property
     def utility_discount(self):
@@ -29,14 +29,14 @@ class UtilityModel(object):
         -------
         array
         """
-        return 1 / ((1 + self._params.prstp) ** (10 * self._params.t0))
+        return 1 / ((1 + self.params.prstp) ** (10 * self.params.t0))
 
-    def get_model_values(self, index, data):
-        utility = self.utility(data.consumption_pc[index])
+    def get_model_values(self, i, df):
+        utility = self.utility(df.consumption_pc[i])
         return (
             utility,
             self.utility_discounted(
-                utility, self.utility_discount[index], data.population[index]
+                utility, self.utility_discount[i], df.population[i]
             )
         )
 
@@ -48,10 +48,10 @@ class UtilityModel(object):
         -------
         float
         """
-        if self._params.elasmu == 1:
-            return np.log(consumption_pc)
-        denom = 1.0 - self._params.elasmu
-        return (1 / denom) * (consumption_pc ** denom - 1)
+        if self.params.elasmu == 1:
+            return ne.evaluate('log(consumption_pc)')
+        d = 1.0 - self.params.elasmu
+        return ne.evaluate('(1 / d) * consumption_pc ** d - 1')
 
     def utility_discounted(self, utility, utility_discount, l):
         """
@@ -61,7 +61,7 @@ class UtilityModel(object):
         -------
         float
         """
-        return utility_discount * l * utility
+        return ne.evaluate('utility_discount * l * utility')
 
 
 class Dice2007(UtilityModel):
