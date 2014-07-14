@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'base_page.html' %}
 {% block headjs -%}
   <script type="text/javascript">
     Options = window.Options || { };
@@ -7,6 +7,7 @@
     Options.graphs = {{  graph_names|safe }};
     Options.dice_version = {% if dice_version %}{{ dice_version|safe }}{% else %}2007{% endif %};
   </script>
+  <script type="text/javascript" src="/static/js/stacked_chart.js?{{ now }}"></script>
   <script type="text/javascript" src="/static/js/main.js?{{ now }}"></script>
 {%- endblock %}
 {% block mainlink %}<div id="back-to-rdcep">Switch to:
