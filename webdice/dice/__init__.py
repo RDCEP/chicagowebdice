@@ -360,34 +360,9 @@ class Dice2007(Dice):
 
 
 if __name__ == '__main__':
-    from datetime import datetime
-    t0 = datetime.now()
-    profile = False
-    d = Dice2007()
-    if profile:
-        import cProfile
-        cProfile.run('d.loop(opt=True)', 'dice_stats')
-        import pstats
-        p = pstats.Stats('dice_stats').sort_stats('cumtime')
-        p.print_stats(20)
-    else:
-        # d.loop()
-        # print(d.data.vars)
-        d.params.savings = .22
-        d.params.fosslim = 100000
-        d.params.elasmu = 2
-        d.params.prstp = .01
-        d.params.damages_model = 'productivity_fraction'
-        d.params.carbon_model = 'beam_carbon'
-        d.params.prod_frac = .25
-        # d.loop(opt=True)
+    run_scenario = False
+    if run_scenario:
+        d = Dice2007()
+        d.params.elasmu = 1.5
         d.loop(opt=False)
-
-        print(d.data.vars.scc[:2].mean())
-        print(d.data.vars.consumption[55:])
-        # print(d.data.vars.ix[i, :] - d.data.scc.ix[i, :])
-    t1 = datetime.now()
-    print t1 - t0
-        # import timeit
-        # t = timeit.Timer('d = Dice2007(); d.loop(opt=True)', 'from webdice import Dice2007')
-        # print t.repeat(1, 2)
+        print d.data.vars.scc[:10]
