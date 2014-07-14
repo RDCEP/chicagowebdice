@@ -1,11 +1,7 @@
 @import globals
 @import old
 @import colors
-
-$top_font: .9em
-$top_pad: .75
-$bottom_font: .9em
-$bottom_pad: .75em
+@import layout
 
 @mixin columns($c, $g)
   -moz-column-count: $c /* Firefox */
@@ -64,7 +60,7 @@ path, circle
   z-index: 1
   #title_legend
     position: relative
-    width: 960px
+    width: $site_width
     margin: 0 auto
     .tabs
       height: 2.4em
@@ -87,11 +83,12 @@ path, circle
   width: 100%
   position: absolute
   top: 0
+  right: -.8em
   li
     float: right!important
 #top_nav
   font-size: .9em
-  width: 960px
+  width: $site_width
   margin: 0 auto
   line-height: 1em
   position: relative
@@ -156,12 +153,14 @@ path, circle
           top: -.81em
 
 #main_content
-  width: 1110px
+  width: $site_width
   margin: 0 auto
   position: relative
   height: 100%
-
-
+  .chart-pane
+    width: $site_width + $left_pad
+    margin-left: -$left_pad
+    margin-bottom: $bottom_pad
 .tab
   //visibility: hidden
   z-index: 0
@@ -176,7 +175,7 @@ path, circle
       font-size: 1em
       position: absolute
       top: 0
-      padding: 1em 0 0 100px
+      padding: 2em 0 0 $left_pad
   &.chart-pane
     position: absolute
     top: 4.2em

@@ -24,7 +24,7 @@
       d3.rgb(213, 94, 0),   // vermilion
       d3.rgb(204, 121, 167) // reddish purple
     ],
-    padding = [50, 10, 50, 100],
+    padding = [65, 0, 40, 100],// padding[3] needs to match $left_pad in _layout.sass
     simulation_periods = 60,
     graph_periods = 20,
     period_length = 10,
