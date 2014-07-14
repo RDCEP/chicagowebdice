@@ -3,9 +3,8 @@ import numpy as np
 import pandas as pd
 
 
-class DiceParams(object):
+class DiceUserParams(object):
     def __init__(self, model=2007):
-        self.dice_version = '2007'
         self.temp_co2_doubling = 3.
         self.damages_exponent = 2.
         self.productivity_decline = .001
@@ -27,18 +26,24 @@ class DiceParams(object):
         self.prod_frac = .05
         self.elasmu = 2.
         self.prstp = .015
-        self.treaty = False
-        self.carbon_tax = False
         self.e2050 = 1.
         self.e2100 = 1.
         self.e2150 = 1.
         self.p2050 = 1.
         self.p2100 = 1.
         self.p2150 = 1.
-        self.pmax = 1.
         self.c2050 = 0.
         self.c2100 = 0.
         self.c2150 = 0.
+
+
+class DiceParams(DiceUserParams):
+    def __init__(self, model=2007):
+        DiceUserParams.__init__(self, model)
+        self.dice_version = '2007'
+        self.treaty = False
+        self.carbon_tax = False
+        self.pmax = 1.
         self.cmax = 500.
 
         ## Population and technology

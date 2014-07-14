@@ -2,7 +2,7 @@ from __future__ import division
 import numpy as np
 import numexpr as ne
 import pandas as pd
-from params import DiceParams, Dice2010Params
+from params import DiceParams, Dice2010Params, DiceUserParams
 from equations.loop import Loop
 from equations_ne.loop import LoopOpt
 
@@ -57,7 +57,8 @@ class Dice(object):
         """
         List of model parameters to be included with output to graphs and CSV.
         """
-        return [k for k, v in self.params.__dict__.iteritems() if k[0] != '_']
+        u_p = DiceUserParams()
+        return [k for k, v in u_p.__dict__.iteritems() if k[0] != '_']
 
     @property
     def vars(self):
