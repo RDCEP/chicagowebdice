@@ -1,4 +1,5 @@
 from __future__ import division
+import json
 import numpy as np
 import numexpr as ne
 import pandas as pd
@@ -338,13 +339,10 @@ class Dice(object):
         -------
         str
         """
-        output = ['%s %s' % (
-            p, getattr(self.params, p)) for p in self.user_params]
-        output += ['%s %s' % (
-            p, ' '.join(map(str, list(getattr(self.data.vars, p))))
-        ) for p in self.vars ]
-        return '\n'.join(output)
-
+        output = dict(parameters=None, data=None)
+        output['parameters'] = {p: getattr(self.params, p) for p in self.user_params if type(p) in ['float', 'integer']}
+        output['data'] = {p: list(getattr(self.data.vars, p)) for p in self.vars}
+        return json.dumps(output)
 
 class Dice2010(Dice):
     def __init__(self, optimize=False):
