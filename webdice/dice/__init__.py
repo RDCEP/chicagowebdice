@@ -1,10 +1,10 @@
 from __future__ import division
-
 import numpy as np
+import numexpr as ne
 import pandas as pd
-
-from webdice.dice.params import DiceParams, Dice2010Params
+from params import DiceParams, Dice2010Params, DiceUserParams
 from equations.loop import Loop
+from equations_ne.loop import LoopOpt
 
 
 class Dice(object):
@@ -41,22 +41,24 @@ class Dice(object):
     """
     def __init__(self, optimize=False):
         self.params = DiceParams()
-        self.data = self.params._data
+        self.data = self.params.data
         self.eq = Loop(self.params)
-        self.eps = self.params._eps
+        self.eps = 1e-8
         self.dice_version = 2007
         self.opt_vars = 60
         self.opt_x = np.arange(self.opt_vars)
         self.opt_grad_f = None
         self.opt_obj = None
-        self.opt_tol = 1e-4
+        self.opt_tol = 1e-5
+        self.opt_scale = 1e-4
 
     @property
     def user_params(self):
         """
         List of model parameters to be included with output to graphs and CSV.
         """
-        return [k for k, v in self.params.__dict__.iteritems() if k[0] != '_']
+        u_p = DiceUserParams()
+        return [k for k, v in u_p.__dict__.iteritems() if k[0] != '_']
 
     @property
     def vars(self):
@@ -76,14 +78,14 @@ class Dice(object):
         """
         return np.sum(self.data.vars.utility_discounted)
 
-    def step(self, i, D, miu=None, deriv=False, opt=False, emissions_shock=0.0):
+    def step(self, i, df, miu=None, deriv=False, opt=False, emissions_shock=0.0):
         """
         Single step for calculating endogenous variables
         ...
         Args
         ----
         i : int, index of current step
-        D : object, pandas DataFrame of variables
+        df : object, pandas DataFrame of variables
         ...
         Kwargs
         ------
@@ -94,39 +96,40 @@ class Dice(object):
         ...
         Returns
         -------
-        pandas.DataFrame : 60 steps of all variables in D
+        pandas.DataFrame : 60 steps of all variables in df
         """
         (
-            D.carbon_intensity[i], D.productivity[i], D.capital[i],
-            D.backstop_growth[i], D.gross_output[i]
-        ) = self.eq.productivity_model.get_model_values(i, D)
+            df.carbon_intensity[i], df.productivity[i], df.capital[i],
+            df.backstop_growth[i], df.gross_output[i], df.intensity_decline[i],
+            df.population[i],
+        ) = self.eq.productivity_model.get_model_values(i, df)
         if i > 0:
-            D.productivity[i] *= self.eq.damages_model.get_production_factor(
-                D.temp_atmosphere[i - 1]
+            df.productivity[i] *= self.eq.damages_model.get_production_factor(
+                df.temp_atmosphere[i - 1]
             ) ** 10
         (
-            D.miu[i], D.emissions_ind[i],
-            D.emissions_total[i], D.carbon_emitted[i],
-            D.tax_rate[i]
-        ) = self.eq.emissions_model.get_emissions_values(
-            i, D, miu=miu, emissions_shock=emissions_shock, deriv=deriv, opt=opt
+            df.miu[i], df.emissions_ind[i],
+            df.emissions_total[i], df.carbon_emitted[i],
+            df.tax_rate[i]
+        ) = self.eq.emissions_model.get_model_values(
+            i, df, miu=miu, emissions_shock=emissions_shock, deriv=deriv, opt=opt
         )
-        D.mass_atmosphere[i], D.mass_upper[i], D.mass_lower[i] = (
-            self.eq.carbon_model.get_model_values(i, D)
+        df.mass_atmosphere[i], df.mass_upper[i], df.mass_lower[i] = (
+            self.eq.carbon_model.get_model_values(i, df)
         )
-        D.forcing[i] = self.eq.carbon_model.forcing(i, D)
-        D.temp_atmosphere[i], D.temp_lower[i] = (
-            self.eq.temperature_model.get_model_values(i, D)
+        df.forcing[i] = self.eq.carbon_model.forcing(i, df)
+        df.temp_atmosphere[i], df.temp_lower[i] = (
+            self.eq.temperature_model.get_model_values(i, df)
         )
-        D.abatement[i], D.damages[i], D.output[i], D.output_abate[i] = (
-            self.eq.damages_model.get_model_values(i, D)
+        df.abatement[i], df.damages[i], df.output[i], df.output_abate[i] = (
+            self.eq.damages_model.get_model_values(i, df)
         )
-        (D.consumption[i], D.consumption_pc[i], D.consumption_discount[i],
-         D.investment[i]) = self.eq.consumption_model.get_model_values(i, D)
-        D.utility[i], D.utility_discounted[i] = (
-            self.eq.utility_model.get_model_values(i, D)
+        (df.consumption[i], df.consumption_pc[i], df.consumption_discount[i],
+         df.investment[i]) = self.eq.consumption_model.get_model_values(i, df)
+        df.utility[i], df.utility_discounted[i] = (
+            self.eq.utility_model.get_model_values(i, df)
         )
-        return D
+        return df
 
     def loop(self, miu=None, deriv=False, scc=True, opt=False):
         """
@@ -146,59 +149,72 @@ class Dice(object):
         self.eq.set_models(self.params)
         _miu = None
         if opt:
-            if miu is not None:
-                D = pd.Panel(
-                    {i: self.data.vars for i in xrange(self.params._tmax + 1)}
-                ).transpose(2, 0, 1)
-            else:
-                _miu = self.get_ipopt_miu()
-                _miu[0] = self.params._miu_2005
-        for i in range(self.params._tmax):
-            if opt and miu is not None:
-                D.miu.ix[:][i] = miu[i]
-                D.miu.ix[i][i] += self.eps
-                _miu = D.miu[i]
-            self.step(i, D, _miu, deriv=deriv, opt=opt)
+            self.eq = LoopOpt(self.params)
+            self.eq.set_models(self.params)
+            _miu = self.get_ipopt_miu()
+            _miu[0] = self.params.miu_2005
+        self.eq = Loop(self.params)
+        self.eq.set_models(self.params)
+        for i in range(self.params.tmax):
+            self.step(i, self.data.vars, _miu, deriv=deriv, opt=opt)
         if scc:
             self.get_scc(_miu)
-        if opt and miu is not None:
-            self.opt_grad_f = ((
-                D.utility_discounted.ix[:59,:].sum(axis=1) -
-                D.utility_discounted.ix[60,:].sum(axis=1)) / self.eps)
-            self.opt_obj = D.utility_discounted.ix[60,:].sum(axis=1)
-            if deriv:
-                return self.opt_grad_f
-            return self.opt_obj
-        return D
+        return self.data.vars
+
+    def set_opt_values(self, df):
+        self.opt_grad_f = (
+            df.utility_discounted.ix[:59, :].sum(axis=1) -
+            df.utility_discounted.ix[60, :].sum(axis=1)
+        ) * self.opt_scale / self.eps
+        self.opt_obj = (
+            df.utility_discounted.ix[60, :].sum(axis=1) * self.opt_scale)
 
     def obj_loop(self, miu):
-        D = pd.Panel(
-            {i: self.data.vars for i in xrange(self.params._tmax + 1)}
+        """
+        Calculate gradient of objective function using finite differences
+        ...
+        Args
+        ----
+        miu : array, 60 values of miu
+        ...
+        Returns
+        -------
+        float : value of objective (utility)
+        ...
+        """
+        df = pd.Panel(
+            {i: self.data.vars for i in xrange(self.params.tmax + 1)}
         ).transpose(2, 0, 1)
-        for i in xrange(self.params._tmax):
-            D.miu.ix[:][i] = miu[i]
-            D.miu.ix[i][i] += self.eps
-            _miu = D.miu[i]
-            self.step(i, D, _miu, deriv=True, opt=True)
-        self.opt_grad_f = ((
-            D.utility_discounted.ix[:59,:].sum(axis=1) -
-            D.utility_discounted.ix[60,:].sum(axis=1)) * 1e-4 / self.eps)
-        self.opt_obj = D.utility_discounted.ix[60,:].sum(axis=1) * 1e-4
+        for i in xrange(self.params.tmax):
+            df.miu.ix[:][i] = miu[i]
+            df.miu.ix[i][i] += self.eps
+            _miu = df.miu[i]
+            self.step(i, df, _miu, deriv=True, opt=True)
+        self.set_opt_values(df)
         return self.opt_obj
 
     def grad_loop(self, miu):
-        D = pd.Panel(
-            {i: self.data.vars for i in xrange(self.params._tmax + 1)}
+        """
+        Calculate gradient of objective function using finite differences
+        ...
+        Args
+        ----
+        miu : array, 60 values of miu
+        ...
+        Returns
+        -------
+        array : gradient of objective
+        ...
+        """
+        df = pd.Panel(
+            {i: self.data.vars for i in xrange(self.params.tmax + 1)}
         ).transpose(2, 0, 1)
-        for i in xrange(self.params._tmax):
-            D.miu.ix[:][i] = miu[i]
-            D.miu.ix[i][i] += self.eps
-            _miu = D.miu[i]
-            self.step(i, D, _miu, deriv=True, opt=True)
-        self.opt_grad_f = ((
-            D.utility_discounted.ix[:59,:].sum(axis=1) -
-            D.utility_discounted.ix[60,:].sum(axis=1)) * 1e-4 / self.eps)
-        self.opt_obj = D.utility_discounted.ix[60, :].sum(axis=1) * 1e-4
+        for i in xrange(self.params.tmax):
+            df.miu.ix[:][i] = miu[i]
+            df.miu.ix[i][i] += self.eps
+            _miu = df.miu[i]
+            self.step(i, df, _miu, deriv=True, opt=True)
+        self.set_opt_values(df)
         return self.opt_grad_f
 
     def get_scc(self, miu):
@@ -223,22 +239,19 @@ class Dice(object):
         """
         x_range = 20
         for i in xrange(x_range):
-            time_horizon = 59
-            future_indices = time_horizon - i
+            th = self.params.scc_horizon
+            future = th - i
             self.data.scc = self.data.vars.copy()
-            for j in range(i, time_horizon + 1):
+            for j in range(i, th + 1):
                 shock = 0
                 if j == i:
                     shock = 1.0
                 self.step(j, self.data.scc, miu=miu, emissions_shock=shock)
-            DIFF = (
-                (
-                    self.data.vars.consumption_pc[i:time_horizon].values -
-                    self.data.scc.consumption_pc[i:time_horizon].values
-                ).clip(0) *
-                self.data.scc.consumption_discount[:future_indices].values
-            )
-            self.data.vars.scc[i] = np.sum(DIFF) * 1000 * 10 * (12 / 44)
+            diff = (
+                self.data.vars.consumption_pc[i:th].values -
+                self.data.scc.consumption_pc[i:th].values
+            ).clip(0) * self.data.scc.consumption_discount[:future].values
+            self.data.vars.scc[i] = np.sum(diff) * 1000 * 10 * (12 / 44)
 
     def get_ipopt_miu(self):
         """
@@ -273,8 +286,8 @@ class Dice(object):
         M = 0
         nnzj = 0
         nnzh = 0
-        xl = np.zeros(self.params._tmax)
-        xu = np.ones(self.params._tmax)
+        xl = np.zeros(self.params.tmax)
+        xu = np.ones(self.params.tmax)
         xl[0] = .005
         xu[0] = .005
         xl[-20:] = 1
@@ -288,7 +301,7 @@ class Dice(object):
                 return self.obj_loop(_x0)
         def eval_grad_f(_x0):
             if (_x0 == self.opt_x).all():
-                return self.opt_grad_f.values
+                return self.opt_grad_f
             else:
                 self.opt_x = _x0.copy()
                 return self.grad_loop(_x0)
@@ -300,7 +313,6 @@ class Dice(object):
             else:
                 return np.empty(M)
         pyipopt.set_loglevel(1)
-        # nlp.num_option('tol', self.opt_tol)
         nlp = pyipopt.create(
             self.opt_vars, xl, xu, M, gl, gu, nnzj, nnzh, eval_f,
             eval_grad_f, eval_g, eval_jac_g,
@@ -308,11 +320,11 @@ class Dice(object):
         nlp.num_option('constr_viol_tol', 8e-7)
         nlp.int_option('max_iter', 30)
         nlp.num_option('max_cpu_time', 60)
-        nlp.num_option('tol', 1e-5)
+        nlp.num_option('tol', self.opt_tol)
         # nlp.num_option('acceptable_tol', 1e-4)
         # nlp.int_option('acceptable_iter', 4)
         nlp.num_option('obj_scaling_factor', -1e+0)
-        nlp.int_option('print_level', 5)
+        nlp.int_option('print_level', 0)
         nlp.str_option('linear_solver', 'ma57')
         x = nlp.solve(x0)[0]
         nlp.close()
@@ -338,26 +350,22 @@ class Dice2010(Dice):
     def __init__(self, optimize=False):
         super(Dice2010, self).__init__()
         self.params = Dice2010Params()
-        self.data = self.params._data
+        self.data = self.params.data
         self.dice_version = 2010
-        self.opt_tol = 1e-6
+        self.opt_tol = 1e-5
 
 
 class Dice2007(Dice):
     def __init__(self, optimize=False):
         super(Dice2007, self).__init__()
         self.dice_version = 2007
-        self.opt_tol = 1e-6
+        self.opt_tol = 1e-5
 
 
 if __name__ == '__main__':
-    profile = False
-    d = Dice2007()
-    if profile:
-        import cProfile
-        cProfile.run('d.loop(opt=True)', 'dice_stats')
-        import pstats
-        p = pstats.Stats('dice_stats')
-    else:
-        d.loop()
-        print(d.data.vars)
+    run_scenario = False
+    if run_scenario:
+        d = Dice2007()
+        d.params.elasmu = 1.5
+        d.loop(opt=False)
+        print d.data.vars.scc[:10]

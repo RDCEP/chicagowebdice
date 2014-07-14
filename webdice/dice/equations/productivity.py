@@ -24,7 +24,7 @@ class ProductivityModel(object):
     gross_output()
     """
     def __init__(self, params):
-        self._params = params
+        self.params = params
 
     @property
     def backstop(self):
@@ -35,33 +35,18 @@ class ProductivityModel(object):
         -------
         array
         """
-        return self._params._backstop_2005 * (
+        return self.params.backstop_2005 * (
             (
-                self._params.backstop_ratio - 1 + np.exp(
-                    -self._params.backstop_decline * self._params._t0
-                )) / self._params.backstop_ratio
+                self.params.backstop_ratio - 1 + np.exp(
+                    -self.params.backstop_decline * self.params.t0
+                )) / self.params.backstop_ratio
         ) * (12 / 44)
 
     @property
     def population_growth_rate(self):
         return (
-            (np.exp(self._params._population_growth * self._params._t0) - 1) /
-            (np.exp(self._params._population_growth * self._params._t0))
-        )
-
-    def population(self, index, data):
-        """
-        L, Population.
-        ...
-        Returns
-        -------
-        array
-        """
-        return (
-            #self._params._population_2005 * (1 - data.population_growth[index]) +
-            #data.population_growth[index] * self._params.popasym
-            self._params._population_2005 * (1 - self.population_growth_rate[index]) +
-            self.population_growth_rate[index] * self._params.popasym
+            (np.exp(self.params.population_growth * self.params.t0) - 1) /
+            (np.exp(self.params.population_growth * self.params.t0))
         )
 
     @property
@@ -73,52 +58,67 @@ class ProductivityModel(object):
         -------
         array
         """
-        return self._params._productivity_growth * np.exp(
-            -self._params.productivity_decline * 10 * self._params._t0
+        return self.params.productivity_growth * np.exp(
+            -self.params.productivity_decline * 10 * self.params.t0
         )
 
-    def intensity_decline(self, index, data):
+    def population(self, i, df):
+        """
+        L, Population.
+        ...
+        Returns
+        -------
+        array
+        """
         return (
-            self._params._intensity_growth * np.exp(
-                -self._params.intensity_decline_rate * 10 *
-                index - self._params._intensity_quadratic * 10 *
-                (index ** 2)
+            self.params.population_2005 *
+            (1 - self.population_growth_rate[i]) +
+            self.population_growth_rate[i] * self.params.popasym
+        )
+
+    def intensity_decline(self, i, df):
+        return (
+            self.params.intensity_growth * np.exp(
+                -self.params.intensity_decline_rate * 10 *
+                i - self.params.intensity_quadratic * 10 *
+                (i ** 2)
             )
         )
 
-    def carbon_intensity(self, index, data):
-        intensity_decline = self.intensity_decline(index, data)
-        data.intensity_decline[index] = intensity_decline
-        return data.carbon_intensity[index - 1] / (
-            # 1 - data.intensity_decline[index]
+    def carbon_intensity(self, i, df):
+        intensity_decline = self.intensity_decline(i, df)
+        df.intensity_decline[i] = intensity_decline
+        return df.carbon_intensity[i - 1] / (
             1 - intensity_decline
-        )
+        ), intensity_decline
 
-    def get_model_values(self, index, data):
-        if index > 0:
-            carbon_intensity = self.carbon_intensity(index, data)
-            productivity = data.productivity[index - 1] / (
-                1 - self.productivity_growth[index - 1])
+    def get_model_values(self, i, df):
+        if i > 0:
+            carbon_intensity, intensity_decline = self.carbon_intensity(i, df)
+            productivity = df.productivity[i - 1] / (
+                1 - self.productivity_growth[i - 1])
             capital = self.capital(
-                data.capital[index - 1], self._params.depreciation,
-                data.investment[index - 1]
+                df.capital[i - 1], self.params.depreciation,
+                df.investment[i - 1]
             )
-            data.population[index] = self.population(index, data)
+            population = self.population(i, df)
             gross_output = self.gross_output(
-                productivity, capital, self._params._output_elasticity,
-                data.population[index]
+                productivity, capital, self.params.output_elasticity,
+                population
             )
         else:
-            data.backstop = self.backstop
-            carbon_intensity = self._params._intensity_2005
-            productivity = self._params._productivity
-            capital = self._params._capital_2005
-            gross_output = self._params._output_2005
-        backstop_growth = (
-            data.backstop[index] * carbon_intensity /
-            self._params.abatement_exponent
-        ) * (44 / 12)
+            df.backstop = self.backstop
+            carbon_intensity = self.params.intensity_2005
+            productivity = self.params.productivity
+            capital = self.params.capital_2005
+            gross_output = self.params.output_2005
+            intensity_decline = self.params.intensity_growth
+            population = self.params.population_2005
 
+        backstop_growth = (
+            df.backstop[i] * carbon_intensity /
+            self.params.abatement_exponent
+        ) * (44 / 12)
 
         return (
             carbon_intensity,
@@ -126,6 +126,8 @@ class ProductivityModel(object):
             capital,
             backstop_growth,
             gross_output,
+            intensity_decline,
+            population,
         )
 
     def capital(self, capital, depreciation, investment):
@@ -158,7 +160,7 @@ class Dice2007(ProductivityModel):
 
 
 class Dice2010(ProductivityModel):
-    def intensity_decline(self, index, data):
+    def intensity_decline(self, i, df):
         """
         sigma_g, Rate of decline of carbon intensity
         ...
@@ -166,9 +168,9 @@ class Dice2010(ProductivityModel):
         -------
         array
         """
-        return data.intensity_decline[index - 1] * (
-            1 - (self._params.intensity_decline_rate *
-                 np.exp(-self._params._intensity_quadratic * 10 * index)
+        return df.intensity_decline[i - 1] * (
+            1 - (self.params.intensity_decline_rate *
+                 np.exp(-self.params.intensity_quadratic * 10 * i)
             )
         ) ** 10
 
@@ -181,18 +183,18 @@ class Dice2010(ProductivityModel):
         -------
         array
         """
-        return self._params._productivity_growth * np.exp(
-            -self._params.productivity_decline * 10 * self._params._t0 *
-        np.exp(-.002 * 10 * self._params._t0))
+        return self.params.productivity_growth * np.exp(
+            -self.params.productivity_decline * 10 * self.params.t0 *
+        np.exp(-.002 * 10 * self.params.t0))
 
-    def carbon_intensity(self, index, data):
-        data.intensity_decline[index] = self.intensity_decline(index, data)
-        return (
-            data.carbon_intensity[index - 1] *
-            (1 - data.intensity_decline[index - 1])
+    def carbon_intensity(self, i, df):
+        intensity_decline = self.intensity_decline(i, df)
+        return intensity_decline, (
+            df.carbon_intensity[i - 1] *
+            (1 - df.intensity_decline[i - 1])
         )
 
-    def population(self, index, data):
+    def population(self, i, df):
         """
         L, Population.
         ...
@@ -201,7 +203,7 @@ class Dice2010(ProductivityModel):
         array
         """
         return (
-            data.population[index - 1] * (
-                self._params.popasym / data.population[index - 1]
-            ) ** self._params._population_growth
+            df.population[i - 1] * (
+                self.params.popasym / df.population[i - 1]
+            ) ** self.params.population_growth
         )

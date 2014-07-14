@@ -1,5 +1,6 @@
 from __future__ import division
 import numpy as np
+import numexpr as ne
 
 
 class CarbonModel(object):
@@ -29,15 +30,15 @@ class CarbonModel(object):
         Calculate forcing at t
     """
     def __init__(self, params):
-        self._params = params
-        self._carbon_matrix = params._carbon_matrix
-        self._mass_atmosphere_2005 = params._mass_atmosphere_2005
-        self._mass_upper_2005 = params._mass_upper_2005
-        self._mass_lower_2005 = params._mass_lower_2005
-        self._mass_preindustrial = params._mass_preindustrial
-        self._temp_atmosphere_2005 = params._temp_atmosphere_2000
-        self._temp_lower_2005 = params._temp_lower_2000
-        self._forcing_co2_doubling = params._forcing_co2_doubling
+        self.params = params
+        self._carbon_matrix = params.carbon_matrix
+        self._mass_atmosphere_2005 = params.mass_atmosphere_2005
+        self._mass_upper_2005 = params.mass_upper_2005
+        self._mass_lower_2005 = params.mass_lower_2005
+        self._mass_preindustrial = params.mass_preindustrial
+        self._temp_atmosphere_2005 = params.temp_atmosphere_2000
+        self._temp_lower_2005 = params.temp_lower_2000
+        self._forcing_co2_doubling = params.forcing_co2_doubling
 
     @property
     def initial_carbon(self):
@@ -80,10 +81,10 @@ class CarbonModel(object):
         array
         """
         return np.concatenate((
-            self._params._forcing_ghg_2000 + .1 * (
-                self._params._forcing_ghg_2100 - self._params._forcing_ghg_2000
+            self.params.forcing_ghg_2000 + .1 * (
+                self.params.forcing_ghg_2100 - self.params.forcing_ghg_2000
             ) * np.arange(11),
-            self._params._forcing_ghg_2100 * np.ones(49),
+            self.params.forcing_ghg_2100 * np.ones(49),
         ))
 
     def mass_atmosphere(self, emissions_total, mass_atmosphere, mass_upper):
@@ -127,7 +128,7 @@ class CarbonModel(object):
             self.carbon_matrix[2][2] * mass_lower
         )
 
-    def forcing(self, index, data):
+    def forcing(self, i, df):
         """
         F, Forcing, W/m^2
         ...
@@ -136,13 +137,13 @@ class CarbonModel(object):
         float
         """
         return (
-            self._forcing_co2_doubling *
+            self.params.forcing_co2_doubling *
             (np.log(
-                data.mass_atmosphere[index] / self._mass_preindustrial
-            ) / np.log(2)) + self.forcing_ghg[index]
+                df.mass_atmosphere[i] / self.params.mass_preindustrial
+            ) / np.log(2)) + self.forcing_ghg[i]
         )
 
-    def get_model_values(self, index, data):
+    def get_model_values(self, i, df):
         """
         Return values for M_AT, M_UP, M_LO
         ...
@@ -156,15 +157,16 @@ class CarbonModel(object):
         tuple
             M_AT, M_UP, M_LO at t
         """
-        if index == 0:
+        if i == 0:
             return self.initial_carbon
-        i = index - 1
+        i -= 1
+        ma = df.mass_atmosphere[i]
+        mu = df.mass_upper[i]
+        ml = df.mass_lower[i]
         return (
-            self.mass_atmosphere(data.emissions_total[i],
-                                 data.mass_atmosphere[i], data.mass_upper[i]),
-            self.mass_upper(data.mass_atmosphere[i], data.mass_upper[i],
-                            data.mass_lower[i]),
-            self.mass_lower(data.mass_upper[i], data.mass_lower[i]),
+            self.mass_atmosphere(df.emissions_total[i], ma, mu),
+            self.mass_upper(ma, mu, ml),
+            self.mass_lower(mu, ml),
         )
 
 
@@ -184,14 +186,15 @@ class BeamCarbon(CarbonModel):
     def __init__(self, params):
         CarbonModel.__init__(self, params)
         self.N = 20
-        self.initial_carbon = [808.9, 604, 29595]
-        self._carbon_matrix_skel = np.array([
+        self.initial_carbon = [808.9, 725, 35641]
+        self.carbon_matrix_skel = np.array([
             -.2, .2, 0,
             .2, -.2, .05,
             0, .001, -.001,
         ]).reshape((3, 3, 1))
 
-    def get_model_values(self, index, data):
+    # @profile
+    def get_model_values(self, i, df):
         """
         Set BEAM transfer matrix, and return values for M_AT, M_UP, M_LO
         ...
@@ -224,42 +227,37 @@ class BeamCarbon(CarbonModel):
 
         _a = k_h * (AM / (OM * (delta + 1)))
         """
-        # if opt: self.N = 2
-        _dims = 61 if data.ndim > 2 else 1
-        if index == 0:
+        _dims = 61 if df.ndim > 2 else 1
+        if i == 0:
             return (
                 self.initial_carbon[0] * np.ones(_dims),
                 self.initial_carbon[1] * np.ones(_dims),
                 self.initial_carbon[2] * np.ones(_dims),
             )
-        self.carbon_matrix = np.tile(self._carbon_matrix_skel, _dims)
-        i = index - 1
-        _ma, _mu, _ml = (
-            data.mass_atmosphere[i], data.mass_upper[i], data.mass_lower[i]
-        )
+        i -= 1
+        self.carbon_matrix = np.tile(self.carbon_matrix_skel, _dims)
+        ma, mu, ml = (df.mass_atmosphere[i], df.mass_upper[i],
+                         df.mass_lower[i])
         for x in xrange(self.N):
+            h = ne.evaluate('5.21512e-10 * mu + 7.32749e-18 * sqrt(5.06546e15 * mu ** 2 - 7.75282e18 * mu + 2.97321e21) - 4e-7')
+            b = ne.evaluate('142.349 / (1 + 8e-7 / h + 8e-7 * 4.53e-10 / h)')
 
-            _h = 5.21512e-10 * _mu + 7.32749e-18 * np.sqrt(
-                5.06546e15 * _mu ** 2 - 7.75282e18 * _mu + 2.97321e21
-            ) - 4e-7
-            _b = 142.349 / (1 + 8e-7 / _h + 8e-7 * 4.53e-10 / _h)
-
-            self.carbon_matrix[1][0] = _b * .2
-            self.carbon_matrix[1][1] = _b * -.2 - .05
-            _ma += self.mass_atmosphere(
-                data.emissions_total[i], _ma, _mu) / self.N
-            _mu += self.mass_upper(_ma, _mu, _ml) / self.N
-            _ml += self.mass_lower(_mu, _ml) / self.N
-        return _ma, _mu, _ml
+            self.carbon_matrix[1][0] = b * .2
+            self.carbon_matrix[1][1] = b * -.2 - .05
+            ma += self.mass_atmosphere(
+                df.emissions_total[i], ma, mu) / self.N
+            mu += self.mass_upper(ma, mu, ml) / self.N
+            ml += self.mass_lower(mu, ml) / self.N
+        return ma, mu, ml
 
 
 class LinearCarbon(CarbonModel):
-    def get_model_values(self, index, data):
+    def get_model_values(self, i, df):
         return (
             None, None, None
         )
 
-    def forcing(self, index, data):
+    def forcing(self, i, df):
         return None
 
 
@@ -274,8 +272,8 @@ class Dice2010(CarbonModel):
         array
         """
         return np.concatenate((
-            self._params._forcing_ghg_2000 + .1 * (
-                self._params._forcing_ghg_2100 - self._params._forcing_ghg_2000
+            self.params.forcing_ghg_2000 + .1 * (
+                self.params.forcing_ghg_2100 - self.params.forcing_ghg_2000
             ) * np.arange(11),
-            self._params._forcing_ghg_2000 * (np.ones(49) * .36),
+            self.params.forcing_ghg_2000 * (np.ones(49) * .36),
         ))
