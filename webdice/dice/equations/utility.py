@@ -18,7 +18,7 @@ class UtilityModel(object):
     utility_discounted()
     """
     def __init__(self, params):
-        self._params = params
+        self.params = params
 
     @property
     def utility_discount(self):
@@ -29,7 +29,7 @@ class UtilityModel(object):
         -------
         array
         """
-        return 1 / ((1 + self._params.prstp) ** (10 * self._params.t0))
+        return 1 / ((1 + self.params.prstp) ** (10 * self.params.t0))
 
     def get_model_values(self, index, data):
         utility = self.utility(data.consumption_pc[index])
@@ -48,9 +48,9 @@ class UtilityModel(object):
         -------
         float
         """
-        if self._params.elasmu == 1:
+        if self.params.elasmu == 1:
             return np.log(consumption_pc)
-        denom = 1.0 - self._params.elasmu
+        denom = 1.0 - self.params.elasmu
         return (1 / denom) * (consumption_pc ** denom - 1)
 
     def utility_discounted(self, utility, utility_discount, l):
