@@ -1,3 +1,178 @@
 <div id="parameters">
+  <div id="parameters_bkgd"></div>
+  <div id="parameter_tabs_wrap">
+    <ul id="parameter_tabs" class="clearfix">
+      <li class="selected">Policy</li>
+      <li>Climate</li>
+      <li>Economy</li>
+    </ul>
+  </div>
+  <form id="parameter_form">
 
+    <div class="parameter-pane">
+      <label>
+        <input type="radio" value="default" name="policy_type" checked>
+        Business as usual
+      </label>
+    </div>
+    <div class="parameter-pane">
+      <label>
+        <input type="radio" value="optimized" name="policy_type">
+        Optimized policy
+      </label>
+    </div>
+
+    <div class="parameter-pane" style="clear:left">
+      <label>
+        <input type="radio" value="carbon_tax" name="policy_type">
+        Simulated carbon tax
+      </label>
+      <ul>
+
+        <li class="disabled init-disabled range-wrap">
+          <label>2050 ($/ton C)
+            <input name="c2050" type="range" min="0" max="500" value="0" step="10" data-prec="0" disabled="disabled">
+          </label>
+          <div class="current-range-val">
+            <span style="left:-50%">0</span>
+          </div>
+          <span class="min-range-val">0</span>
+          <span class="max-range-val">500</span>
+          <div class="tick-wrap">
+            <span class="tick" style="left:-50%" >&bullet;</span>
+          </div>
+        </li>
+
+        <li class="disabled init-disabled range-wrap" >
+          <label>2100 ($/ton C)
+            <input name="c2100" type="range" min="0" max="500" value="0" step="10" data-prec="0" disabled="disabled">
+          </label>
+          <div class="current-range-val">
+            <span style="left:-50%">0</span>
+          </div>
+          <span class="min-range-val">0</span>
+          <span class="max-range-val">500</span>
+          <div class="tick-wrap">
+            <span class="tick" style="left:-50%" >&bullet;</span>
+          </div>
+        </li>
+
+        <li class="disabled init-disabled range-wrap" >
+          <label>2150 ($/ton C)
+            <input name="c2150" type="range" min="0" max="500" value="0" step="10" data-prec="0" disabled="disabled">
+          </label>
+          <div class="current-range-val">
+            <span style="left:-50%">0</span>
+          </div>
+          <span class="min-range-val">0</span>
+          <span class="max-range-val">500</span>
+          <div class="tick-wrap">
+            <span class="tick" style="left:-50%" >&bullet;</span>
+          </div>
+        </li>
+
+      </ul>
+    </div>
+
+    <div class="parameter-pane">
+      <label>
+        <input type="radio" value="treaty" name="policy_type">
+        Climate Treaty
+      </label>
+
+      <h4>Emissions reduction</h4>
+      <ul>
+
+        <li class="disabled init-disabled range-wrap">
+          <label>2050 (% of 2005 emissions)
+            <input name="e2050" type="range" min="0" max="100" value="0" step="1" data-prec="0" disabled="disabled">
+          </label>
+          <div class="current-range-val">
+            <span style="left:-50%">0</span>
+          </div>
+          <span class="min-range-val">0</span>
+          <span class="max-range-val">100</span>
+          <div class="tick-wrap">
+            <span class="tick" style="left:-50%" >&bullet;</span>
+          </div>
+        </li>
+
+        <li class="disabled init-disabled range-wrap" >
+          <label>2100 (% of 2005 emissions)
+            <input name="e2100" type="range" min="0" max="100" value="0" step="1" data-prec="0" disabled="disabled">
+          </label>
+          <div class="current-range-val">
+            <span style="left:-50%">0</span>
+          </div>
+          <span class="min-range-val">0</span>
+          <span class="max-range-val">100</span>
+          <div class="tick-wrap">
+            <span class="tick" style="left:-50%" >&bullet;</span>
+          </div>
+        </li>
+
+        <li class="disabled init-disabled range-wrap" >
+          <label>2150 (% of 2005 emissions)
+            <input name="e2150" type="range" min="0" max="100" value="0" step="1" data-prec="0" disabled="disabled">
+          </label>
+          <div class="current-range-val">
+            <span style="left:-50%">0</span>
+          </div>
+          <span class="min-range-val">0</span>
+          <span class="max-range-val">100</span>
+          <div class="tick-wrap">
+            <span class="tick" style="left:-50%" >&bullet;</span>
+          </div>
+        </li>
+
+      </ul>
+      <h4>Participation</h4>
+      <ul>
+
+        <li class="disabled init-disabled range-wrap">
+          <label>2050 (%)
+            <input name="p2050" type="range" min="0" max="100" value="0" step="1" data-prec="0" disabled="disabled">
+          </label>
+          <div class="current-range-val">
+            <span style="left:-50%">0</span>
+          </div>
+          <span class="min-range-val">0</span>
+          <span class="max-range-val">100</span>
+          <div class="tick-wrap">
+            <span class="tick" style="left:-50%" >&bullet;</span>
+          </div>
+        </li>
+
+        <li class="disabled init-disabled range-wrap" >
+          <label>2100 (%)
+            <input name="p2100" type="range" min="0" max="100" value="0" step="1" data-prec="0" disabled="disabled">
+          </label>
+          <div class="current-range-val">
+            <span style="left:-50%">0</span>
+          </div>
+          <span class="min-range-val">0</span>
+          <span class="max-range-val">100</span>
+          <div class="tick-wrap">
+            <span class="tick" style="left:-50%" >&bullet;</span>
+          </div>
+        </li>
+
+        <li class="disabled init-disabled range-wrap" >
+          <label>2150 (%)
+            <input name="p2150" type="range" min="0" max="100" value="0" step="1" data-prec="0" disabled="disabled">
+          </label>
+          <div class="current-range-val">
+            <span style="left:-50%">0</span>
+          </div>
+          <span class="min-range-val">0</span>
+          <span class="max-range-val">100</span>
+          <div class="tick-wrap">
+            <span class="tick" style="left:-50%" >&bullet;</span>
+          </div>
+        </li>
+
+      </ul>
+    </div>
+
+  </form>
 </div>

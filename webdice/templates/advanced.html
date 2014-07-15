@@ -114,6 +114,8 @@
   <div class="help-text" id="{{ parameter.machine_name }}-help">{{ parameter.help|safe }}
   </div>{% endif %}{% endfor %}
 {% endblock %}
+
 {% block bodyjs %}
-  <script src="/webdice/static/js/webdice_help.js"></script>
+  <script src="/static/js/webdice_help.js"></script>
+  <script type="text/javascript" src="/static/js/webdice_range_slider.js?{{ now }}"></script>
 {% endblock %}

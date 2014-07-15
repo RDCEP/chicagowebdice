@@ -1,0 +1,64 @@
+#parameters
+  width: $site_width + 2 * $left_pad
+  z-index: 999
+  margin-top: 6em
+  margin-left: -$left_pad
+  margin-right: -$left_pad
+  font-size: .8em
+#parameters_bkgd
+  background-color: #ffffff
+  opacity: .9
+  height: 100%
+  width: 100%
+  position: absolute
+#parameter_tabs_wrap
+  width: $site_width
+  margin: 0 auto 2em
+  position: relative
+  z-index: 999
+#parameter_tabs
+  margin: 0 0 0 -.8em
+  li
+    display: block
+    float: left
+    padding: .8em
+    &.selected
+      background-color: $light-gray
+#parameter_form
+  clear: both
+  width: $site_width
+  margin: 0 auto
+  position: relative
+  z-index: 999
+  li
+    position: relative
+.parameter-pane
+  width: 27%
+  float: left
+  & + .parameter-pane
+    margin-left: 9.5%
+  & > label
+    display: block
+    margin-bottom: 1em
+  li
+    margin-bottom: 2em
+  input[type=range]
+    width: 100%
+    margin-top: $range_current_value_gap
+  .max-range-val, .min-range-val, .current-range-val
+    position: absolute
+    top: $range_minmax_v_offset
+    font-size: .6em
+  .current-range-val
+    top: $range_current_value_gap / .6
+    left: 8px
+    right: 8px
+    span
+      text-align: center
+      display: block
+      width: 100%
+      position: relative
+  .max-range-val
+    left: 102%
+  .min-range-val
+    right: 102%
