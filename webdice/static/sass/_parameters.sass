@@ -1,45 +1,82 @@
-#parameters
-  width: $site_width + 2 * $left_pad
+#parameters_wrap
+  width: $site_width + $inner_pad * 2
   z-index: 999
-  margin-top: 6em
-  margin-left: -$left_pad
-  margin-right: -$left_pad
+  top: 6em
+  left: 15px
+  right: 15px
+  bottom: 0
   font-size: .8em
+  position: absolute
 #parameters_bkgd
   background-color: #ffffff
-  opacity: .9
+  opacity: .95
   height: 100%
   width: 100%
   position: absolute
+#parameters_arrow
+  height: $inner_pad * 1.414
+  width: $inner_pad * 1.414
+  -webkit-transform: rotate(45deg)
+  transform: rotate(45deg)
+  position: absolute
+  top: -4px
+  right: 25px
+  background-color: #ffffff
+
+#parameters
+  width: 100%
+  overflow: auto
 #parameter_tabs_wrap
-  width: $site_width
-  margin: 0 auto 2em
+  width: $site_width - $inner_pad * 2
+  margin: 0 $inner_pad * 4
   position: relative
   z-index: 999
 #parameter_tabs
-  margin: 0 0 0 -.8em
+  margin: 0 0 0 0
   li
     display: block
     float: left
     padding: .8em
+    cursor: pointer
     &.selected
       background-color: $light-gray
+
+.parameter-pane-intro
+  width: $site_width - $inner_pad * 6
+  margin: 0 auto $inner_pad * 2
+  font-size: 1.5em
+  color: #999999
 #parameter_form
   clear: both
-  width: $site_width
+  width: $site_width - $inner_pad * 2
+  padding: $inner_pad * 2 $inner_pad * 2 $inner_pad
   margin: 0 auto
   position: relative
   z-index: 999
-  li
+  li, .range-wrap
     position: relative
 .parameter-pane
-  width: 27%
   float: left
-  & + .parameter-pane
-    margin-left: 9.5%
+  margin: 0 $inner_pad * 2 30px
+  &.halfs
+    width: $parameter_pane_halfs
+  &.thirds
+    width: $parameter_pane_thirds
+  &.fourths
+    width: $parameter_pane_fourths
   & > label
     display: block
     margin-bottom: 1em
+    font-weight: bold
+  & > .range-wrap > label
+    font-weight: bold
+  .parameter-pane
+    margin: 0
+    & + .parameter-pane
+      margin-left: $inner_pad * 4
+  h4
+    margin-bottom: 1em
+    font-weight: bold
   li
     margin-bottom: 2em
   input[type=range]
@@ -47,10 +84,10 @@
     margin-top: $range_current_value_gap
   .max-range-val, .min-range-val, .current-range-val
     position: absolute
-    top: $range_minmax_v_offset
+    bottom: $range_minmax_v_offset
     font-size: .6em
   .current-range-val
-    top: $range_current_value_gap / .6
+    bottom: 2.25em
     left: 8px
     right: 8px
     span
@@ -62,3 +99,9 @@
     left: 102%
   .min-range-val
     right: 102%
+.disabled, .disabled .label
+  color: #dddddd!important
+
+.parameter-help
+  margin-top: 2em
+  font-size: .9em

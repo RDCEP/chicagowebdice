@@ -24,7 +24,7 @@
       d3.rgb(213, 94, 0),   // vermilion
       d3.rgb(204, 121, 167) // reddish purple
     ],
-    padding = [65, 0, 40, 100],// padding[3] needs to match $left_pad in _layout.sass
+    padding = [45, 15, 30, 60],// padding[3] needs to match $left_pad in _layout.sass
     simulation_periods = 60,
     graph_periods = 20,
     period_length = 10,
@@ -33,19 +33,12 @@
     colorsUsed = 0,
     numberOfRunsInProgress = 0,
     active_graph_pane,
-    color;
+    color,
+    width,
+    height;
 
   d3.select('#top_nav').style('padding', '0 '+padding[1]+'px 0 '+padding[3]+'px');
   d3.select('#title_legend').style('padding', '0 '+padding[1]+'px 0 '+padding[3]+'px');
-
-  var graph_tabs = d3.selectAll('#title_legend li');
-  graph_tabs.on('click', function() {
-    var t = d3.select(this);
-    graph_tabs.classed('selected', false);
-    t.classed('selected', true);
-    d3.selectAll('.chart-pane').classed('selected', false);
-    d3.select('#' + t.attr('data-pane')).classed('selected', true);
-  });
 
   var active_tab = function() {
     d3.selectAll('.tabs').each(function() {
@@ -70,14 +63,21 @@
   var resize_charts = function() {
 
     var visible_chart_wrap = d3.select('.chart-pane.selected'),
-        width = visible_chart_wrap.node().clientWidth,
-        height = visible_chart_wrap.node().clientHeight;
+        w = visible_chart_wrap.node().clientWidth,
+        h = visible_chart_wrap.node().clientHeight;
     for (var chart in charts) {
       if (charts.hasOwnProperty(chart)) {
+
+        var chart_wrap = d3.select('#'+chart+'_chart');
+        if (chart_wrap.classed('small-chart')) {
+          chart_wrap.style('height', (h / 2 - 15) + 'px');
+        }
+        width = chart_wrap.node().clientWidth;
+//        height = chart_wrap.node().clientHeight;
         if (chart.small) {
-          charts[chart].chart.width(width / 2 - 1).height(height / 2).redraw();
+          charts[chart].chart.width(width).height(h / 2 - 15).redraw();
         } else {
-          chart.width(width - 1).height(height).redraw();
+          chart.width(width - 1).height(h - 15).redraw();
         }
       }
     }
@@ -86,10 +86,10 @@
 
   var initialize_charts = function(_data, _params, _metadata) {
 
-    console.log(_data);
-
     for (var dice_variable in _data) {
+
       if (_data.hasOwnProperty(dice_variable)) {
+
         var this_data = [];
         _data[dice_variable].forEach(function(d, i) {
           if (i < graph_periods) {
@@ -105,14 +105,25 @@
          Draw small chart for important variables
          */
         var chart_wrap = d3.select('#'+dice_variable+'_chart');
+
         if (!chart_wrap.empty()) {
 
+          if (chart_wrap.classed('small-chart')) {
+            var h = d3.select('.chart-pane.selected').node().clientHeight;
+            chart_wrap.style('height', (h / 2 - 15) + 'px');
+          }
+
+          width = chart_wrap.node().clientWidth;
+          height = chart_wrap.node().clientHeight;
+          console.log(width);
           var ext = d3.extent(this_data, function(d, i) { return d.y; }),
             min = ext[0] == 0 ? 0 : ext[0] - (ext[1] - ext[0]) / 10,
             max = ext[1] + (ext[1] - ext[0]) / 10;
 
           charts[dice_variable] = {
             chart: new WebDICEGraph()
+              .width(width)
+              .height(height)
               .padding(padding[0], padding[1], padding[2], padding[3])
               .select(dice_variable+'_chart')
               .x(d3.time.scale())

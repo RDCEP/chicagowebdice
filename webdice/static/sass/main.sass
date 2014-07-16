@@ -20,7 +20,6 @@ body
   background-color: #eeeeee
   font-family: Helveltica, Arial, sans-serif
   color: #222222
-  overflow: hidden
 a
   text-decoration: none
   color: #666666
@@ -65,13 +64,14 @@ path, circle
     .tabs
       height: 2.4em
       font-size: 0.8em
-      margin-left: -1em
+      margin-left: -$inner_pad
+      margin-right: -$inner_pad
       li
         text-decoration: none
         color: #000
         display: block
         float: left
-        padding: 0.8em
+        padding: 0.8em $inner_pad
         border-right: 1px solid transparent
         border-left: 1px solid transparent
         cursor: pointer
@@ -80,10 +80,9 @@ path, circle
       &.notselected
         display: none
 #parameters_and_runs
-  width: 100%
   position: absolute
   top: 0
-  right: -.8em
+  right: -$inner_pad
   li
     float: right!important
 #top_nav
@@ -153,14 +152,15 @@ path, circle
           top: -.81em
 
 #main_content
-  width: $site_width
+  width: $site_width + $inner_pad * 2 + $outer_pad * 2
   margin: 0 auto
   position: relative
   height: 100%
+  min-height: 480px
   .chart-pane
-    width: $site_width + $left_pad
-    margin-left: -$left_pad
-    margin-bottom: $bottom_pad
+    width: $site_width + $inner_pad + $outer_pad * 2
+    //margin-left: -$left_pad
+    margin: 0 auto
 .tab
   //visibility: hidden
   z-index: 0
@@ -168,14 +168,24 @@ path, circle
   &.selected
     display: block
     z-index: 2
+  .chart
+    overflow: visible
   .small-chart
     float: left
     position: relative
+    width: $small_chart_width
+    margin: $outer_pad / 2
+    .bkgd
+      position: absolute
+      height: 100%
+      width: 100%
+      //background-color: #f6f6f6
+      z-index: -1
     h3
       font-size: 1em
       position: absolute
       top: 0
-      padding: 2em 0 0 $left_pad
+      padding: 15px 0 0 $left_pad
   &.chart-pane
     position: absolute
     top: 4.2em

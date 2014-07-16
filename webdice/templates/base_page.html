@@ -14,30 +14,26 @@
         <li><a href="{{ url_for('webdice.basic') }}">Basic</a></li>
         <li><a href>Documentation</a><ul>
           <!-- switch help forbasic and advanced -->
-          <li><a target="_blank" href="{{ url_for('webdice.static', filename='docs/webdice_basic_help.pdf') }}">Basic</a></li>
-          <li><a target="_blank" href="{{ url_for('webdice.static', filename='docs/webdice_intermediate_help.pdf') }}">Intermediate</a></li>
-          <li><a target="_blank" href="{{ url_for('webdice.static', filename='docs/webdice_equation_help.pdf') }}">Equations</a></li>
-          <li><a target="_blank" href="https://www.github.com/RDCEP/chicagowebdice/">View source</a></li>
+          <li><a target=_blank href="{{ url_for('webdice.static', filename='docs/webdice_basic_help.pdf') }}">Basic</a></li>
+          <li><a target=_blank href="{{ url_for('webdice.static', filename='docs/webdice_intermediate_help.pdf') }}">Intermediate</a></li>
+          <li><a target=_blank href="{{ url_for('webdice.static', filename='docs/webdice_equation_help.pdf') }}">Equations</a></li>
+          <li><a target=_blank href="https://www.github.com/RDCEP/chicagowebdice/">View source</a></li>
         </ul></li>
       </ul>
     </nav>
-    <div id="title_legend_wrap">
-      <div id="title_legend">
-        <ul class="tabs">
-          <li id="link-to-essential" data-pane="essential_graphs" class="selected">Essential</li>
-          <li id="link-to-climate" data-pane="climate_graphs">Climate</li>
-          <li id="link-to-economy" data-pane="economy_graphs">Economy</li>
-          <li id="link-to-policy" data-pane="policy_graphs">Policy</li>
-          <li id="link-to-custom" data-pane="custom_graph">Customizable</li>
-          <li id="link-to-scc-graph" data-pane="scc_graph">SCC</li>
+    <div id=title_legend_wrap>
+      <div id=title_legend>
+        <ul class=tabs>
+          <li id=link-to-essential data-pane=essential_graphs class=selected>Essential</li>
+          <li id=link-to-climate data-pane=climate_graphs>Climate</li>
+          <li id=link-to-economy data-pane=economy_graphs>Economy</li>
+          <li id=link-to-policy data-pane=policy_graphs>Policy</li>
+          <li id=link-to-custom data-pane=custom_graph>Customizable</li>
+          <li id=link-to-scc-graph data-pane=scc_graph>SCC</li>
         </ul>
-        <ul id="parameters_and_runs" class="tabs">
-          <li id="parameters_tab">
-            Parameters
-          </li>
-          <li id="runs_tab">
-            Runs
-          </li>
+        <ul id=parameters_and_runs class=tabs>
+          <li id=parameters_tab data-pane=parameters>Parameters</li>
+          <li id=runs_tab data-pane=runs>Runs</li>
         </ul>
       </div>
     </div>
@@ -51,32 +47,32 @@
 
   {% block content %}
     <div id="essential_graphs" class="tab chart-pane selected">
-      <div class="small-chart" id="temp_atmosphere_chart"></div>
-      <div class="small-chart" id="consumption_pc_chart"></div>
-      <div class="small-chart" id="mass_atmosphere_chart"></div>
-      <div class="small-chart" id="emissions_total_chart"></div>
+      <div class="small-chart chart" id="temp_atmosphere_chart"><div class="bkgd"></div></div>
+      <div class="small-chart chart" id="consumption_pc_chart"><div class="bkgd"></div></div>
+      <div class="small-chart chart" id="mass_atmosphere_chart"><div class="bkgd"></div></div>
+      <div class="small-chart chart" id="emissions_total_chart"><div class="bkgd"></div></div>
     </div>
     <div id="climate_graphs" class="tab chart-pane">
-      <div class="small-chart" id="mass_upper_chart"></div>
-      <div class="small-chart" id="mass_lower_chart"></div>
-      <div class="small-chart" id="temp_lower_chart"></div>
+      <div class="small-chart chart" id="mass_upper_chart"></div>
+      <div class="small-chart chart" id="mass_lower_chart"></div>
+      <div class="small-chart chart" id="temp_lower_chart"></div>
     </div>
     <div id="economy_graphs" class="tab chart-pane">
-      <div class="small-chart" id="productivity_chart"></div>
-      <div class="small-chart" id="backstop_growth_chart"></div>
-      <div class="small-chart" id="carbon_intensity_chart"></div>
-      <div class="small-chart" id="damages_chart"></div>
+      <div class="small-chart chart" id="productivity_chart"></div>
+      <div class="small-chart chart" id="backstop_growth_chart"></div>
+      <div class="small-chart chart" id="carbon_intensity_chart"></div>
+      <div class="small-chart chart" id="damages_chart"></div>
     </div>
     <div id="policy_graphs" class="tab chart-pane">
-      <div class="small-chart" id="tax_rate_chart"></div>
-      <div class="small-chart" id="abatement_chart"></div>
-      <div class="small-chart" id="scc_chart"></div>
-      <div class="small-chart" id="output_abate_chart"></div>
+      <div class="small-chart chart" id="tax_rate_chart"></div>
+      <div class="small-chart chart" id="abatement_chart"></div>
+      <div class="small-chart chart" id="scc_chart"></div>
+      <div class="small-chart chart" id="output_abate_chart"></div>
     </div>
     <div id="custom_graph" class="tab chart-pane">
       <div id="large-graph">
-        <div id="large-graph-chart" style="height:90%;"></div>
-        <div id="large-graph-zoom" style="height:10%;"></div>
+        <div id="large-graph-chart chart" style="height:90%;"></div>
+        <div id="large-graph-zoom chart" style="height:10%;"></div>
       </div>
       <div id="graph-controls">
         <div>
@@ -103,11 +99,12 @@
         </div>
       </div>
     </div>
-    <div id="scc_graph" class="tab chart-pane"></div>
+    <div id="scc_graph" class="tab chart-pane">
+
+    </div>
     {% include 'modules/parameters.html' %}
   {% endblock %}
   </article>
-
   <div id="help-wrapper">
   {% block help %}{% endblock %}
   </div>

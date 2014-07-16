@@ -1,13 +1,19 @@
-$site_width: 960px
+$site_width: 900px
+$outer_pad: 15px
+$inner_pad: 15px
 $top_pad: .75
 $bottom_pad: 30px
-$left_pad: 100px // Needs to match padding[3] in main.js
+$left_pad: 60px // Needs to match padding[3] in main.js
 $top_font: .9em
-
 $bottom_font: .9em
 
+$small_chart_width: ($site_width + $inner_pad * 2 + $outer_pad - 30px) / 2
 
-
+$parameter_columns: 4
+$parameter_pane_halfs: ($site_width - $inner_pad * (2 * 4 + 2)) / 2
+$parameter_pane_thirds: ($site_width - $inner_pad * (3 * 4 + 2)) / 3
+$parameter_pane_fourths: ($site_width - $inner_pad * (4 * 4 + 2)) / 4
 $range_current_value_gap: 1.2em
 $range_minmax_value_size: .6em
-$range_minmax_v_offset: (1em + $range_current_value_gap) / .6
+//$range_minmax_v_offset: (1em + $range_current_value_gap) / .6
+$range_minmax_v_offset: .6em
