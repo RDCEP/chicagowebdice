@@ -41,35 +41,39 @@
 
   <article id="main_content">
 
-  <div id="sidebar">
-  {% block sidebar %}{% endblock %}
-  </div>
+{#  <div id="sidebar">#}
+{#  {% block sidebar %}{% endblock %}#}
+{#  </div>#}
 
   {% block content %}
-    <div id="essential_graphs" class="tab chart-pane selected">
+  <div id=graphs_wrap>
+
+    <div id=graphs_bkgd></div>
+
+    <div id="essential_graphs" class="pane chart-pane selected">
       <div class="small-chart chart" id="temp_atmosphere_chart"><div class="bkgd"></div></div>
       <div class="small-chart chart" id="consumption_pc_chart"><div class="bkgd"></div></div>
       <div class="small-chart chart" id="mass_atmosphere_chart"><div class="bkgd"></div></div>
       <div class="small-chart chart" id="emissions_total_chart"><div class="bkgd"></div></div>
     </div>
-    <div id="climate_graphs" class="tab chart-pane">
+    <div id="climate_graphs" class="pane chart-pane">
       <div class="small-chart chart" id="mass_upper_chart"></div>
       <div class="small-chart chart" id="mass_lower_chart"></div>
       <div class="small-chart chart" id="temp_lower_chart"></div>
     </div>
-    <div id="economy_graphs" class="tab chart-pane">
+    <div id="economy_graphs" class="pane chart-pane">
       <div class="small-chart chart" id="productivity_chart"></div>
       <div class="small-chart chart" id="backstop_growth_chart"></div>
       <div class="small-chart chart" id="carbon_intensity_chart"></div>
       <div class="small-chart chart" id="damages_chart"></div>
     </div>
-    <div id="policy_graphs" class="tab chart-pane">
+    <div id="policy_graphs" class="pane chart-pane">
       <div class="small-chart chart" id="tax_rate_chart"></div>
       <div class="small-chart chart" id="abatement_chart"></div>
       <div class="small-chart chart" id="scc_chart"></div>
       <div class="small-chart chart" id="output_abate_chart"></div>
     </div>
-    <div id="custom_graph" class="tab chart-pane">
+    <div id="custom_graph" class="pane chart-pane">
       <div id="large-graph">
         <div id="large-graph-chart chart" style="height:90%;"></div>
         <div id="large-graph-zoom chart" style="height:10%;"></div>
@@ -99,10 +103,11 @@
         </div>
       </div>
     </div>
-    <div id="scc_graph" class="tab chart-pane">
+    <div id="scc_graph" class="pane chart-pane">
 
     </div>
-    {% include 'modules/parameters.html' %}
+  </div>
+  {% include 'modules/parameters.html' %}
   {% endblock %}
   </article>
   <div id="help-wrapper">

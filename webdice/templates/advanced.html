@@ -21,76 +21,7 @@
   <li><a target="_blank" href="/webdice/static/docs/webdice_advanced_manual.pdf">Intermediate</a></li>
   <li><a target="_blank" href="/webdice/static/docs/webdice_equation_help.pdf">Equations</a></li>
 {% endblock %}
-{% block sidebar -%}
-  <form id="submission" method="post" action="/">
-    <div id="parameters" class="has-tabs">
-      <div id="sidebar-tabs" class="tabs">
-        <a href="" class="selected" id="link-to-tab-policy">Policy</a>
-        <a href="" id="link-to-tab-climate">Climate</a>
-        <a href="" id="link-to-tab-economy">Economy</a>
-      </div>
-      {% for tab in tabs -%}
-      <div id="tab-{{ tab.name|lower }}" class="tab {% if tab.name|lower != 'policy' %}not{% endif %}selected">
-        {% for section in tab.sections -%}
-        <h2>{% if section.radio -%}{{ section.radio|safe }}
-          {% if section.help -%}
-            <span class="help-button">?</span>
-          {%- endif %}
-        {%- endif %}{{ section.name }}</h2>
-        {% if section.parameters -%}
-        <ul>
-          {% for parameter in section.parameters -%}
-          <li{% if parameter.disabled or parameter.init_disabled %} class="disabled init-disabled" {% endif %}>
-            {% if parameter.type == 'range' -%}
-            <label title="{{ parameter.description }}">{{ parameter.name }}
-            <span class="label">
-              <span class="label-number">{% if parameter.class == 'reverse' -%}
-                {{ parameter.max - (parameter.default - parameter.min) }}
-              {%- elif parameter.class == 'percent' -%}
-                {%- if parameter.precision == 2 -%}
-                  {{ (parameter.default * 100)|int }}
-                {%- else -%}
-                  {{ parameter.default * 100 }}
-                {%- endif -%}
-              {%- elif parameter.class == 'reverse percent' or parameter.class == 'percent reverse' -%}
-                {{ ((parameter.max - (parameter.default - parameter.min)) * 100)|int }}
-              {%- else -%}
-                {{ parameter.default }}
-              {%- endif %}</span><span>{{ parameter.unit|safe }}</span>
-            </span>
-            </label>
-            <input name="{{ parameter.machine_name }}" type="range" min="{{ parameter.min }}" max="{{ parameter.max }}" value="{{ parameter.default }}" step="{{ parameter.step }}" data-prec="{{ parameter.precision }}" {% if parameter.disabled or parameter.init_disabled %}disabled="disabled"{% endif %} {% if parameter.class %}class="{{ parameter.class }}"{% endif %}/>
-            <div class="tick-wrap">
-              <span class="tick" style="left:{{ parameter.tick }}" >&bullet;</span>
-            </div>
-            {%- endif %}
-            {% if parameter.type == 'select' -%}
-            <label title="{{ parameter.description }}">{{ parameter.name }}</label>
-              <select name="{{ parameter.machine_name }}"{% if parameter.disabled or parameter.init_disabled %} disabled="disabled"{% endif %}>
-              {% for option in parameter.options -%}
-              <option value="{{ option.machine_name }}" title="{{ option.description }}">{{ option.name }}</option>
-              {%- endfor %}
-            </select>
-            {%- endif %}
-            {% if parameter.help -%}
-            <span class="help-button">?</span>
-            {%- endif %}
-          </li>
-          {%- endfor %}
-        </ul>
-        {%- endif %}
-        {%- endfor %}
-      </div>
-      {%- endfor %}
-    </div>
-    <div id="controls">
-      <input type="reset" id="reset-inputs" value="Reset Inputs"/>
-      <input type="submit" id="delete-all" value="Clear Graphs" disabled="disabled"/>
-      <input type="submit" value="Run Model" onclick="_gaq.push(['_trackEvent', 'Models', 'Run', 'Run webDICE {{  year }} Model']);"/>
-    </div>
-  </form>
-  <ul id="runs"></ul>
-{%- endblock %}
+
 {% block text -%}
   {# paragraphs_html|safe #}
 {%- endblock %}
@@ -118,5 +49,5 @@
 {% block bodyjs %}
   <script src="/static/js/webdice_help.js"></script>
   <script type="text/javascript" src="/static/js/webdice_range_slider.js?{{ now }}"></script>
-  <script type="text/javascript" src="/static/js/webdice_parameters.js?{{ now }}"></script>
+  <script type="text/javascript" src="/static/js/webdice_tabs.js?{{ now }}"></script>
 {% endblock %}

@@ -12,10 +12,12 @@
         min = parseFloat(t.attr('min')),
         max = parseFloat(t.attr('max')),
         dot = p.select('.tick'),
-        val = t.property('value'),
+        val = parseFloat(t.property('value')),
+        prec = parseInt(t.attr('data-prec')),
         pct = ((parseFloat(val) - min) / (max - min) - .5) * 100;
 
-      current.text(val).style('left', pct + '%');
+//      current.text(val.toFixed(prec).toString().replace(/^0+(.)/, '$1')).style('left', pct + '%');
+      current.text(val.toFixed(prec).toString()).style('left', pct + '%');
 
     };
 

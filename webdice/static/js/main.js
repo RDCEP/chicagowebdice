@@ -60,24 +60,28 @@
 
   };
 
+  var get_dims = function() {
+    var visible_chart_wrap = d3.select('.chart-pane.selected'),
+      w = visible_chart_wrap.node().clientWidth,
+      h = visible_chart_wrap.node().clientHeight;
+    return {w: w, h: h};
+  };
+
   var resize_charts = function() {
 
-    var visible_chart_wrap = d3.select('.chart-pane.selected'),
-        w = visible_chart_wrap.node().clientWidth,
-        h = visible_chart_wrap.node().clientHeight;
+    var dims = get_dims();
+
     for (var chart in charts) {
       if (charts.hasOwnProperty(chart)) {
 
         var chart_wrap = d3.select('#'+chart+'_chart');
         if (chart_wrap.classed('small-chart')) {
-          chart_wrap.style('height', (h / 2 - 15) + 'px');
+          chart_wrap.style('height', (dims.h / 2 - 15) + 'px');
         }
-        width = chart_wrap.node().clientWidth;
-//        height = chart_wrap.node().clientHeight;
         if (chart.small) {
-          charts[chart].chart.width(width).height(h / 2 - 15).redraw();
+          charts[chart].chart.width(dims.w / 2 - 15).height(dims.h / 2 - 15).redraw();
         } else {
-          chart.width(width - 1).height(h - 15).redraw();
+          chart.width(dims.w - 1).height(dims.h - 15).redraw();
         }
       }
     }
@@ -108,22 +112,25 @@
 
         if (!chart_wrap.empty()) {
 
+          var dims = get_dims(),
+            h, w;
+
           if (chart_wrap.classed('small-chart')) {
-            var h = d3.select('.chart-pane.selected').node().clientHeight;
-            chart_wrap.style('height', (h / 2 - 15) + 'px');
+            h = dims.h / 2 - 15;
+            w = dims.w / 2 - 15;
+            chart_wrap.style('height', h + 'px');
+          } else {
+            h = dims.h; w = dims.w;
           }
 
-          width = chart_wrap.node().clientWidth;
-          height = chart_wrap.node().clientHeight;
-          console.log(width);
           var ext = d3.extent(this_data, function(d, i) { return d.y; }),
             min = ext[0] == 0 ? 0 : ext[0] - (ext[1] - ext[0]) / 10,
             max = ext[1] + (ext[1] - ext[0]) / 10;
 
           charts[dice_variable] = {
             chart: new WebDICEGraph()
-              .width(width)
-              .height(height)
+              .width(w)
+              .height(h)
               .padding(padding[0], padding[1], padding[2], padding[3])
               .select(dice_variable+'_chart')
               .x(d3.time.scale())

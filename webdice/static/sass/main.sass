@@ -1,7 +1,7 @@
 @import globals
 @import old
-@import colors
-@import layout
+@import "vars_color"
+@import "vars_layout"
 
 @mixin columns($c, $g)
   -moz-column-count: $c /* Firefox */
@@ -71,18 +71,32 @@ path, circle
         color: #000
         display: block
         float: left
-        padding: 0.8em $inner_pad
+        padding: .9em $inner_pad .7em
+
         border-right: 1px solid transparent
         border-left: 1px solid transparent
         cursor: pointer
+        line-height: 1em
         &.selected
           background-color: #eee
+          position: relative
+          &:after
+            content: ' '
+            height: $inner_pad * 1.414
+            width: $inner_pad * 1.414
+            -webkit-transform: rotate(45deg)
+            transform: rotate(45deg)
+            position: absolute
+            top: 100%
+            left: 15%
+            background-color: #ffffff
+
       &.notselected
         display: none
 #parameters_and_runs
   position: absolute
   top: 0
-  right: -$inner_pad
+  right: 0
   li
     float: right!important
 #top_nav
@@ -157,14 +171,31 @@ path, circle
   position: relative
   height: 100%
   min-height: 480px
+  max-height: 960px
+  padding-bottom: 30px
   .chart-pane
-    width: $site_width + $inner_pad + $outer_pad * 2
-    //margin-left: -$left_pad
+    width: $site_width + $outer_pad * 2
     margin: 0 auto
-.tab
+#parameters_wrap, #graphs_wrap
+  width: $site_width + $inner_pad * 2
+  z-index: 997
+  top: 6em
+  left: 15px
+  right: 15px
+  bottom: 0
+  font-size: .8em
+  position: absolute
+#parameters_bkgd, #graphs_bkgd
+  background-color: #ffffff
+  opacity: .95
+  height: 100%
+  width: 100%
+  position: absolute
+.pane
   //visibility: hidden
-  z-index: 0
-  background-color: #eeeeee
+  z-index: 3
+  //background-color: #eeeeee
+  display: none
   &.selected
     display: block
     z-index: 2
@@ -183,12 +214,13 @@ path, circle
       z-index: -1
     h3
       font-size: 1em
+      font-weight: bold
       position: absolute
       top: 0
       padding: 15px 0 0 $left_pad
   &.chart-pane
     position: absolute
-    top: 4.2em
+    top: 0
     left: 0
     right: 0
     bottom: 0
