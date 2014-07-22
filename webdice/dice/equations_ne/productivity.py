@@ -71,7 +71,7 @@ class ProductivityModel(object):
         -------
         array
         """
-        p = self.params._population_2005
+        p = self.params.population_2005
         pa = self.params.popasym
         return ne.evaluate('p * (1 - population_growth_rate) + population_growth_rate * pa')
 
@@ -108,7 +108,7 @@ class ProductivityModel(object):
             )
         else:
             intensity_decline = self.params.intensity_growth
-            df.backstop = self.backstop
+            df.backstop.ix[:] = np.tile(self.backstop, (61, 1))
             carbon_intensity = self.params.intensity_2005
             productivity = self.params.productivity
             capital = self.params.capital_2005
