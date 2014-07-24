@@ -108,7 +108,7 @@ class ProductivityModel(object):
             )
         else:
             intensity_decline = self.params.intensity_growth
-            df.backstop.ix[:] = np.tile(self.backstop, (61, 1))
+            df.backstop[:] = np.tile(self.backstop, (61, 1))
             carbon_intensity = self.params.intensity_2005
             productivity = self.params.productivity
             capital = self.params.capital_2005

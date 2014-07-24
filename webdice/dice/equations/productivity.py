@@ -107,7 +107,7 @@ class ProductivityModel(object):
                 population
             )
         else:
-            df.backstop = self.backstop
+            df.backstop[:] = self.backstop
             carbon_intensity = self.params.intensity_2005
             productivity = self.params.productivity
             capital = self.params.capital_2005
