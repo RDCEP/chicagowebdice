@@ -59,12 +59,12 @@ class Dice(object):
         u_p = DiceUserParams()
         return [k for k, v in u_p.__dict__.iteritems() if k[0] != '_']
 
-    # @property
-    # def vars(self):
-    #     """
-    #     List of model variables to be included with output to graphs and CSV.
-    #     """
-        # return self.vars.columns.tolist()
+    @property
+    def model_vars(self):
+        """
+        List of model variables to be included with output to graphs and CSV.
+        """
+        return [k for k, v in self.vars.__dict__.iteritems() if k[0] != '_']
 
     @property
     def welfare(self):
@@ -335,7 +335,7 @@ class Dice(object):
             p, getattr(self.params, p)) for p in self.user_params]
         output += ['%s %s' % (
             p, ' '.join(map(str, list(getattr(self.vars, p))))
-        ) for p in self.vars ]
+        ) for p in self.model_vars ]
         return '\n'.join(output)
 
 
@@ -359,7 +359,7 @@ if __name__ == '__main__':
     run_scenario = 1
     if run_scenario:
         d = Dice2007()
-        d.params.elasmu = 2
+        d.params.elasmu = 1.3
         d.params.carbon_model = 'beam_carbon'
-        d.loop(opt=True)
+        d.loop(opt=False)
         print d.vars.scc[:10]
