@@ -5,7 +5,8 @@ from webdice.dice import Dice2007, Dice2010
 from webdice.html_parser.web import DiceWebParser
 
 
-mod = Blueprint('webdice', __name__, static_folder='static', template_folder='templates')
+mod = Blueprint('webdice', __name__, static_folder='static',
+                template_folder='templates')
 
 
 def validate_number(n):
@@ -130,7 +131,8 @@ def graphs(year):
                 pass
             else:
                 try:
-                    this_dice.params.__dict__[p['machine_name']] = float(form[p['machine_name']])
+                    this_dice.params.__dict__[p['machine_name']] = \
+                        float(form[p['machine_name']])
                 except (ValueError, AttributeError, KeyError):
                     pass
     try:
@@ -157,5 +159,6 @@ def graphs(year):
 def csv_output():
     data = request.form['data']
     response =  make_response(data)
-    response.headers['Content-Disposition'] = 'attachment; filename="WebDICE-Data.csv"'
+    response.headers['Content-Disposition'] = 'attachment; filename="{}.csv"'.\
+        format('WebDICE-Data')
     return response
