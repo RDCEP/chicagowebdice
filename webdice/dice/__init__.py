@@ -165,9 +165,9 @@ class Dice(object):
             df.utility_discounted[:, :60].sum(axis=0) -
             df.utility_discounted[:, 60].sum()
         ) * self.opt_scale / self.eps
-        self.opt_grad_f = gf.values
+        self.opt_grad_f = gf
         self.opt_obj = (
-            df.utility_discounted.ix[60, :].sum(axis=1) * self.opt_scale)
+            df.utility_discounted[:, 60].sum() * self.opt_scale)
 
     def obj_loop(self, miu):
         """
@@ -272,7 +272,9 @@ class Dice(object):
         try:
             import pyipopt
         except ImportError:
-            print('OPTIMIZATION ERROR: It appears that you do not have pyipopt installed. Please install it before running optimization.')
+            print('OPTIMIZATION ERROR: It appears that you do not have '
+                  'pyipopt installed. Please install it before running '
+                  'optimization.')
         x0 = np.concatenate(
             (np.linspace(0, 1, 40) ** (1 - np.linspace(0, 1, 40)), np.ones(20))
         )
@@ -334,7 +336,7 @@ class Dice(object):
         """
         output = dict(parameters=None, data=None)
         output['parameters'] = {p: getattr(self.params, p) for p in self.user_params if type(p) in ['float', 'integer']}
-        output['data'] = {p: list(getattr(self.data.vars, p)) for p in self.vars}
+        output['data'] = {p: list(getattr(self.vars, p)) for p in self.vars}
         return json.dumps(output)
 
 
@@ -358,7 +360,10 @@ if __name__ == '__main__':
     run_scenario = 1
     if run_scenario:
         d = Dice2007()
-        d.params.elasmu = 1.7
+        d.params.elasmu = 2
+        d.params.prstp = .01
         d.params.carbon_model = 'beam_carbon'
-        d.loop(opt=True)
-        print d.data.vars.ix[:10, ('miu', 'scc')]
+        d.params.damages_model = 'productivity_fraction'
+        d.params.prod_frac = .1
+        d.loop(opt=0)
+        print d.vars.scc[:2].mean()
