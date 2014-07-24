@@ -5,7 +5,7 @@ from webdice.dice import Dice2007, Dice2010
 from webdice.html_parser.web import DiceWebParser
 
 
-mod = Blueprint('webdice', __name__, static_folder='static')
+mod = Blueprint('webdice', __name__, static_folder='static', template_folder='templates')
 
 
 def validate_number(n):
@@ -90,6 +90,7 @@ def page(tabs, parser, year, tpl='index'):
     graph_locations = json.JSONEncoder().encode(graph_locations)
     graph_names = json.JSONEncoder().encode(graph_names)
     now = datetime.now().strftime('%Y%m%d%H%M%S')
+    print tabs, tpl
     return render_template(
         tpl + '.html',
         measurements=m,

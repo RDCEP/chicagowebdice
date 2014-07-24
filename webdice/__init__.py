@@ -39,7 +39,7 @@ def not_found(error):
 
 @app.context_processor
 def context_globals():
-    pass
+    return dict()
 
 
 api = Api(app)
