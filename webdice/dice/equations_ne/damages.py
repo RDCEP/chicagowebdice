@@ -180,7 +180,11 @@ class IncommensurableDamages(DamagesModel):
         array
         """
         if index == 0:
+<<<<<<< HEAD
             df.participation = self.participation
+=======
+            df.participation = np.tile(self.participation, (61, 1))
+>>>>>>> develop
         _go = df.gross_output[index]
         _miu = df.miu[index]
         _bg = df.backstop_growth[index]

@@ -5,7 +5,8 @@ from webdice.dice import Dice2007, Dice2010
 from webdice.html_parser.web import DiceWebParser
 
 
-mod = Blueprint('webdice', __name__, static_folder='static')
+mod = Blueprint('webdice', __name__, static_folder='static',
+                template_folder='templates')
 
 
 def validate_number(n):
@@ -90,6 +91,7 @@ def page(tabs, parser, year, tpl='index'):
     graph_locations = json.JSONEncoder().encode(graph_locations)
     graph_names = json.JSONEncoder().encode(graph_names)
     now = datetime.now().strftime('%Y%m%d%H%M%S')
+    print tabs, tpl
     return render_template(
         tpl + '.html',
         measurements=m,
@@ -129,7 +131,8 @@ def graphs(year):
                 pass
             else:
                 try:
-                    this_dice.params.__dict__[p['machine_name']] = float(form[p['machine_name']])
+                    this_dice.params.__dict__[p['machine_name']] = \
+                        float(form[p['machine_name']])
                 except (ValueError, AttributeError, KeyError):
                     pass
     try:
@@ -140,14 +143,14 @@ def graphs(year):
         pass
     opt = False
     policy = form['policy_type']
-    this_dice.params._treaty = False
-    this_dice.params._carbon_tax = False
+    this_dice.params.treaty = False
+    this_dice.params.carbon_tax = False
     if policy == 'treaty':
-        this_dice.params._treaty = True
+        this_dice.params.treaty = True
     elif policy == 'optimized':
         opt = True
     elif policy == 'carbon_tax':
-        this_dice.params._carbon_tax = True
+        this_dice.params.carbon_tax = True
     this_dice.loop(opt=opt)
     return this_dice.format_output()
 
@@ -205,5 +208,6 @@ def graphs_d3(year):
 def csv_output():
     data = request.form['data']
     response =  make_response(data)
-    response.headers['Content-Disposition'] = 'attachment; filename="WebDICE-Data.csv"'
+    response.headers['Content-Disposition'] = 'attachment; filename="{}.csv"'.\
+        format('WebDICE-Data')
     return response

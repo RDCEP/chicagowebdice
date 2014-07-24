@@ -37,9 +37,9 @@ def not_found(error):
     return render_template('errors/500.html'), 500
 
 
-# @app.context_processor
-# def context_globals():
-#     pass
+@app.context_processor
+def context_globals():
+    return dict()
 
 
 # api = Api(app)
