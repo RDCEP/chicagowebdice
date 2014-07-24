@@ -336,7 +336,7 @@ class Dice(object):
         """
         output = dict(parameters=None, data=None)
         output['parameters'] = {p: getattr(self.params, p) for p in self.user_params if type(p) in ['float', 'integer']}
-        output['data'] = {p: list(getattr(self.vars, p)) for p in self.vars}
+        output['data'] = {p: list(getattr(self.vars, p)) for p in self.model_vars}
         return json.dumps(output)
 
 
