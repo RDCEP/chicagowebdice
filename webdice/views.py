@@ -37,7 +37,6 @@ def do_session(request, year=None):
         if year == 2007:
             dice = Dice2007()
         elif year == 2010:
-            print('2010')
             dice = Dice2010()
     s['dice'] = dice if dice else s['dice']
     return s, DiceWebParser(year)
@@ -91,7 +90,6 @@ def page(tabs, parser, year, tpl='index'):
     graph_locations = json.JSONEncoder().encode(graph_locations)
     graph_names = json.JSONEncoder().encode(graph_names)
     now = datetime.now().strftime('%Y%m%d%H%M%S')
-    print tabs, tpl
     return render_template(
         tpl + '.html',
         measurements=m,
