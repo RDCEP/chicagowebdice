@@ -160,10 +160,11 @@ class Dice(object):
         return self.data.vars
 
     def set_opt_values(self, df):
-        self.opt_grad_f = (
+        gf = (
             df.utility_discounted.ix[:59, :].sum(axis=1) -
             df.utility_discounted.ix[60, :].sum(axis=1)
         ) * self.opt_scale / self.eps
+        self.opt_grad_f = gf.values
         self.opt_obj = (
             df.utility_discounted.ix[60, :].sum(axis=1) * self.opt_scale)
 
@@ -184,8 +185,8 @@ class Dice(object):
             {i: self.data.vars for i in xrange(self.params.tmax + 1)}
         ).transpose(2, 0, 1)
         for i in xrange(self.params.tmax):
-            df.miu.ix[:][i] = miu[i]
-            df.miu.ix[i][i] += self.eps
+            df.miu.loc[:, i] = miu[i]
+            df.miu.loc[i, i] += self.eps
             _miu = df.miu[i]
             self.step(i, df, _miu, deriv=True, opt=True)
         self.set_opt_values(df)
@@ -208,8 +209,8 @@ class Dice(object):
             {i: self.data.vars for i in xrange(self.params.tmax + 1)}
         ).transpose(2, 0, 1)
         for i in xrange(self.params.tmax):
-            df.miu.ix[:][i] = miu[i]
-            df.miu.ix[i][i] += self.eps
+            df.miu.loc[:, i] = miu[i]
+            df.miu.loc[i, i] += self.eps
             _miu = df.miu[i]
             self.step(i, df, _miu, deriv=True, opt=True)
         self.set_opt_values(df)
@@ -292,13 +293,13 @@ class Dice(object):
         gl = np.zeros(M)
         gu = np.ones(M) * 4.0
         def eval_f(_x0):
-            if (_x0 == self.opt_x).all():
+            if (_x0 == self.opt_x).all() and self.opt_obj is not None:
                 return self.opt_obj
             else:
                 self.opt_x = _x0.copy()
                 return self.obj_loop(_x0)
         def eval_grad_f(_x0):
-            if (_x0 == self.opt_x).all():
+            if (_x0 == self.opt_x).all() and self.opt_grad_f is not None:
                 return self.opt_grad_f
             else:
                 self.opt_x = _x0.copy()
@@ -324,6 +325,7 @@ class Dice(object):
         nlp.num_option('obj_scaling_factor', -1e+0)
         nlp.int_option('print_level', 0)
         nlp.str_option('linear_solver', 'ma57')
+        # nlp.str_option('derivative_test', 'first-order')
         x = nlp.solve(x0)[0]
         nlp.close()
         return x
@@ -361,9 +363,10 @@ class Dice2007(Dice):
 
 
 if __name__ == '__main__':
-    run_scenario = False
+    run_scenario = 1
     if run_scenario:
         d = Dice2007()
-        d.params.elasmu = 1.5
-        d.loop(opt=False)
-        print d.data.vars.scc[:10]
+        d.params.elasmu = 1.7
+        d.params.carbon_model = 'beam_carbon'
+        d.loop(opt=True)
+        print d.data.vars.ix[:10, ('miu', 'scc')]
