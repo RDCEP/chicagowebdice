@@ -108,14 +108,14 @@ class ProductivityModel(object):
             )
         else:
             intensity_decline = self.params.intensity_growth
-            df.backstop[:] = np.tile(self.backstop, (61, 1))
+            # df.backstop[:] = self.backstop
             carbon_intensity = self.params.intensity_2005
             productivity = self.params.productivity
             capital = self.params.capital_2005
             gross_output = self.params.output_2005
             population = self.params.population_2005
 
-        bs = df.backstop[i]
+        bs = self.backstop[i]
         ae = self.params.abatement_exponent
         backstop_growth = ne.evaluate('(bs * carbon_intensity / ae) * (44 / 12)')
 

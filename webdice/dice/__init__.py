@@ -1,7 +1,5 @@
 from __future__ import division
 import numpy as np
-import numexpr as ne
-import pandas as pd
 from params import DiceParams, Dice2010Params, DiceUserParams, DiceDataMatrix
 from equations.loop import Loop
 from equations_ne.loop import LoopOpt
@@ -42,7 +40,7 @@ class Dice(object):
     def __init__(self, optimize=False):
         self.params = DiceParams()
         self.vars = self.params.vars
-        self.scc = None
+        self.scc = self.params.scc
         self.eq = Loop(self.params)
         self.eps = 1e-8
         self.dice_version = 2007
@@ -86,7 +84,7 @@ class Dice(object):
         Args
         ----
         i : int, index of current step
-        df : object, pandas DataFrame of variables
+        df : object, DiceDataMatrix
         ...
         Kwargs
         ------
@@ -99,7 +97,7 @@ class Dice(object):
         -------
         pandas.DataFrame : 60 steps of all variables in df
         """
-        if df.base is not None: print df.base
+
         (
             df.carbon_intensity[i], df.productivity[i], df.capital[i],
             df.backstop_growth[i], df.gross_output[i], df.intensity_decline[i],
@@ -163,12 +161,12 @@ class Dice(object):
 
     def set_opt_values(self, df):
         gf = (
-            df.utility_discounted[:60, :].sum(axis=1) -
-            df.utility_discounted[60, :].sum()
+            df.utility_discounted[:, :60].sum(axis=0) -
+            df.utility_discounted[:, 60].sum()
         ) * self.opt_scale / self.eps
         self.opt_grad_f = gf
         self.opt_obj = (
-            df.utility_discounted[60, :].sum() * self.opt_scale)
+            df.utility_discounted[:, 60].sum() * self.opt_scale)
 
     def obj_loop(self, miu):
         """
@@ -183,12 +181,11 @@ class Dice(object):
         float : value of objective (utility)
         ...
         """
-        df = DiceDataMatrix(np.tile(self.vars, (61, 1, 1)).transpose(1, 0, 2))
+        df = DiceDataMatrix(np.tile(self.vars, (61, 1, 1)).transpose(1, 2, 0))
         for i in xrange(self.params.tmax):
-            df.miu[:, i] = miu[i]
+            df.miu[i, :] = miu[i]
             df.miu[i, i] += self.eps
-            _miu = df.miu[i]
-            self.step(i, df, _miu, deriv=True, opt=True)
+            self.step(i, df, df.miu[i], deriv=True, opt=True)
         self.set_opt_values(df)
         return self.opt_obj
 
@@ -205,12 +202,11 @@ class Dice(object):
         array : gradient of objective
         ...
         """
-        df = DiceDataMatrix(np.tile(self.vars, (61, 1, 1)).transpose(1, 0, 2))
+        df = DiceDataMatrix(np.tile(self.vars, (61, 1, 1)).transpose(1, 2, 0))
         for i in xrange(self.params.tmax):
-            df.miu[:, i] = miu[i]
+            df.miu[i, :] = miu[i]
             df.miu[i, i] += self.eps
-            _miu = df.miu[i]
-            self.step(i, df, _miu, deriv=True, opt=True)
+            self.step(i, df, df.miu[i], deriv=True, opt=True)
         self.set_opt_values(df)
         return self.opt_grad_f
 
@@ -234,17 +230,15 @@ class Dice(object):
         time_horizon : integer, last period of to calculate consumption
         shock : float, amount to 'shock' the emissions of the current period
         """
-        x_range = 20
-        for i in xrange(x_range):
+        for i in xrange(20):
             th = self.params.scc_horizon
             future = th - i
-            self.scc = self.vars.copy()
+            self.scc[:] = self.vars[:]
             for j in range(i, th + 1):
                 shock = 0
                 if j == i:
                     shock = 1.0
                 self.step(j, self.scc, miu=miu, emissions_shock=shock)
-            # print(self.vars.consumption_pc[i:th] - self.scc.consumption_pc[i:th])
             diff = (
                 self.vars.consumption_pc[i:th] -
                 self.scc.consumption_pc[i:th]
@@ -322,7 +316,7 @@ class Dice(object):
         # nlp.num_option('acceptable_tol', 1e-4)
         # nlp.int_option('acceptable_iter', 4)
         nlp.num_option('obj_scaling_factor', -1e+0)
-        nlp.int_option('print_level', 5)
+        nlp.int_option('print_level', 0)
         nlp.str_option('linear_solver', 'ma57')
         # nlp.str_option('derivative_test', 'first-order')
         x = nlp.solve(x0)[0]
@@ -365,7 +359,7 @@ if __name__ == '__main__':
     run_scenario = 1
     if run_scenario:
         d = Dice2007()
-        d.params.elasmu = 1.7
-        # d.params.carbon_model = 'beam_carbon'
-        d.loop(opt=False)
+        d.params.elasmu = 2
+        d.params.carbon_model = 'beam_carbon'
+        d.loop(opt=True)
         print d.vars.scc[:10]

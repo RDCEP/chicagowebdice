@@ -1,6 +1,5 @@
 from __future__ import division
 import numpy as np
-import pandas as pd
 
 
 class DiceDataMatrix(np.ndarray):
@@ -74,107 +73,9 @@ class DiceDataMatrix(np.ndarray):
         self.temp_lower = getattr(obj, 'temp_lower', None)
         self.utility = getattr(obj, 'utility', None)
         self.utility_discounted = getattr(obj, 'utility_discounted', None)
-        # self.info = getattr(obj, 'info', None)
 
     def __array_wrap__(self, out_arr, context=None):
         return np.ndarray.__array_wrap__(self, out_arr, context)
-
-
-#     @property
-#     def abatement(self): return self[0]
-# 
-#     @property
-#     def backstop(self): return self[1]
-# 
-#     @property
-#     def backstop_growth(self): return self[2]
-#     
-#     @property
-#     def capital(self): return self[3]
-#     
-#     @property
-#     def carbon_emitted(self): return self[4]
-#     
-#     @property
-#     def carbon_intensity(self): return self[5]
-# 
-#     @property
-#     def consumption(self): return self[6]
-# 
-#     @property
-#     def consumption_discount(self): return self[7]
-# 
-#     @property
-#     def consumption_pc(self): return self[8]
-# 
-#     @property
-#     def damages(self): return self[9]
-# 
-#     @property
-#     def emissions_ind(self): return self[10]
-#     
-#     @property
-#     def emissions_total(self): return self[11]
-#     
-#     @property
-#     def forcing(self): return self[12]
-#     
-#     @property
-#     def gross_output(self): return self[13]
-#     
-#     @property
-#     def intensity_decline(self): return self[14]
-#     
-#     @property
-#     def investment(self): return self[15]
-#     
-#     @property
-#     def mass_atmosphere(self): return self[16]
-#     
-#     @property
-#     def mass_upper(self): return self[17]
-#     
-#     @property
-#     def mass_lower(self): return self[18]
-#     
-#     @property
-#     def miu(self): return self[19]
-#         
-#     @property
-#     def output(self): return self[20]
-# 
-#     @property
-#     def output_abate(self): return self[21]
-# 
-#     @property
-#     def participation(self): return self[:]
-# 
-#     @property
-#     def population(self): return self[22]
-# 
-#     @property
-#     def population_growth(self): return self[23]
-# 
-#     @property
-#     def productivity(self): return self[24]
-#     
-#     @property
-#     def scc(self): return self[25]
-# 
-#     @property
-#     def tax_rate(self): return self[26]
-# 
-#     @property
-#     def temp_atmosphere(self): return self[27]
-#     
-#     @property
-#     def temp_lower(self): return self[28]
-#     
-#     @property
-#     def utility(self): return self[29]
-# 
-#     @property
-#     def utility_discounted(self): return self[30]
 
 
 class DiceUserParams(object):
@@ -283,7 +184,7 @@ class DiceParams(DiceUserParams):
         self.t1 = self.t0 + 1
         self.scc_horizon = self.tmax - 1
 
-        # Variables for initiating pandas array
+        # Variables for initiating DiceDataMatrix
         backstop_growth = np.zeros(self.tmax)
         carbon_intensity = np.empty(self.tmax)
         carbon_intensity[:] = self.intensity_2005
@@ -313,44 +214,41 @@ class DiceParams(DiceUserParams):
         miu[:] = self.miu_2005
 
         self.vars = DiceDataMatrix(np.array([
-            np.zeros(self.tmax),  # abatement
-            np.zeros(self.tmax),  # backstop
-            backstop_growth,  # backstop_growth
-            capital,  # capital
-            np.zeros(self.tmax),  # carbon_emitted
-            carbon_intensity,  # carbon_intensity
-            np.zeros(self.tmax),  # consumption
-            np.ones(self.tmax),  # consumption_discount
-            np.zeros(self.tmax),  # consumption_pc
-            np.zeros(self.tmax),  # damages
-            np.zeros(self.tmax),  # emissions_ind
-            np.zeros(self.tmax),  # emissions_total
-            np.zeros(self.tmax),  # forcing
-            np.zeros(self.tmax),  # gross_output
-            intensity_decline,  # intensity_decline
-            investment,  # investment
-            mass_atmosphere,  # mass_atmosphere
-            mass_upper,  # mass_upper
-            mass_lower,  # mass_lower
-            miu,
-            output,  # output
-            np.zeros(self.tmax),  # output_abate
-            np.zeros(self.tmax),  # participation
-            population,  # population
-            np.zeros(self.tmax),  # population_growth
-            productivity,  # productivity
-            np.ones(self.tmax),  # scc
-            np.zeros(self.tmax),  # tax_rate
-            temp_atmosphere,  # temp_atmosphere
-            temp_lower,  # temp_lower
-            np.zeros(self.tmax),  # utility
-            np.zeros(self.tmax),  # utility_discounted
+            np.zeros(self.tmax),                # abatement
+            np.zeros(self.tmax),                # backstop
+            backstop_growth,                    # backstop_growth
+            capital,                            # capital
+            np.zeros(self.tmax),                # carbon_emitted
+            carbon_intensity,                   # carbon_intensity
+            np.zeros(self.tmax),                # consumption
+            np.ones(self.tmax),                 # consumption_discount
+            np.zeros(self.tmax),                # consumption_pc
+            np.zeros(self.tmax),                # damages
+            np.zeros(self.tmax),                # emissions_ind
+            np.zeros(self.tmax),                # emissions_total
+            np.zeros(self.tmax),                # forcing
+            np.zeros(self.tmax),                # gross_output
+            intensity_decline,                  # intensity_decline
+            investment,                         # investment
+            mass_atmosphere,                    # mass_atmosphere
+            mass_upper,                         # mass_upper
+            mass_lower,                         # mass_lower
+            miu,                                # miu
+            output,                             # output
+            np.zeros(self.tmax),                # output_abate
+            np.zeros(self.tmax),                # participation
+            population,                         # population
+            np.zeros(self.tmax),                # population_growth
+            productivity,                       # productivity
+            np.ones(self.tmax),                 # scc
+            np.zeros(self.tmax),                # tax_rate
+            temp_atmosphere,                    # temp_atmosphere
+            temp_lower,                         # temp_lower
+            np.zeros(self.tmax),                # utility
+            np.zeros(self.tmax),                # utility_discounted
         ]))
-        
-        # self.data = pd.Panel({
-        #     'vars': data,
-        #     'scc': data,
-        # })
+
+        self.scc = DiceDataMatrix(np.zeros((32, 60)))
 
 
 class Dice2010Params(DiceParams):
@@ -420,9 +318,3 @@ class Dice2010Params(DiceParams):
         self.scc.mass_upper[0] = self.mass_upper_2005
         self.vars.mass_lower[0] = self.mass_lower_2005
         self.scc.mass_lower[0] = self.mass_lower_2005
-
-
-if __name__ == '__main__':
-    c = np.ones(10)
-    C = DiceDataMatrix(c)
-    print C.capital

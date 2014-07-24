@@ -76,7 +76,8 @@ class DamagesModel(object):
         array
         """
         if i == 0:
-            df.participation = np.tile(self.participation, (61, 1))#.transpose()
+            df.participation = np.tile(self.participation, (61, 1)).transpose()
+            # df.participation = self.participation
         abatement = self.abatement(df.gross_output[i], df.miu[i],
                                    df.backstop_growth[i],
                                    df.participation[i])
