@@ -76,7 +76,7 @@ class DamagesModel(object):
         array
         """
         if i == 0:
-            df.participation.ix[:] = np.tile(self.participation, (61, 1))
+            df.participation = np.tile(self.participation, (61, 1)).transpose()
         abatement = self.abatement(df.gross_output[i], df.miu[i],
                                    df.backstop_growth[i],
                                    df.participation[i])
@@ -180,8 +180,7 @@ class IncommensurableDamages(DamagesModel):
         array
         """
         if index == 0:
-            df.participation = self.participation
-            # df.participation = np.tile(self.participation, (61, 1))
+            df.participation = np.tile(self.participation, (61, 1))
         _go = df.gross_output[index]
         _miu = df.miu[index]
         _bg = df.backstop_growth[index]

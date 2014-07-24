@@ -1,9 +1,7 @@
 from __future__ import division
 import json
 import numpy as np
-import numexpr as ne
-import pandas as pd
-from params import DiceParams, Dice2010Params, DiceUserParams
+from params import DiceParams, Dice2010Params, DiceUserParams, DiceDataMatrix
 from equations.loop import Loop
 from equations_ne.loop import LoopOpt
 
@@ -42,7 +40,8 @@ class Dice(object):
     """
     def __init__(self, optimize=False):
         self.params = DiceParams()
-        self.data = self.params.data
+        self.vars = self.params.vars
+        self.scc = self.params.scc
         self.eq = Loop(self.params)
         self.eps = 1e-8
         self.dice_version = 2007
@@ -62,11 +61,11 @@ class Dice(object):
         return [k for k, v in u_p.__dict__.iteritems() if k[0] != '_']
 
     @property
-    def vars(self):
+    def model_vars(self):
         """
         List of model variables to be included with output to graphs and CSV.
         """
-        return self.data.vars.columns.tolist()
+        return [k for k, v in self.vars.__dict__.iteritems() if k[0] != '_']
 
     @property
     def welfare(self):
@@ -77,7 +76,7 @@ class Dice(object):
         -------
         float
         """
-        return np.sum(self.data.vars.utility_discounted)
+        return np.sum(self.vars.utility_discounted)
 
     def step(self, i, df, miu=None, deriv=False, opt=False, emissions_shock=0.0):
         """
@@ -86,7 +85,7 @@ class Dice(object):
         Args
         ----
         i : int, index of current step
-        df : object, pandas DataFrame of variables
+        df : object, DiceDataMatrix
         ...
         Kwargs
         ------
@@ -99,6 +98,7 @@ class Dice(object):
         -------
         pandas.DataFrame : 60 steps of all variables in df
         """
+
         (
             df.carbon_intensity[i], df.productivity[i], df.capital[i],
             df.backstop_growth[i], df.gross_output[i], df.intensity_decline[i],
@@ -144,10 +144,8 @@ class Dice(object):
         ...
         Returns
         -------
-        pd.DataFrame : self.data.vars
+        pd.DataFrame : self.vars
         """
-        D = self.data.vars
-        self.eq.set_models(self.params)
         _miu = None
         if opt:
             self.eq = LoopOpt(self.params)
@@ -157,15 +155,15 @@ class Dice(object):
         self.eq = Loop(self.params)
         self.eq.set_models(self.params)
         for i in range(self.params.tmax):
-            self.step(i, self.data.vars, _miu, deriv=deriv, opt=opt)
+            self.step(i, self.vars, _miu, deriv=deriv, opt=opt)
         if scc:
             self.get_scc(_miu)
-        return self.data.vars
+        return self.vars
 
     def set_opt_values(self, df):
         gf = (
-            df.utility_discounted.ix[:59, :].sum(axis=1) -
-            df.utility_discounted.ix[60, :].sum(axis=1)
+            df.utility_discounted[:, :60].sum(axis=0) -
+            df.utility_discounted[:, 60].sum()
         ) * self.opt_scale / self.eps
         self.opt_grad_f = gf.values
         self.opt_obj = (
@@ -184,14 +182,11 @@ class Dice(object):
         float : value of objective (utility)
         ...
         """
-        df = pd.Panel(
-            {i: self.data.vars for i in xrange(self.params.tmax + 1)}
-        ).transpose(2, 0, 1)
+        df = DiceDataMatrix(np.tile(self.vars, (61, 1, 1)).transpose(1, 2, 0))
         for i in xrange(self.params.tmax):
-            df.miu.loc[:, i] = miu[i]
-            df.miu.loc[i, i] += self.eps
-            _miu = df.miu[i]
-            self.step(i, df, _miu, deriv=True, opt=True)
+            df.miu[i, :] = miu[i]
+            df.miu[i, i] += self.eps
+            self.step(i, df, df.miu[i], deriv=True, opt=True)
         self.set_opt_values(df)
         return self.opt_obj
 
@@ -208,14 +203,11 @@ class Dice(object):
         array : gradient of objective
         ...
         """
-        df = pd.Panel(
-            {i: self.data.vars for i in xrange(self.params.tmax + 1)}
-        ).transpose(2, 0, 1)
+        df = DiceDataMatrix(np.tile(self.vars, (61, 1, 1)).transpose(1, 2, 0))
         for i in xrange(self.params.tmax):
-            df.miu.loc[:, i] = miu[i]
-            df.miu.loc[i, i] += self.eps
-            _miu = df.miu[i]
-            self.step(i, df, _miu, deriv=True, opt=True)
+            df.miu[i, :] = miu[i]
+            df.miu[i, i] += self.eps
+            self.step(i, df, df.miu[i], deriv=True, opt=True)
         self.set_opt_values(df)
         return self.opt_grad_f
 
@@ -239,21 +231,20 @@ class Dice(object):
         time_horizon : integer, last period of to calculate consumption
         shock : float, amount to 'shock' the emissions of the current period
         """
-        x_range = 20
-        for i in xrange(x_range):
+        for i in xrange(20):
             th = self.params.scc_horizon
             future = th - i
-            self.data.scc = self.data.vars.copy()
+            self.scc[:] = self.vars[:]
             for j in range(i, th + 1):
                 shock = 0
                 if j == i:
                     shock = 1.0
-                self.step(j, self.data.scc, miu=miu, emissions_shock=shock)
+                self.step(j, self.scc, miu=miu, emissions_shock=shock)
             diff = (
-                self.data.vars.consumption_pc[i:th].values -
-                self.data.scc.consumption_pc[i:th].values
-            ).clip(0) * self.data.scc.consumption_discount[:future].values
-            self.data.vars.scc[i] = np.sum(diff) * 1000 * 10 * (12 / 44)
+                self.vars.consumption_pc[i:th] -
+                self.scc.consumption_pc[i:th]
+            ).clip(0) * self.scc.consumption_discount[:future]
+            self.vars.scc[i] = np.sum(diff) * 1000 * 10 * (12 / 44)
 
     def get_ipopt_miu(self):
         """
@@ -328,6 +319,7 @@ class Dice(object):
         nlp.num_option('obj_scaling_factor', -1e+0)
         nlp.int_option('print_level', 0)
         nlp.str_option('linear_solver', 'ma57')
+        # nlp.str_option('derivative_test', 'first-order')
         x = nlp.solve(x0)[0]
         nlp.close()
         return x
@@ -345,11 +337,12 @@ class Dice(object):
         output['data'] = {p: list(getattr(self.data.vars, p)) for p in self.vars}
         return json.dumps(output)
 
+
 class Dice2010(Dice):
     def __init__(self, optimize=False):
         super(Dice2010, self).__init__()
         self.params = Dice2010Params()
-        self.data = self.params.data
+        self.vars = self.params.vars
         self.dice_version = 2010
         self.opt_tol = 1e-5
 
@@ -362,9 +355,10 @@ class Dice2007(Dice):
 
 
 if __name__ == '__main__':
-    run_scenario = False
+    run_scenario = 1
     if run_scenario:
         d = Dice2007()
-        d.params.elasmu = 1.5
-        d.loop(opt=False)
-        print d.data.vars.scc[:10]
+        d.params.elasmu = 1.7
+        d.params.carbon_model = 'beam_carbon'
+        d.loop(opt=True)
+        print d.data.vars.ix[:10, ('miu', 'scc')]
