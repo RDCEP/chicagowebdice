@@ -335,9 +335,14 @@ class Dice(object):
         str
         """
         output = dict(parameters=None, data=None)
-        output['parameters'] = {p: getattr(self.params, p) for p in self.user_params if type(p) in ['float', 'integer']}
-        output['data'] = {p: list(getattr(self.vars, p)) for p in self.model_vars}
-        return json.dumps(output)
+        output['parameters'] = {
+            p: getattr(self.params, p) for p in self.user_params
+            if type(p) in ['float', 'integer']
+        }
+        output['data'] = {
+            p: list(getattr(self.vars, p)) for p in self.model_vars
+        }
+        return output
 
 
 class Dice2010(Dice):

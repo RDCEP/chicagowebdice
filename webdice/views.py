@@ -1,6 +1,6 @@
 import json
 from datetime import datetime
-from flask import render_template, request, make_response, Blueprint
+from flask import render_template, request, make_response, Blueprint, jsonify
 from webdice.dice import Dice2007, Dice2010
 from webdice.html_parser.web import DiceWebParser
 
@@ -105,54 +105,6 @@ def page(tabs, parser, year, tpl='index'):
     )
 
 
-@mod.route('/runold/<int:year>', methods=['POST', ])
-def graphs(year):
-    """
-    Get data from <form>, run DICE loop.
-    ...
-    Args:
-        None
-    Returns:
-        Formatted step values
-    """
-    s, parser = do_session(request, year)
-    this_dice = s['dice']
-    form = request.form
-    all_parameters = parser.get_all_parameters()
-    for p in all_parameters:
-        try:
-            p['disabled']
-        except (KeyError, AttributeError):
-            try:
-                getattr(this_dice.params, p['machine_name'])
-            except AttributeError:
-                pass
-            else:
-                try:
-                    this_dice.params.__dict__[p['machine_name']] = \
-                        float(form[p['machine_name']])
-                except (ValueError, AttributeError, KeyError):
-                    pass
-    try:
-        this_dice.params.damages_model = form['damages_model']
-        this_dice.params.carbon_model = form['carbon_model']
-        this_dice.params.temperature_model = form['temperature_model']
-    except KeyError:
-        pass
-    opt = False
-    policy = form['policy_type']
-    this_dice.params.treaty = False
-    this_dice.params.carbon_tax = False
-    if policy == 'treaty':
-        this_dice.params.treaty = True
-    elif policy == 'optimized':
-        opt = True
-    elif policy == 'carbon_tax':
-        this_dice.params.carbon_tax = True
-    this_dice.loop(opt=opt)
-    return this_dice.format_output()
-
-
 @mod.route('/run/<int:year>', methods=['POST', 'GET'])
 def graphs_d3(year):
     """
@@ -166,40 +118,47 @@ def graphs_d3(year):
     s, parser = do_session(request, year)
     this_dice = s['dice']
     this_dice.loop()
-    return this_dice.format_output()
-    # form = request.form
-    # all_parameters = parser.get_all_parameters()
-    # for p in all_parameters:
-    #     try:
-    #         p['disabled']
-    #     except (KeyError, AttributeError):
-    #         try:
-    #             getattr(this_dice.params, p['machine_name'])
-    #         except AttributeError:
-    #             pass
-    #         else:
-    #             try:
-    #                 this_dice.params.__dict__[p['machine_name']] = float(form[p['machine_name']])
-    #             except (ValueError, AttributeError, KeyError):
-    #                 pass
-    # try:
-    #     this_dice.params.damages_model = form['damages_model']
-    #     this_dice.params.carbon_model = form['carbon_model']
-    #     this_dice.params.temperature_model = form['temperature_model']
-    # except KeyError:
-    #     pass
-    # opt = False
-    # policy = form['policy_type']
-    # this_dice.params._treaty = False
-    # this_dice.params._carbon_tax = False
-    # if policy == 'treaty':
-    #     this_dice.params._treaty = True
-    # elif policy == 'optimized':
-    #     opt = True
-    # elif policy == 'carbon_tax':
-    #     this_dice.params._carbon_tax = True
-    # this_dice.loop(opt=opt)
-    # return this_dice.format_output()
+    form = json.loads(request.data)
+    form['depreciation'] = float(form['depreciation']) / 100
+    form['prstp'] = float(form['prstp']) / 100
+    form['backstop_decline'] = float(form['backstop_decline']) / 100
+    form['productivity_decline'] = float(form['productivity_decline']) / 100
+    form['intensity_decline_rate'] = float(form['intensity_decline_rate']) / 100
+
+    all_parameters = parser.get_all_parameters()
+    print form
+    print all_parameters
+    for p in all_parameters:
+        try:
+            p['disabled']
+        except (KeyError, AttributeError):
+            try:
+                getattr(this_dice.params, p['machine_name'])
+            except AttributeError:
+                pass
+            else:
+                try:
+                    this_dice.params.__dict__[p['machine_name']] = float(form[p['machine_name']])
+                except (ValueError, AttributeError, KeyError):
+                    pass
+    try:
+        this_dice.params.damages_model = form['damages_model']
+        this_dice.params.carbon_model = form['carbon_model']
+        this_dice.params.temperature_model = form['temperature_model']
+    except KeyError:
+        pass
+    opt = False
+    policy = form['policy_type']
+    this_dice.params._treaty = False
+    this_dice.params._carbon_tax = False
+    if policy == 'treaty':
+        this_dice.params._treaty = True
+    elif policy == 'optimized':
+        opt = True
+    elif policy == 'carbon_tax':
+        this_dice.params._carbon_tax = True
+    this_dice.loop(opt=opt)
+    return jsonify(**this_dice.format_output())
 
 
 @mod.route('/csv', methods=['POST',])
