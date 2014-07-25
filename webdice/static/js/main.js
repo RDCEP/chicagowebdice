@@ -1,19 +1,8 @@
 (function() {
   'use strict';
 
-  var content_div = d3.select('#main_content'),
-    runs_ul = d3.select('#runs'),
-    submission = d3.select('#submission'),
-    overlay_div = d3.select('#overlay'),
-    advancedHelpDiv = d3.select('#advanced-help'),
-    sidebar_div = d3.select('#sidebar'),
-    runsBeingDisplayed = [],
-    nextRunNumber = 1,
-    charts = {},
-    data = [],
-
-    handlersForViewportChanged = [],
-    handlersForDataChanged = [],
+  var parameters_wrap = d3.select('#parameters_wrap'),
+    run_model = d3.select('#run_model'),
     color_list = [
       //d3.rgb(0, 0, 0), //black
       d3.rgb(86, 180, 233), // sky blue
@@ -31,14 +20,16 @@
     start_year = 2005,
     end_year = start_year + ((graph_periods-1) * period_length),
     colorsUsed = 0,
-    numberOfRunsInProgress = 0,
+    total_runs = 0,
     active_graph_pane,
+    metadata,
+    charts = {},
+    runs = [],
+    data = {},
     color,
     width,
     height;
 
-  d3.select('#top_nav').style('padding', '0 '+padding[1]+'px 0 '+padding[3]+'px');
-  d3.select('#title_legend').style('padding', '0 '+padding[1]+'px 0 '+padding[3]+'px');
 
   var active_tab = function() {
     d3.selectAll('.tabs').each(function() {
@@ -60,10 +51,143 @@
 
   };
 
+  var add_run = function(_data, _params) {
+
+    console.log(_data);
+
+    for (var dice_variable in _data) {
+
+      if (_data.hasOwnProperty(dice_variable)) {
+
+        var graph_data = {
+          data: [],
+          var: dice_variable,
+          run: total_runs
+        };
+
+        _data[dice_variable].forEach(function(d, i) {
+          /*
+           Only show periods in first 200 years
+           */
+          if (i < graph_periods) {
+            graph_data.data.push({
+              y: d,
+              y0: 0,
+              x: new Date(start_year + i * period_length, 0, 1)
+            })
+          }
+        });
+
+        data[dice_variable] = data[dice_variable] || [];
+        data[dice_variable].push(graph_data);
+
+        var chart_wrap = d3.select('#'+dice_variable+'_chart');
+
+        if (!chart_wrap.empty()) {
+
+          var dims = get_dims(),
+            h, w;
+
+          if (chart_wrap.classed('small-chart')) {
+            h = dims.h / 2 - 15;
+            w = dims.w / 2 - 15;
+            chart_wrap.style('height', h + 'px');
+          } else {
+            h = dims.h; w = dims.w;
+          }
+
+          var ext = d3.extent(graph_data.data, function(d, i) { return d.y; }),
+            min = ext[0] == 0 ? 0 : ext[0] - (ext[1] - ext[0]) / 10,
+            max = ext[1] + (ext[1] - ext[0]) / 10;
+
+          charts[dice_variable] = charts[dice_variable] || {
+            chart: new WebDICEGraph()
+              .width(w)
+              .height(h)
+              .padding(padding[0], padding[1], padding[2], padding[3])
+              .select(dice_variable+'_chart')
+              .x(d3.time.scale())
+              .y(d3.scale.linear())
+              .domain(
+                [new Date(start_year, 0, 1),
+                 new Date(start_year + (graph_periods - 1) * period_length, 0, 1)],
+                [min, max])
+              .format_x(function(x) { return x.getFullYear(); })
+              .format_y(function(y) { return d3.format('.1f')(y); })
+              .title(metadata[dice_variable].title || '')
+              .h_grid(true)
+              .legend(true)
+              .lines(true)
+              .outlines(false),
+            small: chart_wrap.classed('small-chart')
+          };
+          charts[dice_variable].chart
+//            .data([{data: run.data, type: dice_variable, run: run.counter}])
+            .data(data[dice_variable])
+            .hoverable(true)
+            .draw();
+        }
+      }
+    }
+
+    /*
+     Draw customizable chart
+     */
+
+    resize_charts();
+
+    ++total_runs;
+
+  };
+
+  var start_run = function() {
+
+    var form = d3.select('#parameter_form'),
+      inputs = form.selectAll('input'),
+      run_params = {};
+
+    inputs.each(function() {
+      var t = d3.select(this);
+      run_params[t.attr('name')] = t.property('value');
+    });
+
+    d3.xhr(form.attr('action'))
+      .mimeType('application/json')
+      .responseType('text')
+      .post(JSON.stringify(run_params))
+      .on('load', load_run)
+      .on('error', function(e) {})
+      .on('progress', function(r) {});
+
+  };
+
+  var load_run = function(r) {
+    r = JSON.parse(r.response);
+
+    add_run(r.data, r.parameters);
+
+    d3.select('#parameters_tab').classed('selected', false);
+    parameters_wrap
+      .classed('visuallyhidden', true)
+      .style('left', 0);
+
+  };
+
+  var get_params = function() {
+
+  };
+
+  run_model.on('click', function() {
+    d3.event.preventDefault();
+    start_run();
+
+  });
+
   var get_dims = function() {
     var visible_chart_wrap = d3.select('.chart-pane.selected'),
       w = visible_chart_wrap.node().clientWidth,
       h = visible_chart_wrap.node().clientHeight;
+    console.log(w, h);
     return {w: w, h: h};
   };
 
@@ -88,103 +212,17 @@
 
   };
 
-  var initialize_charts = function(_data, _params, _metadata) {
-
-    for (var dice_variable in _data) {
-
-      if (_data.hasOwnProperty(dice_variable)) {
-
-        var this_data = [];
-        _data[dice_variable].forEach(function(d, i) {
-          if (i < graph_periods) {
-            this_data.push({
-              y: d,
-              y0: 0,
-              x: new Date(start_year + i * period_length, 0, 1)
-            })
-          }
-        });
-
-        /*
-         Draw small chart for important variables
-         */
-        var chart_wrap = d3.select('#'+dice_variable+'_chart');
-
-        if (!chart_wrap.empty()) {
-
-          var dims = get_dims(),
-            h, w;
-
-          if (chart_wrap.classed('small-chart')) {
-            h = dims.h / 2 - 15;
-            w = dims.w / 2 - 15;
-            chart_wrap.style('height', h + 'px');
-          } else {
-            h = dims.h; w = dims.w;
-          }
-
-          var ext = d3.extent(this_data, function(d, i) { return d.y; }),
-            min = ext[0] == 0 ? 0 : ext[0] - (ext[1] - ext[0]) / 10,
-            max = ext[1] + (ext[1] - ext[0]) / 10;
-
-          charts[dice_variable] = {
-            chart: new WebDICEGraph()
-              .width(w)
-              .height(h)
-              .padding(padding[0], padding[1], padding[2], padding[3])
-              .select(dice_variable+'_chart')
-              .x(d3.time.scale())
-              .y(d3.scale.linear())
-              .domain(
-                [new Date(start_year, 0, 1),
-                 new Date(start_year + (graph_periods - 1) * period_length, 0, 1)],
-                [min, max])
-              .format_x(function(x) { return x.getFullYear(); })
-              .format_y(function(y) { return d3.format('.1f')(y); })
-              .data([{data: this_data, type: dice_variable}])
-              .title(_metadata[dice_variable].title || '')
-              .h_grid(true)
-              .hoverable(true)
-              .legend(true)
-              .lines(true)
-              .outlines(false)
-              .draw(),
-            small: chart_wrap.classed('small-chart')
-          };
-        }
-
-
-
-      }
-    }
-
-    /*
-     Draw customizable chart
-     */
-
-    resize_charts();
-
-  };
-
-  var add_run = function(_data, _params) {
-
-  };
-
   d3.select(window).on('resize', function() {
     resize_charts();
   });
 
-  d3.json('/run/'+Options.dice_version, function(error, _data) {
+  d3.json('/static/js/meta_data.json?4', function(error, _metadata) {
 
-    d3.json('/static/js/meta_data.json?4', function(error, _metadata) {
-
-      initialize_charts(_data.data, _data.parameters, _metadata);
-
-      data.push(_data);
-
-    });
+    metadata = _metadata;
+    start_run();
 
   });
+
 
   /*
    END NEW CODE

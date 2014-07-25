@@ -25,7 +25,8 @@ a
   color: #666666
   &:hover
     color: #ccc !important
-
+input:focus
+  outline: none
 h1, h2
   margin-bottom: .5em
 #wrapper
@@ -49,14 +50,25 @@ path, circle
     opacity: .8
     padding: .75em 0
     position: relative
-    z-index: 5
+    z-index: 999
+#loader_wrap
+  position: absolute
+  top: 2.3em
+  z-index: 999
+  height: 1px
+  width: 960px
+  margin: 0 auto
+  img
+    width: 100%
+    display: block
+    height: 1px
 #title_legend_wrap
   position: absolute
   top: 2.3em
   background-color: #ffffff
   opacity: .8
   height: 2em
-  z-index: 1
+  z-index: 999
   #title_legend
     position: relative
     width: $site_width
@@ -80,7 +92,7 @@ path, circle
         &.selected
           background-color: #eee
           position: relative
-          &:after
+          //&:after
             content: ' '
             height: $inner_pad * 1.414
             width: $inner_pad * 1.414
@@ -90,7 +102,7 @@ path, circle
             top: 100%
             left: 15%
             background-color: #ffffff
-
+            z-index: 900
       &.notselected
         display: none
 #parameters_and_runs
@@ -176,7 +188,7 @@ path, circle
   .chart-pane
     width: $site_width + $outer_pad * 2
     margin: 0 auto
-#parameters_wrap, #graphs_wrap
+#parameters_wrap, #graphs_wrap, #runs_wrap
   width: $site_width + $inner_pad * 2
   z-index: 997
   top: 6em
@@ -185,12 +197,34 @@ path, circle
   bottom: 0
   font-size: .8em
   position: absolute
-#parameters_bkgd, #graphs_bkgd
+#runs_wrap
+  width: 300px
+  left: auto
+  border-left: 1px solid #cccccc
+#parameters_bkgd, #graphs_bkgd, #runs_bkgd
   background-color: #ffffff
   opacity: .95
   height: 100%
   width: 100%
   position: absolute
+#run_model
+  position: absolute
+  right: 0
+  bottom: 100%
+  border: none
+  padding: .8em 15px
+  background-color: transparent
+  color: #ff0000
+  font-weight: bold
+  font-size: 1em
+  font-family: Helveltica,Arial,sans-serif
+  z-index: 999
+#runs
+  position: relative
+  z-index: 4
+  padding: 15px
+  h3
+    font-weight: bold
 .pane
   //visibility: hidden
   z-index: 3
