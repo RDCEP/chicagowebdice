@@ -12,14 +12,16 @@
         <li data-pane=discount_parameters>Discount</li>
       </ul>
     </div>
-    <form id=parameter_form class=clearfix>
+    <form id=parameter_form class=clearfix action=/run/{{ dice_version }}>
 
-    {% include 'modules/parameters_policy.html' %}
-    {% include 'modules/parameters_climate.html' %}
-    {% include 'modules/parameters_economy.html' %}
-    {% include 'modules/parameters_technology.html' %}
-    {% include 'modules/parameters_energy.html' %}
-    {% include 'modules/parameters_discount.html' %}
+      {% include 'modules/parameters_policy.html' %}
+      {% include 'modules/parameters_climate.html' %}
+      {% include 'modules/parameters_economy.html' %}
+      {% include 'modules/parameters_technology.html' %}
+      {% include 'modules/parameters_energy.html' %}
+      {% include 'modules/parameters_discount.html' %}
+
+      <input id=run_model type=submit value="Run Model">
 
     </form>
   </div>
