@@ -3,6 +3,10 @@
 
   var parameters_wrap = d3.select('#parameters_wrap'),
     run_model = d3.select('#run_model'),
+
+    initialized = false,
+
+    colorsUsed = 0,
     color_list = [
       //d3.rgb(0, 0, 0), //black
       d3.rgb(86, 180, 233), // sky blue
@@ -14,12 +18,15 @@
       d3.rgb(204, 121, 167) // reddish purple
     ],
     padding = [45, 15, 30, 60],// padding[3] needs to match $left_pad in _layout.sass
+
     simulation_periods = 60,
     graph_periods = 20,
     period_length = 10,
     start_year = 2005,
     end_year = start_year + ((graph_periods-1) * period_length),
-    colorsUsed = 0,
+    x_domain = [new Date(start_year, 0, 1),
+      new Date(start_year + (graph_periods - 1) * period_length, 0, 1)],
+
     total_runs = 0,
     active_graph_pane,
     metadata,
@@ -30,6 +37,17 @@
     width,
     height;
 
+  var flatten_data = function(_data) {
+    var fd = [];
+
+    _data.forEach(function(d) {
+      fd = fd.concat(d.data);
+    });
+    fd.forEach(function(d, i) {
+      fd[i] = d.y;
+    });
+    return fd;
+  };
 
   var active_tab = function() {
     d3.selectAll('.tabs').each(function() {
@@ -51,18 +69,80 @@
 
   };
 
-  var add_run = function(_data, _params) {
-
-    console.log(_data);
+  var initialize_graphs = function(_data) {
 
     for (var dice_variable in _data) {
+      if (_data.hasOwnProperty(dice_variable)) {
 
+        var chart_wrap = d3.select('#' + dice_variable + '_chart');
+
+        if (!chart_wrap.empty()) {
+
+          // Set dimensions
+          var dims = get_dims(),
+            h, w;
+          if (chart_wrap.classed('small-chart')) {
+            h = dims.h / 2 - 15;
+            w = dims.w / 2 - 15;
+            chart_wrap.style('height', h + 'px');
+          } else {
+            h = dims.h;
+            w = dims.w;
+          }
+
+          // Add chart to charts
+          charts[dice_variable] = charts[dice_variable] || {
+            chart: new WebDICEGraph()
+              .width(w)
+              .height(h)
+              .padding(padding[0], padding[1], padding[2], padding[3])
+              .select(dice_variable + '_chart')
+              .x(d3.time.scale())
+              .y(d3.scale.linear())
+              .domain(x_domain, [0, 1])
+              .format_x(function (x) {
+                return x.getFullYear();
+              })
+              .format_y(function (y) {
+                return d3.format('.1f')(y);
+              })
+              .title(metadata[dice_variable].title || '')
+              .h_grid(true)
+              .legend(true)
+              .lines(true)
+              .outlines(false),
+            small: chart_wrap.classed('small-chart')
+          };
+        }
+      }
+    }
+
+//    initialized = true;
+
+  };
+
+  var update_graph = function(variable) {
+
+  };
+
+  var remove_run = function(index) {
+
+  };
+
+  var add_run = function(_data, _params) {
+
+    if (!initialized) {
+      initialize_graphs(_data)
+    }
+
+    for (var dice_variable in _data) {
       if (_data.hasOwnProperty(dice_variable)) {
 
         var graph_data = {
           data: [],
           var: dice_variable,
-          run: total_runs
+          run_index: total_runs,
+          run_name: 'Run #' + total_runs
         };
 
         _data[dice_variable].forEach(function(d, i) {
@@ -85,54 +165,28 @@
 
         if (!chart_wrap.empty()) {
 
-          var dims = get_dims(),
-            h, w;
-
-          if (chart_wrap.classed('small-chart')) {
-            h = dims.h / 2 - 15;
-            w = dims.w / 2 - 15;
-            chart_wrap.style('height', h + 'px');
-          } else {
-            h = dims.h; w = dims.w;
-          }
-
-          var ext = d3.extent(graph_data.data, function(d, i) { return d.y; }),
+          // Set domain extents
+          var ext = d3.extent(flatten_data(data[dice_variable])),
             min = ext[0] == 0 ? 0 : ext[0] - (ext[1] - ext[0]) / 10,
             max = ext[1] + (ext[1] - ext[0]) / 10;
 
-          charts[dice_variable] = charts[dice_variable] || {
-            chart: new WebDICEGraph()
-              .width(w)
-              .height(h)
-              .padding(padding[0], padding[1], padding[2], padding[3])
-              .select(dice_variable+'_chart')
-              .x(d3.time.scale())
-              .y(d3.scale.linear())
-              .domain(
-                [new Date(start_year, 0, 1),
-                 new Date(start_year + (graph_periods - 1) * period_length, 0, 1)],
-                [min, max])
-              .format_x(function(x) { return x.getFullYear(); })
-              .format_y(function(y) { return d3.format('.1f')(y); })
-              .title(metadata[dice_variable].title || '')
-              .h_grid(true)
-              .legend(true)
-              .lines(true)
-              .outlines(false),
-            small: chart_wrap.classed('small-chart')
-          };
+          // Update chart data and redraw
           charts[dice_variable].chart
-//            .data([{data: run.data, type: dice_variable, run: run.counter}])
             .data(data[dice_variable])
-            .hoverable(true)
-            .draw();
+            .domain(x_domain, [min, max])
+            .hoverable(true);
+          if (initialized) {
+            charts[dice_variable].chart.update_data();
+          } else {
+            charts[dice_variable].chart.draw();
+          }
         }
       }
     }
 
-    /*
-     Draw customizable chart
-     */
+    if (!initialized) { initialized = true; }
+
+    //TODO: Draw customizable chart
 
     resize_charts();
 
@@ -187,7 +241,6 @@
     var visible_chart_wrap = d3.select('.chart-pane.selected'),
       w = visible_chart_wrap.node().clientWidth,
       h = visible_chart_wrap.node().clientHeight;
-    console.log(w, h);
     return {w: w, h: h};
   };
 
@@ -198,9 +251,11 @@
     for (var chart in charts) {
       if (charts.hasOwnProperty(chart)) {
 
-        var chart_wrap = d3.select('#'+chart+'_chart');
+        var chart_wrap = d3.select('#'+chart+'_chart'),
+          chart_svg = chart_wrap.select('svg');
         if (chart_wrap.classed('small-chart')) {
           chart_wrap.style('height', (dims.h / 2 - 15) + 'px');
+          chart_svg.style('height', (dims.h / 2 - 15) + 'px');
         }
         if (chart.small) {
           charts[chart].chart.width(dims.w / 2 - 15).height(dims.h / 2 - 15).redraw();
@@ -229,3 +284,5 @@
    */
 
 })();
+
+//FIXME: Legend doesn't disappear with Cmd+Alt+I
