@@ -207,24 +207,34 @@ path, circle
   height: 100%
   width: 100%
   position: absolute
-#run_model
+#run_clear
   position: absolute
   right: 0
-  bottom: 100%
-  border: none
-  padding: .8em 15px
-  background-color: transparent
-  color: #ff0000
-  font-weight: bold
-  font-size: 1em
-  font-family: Helveltica,Arial,sans-serif
-  z-index: 999
+  top: -2.25em
+  #run_model, #clear_model
+    border: none
+    padding: .25em 15px
+    color: #ffffff
+    font-weight: bold
+    font-size: 1em
+    font-family: Helveltica,Arial,sans-serif
+    z-index: 999
+    cursor: pointer
+  #run_model
+    background-color: $red
+  #clear_model
+    background-color: $sky-blue
 #runs
   position: relative
   z-index: 4
   padding: 15px
   h3
     font-weight: bold
+    width: 240px
+    span
+      height: 200%
+      padding: 0 .5em 0 0
+      background-color: #ffffff
 .pane
   //visibility: hidden
   z-index: 3
