@@ -1,0 +1,68 @@
+<section id=model_parameters class="pane clearfix">
+
+  <div class=parameter-pane-intro>
+    <p>TKTK</p>
+  </div>
+
+  <div class="parameter-pane thirds">
+
+    <div class=select-wrap>
+      <h3><span class="parameter-name">Carbon model</span></h3>
+      <label>DICE carbon
+        <input name=carbon_model type=radio value=dice_2007
+               data-default=dice_2007 checked></label>
+      <label>BEAM simplified
+        <input name=carbon_model type=radio value=beam_carbon
+               data-default=dice_2007></label>
+      <label>Linear (2° C / 1000 GtC)
+        <input name=carbon_model type=radio value=linear_carbon
+               data-default=dice_2007>
+      </label>
+    </div>
+    <div class=parameter-help>
+      <p></p>
+    </div>
+
+  </div>
+
+  <div class="parameter-pane thirds">
+
+    <div class=select-wrap>
+      <h3><span class="parameter-name">Damages function</span></h3>
+      <label>DICE damages
+        <input name=damages_model type=radio value=dice_2007
+               data-default=dice_2007 checked></label>
+      <label>Incommensurable environmental goods
+        <input name=damages_model type=radio value=incommensurable_damages
+               data-default=dice_2007></label>
+      <label>Tipping point
+        <input name=damages_model type=radio value=tipping_point
+               data-default=dice_2007></label>
+      <label>Fraction of productivity
+        <input name=damages_model type=radio value=productivity_fraction
+               data-default=dice_2007></label>
+    </div>
+    <div class=parameter-help>
+      <p></p>
+    </div>
+
+    <div class="disabled init-disabled range-wrap">
+      <label><span class="parameter-name">Damages to productivity</span> (%)
+        <input name=prod_frac type=range min=0 max=50 value=5
+               step=1 data-prec=0 data-default=5 disabled>
+      </label>
+      <div class=current-range-val>
+        <span style=left:{{ (5 - 0.0) / (50 - 0.0) * 100 - 50 }}%>5</span>
+      </div>
+      <span class=min-range-val>0</span>
+      <span class=max-range-val>50</span>
+      <div class=tick-wrap>
+        <span class=tick style=left:{{ (5 - 0.0) / (50 - 0.0) * 100 - 50 }}%>&bullet;</span>
+      </div>
+
+    </div>
+
+
+  </div>
+
+</section>
