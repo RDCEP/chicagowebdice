@@ -8,8 +8,9 @@
   <div class="parameter-pane fourths">
 
     <div class=range-wrap>
-      <label>Productivity decline (%)
-        <input name=productivity_decline type=range min=0.05 max=1.5 value=0.1 step=0.05 data-prec=2>
+      <label><span class="parameter-name">Productivity decline</span> (%)
+        <input name=productivity_decline type=range min=0.05 max=1.5 value=0.1
+               step=0.05 data-prec=2 data-default=0.1>
       </label>
       <div class=current-range-val>
         <span style=left:{{ (0.1 - 0.05) / (1.5 - 0.05) * 100 - 50 }}%>.10</span>
@@ -29,8 +30,9 @@
   <div class="parameter-pane fourths">
 
     <div class=range-wrap>
-      <label>Depreciation (%)
-        <input name=depreciation type=range min=8 max=20 value=10 step=1 data-prec=0>
+      <label><span class="parameter-name">Depreciation</span> (%)
+        <input name=depreciation type=range min=8 max=20 value=10 step=1
+               data-prec=0 data-default=10 data-fullname=Depreciation>
       </label>
       <div class=current-range-val>
         <span style=left:{{ (10.0 - 8.0) / (20.0 - 8.0) * 100 - 50 }}%>10</span>
@@ -50,8 +52,9 @@
   <div class="parameter-pane fourths">
 
     <div class=range-wrap>
-      <label>Savings (%)
-        <input name=depreciation type=range min=15 max=25 value=22 step=1 data-prec=0>
+      <label><span class="parameter-name">Savings</span> (%)
+        <input name=savings type=range min=15 max=25 value=22 step=1
+               data-prec=0 data-default=22>
       </label>
       <div class=current-range-val>
         <span style=left:{{ (22.0 - 15.0) / (25.0 - 15.0) * 100 - 50 }}%>22</span>
@@ -71,8 +74,9 @@
   <div class="parameter-pane fourths">
 
     <div class=range-wrap>
-      <label>Max. population (MM)
-        <input name=popasym type=range min=8000 max=12000 value=8600 step=200 data-prec=0>
+      <label><span class="parameter-name">Max. population</span> (MM)
+        <input name=popasym type=range min=8000 max=12000 value=8600 step=200
+               data-prec=0 data-default=8600>
       </label>
       <div class=current-range-val>
         <span style=left:{{ (8600.0 - 8000.0) / (12000.0 - 8000.0) * 100 - 50 }}%>8600</span>
