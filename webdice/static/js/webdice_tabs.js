@@ -25,24 +25,29 @@
     var t = d3.select(this),
       tab = t.attr('data-pane'),
       pane = d3.select('#' + tab),
-      parent = d3.select(pane.node().parentNode);
+      parent = d3.select(pane.node().parentNode),
+      vis;
 
     if (t.classed('graph-tab')) {
-      title_tabs.classed('selected', false);
+      d3.selectAll('.graph-tab').classed('selected', false);
     } else {
       d3.selectAll('.option-tab').classed('selected', false);
     }
     t.classed('selected', true);
 
     if (tab == 'parameters') {
-      parameters.classed('visuallyhidden', false).style('z-index', 998);
+      vis = !parameters.classed('visuallyhidden');
+      t.classed('selected', !vis);
+      parameters.classed('visuallyhidden', vis).style('z-index', 998);
       runs.classed('visuallyhidden', true);
     } else if (tab == 'runs') {
+      vis = !runs.classed('visuallyhidden');
+      t.classed('selected', !vis);
+      runs.classed('visuallyhidden', vis).style('z-index', 998);
       parameters.classed('visuallyhidden', true);
-      runs.classed('visuallyhidden', false).style('z-index', 998);
     } else {
-      parameters.classed('visuallyhidden', true);
-      runs.classed('visuallyhidden', true);
+//      parameters.classed('visuallyhidden', true);
+//      runs.classed('visuallyhidden', true);
       parent.select('.pane.selected').classed('selected', false);
       pane.classed('selected', true).style('z-index', 998);
     }
