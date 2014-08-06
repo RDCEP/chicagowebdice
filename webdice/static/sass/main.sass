@@ -228,13 +228,29 @@ path, circle
   position: relative
   z-index: 4
   padding: 15px
-  h3
-    font-weight: bold
-    width: 240px
-    span
-      height: 200%
-      padding: 0 .5em 0 0
-      background-color: #ffffff
+  li
+    padding: 15px 0
+    &+li
+      border-top: 1px solid #cccccc
+    h3
+      font-weight: bold
+      width: 240px
+      border-right: 30px solid
+      span
+        height: 200%
+        padding: 0 .5em 0 0
+        background-color: #ffffff
+    p
+      font-size: .85em
+      margin-top: .5em
+    .delete-run, .rename-run
+      background-color: #999999
+      color: #ffffff
+      padding: 2px 3px
+      font-weight: normal
+      letter-spacing: .02em
+      cursor: pointer
+      margin-right: 5px
 .pane
   //visibility: hidden
   z-index: 3
