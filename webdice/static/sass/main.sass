@@ -105,12 +105,14 @@ path, circle
             z-index: 900
       &.notselected
         display: none
+
 #parameters_and_runs
   position: absolute
   top: 0
   right: 0
   li
     float: right!important
+
 #top_nav
   font-size: .9em
   width: $site_width
@@ -200,16 +202,42 @@ path, circle
 #runs_wrap
   width: 300px
   left: auto
+  bottom: auto
   border-left: 1px solid #cccccc
+  border-bottom: 1px solid #cccccc
 #parameters_bkgd, #graphs_bkgd, #runs_bkgd
   background-color: #ffffff
   opacity: .95
   height: 100%
   width: 100%
   position: absolute
+
+.select-wrap
+  h3
+    font-weight: bold
+    margin-bottom: 10px
+  label
+    display: block
+    position: relative
+    margin-bottom: 5px
+    input
+      position: absolute
+      right: 102%
+      top: 0
+      padding: 0 10px 0 0
+#clear_runs
+  border: none
+  padding: .25em 15px
+  color: #ffffff
+  font-weight: bold
+  font-size: 1em
+  font-family: Helveltica,Arial,sans-serif
+  cursor: pointer
+  background-color: $red
+  margin-top: 15px
 #run_clear
   position: absolute
-  right: 0
+  right: 15px
   top: -2.25em
   #run_model, #clear_model
     border: none
@@ -230,8 +258,7 @@ path, circle
   padding: 15px
   li
     padding: 15px 0
-    &+li
-      border-top: 1px solid #cccccc
+    border-bottom: 1px solid #cccccc
     h3
       font-weight: bold
       width: 240px
@@ -243,7 +270,7 @@ path, circle
     p
       font-size: .85em
       margin-top: .5em
-    .delete-run, .rename-run
+    .delete-run, .rename-run, .hide-run
       background-color: #999999
       color: #ffffff
       padding: 2px 3px
