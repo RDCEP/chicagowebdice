@@ -120,6 +120,7 @@ def graphs_d3(year):
     this_dice.loop()
     form = json.loads(request.data)
     form['depreciation'] = float(form['depreciation']) / 100
+    form['savings'] = float(form['savings']) / 100
     form['prstp'] = float(form['prstp']) / 100
     form['backstop_decline'] = float(form['backstop_decline']) / 100
     form['productivity_decline'] = float(form['productivity_decline']) / 100
