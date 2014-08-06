@@ -3,6 +3,8 @@
 
   var parameters_wrap = d3.select('#parameters_wrap'),
     run_model = d3.select('#run_model'),
+    clear_model = d3.select('#clear_model'),
+    runs_list = d3.select('#runs ul'),
 
     initialized = false,
 
@@ -33,9 +35,15 @@
     charts = {},
     runs = [],
     data = {},
+    adjusted_params = [],
+
     color,
     width,
     height;
+
+  var get_run_adjustment = function() {
+    var parameters = d3.selectAll('')
+  };
 
   var flatten_data = function(_data) {
     var fd = [];
@@ -121,12 +129,111 @@
 
   };
 
-  var update_graph = function(variable) {
+  var get_updated_params = function() {
+    /*
+     Update list of non-default parameters (for run descriptions)
+     */
+
+    //TODO: Parse policy inputs
+
+    d3.selectAll('#parameter_form section')
+      .filter(function(){
+        return d3.select(this).attr('id') != 'policy_parameters';
+      })
+      .selectAll('input').each(function(d, i) {
+        var t = d3.select(this),
+          dflt = +t.attr('data-default'),
+          val = +t.property('value');
+        if (dflt != val) {
+          adjusted_params.push({
+            name: d3.select(this.parentNode).select('.parameter-name').text(),
+            value: val,
+            dflt: dflt,
+            diff: (val > dflt)
+              ? '<span class="fa fa-chevron-up"></span>'
+              : '<span class="fa fa-chevron-down"></span>'
+          });
+        }
+      });
+    return adjusted_params;
+  };
+
+  var reset_params = function() {
+
+    var event;
+
+    if (document.createEvent) {
+      event = document.createEvent('HTMLEvents');
+      event.initEvent('change', true, true);
+    } else {
+      event = document.createEventObject();
+      event.eventType = 'change';
+    }
+
+    event.eventName = 'change';
+
+    d3.selectAll('#parameter_form section')
+      .filter(function(){
+        return d3.select(this).attr('id') != 'policy_parameters';
+      })
+      .selectAll('input').each(function(d, i) {
+        var t = d3.select(this),
+          dflt = +t.attr('data-default'),
+          val = +t.property('value');
+        if (val != dflt) {
+          t.property('value', dflt);
+
+          if (document.createEvent) {
+            this.dispatchEvent(event);
+          } else {
+            this.fireEvent('on' + event.eventType, event);
+          }
+
+        }
+      });
+  };
+
+  var get_run_description = function() {
+    /*
+     Build run description from list of non-default parameters
+     */
+    var run_name = '',
+      params = get_updated_params();
+    if (params.length == 0) {
+      return 'Default model';
+    } else {
+      params.forEach(function (d) {
+//        run_name += d.name + ': ' + d.value + ' [' + d.diff + ' ' + d.dflt + ']<br>';
+        run_name += d.name + ': ' + d.value + ' (' + d.dflt + ')<br>';
+      });
+      return run_name//.substring(0, -1)
+    }
+  };
+
+  var rename_run = function() {
 
   };
 
   var remove_run = function(index) {
 
+  };
+
+  var add_run_to_list = function(index) {
+    var li = runs_list.append('li');
+    li.append('div').attr('class', 'run-swatch');
+    li.append('h3').style({
+      'border-right-color': color_list[index]
+    }).append('span').text('Run #' + index);
+    li.append('p').html(get_run_description());
+    var buttons = li.append('p');
+    buttons.append('mark')
+      .attr('class', 'delete-run')
+      .text('delete')
+      .on('click', remove_run);
+    buttons.append('mark')
+      .attr('class', 'rename-run')
+      .text('rename')
+      .on('click', rename_run);
   };
 
   var add_run = function(_data, _params) {
@@ -184,6 +291,8 @@
       }
     }
 
+    add_run_to_list(total_runs);
+
     if (!initialized) { initialized = true; }
 
     //TODO: Draw customizable chart
@@ -227,16 +336,6 @@
 
   };
 
-  var get_params = function() {
-
-  };
-
-  run_model.on('click', function() {
-    d3.event.preventDefault();
-    start_run();
-
-  });
-
   var get_dims = function() {
     var visible_chart_wrap = d3.select('.chart-pane.selected'),
       w = visible_chart_wrap.node().clientWidth,
@@ -266,6 +365,18 @@
     }
 
   };
+
+  run_model.on('click', function() {
+    d3.event.preventDefault();
+    start_run();
+  });
+
+ clear_model.on('click', function() {
+    d3.event.preventDefault();
+    reset_params();
+  });
+
+
 
   d3.select(window).on('resize', function() {
     resize_charts();
