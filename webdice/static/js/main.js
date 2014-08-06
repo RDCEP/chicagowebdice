@@ -41,8 +41,15 @@
     width,
     height;
 
-  var get_run_adjustment = function() {
-    var parameters = d3.selectAll('')
+  var get_dims = function() {
+    /*
+     Get dimensions of current pane in interface
+     */
+
+    var visible_chart_wrap = d3.select('.chart-pane.selected'),
+      w = visible_chart_wrap.node().clientWidth,
+      h = visible_chart_wrap.node().clientHeight;
+    return {w: w, h: h};
   };
 
   var flatten_data = function(_data) {
@@ -134,11 +141,12 @@
      Update list of non-default parameters (for run descriptions)
      */
 
-    //TODO: Parse policy inputs
+    //TODO: Parse policy and model parameters
 
     d3.selectAll('#parameter_form section')
       .filter(function(){
-        return d3.select(this).attr('id') != 'policy_parameters';
+        var id = d3.select(this).attr('id');
+        return (id != 'policy_parameters') && (id != 'model_parameters');
       })
       .selectAll('input').each(function(d, i) {
         var t = d3.select(this),
@@ -159,6 +167,11 @@
   };
 
   var reset_params = function() {
+    /*
+     Reset all parameters back to default values
+     */
+
+    //TODO: Reset policy and model parameters
 
     var event;
 
@@ -174,7 +187,8 @@
 
     d3.selectAll('#parameter_form section')
       .filter(function(){
-        return d3.select(this).attr('id') != 'policy_parameters';
+        var id = d3.select(this).attr('id');
+        return (id != 'policy_parameters') && (id != 'model_parameters');
       })
       .selectAll('input').each(function(d, i) {
         var t = d3.select(this),
@@ -197,6 +211,7 @@
     /*
      Build run description from list of non-default parameters
      */
+
     var run_name = '',
       params = get_updated_params();
     if (params.length == 0) {
@@ -219,6 +234,10 @@
   };
 
   var add_run_to_list = function(index) {
+    /*
+     Add item to list of runs
+     */
+
     var li = runs_list.append('li');
     li.append('div').attr('class', 'run-swatch');
     li.append('h3').style({
@@ -237,6 +256,9 @@
   };
 
   var add_run = function(_data, _params) {
+    /*
+     Add run to interface.
+     */
 
     if (!initialized) {
       initialize_graphs(_data)
@@ -304,6 +326,9 @@
   };
 
   var start_run = function() {
+    /*
+     Gather parameters and begin AJAX call to run model.
+     */
 
     var form = d3.select('#parameter_form'),
       inputs = form.selectAll('input'),
@@ -325,6 +350,10 @@
   };
 
   var load_run = function(r) {
+    /*
+     Upon successful run of model, add run and hide parameters pane
+     */
+
     r = JSON.parse(r.response);
 
     add_run(r.data, r.parameters);
@@ -334,13 +363,6 @@
       .classed('visuallyhidden', true)
       .style('left', 0);
 
-  };
-
-  var get_dims = function() {
-    var visible_chart_wrap = d3.select('.chart-pane.selected'),
-      w = visible_chart_wrap.node().clientWidth,
-      h = visible_chart_wrap.node().clientHeight;
-    return {w: w, h: h};
   };
 
   var resize_charts = function() {
@@ -366,21 +388,27 @@
 
   };
 
+  /***************
+   Event listeners
+   ***************/
+
   run_model.on('click', function() {
     d3.event.preventDefault();
     start_run();
   });
 
- clear_model.on('click', function() {
+  clear_model.on('click', function() {
     d3.event.preventDefault();
     reset_params();
   });
 
-
-
   d3.select(window).on('resize', function() {
     resize_charts();
   });
+
+  /********************************************
+   Trigger initial run and graph initialization
+   ********************************************/
 
   d3.json('/static/js/meta_data.json?4', function(error, _metadata) {
 
