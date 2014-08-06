@@ -4,6 +4,7 @@
     <nav>
       <ul id="top_nav" class="clearfix">
         <li><a href="{{ url_for('webdice.index') }}">WebDICE</a></li>
+        <li><a href="{{ url_for('webdice.basic') }}">Standard</a></li>
         <li id="advanced_pages">
           <a class="dead-hover">Advanced</a>
           <ul>
@@ -11,7 +12,6 @@
             <li><a href="{{ url_for('webdice.advanced', year=2010) }}">2010</a></li>
           </ul>
         </li>
-        <li><a href="{{ url_for('webdice.basic') }}">Basic</a></li>
         <li><a href>Documentation</a><ul>
           <!-- switch help forbasic and advanced -->
           <li><a target=_blank href="{{ url_for('webdice.static', filename='docs/webdice_basic_help.pdf') }}">Basic</a></li>
@@ -29,7 +29,7 @@
           <li id=link-to-economy data-pane=economy_graphs class=graph-tab>Economy</li>
           <li id=link-to-policy data-pane=policy_graphs class=graph-tab>Policy</li>
           <li id=link-to-custom data-pane=custom_graph class=graph-tab>Customizable</li>
-          <li id=link-to-scc-graph data-pane=scc_graph class=graph-tab>SCC</li>
+{#          <li id=link-to-scc-graph data-pane=scc_graph class=graph-tab>SCC</li>#}
         </ul>
         <ul id=parameters_and_runs class=tabs>
           <li id=parameters_tab data-pane=parameters class=option-tab>Parameters</li>
@@ -69,8 +69,8 @@
     </div>
     <div id="policy_graphs" class="pane chart-pane">
       <div class="small-chart chart" id="tax_rate_chart"></div>
-      <div class="small-chart chart" id="abatement_chart"></div>
       <div class="small-chart chart" id="scc_chart"></div>
+      <div class="small-chart chart" id="abatement_chart"></div>
       <div class="small-chart chart" id="output_abate_chart"></div>
     </div>
     <div id="custom_graph" class="pane chart-pane">
@@ -103,9 +103,7 @@
         </div>
       </div>
     </div>
-    <div id="scc_graph" class="pane chart-pane">
-
-    </div>
+{#    <div id="scc_graph" class="pane chart-pane"></div> #}
   </div>
   {% include 'modules/parameters.html' %}
   {% include 'modules/runs.html' %}
