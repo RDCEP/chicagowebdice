@@ -125,10 +125,10 @@ def graphs_d3(year):
     form['backstop_decline'] = float(form['backstop_decline']) / 100
     form['productivity_decline'] = float(form['productivity_decline']) / 100
     form['intensity_decline_rate'] = float(form['intensity_decline_rate']) / 100
+    form['prod_frac'] = float(form['prod_frac']) / 100
 
     all_parameters = parser.get_all_parameters()
-    print form
-    print all_parameters
+
     for p in all_parameters:
         try:
             p['disabled']
@@ -145,9 +145,10 @@ def graphs_d3(year):
     try:
         this_dice.params.damages_model = form['damages_model']
         this_dice.params.carbon_model = form['carbon_model']
-        this_dice.params.temperature_model = form['temperature_model']
+        # this_dice.params.temperature_model = form['temperature_model']
     except KeyError:
-        pass
+        this_dice.params.carbon_model = 'dice_2007'
+        this_dice.params.damages_model = 'dice_2007'
     opt = False
     policy = form['policy_type']
     this_dice.params._treaty = False
