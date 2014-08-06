@@ -10,6 +10,7 @@
         <li data-pane=technology_parameters>Technology</li>
         <li data-pane=energy_parameters>Energy</li>
         <li data-pane=discount_parameters>Discount</li>
+        <li data-pane=model_parameters>Model</li>
       </ul>
     </div>
     <form id=parameter_form class=clearfix action=/run/{{ dice_version }}>
@@ -20,6 +21,7 @@
       {% include 'modules/parameters_technology.html' %}
       {% include 'modules/parameters_energy.html' %}
       {% include 'modules/parameters_discount.html' %}
+      {% include 'modules/parameters_model.html' %}
 
       <div id=run_clear>
         <input id=clear_model type=button value="Clear Model">
