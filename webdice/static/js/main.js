@@ -143,12 +143,15 @@
 
     //TODO: Parse policy and model parameters
 
+    adjusted_params = [];
+
     d3.selectAll('#parameter_form section')
       .filter(function(){
         var id = d3.select(this).attr('id');
         return (id != 'policy_parameters') && (id != 'model_parameters');
       })
-      .selectAll('input').each(function(d, i) {
+      .selectAll('input')
+      .each(function(d, i) {
         var t = d3.select(this),
           dflt = +t.attr('data-default'),
           val = +t.property('value');
@@ -229,6 +232,10 @@
 
   };
 
+  var hide_run = function(index) {
+
+  };
+
   var remove_run = function(index) {
 
   };
@@ -245,6 +252,10 @@
     }).append('span').text('Run #' + index);
     li.append('p').html(get_run_description());
     var buttons = li.append('p');
+    buttons.append('mark')
+      .attr('class', 'hide-run')
+      .text('hide')
+      .on('click', hide_run);
     buttons.append('mark')
       .attr('class', 'delete-run')
       .text('delete')
@@ -336,7 +347,14 @@
 
     inputs.each(function() {
       var t = d3.select(this);
-      run_params[t.attr('name')] = t.property('value');
+      if (t.attr('type') == 'range') {
+        run_params[t.attr('name')] = t.property('value');
+      } else {
+        if (t.property('checked')) {
+          console.log(t.attr('name'), t.property('value'));
+          run_params[t.attr('name')] = t.property('value');
+        }
+      }
     });
 
     d3.xhr(form.attr('action'))
@@ -359,9 +377,7 @@
     add_run(r.data, r.parameters);
 
     d3.select('#parameters_tab').classed('selected', false);
-    parameters_wrap
-      .classed('visuallyhidden', true)
-      .style('left', 0);
+    parameters_wrap.classed('visuallyhidden', true)
 
   };
 
