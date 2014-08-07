@@ -16,6 +16,23 @@
         return output;
       }
     },
+    damages_exponent: {
+      width: 230,
+      max: 'max',
+      scale: 'linear',
+      legend: 'Damages v. Temp',
+      output: function (v) {
+        var output = [];
+        for (var i = 0; i < 10; ++i) {
+          var y = 1 - 1 / (1 + 0.0028388 * Math.pow(i, v))
+          output.push({
+            y: y,
+            x: i + 1
+          });
+        }
+        return output;
+      }
+    },
     productivity_decline: {
       width: 158,
       max: 'min',
@@ -121,5 +138,5 @@
         }
         return o;
       }
-    },
+    }
   };
