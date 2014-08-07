@@ -39,6 +39,44 @@
 {%- endfor %}
 {%- endfor %}
 {%- endblock %}
+
+{% block parameters %}
+<div id=parameters_wrap class=visuallyhidden>
+  <div id=parameters_bkgd></div>
+  <div id=parameters>
+
+    <div id=parameter_tabs_wrap>
+      <ul id=parameter_tabs class=clearfix>
+        <li class=selected  data-pane=policy_parameters>Policy</li>
+        <li data-pane=climate_parameters>Climate</li>
+        <li data-pane=economy_parameters>Economy</li>
+        <li data-pane=technology_parameters>Technology</li>
+        <li data-pane=energy_parameters>Energy</li>
+        <li data-pane=discount_parameters>Discount</li>
+        <li data-pane=model_parameters>Model</li>
+      </ul>
+    </div>
+    <form id=parameter_form class=clearfix action=/run/{{ dice_version }}>
+
+      {% include 'modules/parameters_policy.html' %}
+      {% include 'modules/parameters_climate.html' %}
+      {% include 'modules/parameters_economy.html' %}
+      {% include 'modules/parameters_technology.html' %}
+      {% include 'modules/parameters_energy.html' %}
+      {% include 'modules/parameters_discount.html' %}
+      {% include 'modules/parameters_model.html' %}
+
+      <div id=run_clear>
+        <input id=clear_model type=button value="Clear Model">
+        <input id=run_model type=submit value="Run Model">
+      </div>
+
+
+    </form>
+  </div>
+</div>
+{% endblock %}
+
 {% block help %}{% for parameter in all_parameters %}{% if parameter.help %}
   <div class="help-text" id="{{ parameter.machine_name }}-help">{{ parameter.help|safe }}
   </div>{% endif %}{% endfor %}

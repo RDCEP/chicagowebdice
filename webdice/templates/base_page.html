@@ -105,7 +105,7 @@
     </div>
 {#    <div id="scc_graph" class="pane chart-pane"></div> #}
   </div>
-  {% include 'modules/parameters.html' %}
+  {% block parameters %}{% endblock %}
   {% include 'modules/runs.html' %}
   {% endblock %}
   </article>
@@ -115,6 +115,7 @@
 
 {% block bodyjs %}
 <script src="{{ url_for('webdice.static', filename='js/stacked_chart.js') }}?{{ now }}"></script>
+<script src="{{ url_for('webdice.static', filename='js/webdice_param_eq.js') }}?{{ now }}"></script>
 <script src="{{ url_for('webdice.static', filename='js/main.js') }}?{{ now }}"></script>
 
 {% endblock %}
