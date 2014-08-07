@@ -1,0 +1,63 @@
+{
+  "temp_atmosphere": {
+    "unit": "degrees C since 1900",
+    "title": "Atmospheric temperature increase"
+  },
+  "temp_lower": {
+    "unit": "degrees C since 1900",
+    "title": "Lower ocean temperature increase"
+  },
+  "mass_atmosphere": {
+    "unit": "gigatons of carbon",
+    "title": "Carbon mass in atmosphere"
+  },
+  "mass_upper": {
+    "unit": "gigatons of carbon",
+    "title": "Carbon mass in upper oceans"
+  },
+  "mass_lower": {
+    "unit": "gigatons of carbon",
+    "title": "Carbon mass in lower oceans"
+  },
+  "emissions_total": {
+    "unit": "gigatons of carbon / year",
+    "title": "Total emissions"
+  },
+  "consumption_pc": {
+    "unit": "thousands $USD / person / year",
+    "title": "Consumption per capita"
+  },
+  "productivity": {
+    "unit": false,
+    "title": "Total factor productivity"
+  },
+  "carbon_intensity": {
+    "unit": "tons of CO2 / 1000 $USD",
+    "title": "Total emissions"
+  },
+  "damages": {
+    "unit": "trillions $USD year",
+    "title": "Damages"
+  },
+  "tax_rate": {
+    "unit": "$USD / ton of carbon",
+    "title": "Tax rate"
+  },
+  "abatement": {
+    "unit": "trillions $USD / year",
+    "title": "Abatement"
+  },
+  "scc": {
+    "unit": "$USD / ton of carbon",
+    "title": "Social cost of carbon"
+  },
+  "output_abate": {
+    "unit": "%",
+    "title": "Abatement cost as a percentage of output"
+  },
+  "backstop_growth": {
+    "unit": "thousands $USD / ton of carbon",
+    "title": "Clean energy costs"
+  }
+
+}
