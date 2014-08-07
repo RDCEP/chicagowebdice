@@ -351,7 +351,6 @@
         run_params[t.attr('name')] = t.property('value');
       } else {
         if (t.property('checked')) {
-          console.log(t.attr('name'), t.property('value'));
           run_params[t.attr('name')] = t.property('value');
         }
       }
