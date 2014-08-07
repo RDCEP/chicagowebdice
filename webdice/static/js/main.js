@@ -30,11 +30,12 @@
       new Date(start_year + (graph_periods - 1) * period_length, 0, 1)],
 
     total_runs = 0,
+    visible_runs = 0,
     active_graph_pane,
     metadata,
     charts = {},
     runs = [],
-    data = {},
+    all_data = {},
     adjusted_params = [],
 
     color,
@@ -123,9 +124,7 @@
               })
               .title(metadata[dice_variable].title || '')
               .h_grid(true)
-              .legend(true)
-              .lines(true)
-              .outlines(false),
+              .legend(true),
             small: chart_wrap.classed('small-chart')
           };
         }
@@ -134,6 +133,37 @@
 
 //    initialized = true;
 
+  };
+
+  var update_graph = function(dice_variable) {
+
+    if (charts.hasOwnProperty(dice_variable)) {
+
+      // Set domain extents
+      var ext = d3.extent(flatten_data(all_data[dice_variable])),
+        min = ext[0] == 0 ? 0 : ext[0] - (ext[1] - ext[0]) / 10,
+        max = ext[1] + (ext[1] - ext[0]) / 10;
+
+      // Update chart data and redraw
+      charts[dice_variable].chart
+        .data(all_data[dice_variable])
+        .domain(x_domain, [min, max])
+        .hoverable(all_data[dice_variable].length > 0);
+      if (initialized) {
+        charts[dice_variable].chart.update_data();
+      } else {
+        charts[dice_variable].chart.draw();
+      }
+
+    }
+  };
+
+  var toggle_graph_hover = function(bool) {
+    for (var dice_variable in charts) {
+      if (charts.hasOwnProperty(dice_variable)) {
+        charts[dice_variable].chart.toggle_hover(bool);
+      }
+    }
   };
 
   var get_updated_params = function() {
@@ -232,11 +262,62 @@
 
   };
 
-  var hide_run = function(index) {
+  var show_run = function() {
+    var t = d3.select(this),
+      index = +t.attr('data-run-id');
+    d3.selectAll('#graphs_wrap [data-run-id="' + index + '"]')
+      .classed('visuallyhidden', false);
+    t.text('hide')
+      .on('click', hide_run);
+
+    for(var dice_variable in charts) {
+      if (charts.hasOwnProperty(dice_variable)) {
+        charts[dice_variable].chart.show_run(index);
+      }
+    }
+
+    ++visible_runs;
+
+    if (visible_runs == 1) {
+      toggle_graph_hover(true);
+    }
 
   };
 
-  var remove_run = function(index) {
+  var hide_run = function() {
+    var t = d3.select(this),
+      index = +t.attr('data-run-id');
+    d3.selectAll('#graphs_wrap [data-run-id="' + index + '"]')
+      .classed('visuallyhidden', true);
+    t.text('show')
+      .on('click', show_run);
+
+    for(var dice_variable in charts) {
+      if (charts.hasOwnProperty(dice_variable)) {
+        charts[dice_variable].chart.hide_run(index);
+      }
+    }
+
+    --visible_runs;
+
+    if (visible_runs < 1) {
+      toggle_graph_hover(false);
+    }
+
+
+
+  };
+
+  var remove_run = function() {
+    var index = +d3.select(this).attr('data-run-id');
+    for (var dice_variable in all_data) {
+      if (all_data.hasOwnProperty(dice_variable)) {
+        all_data[dice_variable] = all_data[dice_variable].filter(function(d) {
+          return d.run_index !== index;
+        });
+        update_graph(dice_variable);
+      }
+    }
 
   };
 
@@ -254,14 +335,17 @@
     var buttons = li.append('p');
     buttons.append('mark')
       .attr('class', 'hide-run')
+      .attr('data-run-id', total_runs)
       .text('hide')
       .on('click', hide_run);
     buttons.append('mark')
       .attr('class', 'delete-run')
+      .attr('data-run-id', total_runs)
       .text('delete')
       .on('click', remove_run);
     buttons.append('mark')
       .attr('class', 'rename-run')
+      .attr('data-run-id', total_runs)
       .text('rename')
       .on('click', rename_run);
   };
@@ -298,28 +382,15 @@
           }
         });
 
-        data[dice_variable] = data[dice_variable] || [];
-        data[dice_variable].push(graph_data);
+        all_data[dice_variable] = all_data[dice_variable] || [];
+        all_data[dice_variable].push(graph_data);
 
         var chart_wrap = d3.select('#'+dice_variable+'_chart');
 
         if (!chart_wrap.empty()) {
 
-          // Set domain extents
-          var ext = d3.extent(flatten_data(data[dice_variable])),
-            min = ext[0] == 0 ? 0 : ext[0] - (ext[1] - ext[0]) / 10,
-            max = ext[1] + (ext[1] - ext[0]) / 10;
+          update_graph(dice_variable);
 
-          // Update chart data and redraw
-          charts[dice_variable].chart
-            .data(data[dice_variable])
-            .domain(x_domain, [min, max])
-            .hoverable(true);
-          if (initialized) {
-            charts[dice_variable].chart.update_data();
-          } else {
-            charts[dice_variable].chart.draw();
-          }
         }
       }
     }
@@ -333,6 +404,7 @@
     resize_charts();
 
     ++total_runs;
+    ++visible_runs;
 
   };
 
