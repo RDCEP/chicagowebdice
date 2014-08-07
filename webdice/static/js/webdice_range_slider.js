@@ -1,14 +1,59 @@
-(function() {
-  "use strict";
 
-  var radios = d3.selectAll('#parameters input[type="radio"]'),
+
+(function() {
+  var WebDICEPreview = function() {
+    "use strict";
+      var _f, _n, _h, _w, _t, _s,
+        _l = false,
+        svg = false,
+        data,
+        x = d3.scale.linear(),
+        y,
+        line = d3.svg.line().x(function (d) {
+          return x(d.x);
+        }).y(function (d) {
+          return y(d.y);
+        })
+      ;
+      this.init = function(t, f, h, w, v, m, s, o) {
+        _f = f;
+        _h = h;
+        _w = w;
+        _t = t;
+        y = (s == 'log') ? d3.scale.log() : d3.scale.linear();
+        data = _f(v, o);
+        x.range([0, w]);
+        y.range([h, 0]);
+
+        x.domain(d3.extent(data, function (d) {
+          return d.x;
+        }));
+        y.domain(d3.extent(_f(m, o), function (d) {
+          return d.y;
+        }));
+        svg = !svg ? t.append('svg').attr({width: w, height: h})
+          .append('g').attr('transform', 'translate(0,0)') : svg;
+        _l = !_l ? svg.append('path').attr('class', 'parameter-preview-line') : _l;
+        _l.datum(data)
+          .attr('d', line);
+        return this;
+      };
+      this.draw = function(v, o) {
+        _l.datum(_f(v, o)).attr('d', line);
+        return this;
+      }
+    },
+
+    preview_graphs = {},
+    radios = d3.selectAll('#parameters input[type="radio"]'),
     sliders = d3.selectAll('#parameters .range-wrap input[type="range"]'),
 
-    update_slider = function() {
-
+    update_slider = function () {
       var t = d3.select(this),
-        p = d3.select(t.node().parentNode.parentNode),
+        p = d3.select(this.parentNode.parentNode),
         current = p.select('.current-range-val span'),
+        preview = p.select('.parameter-preview-line'),
+        name = t.attr('name'),
         min = parseFloat(t.attr('min')),
         max = parseFloat(t.attr('max')),
         dot = p.select('.tick'),
@@ -16,17 +61,61 @@
         prec = parseInt(t.attr('data-prec')),
         pct = ((parseFloat(val) - min) / (max - min) - .5) * 100;
 
-//      current.text(val.toFixed(prec).toString().replace(/^0+(.)/, '$1')).style('left', pct + '%');
       current.text(val.toFixed(prec).toString()).style('left', pct + '%');
 
+      if (preview_graphs.hasOwnProperty(name)) {
+        var eq = equations[name],
+          o = false;
+
+        if (eq.hasOwnProperty('other_input')) {
+          o = +d3.select('input[name="' + eq.other_input + '"]').property('value');
+        }
+
+        if (eq.shared) {
+          preview_graphs[name].draw(o, val);
+        } else {
+          preview_graphs[name].draw(val, o);
+        }
+
+      }
     };
 
-  radios.on('change', function() {
+  sliders.each(function () {
+
+    var input = d3.select(this),
+      name = input.attr('name'),
+      t = d3.select('.parameter-preview[data-input-parameters*="' + name + '"]');
+
+    if (!t.empty() && equations.hasOwnProperty(name)) {
+      var value = input.property('value'),
+        eq = equations[name];
+      if (!eq.shared) {
+        var max = +input.attr(eq['max']),
+          s = eq['scale'],
+          f = eq['output'],
+          w = eq['width'],
+          h = 100,
+          oname = false,
+          o;
+        if (eq.hasOwnProperty('other_input')) {
+          oname = eq.other_input;
+          o = +d3.select('input[name="'+eq.other_input+'"]').property('value');
+        }
+        preview_graphs[name] = new WebDICEPreview()
+          .init(t, f, h, w, value, max, s, o);
+        t.append('figcaption').text(eq['legend']);
+      } else {
+        preview_graphs[name] = preview_graphs[eq.other_input];
+      }
+    }
+  });
+
+  radios.on('change', function () {
 
     var t = d3.select(this),
       disabled = t.property('checked');
 
-    radios.each(function() {
+    radios.each(function () {
 
       var p = d3.select(d3.select(this).node().parentNode.parentNode);
 
