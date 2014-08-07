@@ -2,98 +2,131 @@
 #parameters
   width: 100%
   overflow: auto
-#parameter_tabs_wrap
-  width: $site_width - $inner_pad * 2
-  margin: 0 $inner_pad * 3
-  position: fixed
-  z-index: 900
-  background-color: white
-#parameter_tabs
-  margin: 0 0 0 0
-  li
-    display: block
-    float: left
-    padding: .8em
-    cursor: pointer
-    &.selected
-      background-color: $light-gray
-
-.parameter-pane-intro
-  width: $site_width - $inner_pad * 6
-  margin: 0 auto $inner_pad * 2
-  font-size: 1.5em
-  color: #999999
-#parameter_form
-  clear: both
-  width: $site_width - $inner_pad * 2
-  padding: $inner_pad * 4 $inner_pad * 2 $inner_pad
-  margin: 0 auto
-  position: relative
-  z-index: 800
-  li, .range-wrap
+  #parameter_tabs_wrap
+    width: $site_width - $inner_pad * 2
+    margin: 0 $inner_pad * 3
+    position: fixed
+    z-index: 900
+    background-color: white
+    #parameter_tabs
+      margin: 0 0 0 0
+      li
+        display: block
+        float: left
+        padding: .8em
+        cursor: pointer
+        &.selected
+          background-color: $light-gray
+  #parameter_form
+    clear: both
+    width: $site_width - $inner_pad * 2
+    padding: $inner_pad * 4 $inner_pad * 2 $inner_pad
+    margin: 0 auto
     position: relative
-.parameter-pane
-  float: left
-  margin: 0 $inner_pad * 2 30px
-  &.halfs
-    width: $parameter_pane_halfs
-  &.thirds
-    width: $parameter_pane_thirds
-  &.fourths
-    width: $parameter_pane_fourths
-  & > label
-    display: block
-    margin-bottom: 1em
-    font-weight: bold
-  & > .range-wrap > label
-    font-weight: bold
-  .parameter-pane
-    margin: 0
-    & + .parameter-pane
-      margin-left: $inner_pad * 4
-  h4
-    margin-bottom: 1em
-    font-weight: bold
-  li
-    margin-bottom: 2em
-  input[type=range]
-    width: 100%
-    margin-top: $range_current_value_gap
-  .max-range-val, .min-range-val, .current-range-val
-    position: absolute
-    bottom: $range_minmax_v_offset
-    font-size: .6em
-  .current-range-val
-    bottom: 2.25em
-    left: 8px
-    right: 8px
-    span
-      text-align: center
-      display: block
-      width: 100%
+    z-index: 800
+    li, .range-wrap
       position: relative
-  .max-range-val
-    left: 102%
-  .min-range-val
-    right: 102%
+    .parameter-pane-intro
+      width: $site_width - $inner_pad * 6
+      margin: 0 auto $inner_pad * 2
+      font-size: 1.5em
+      color: #999999
+    .parameter-pane
+      float: left
+      margin: 0 $inner_pad * 2 30px
+      &.halfs
+        width: $parameter_pane_halfs
+      &.thirds
+        width: $parameter_pane_thirds
+      &.fourths
+        width: $parameter_pane_fourths
+      & > label
+        display: block
+        margin-bottom: 1em
+        font-weight: bold
+      & > .range-wrap > label
+        font-weight: bold
+      .parameter-pane
+        margin: 0
+        & + .parameter-pane
+          margin-left: $inner_pad * 4
+      h4
+        margin-bottom: 1em
+        font-weight: bold
+      li
+        margin-bottom: 2em
+      input[type=range]
+        width: 100%
+        margin-top: $range_current_value_gap
+      .max-range-val, .min-range-val, .current-range-val
+        position: absolute
+        bottom: $range_minmax_v_offset
+        font-size: .6em
+      .current-range-val
+        bottom: 2.25em
+        left: 8px
+        right: 8px
+        span
+          text-align: center
+          display: block
+          width: 100%
+          position: relative
+      .max-range-val
+        left: 102%
+      .min-range-val
+        right: 102%
+      .parameter-help
+        margin-top: 2em
+        font-size: .9em
+      .parameter-previews
+        clear: left
+      .parameter-preview
+        height: 100px
+        margin-top: 30px
+        border: 1px solid #cccccc
+        figcaption
+          font-size: .8em
+          text-transform: uppercase
+          letter-spacing: .03em
+          font-weight: bold
+          color: #666666
+        .parameter-preview-line
+          stroke: $blue
+          stroke-width: 3
+
+#run_clear
+  position: absolute
+  right: 15px
+  top: -2.25em
+  #run_model, #clear_model
+    border: none
+    padding: .25em 15px
+    color: #ffffff
+    font-weight: bold
+    font-size: 1em
+    font-family: Helveltica,Arial,sans-serif
+    z-index: 999
+    cursor: pointer
+  #run_model
+    background-color: $red
+  #clear_model
+    background-color: $sky-blue
+
+.select-wrap
+  h3
+    font-weight: bold
+    margin-bottom: 10px
+  label
+    display: block
+    position: relative
+    margin-bottom: 5px
+    input
+      position: absolute
+      right: 102%
+      top: 0
+      padding: 0 10px 0 0
+
+
 .disabled, .disabled .label
   color: #dddddd!important
-
-.parameter-help
-  margin-top: 2em
-  font-size: .9em
-
-.parameter-preview
-  height: 100px
-  margin-top: 30px
-  border: 1px solid #cccccc
-  figcaption
-    font-size: .8em
-    text-transform: uppercase
-    letter-spacing: .03em
-    font-weight: bold
-    color: #666666
-  .parameter-preview-line
-    stroke: $blue
-    stroke-width: 3
 
