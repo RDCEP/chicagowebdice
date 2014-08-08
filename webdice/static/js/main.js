@@ -222,25 +222,27 @@
     event.eventName = 'change';
 
     d3.selectAll('#parameter_form section')
-      .filter(function(){
-        var id = d3.select(this).attr('id');
-        return (id != 'policy_parameters') && (id != 'model_parameters');
-      })
-      .selectAll('input')
+      .selectAll('input[type="range"], input[type="radio"]')
       .each(function(d, i) {
         var t = d3.select(this),
-          dflt = +t.attr('data-default'),
-          val = +t.property('value');
-        if (val != dflt) {
+          type = t.attr('type'),
+          dflt = t.attr('data-default'),
+          val = t.property('value');
+        val = type == 'range' ? +val : val;
+        dflt = type == 'range' ? +dflt : dflt;
+        if (type == 'radio') {
+          if (val == dflt) {
+            t.property('checked', true);
+          }
+        } else if (type == 'range' && val != dflt) {
           t.property('value', dflt);
-
           if (document.createEvent) {
             this.dispatchEvent(event);
           } else {
             this.fireEvent('on' + event.eventType, event);
           }
-
         }
+
       });
   };
 
