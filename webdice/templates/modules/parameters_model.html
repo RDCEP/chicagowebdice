@@ -40,13 +40,13 @@
                data-default=dice_2007></label>
       <label><span class=parameter-name>Fraction of productivity</span>
         <input name=damages_model type=radio value=productivity_fraction
-               data-default=dice_2007></label>
+               data-default=dice_2007 id=productivity_fraction></label>
     </div>
     <div class=parameter-help>
       <p></p>
     </div>
 
-    <div class="disabled init-disabled range-wrap">
+    <div id=prod_frac class="disabled init-disabled range-wrap">
       <label><span class="parameter-name">Damages to productivity</span> (%)
         <input name=prod_frac type=range min=0 max=50 value=5
                step=1 data-prec=0 data-default=5 disabled>

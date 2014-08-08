@@ -209,17 +209,22 @@
 
     //TODO: Reset policy and model parameters
 
-    var event;
+    var change_event, click_event;
 
     if (document.createEvent) {
-      event = document.createEvent('HTMLEvents');
-      event.initEvent('change', true, true);
+      change_event = document.createEvent('HTMLEvents');
+      change_event.initEvent('change', true, true);
+      click_event = document.createEvent('HTMLEvents');
+      click_event.initEvent('click', true, true);
     } else {
-      event = document.createEventObject();
-      event.eventType = 'change';
+      change_event = document.createEventObject();
+      change_event.eventType = 'change';
+      click_event = document.createEventObject();
+      click_event.eventType = 'click';
     }
 
-    event.eventName = 'change';
+    change_event.eventName = 'change';
+    click_event.eventName = 'click';
 
     d3.selectAll('#parameter_form section')
       .selectAll('input[type="range"], input[type="radio"]')
@@ -229,18 +234,21 @@
           dflt = t.attr('data-default'),
           val = t.property('value');
         val = type == 'range' ? +val : val;
-        dflt = type == 'range' ? +dflt : dflt;
+        dflt = type == 'range' ? dflt == 'null' ? 0 : +dflt : dflt;
         if (type == 'radio') {
           if (val == dflt) {
             t.property('checked', true);
           }
         } else if (type == 'range' && val != dflt) {
           t.property('value', dflt);
-          if (document.createEvent) {
-            this.dispatchEvent(event);
-          } else {
-            this.fireEvent('on' + event.eventType, event);
-          }
+        }
+
+        if (document.createEvent) {
+          this.dispatchEvent(change_event);
+          this.dispatchEvent(click_event);
+        } else {
+          this.fireEvent('on' + change_event.eventType, change_event);
+          this.fireEvent('on' + click_event.eventType, click_event);
         }
 
       });
@@ -267,7 +275,30 @@
   };
 
   var rename_run = function() {
-
+    var t = d3.select(this),
+      index = +t.attr('data-run-id'),
+      h3 = d3.select('#runs li[data-run-id="' + index +'"] h3'),
+      input = h3.append('input')
+        .classed('rename-input', true)
+        .property('value', h3.text())
+        .on('change', function() {
+          var new_name = this.value,
+            old_name = h3.text();
+          for (var dice_variable in all_data) {
+            if (all_data.hasOwnProperty(dice_variable)) {
+              all_data[dice_variable].filter(function(d) {
+                return d.run_name == old_name;
+              }).forEach(function(d) {
+                d.run_name = new_name;
+              });
+              update_graph(dice_variable);
+            }
+          }
+          h3.text(new_name);
+          d3.selectAll('[data-type]').attr('data-type', new_name);
+          d3.select(this).remove();
+        });
+    input.node().select();
   };
 
   var show_run = function() {
@@ -513,10 +544,24 @@
   });
 
   clear_runs.on('click', function() {
+    used_colors = [];
     runs_list.selectAll('li').each(function() {
       remove_run(+d3.select(this).attr('data-run-id'));
     });
     d3.select('#runs_wrap').classed('visuallyhidden', true);
+  });
+
+  d3.selectAll('input[name="damages_model"]').on('click', function() {
+    console.log(1);
+    var pf = d3.select('#prod_frac'),
+      active = d3.select('#productivity_fraction').property('checked');
+    if (active) {
+      pf.classed('disabled', false);
+      pf.select('input').property('disabled', false);
+    } else {
+      pf.classed('disabled', true);
+      pf.select('input').property('disabled', true);
+    }
   });
 
   d3.select(window).on('resize', function() {
