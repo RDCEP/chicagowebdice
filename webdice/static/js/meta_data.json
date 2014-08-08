@@ -1,4 +1,7 @@
 {
+  "custom" : {
+    "title": "Productivity"
+  },
   "temp_atmosphere": {
     "unit": "degrees C since 1900",
     "title": "Atmospheric temperature increase"

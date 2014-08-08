@@ -4,9 +4,11 @@ var WebDICEGraph = function() {
     width = 700,
     height = 345,
     padding = {top: 10, right: 10, bottom: 30, left: 30},
+
     /***********************
      Scale and chart objects
      ***********************/
+
     _max_domains,
     _x = d3.scale.linear().domain([0, 1]).range([0, width]),
     _y = d3.scale.linear().domain([0, 1]).range([height, 0]),
@@ -38,22 +40,24 @@ var WebDICEGraph = function() {
       .tickSize(6).innerTickSize(6),
     y_axis = d3.svg.axis().scale(_y).orient('left')
       .tickFormat(function(d) { return y_axis_format(d); }),
+    y_twin_axis = d3.svg.axis().scale(_y).orient('right')
+      .tickFormat(function(d) { return y_axis_format(d); }),
     _line = d3.svg.line()
       .x(function(d) { return _x(d.x); })
       .y(function(d) { return _y(d.y + d.y0); }),
+
     /**************
      Data and color
      **************/
+
     graph_data = {
       graphs: [],       // Graph objects
-      outlines: [],     // Graph outline objects
-      intersection: null,
       data: [],         // Data
-      inputs: [],       // Inputs below graph
-      active: [],       // Data series currently being altered
-      ghost: [],        // Background area chart
-      default_line: [], // Dotted default line for draggable graphs
-      nested: []        // Nested data needed for handles when graphing multiple series
+      nested: [],       // Nested data needed for handles when graphing multiple series
+      twin_graphs: [],  // Twin graph objects
+      twin_data: [],    // Twin data
+      twin_nested: []   // Twin nested data needed for handles when graphing multiple series
+
     },
     color_list = [
       //d3.rgb(0, 0, 0), //black
@@ -67,33 +71,42 @@ var WebDICEGraph = function() {
     ],
     hidden_runs = [],
     _color,
+
     /*********************
      SVG and layer objects
      *********************/
+
     svg_id = null,
     svg_wrap,
     svg,
     svg_defs,
     grid_layer,
+    twin_graph_layer,
     graph_layer,
     axes_layer,
     handle_layer,
     button_layer,
     segment_width,
     title,
+
     /**********************
      X-segments and handles
      **********************/
+
     handles,
     tool_tip,
+
     /******
      States
      ******/
+
     _hoverable = false,
     _h_grid = true,
+
     /*****************
-     "Private" methods
+     'Private' methods
      *****************/
+
     color = function(i) {
       /*
        Return color from array
@@ -226,9 +239,23 @@ var WebDICEGraph = function() {
         .attr('transform', 'translate(-5,0)')
         .call(y_axis);
     },
+    draw_twin_axes = function() {
+      /*
+       Draw x and y axes, ticks, etc.
+       */
+      axes_layer.append('g')
+        .attr('class', 'y twin axis')
+        .attr('transform', 'translate('+ (width + 5) + ',0)')
+        .call(y_twin_axis);
+    },
     pre_id = function(str) {
       return svg_id + '_' + str;
     };
+
+  /****************
+   'Public' methods
+   ****************/
+
   this.padding = function(all, sides, bottom, left) {
     if (!all) { return padding; }
     padding = {top: all, right: all, bottom: all, left: all};
@@ -287,6 +314,7 @@ var WebDICEGraph = function() {
       .attr('transform', 'translate(' + padding.left + ',' + padding.top + ')');
     svg_defs = svg.append('defs');
     grid_layer = svg.append('g').attr('id', pre_id('grid_layer'));
+    twin_graph_layer = svg.append('g').attr('id', pre_id('twin_graph_layer'));
     graph_layer = svg.append('g').attr('id', pre_id('graph_layer'));
     svg_defs.append('clipPath').attr("id", "graph_clip").append("rect")
       .attr({'width': width, 'height': height });
@@ -390,6 +418,24 @@ var WebDICEGraph = function() {
     if (arr === undefined) { return graph_data.data; }
     graph_data.data = arr;
     graph_data.nested = nested(arr);
+    return this;
+  };
+  this.twin_data = function(arr) {
+    /*
+     Set twin data series to graph.
+     ...
+     Args
+     ----
+     arr (Array): Array of Arrays of Objects {x: foo, y: bar, y0: [0]}
+     ...
+     Returns
+     -------
+     RPSGraph
+     ...
+     */
+    if (arr === undefined) { return graph_data.twin_data; }
+    graph_data.twin_data = arr;
+    graph_data.twin_nested = nested(arr);
     return this;
   };
   this.hide_run = function(index) {
@@ -548,6 +594,31 @@ var WebDICEGraph = function() {
     draw_axes();
     return this;
   };
+  this.twin_draw = function() {
+    /*
+     Draw all data
+     ...
+     Args
+     ----
+     null
+     ...
+     Returns
+     -------
+     RPSGraph
+     ...
+     */
+    graph_data.twin_graphs = twin_graph_layer.selectAll('.chart-line')
+      .data(graph_data.twin_data).enter().append('path')
+      .attr('d', function(d) { return _line(d.data); })
+      .attr('class', 'chart-line')
+      .attr('clip-path', 'url(#graph_clip)')
+      .attr('data-type', function(d) { return d.run_name ? d.run_name : null; })
+      .attr('data-run-id', function(d) { return typeof(d.run_index) == 'number' ? d.run_index : null; })
+      .attr('stroke-dasharray', '5, 5')
+      .style('stroke', function(d, i) { return color(i); });
+    draw_twin_axes();
+    return this;
+  };
   this.delete_run = function() {
 
   };
@@ -561,9 +632,23 @@ var WebDICEGraph = function() {
       .attr('clip-path', 'url(#graph_clip)')
       .attr('data-type', function(d) { return d.run_name ? d.run_name : null; })
       .attr('data-run-id', function(d) { return typeof(d.run_index) == 'number' ? d.run_index : null; })
-      .style('fill', function(d, i) { return null; })
       .style('stroke', function(d, i) { return color(i); });
     handles.data(graph_data.nested);
+    add_hover();
+  };
+  this.update_twin_data = function() {
+    graph_data.twin_graphs = graph_layer.selectAll('.chart-line')
+      .data(graph_data.data);
+    graph_data.twin_graphs.exit().remove();
+    graph_data.twin_graphs.enter().append('path')
+      .attr('d', function(d) { return _line(d.data); })
+      .attr('class', 'chart-line')
+      .attr('clip-path', 'url(#graph_clip)')
+      .attr('data-type', function(d) { return d.run_name ? d.run_name : null; })
+      .attr('data-run-id', function(d) { return typeof(d.run_index) == 'number' ? d.run_index : null; })
+      .attr('stroke-dasharray', '5, 5')
+      .style('stroke', function(d, i) { return color(i); });
+    handles.data(graph_data.twin_nested);
     add_hover();
   };
   this.redraw = function() {

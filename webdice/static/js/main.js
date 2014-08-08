@@ -39,6 +39,7 @@
     runs = [],
     all_data = {},
     adjusted_params = [],
+    custom_vars = ['productivity', false],
 
     color,
     width,
@@ -87,58 +88,83 @@
 
   };
 
-  var initialize_graphs = function(_data) {
+  var update_custom_graph = function(dice_variables) {
 
-    for (var dice_variable in _data) {
-      if (_data.hasOwnProperty(dice_variable)) {
+    var ext, min, max;
 
-        var chart_wrap = d3.select('#' + dice_variable + '_chart');
+    ext = d3.extent(flatten_data(all_data[dice_variables[0]]));
+    min = ext[0] == 0 ? 0 : ext[0] - (ext[1] - ext[0]) / 10;
+    max = ext[1] + (ext[1] - ext[0]) / 10;
 
-        if (!chart_wrap.empty()) {
-
-          // Set dimensions
-          var dims = get_dims(),
-            h, w;
-          if (chart_wrap.classed('small-chart')) {
-            h = dims.h / 2 - 15;
-            w = dims.w / 2 - 15;
-            chart_wrap.style('height', h + 'px');
-          } else {
-            h = dims.h;
-            w = dims.w;
-          }
-
-          // Add chart to charts
-          charts[dice_variable] = charts[dice_variable] || {
-            chart: new WebDICEGraph()
-              .width(w)
-              .height(h)
-              .padding(padding[0], padding[1], padding[2], padding[3])
-              .select(dice_variable + '_chart')
-              .x(d3.time.scale())
-              .y(d3.scale.linear())
-              .domain(x_domain, [0, 1])
-              .format_x(function (x) {
-                return x.getFullYear();
-              })
-              .format_y(function (y) {
-                if ((y < .01 || y > 99999) && y != 0) {
-                  return d3.format('.1e')(y);
-                } else {
-                  return d3.format('.3r')(y);
-                }
-              })
-              .title(metadata[dice_variable].title || '')
-              .h_grid(true)
-              .legend(true),
-            small: chart_wrap.classed('small-chart')
-          };
-        }
-      }
+    if (dice_variables[1]) {
+      ext = d3.extent(flatten_data(all_data[dice_variables[1]]));
+      var tmin = ext[0] == 0 ? 0 : ext[0] - (ext[1] - ext[0]) / 10;
+      var tmax = ext[1] + (ext[1] - ext[0]) / 10;
+      min = min < tmin ? min : tmin;
+      max = max < tmax ? max : tmax;
     }
 
-//    initialized = true;
+    // Update chart data and redraw
+    charts.custom.chart
+      .data(all_data[dice_variables[0]])
+      .domain(x_domain, [min, max])
+      .colors(used_colors);
+    if (initialized) {
+      charts.custom.chart
+        .update_data();
+      if (dice_variables[1]) {
+        charts.custom.chart
+          .twin_data(all_data[dice_variables[1]])
+          .update_twin_data();
+      }
+    } else {
+      charts.custom.chart
+        .hoverable(true)
+        .padding(45, 60, 45, 60)
+        .draw();
+    }
+  };
 
+  var initialize_graph = function(dice_variable, chart_wrap) {
+
+    // Set dimensions
+    var dims = get_dims(),
+      h, w;
+    if (chart_wrap.classed('small-chart')) {
+      h = dims.h / 2 - 15;
+      w = dims.w / 2 - 15;
+      chart_wrap.style('height', h + 'px');
+    } else {
+      h = dims.h;
+      w = dims.w;
+      chart_wrap.style('height', h + 'px');
+    }
+
+    // Add chart to charts
+    charts[dice_variable] = charts[dice_variable] || {
+      chart: new WebDICEGraph()
+        .width(w)
+        .height(h)
+        .padding(padding[0], padding[1], padding[2], padding[3])
+        .select(dice_variable + '_chart')
+        .x(d3.time.scale())
+        .y(d3.scale.linear())
+        .domain(x_domain, [0, 1])
+        .format_x(function (x) {
+          return x.getFullYear();
+        })
+        .format_y(function (y) {
+          if ((y < .01 || y > 99999) && y != 0) {
+            return d3.format('.1e')(y);
+          } else {
+            return d3.format('.3r')(y);
+          }
+        })
+        .title(metadata[dice_variable].title || '')
+        .h_grid(true)
+        .legend(true),
+      small: chart_wrap.classed('small-chart')
+    };
   };
 
   var update_graph = function(dice_variable) {
@@ -298,6 +324,7 @@
               update_graph(dice_variable);
             }
           }
+          //TODO: Update custom
           h3.text(new_name);
           d3.selectAll('[data-type]').attr('data-type', new_name);
           d3.select(this).remove();
@@ -365,6 +392,8 @@
       }
     }
 
+    //TODO: Update custom
+
     used_colors.splice(index, 1);
 
     --visible_runs;
@@ -411,10 +440,6 @@
      Add run to interface.
      */
 
-    if (!initialized) {
-      initialize_graphs(_data)
-    }
-
     used_colors.push(color_list[total_runs]);
 
     for (var dice_variable in _data) {
@@ -447,17 +472,23 @@
 
         if (!chart_wrap.empty()) {
 
+          if (!initialized) {
+            initialize_graph(dice_variable, chart_wrap);
+          }
           update_graph(dice_variable);
 
         }
       }
     }
 
+    if (!initialized) { initialize_graph('custom', d3.select('#custom_chart')); }
+    update_custom_graph(custom_vars);
+
+    //TODO: Draw customizable chart
+
     add_run_to_list(total_runs);
 
     if (!initialized) { initialized = true; }
-
-    //TODO: Draw customizable chart
 
     resize_charts();
 
@@ -512,7 +543,8 @@
 
   var resize_charts = function() {
 
-    var dims = get_dims();
+    var dims = get_dims(),
+      tall = (dims.h - 15) - 70; //TODO: Get height of #graph-controls
 
     for (var chart in charts) {
       if (charts.hasOwnProperty(chart)) {
@@ -522,11 +554,14 @@
         if (chart_wrap.classed('small-chart')) {
           chart_wrap.style('height', (dims.h / 2 - 15) + 'px');
           chart_svg.style('height', (dims.h / 2 - 15) + 'px');
+        } else {
+          chart_wrap.style('height', tall + 'px');
+          chart_svg.style('height', tall + 'px');
         }
-        if (chart.small) {
+        if (charts[chart].small) {
           charts[chart].chart.width(dims.w / 2 - 15).height(dims.h / 2 - 15).redraw();
         } else {
-          chart.width(dims.w - 1).height(dims.h - 15).redraw();
+          charts[chart].chart.width(dims.w - 1).height(tall).redraw();
         }
       }
     }
