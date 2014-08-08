@@ -19,6 +19,7 @@
       d3.rgb(213, 94, 0),   // vermilion
       d3.rgb(204, 121, 167) // reddish purple
     ],
+    used_colors = [],
     padding = [45, 15, 30, 60],// padding[3] needs to match $left_pad in _layout.sass
 
     simulation_periods = 60,
@@ -148,11 +149,15 @@
       charts[dice_variable].chart
         .data(all_data[dice_variable])
         .domain(x_domain, [min, max])
-        .hoverable(all_data[dice_variable].length > 0);
+        .colors(used_colors)
+      ;
       if (initialized) {
-        charts[dice_variable].chart.update_data();
+        charts[dice_variable].chart
+          .update_data();
       } else {
-        charts[dice_variable].chart.draw();
+        charts[dice_variable].chart
+          .hoverable(true)
+          .draw();
       }
 
     }
@@ -310,14 +315,25 @@
 
   var remove_run = function() {
     var index = +d3.select(this).attr('data-run-id');
+    d3.selectAll('#graphs_wrap [data-run-id="' + index + '"]').remove();
     for (var dice_variable in all_data) {
       if (all_data.hasOwnProperty(dice_variable)) {
         all_data[dice_variable] = all_data[dice_variable].filter(function(d) {
-          return d.run_index !== index;
+          return d.run_index != index;
         });
         update_graph(dice_variable);
       }
     }
+
+    used_colors.splice(index, 1);
+
+    --visible_runs;
+
+    if (visible_runs < 1) {
+      toggle_graph_hover(false);
+    }
+
+    d3.selectAll('#runs li[data-run-id="' + index + '"]').remove();
 
   };
 
@@ -326,7 +342,7 @@
      Add item to list of runs
      */
 
-    var li = runs_list.append('li');
+    var li = runs_list.append('li').attr('data-run-id', index);
     li.append('div').attr('class', 'run-swatch');
     li.append('h3').style({
       'border-right-color': color_list[index]
@@ -358,6 +374,8 @@
     if (!initialized) {
       initialize_graphs(_data)
     }
+
+    used_colors.push(color_list[total_runs]);
 
     for (var dice_variable in _data) {
       if (_data.hasOwnProperty(dice_variable)) {
