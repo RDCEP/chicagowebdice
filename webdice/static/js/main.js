@@ -177,28 +177,25 @@
      Update list of non-default parameters (for run descriptions)
      */
 
-    //TODO: Parse policy and model parameters
-
     adjusted_params = [];
 
     d3.selectAll('#parameter_form section')
-      .filter(function(){
-        var id = d3.select(this).attr('id');
-        return (id != 'policy_parameters') && (id != 'model_parameters');
+      .selectAll('input[type="range"], input[type="radio"]:checked')
+      .filter(function() {
+        return !this.hasAttribute('disabled');
       })
-      .selectAll('input')
       .each(function(d, i) {
         var t = d3.select(this),
-          dflt = +t.attr('data-default'),
-          val = +t.property('value');
+          type = t.attr('type'),
+          dflt = t.attr('data-default'),
+          val = t.property('value');
+        val = type == 'range' ? +val : val;
+        dflt = type == 'range' ? dflt == 'null' ? null : +dflt : dflt;
         if (dflt != val) {
           adjusted_params.push({
             name: d3.select(this.parentNode).select('.parameter-name').text(),
-            value: val,
-            dflt: dflt,
-            diff: (val > dflt)
-              ? '<span class="fa fa-chevron-up"></span>'
-              : '<span class="fa fa-chevron-down"></span>'
+            value: type == 'radio' ? null : val,
+            dflt: dflt == 'null' ? null : type == 'radio' ? null : dflt
           });
         }
       });
@@ -229,7 +226,8 @@
         var id = d3.select(this).attr('id');
         return (id != 'policy_parameters') && (id != 'model_parameters');
       })
-      .selectAll('input').each(function(d, i) {
+      .selectAll('input')
+      .each(function(d, i) {
         var t = d3.select(this),
           dflt = +t.attr('data-default'),
           val = +t.property('value');
@@ -257,8 +255,10 @@
       return 'Default model';
     } else {
       params.forEach(function (d) {
-//        run_name += d.name + ': ' + d.value + ' [' + d.diff + ' ' + d.dflt + ']<br>';
-        run_name += d.name + ': ' + d.value + ' (' + d.dflt + ')<br>';
+        run_name += d.name;
+        if (!(d.value === null)) { run_name += ': ' + d.value; }
+        if (!(d.dflt === null)) { run_name += ' (' + d.dflt + ')'; }
+        run_name += '<br>';
       });
       return run_name//.substring(0, -1)
     }

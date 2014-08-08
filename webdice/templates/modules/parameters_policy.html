@@ -10,21 +10,21 @@
   <div class=parameter-pane
        style="border-top:1px solid #ccc;border-bottom:1px solid #ccc;float:none;padding-top:1em;">
     <label>
-      <input type=radio value=default name=policy_type checked>
-      Business as usual
+      <input type=radio value=default name=policy_type data-default=default checked>
+      <span class=parameter-name>Business as usual</span>
     </label>
   </div>
   <div class="parameter-pane fourths">
     <label>
-      <input type=radio value=optimized name=policy_type>
-      Optimized policy
+      <input type=radio value=optimized name=policy_type data-default=default>
+      <span class=parameter-name>Optimized policy</span>
     </label>
   </div>
 
   <div class="parameter-pane fourths">
     <label>
-      <input type=radio value=carbon_tax name=policy_type>
-      Simulated carbon tax
+      <input type=radio value=carbon_tax name=policy_type data-default=default>
+      <span class=parameter-name>Simulated carbon tax</span>
     </label>
 
     <h4 class=disabled>Tax rate</h4>
@@ -32,9 +32,9 @@
     <ul>
 
       <li class="disabled init-disabled range-wrap">
-        <label>2050 ($/ton C)
+        <label><span class=parameter-name>2050</span> ($/ton C)
           <input name=c2050 type=range min=0 max=500 value=0 step=10
-                 data-prec=0 disabled>
+                 data-prec=0 data-default=null disabled>
         </label>
         <div class=current-range-val>
           <span style=left:-50%>0</span>
@@ -47,9 +47,9 @@
       </li>
 
       <li class="disabled init-disabled range-wrap" >
-        <label>2100 ($/ton C)
+        <label><span class=parameter-name>2100</span> ($/ton C)
           <input name=c2100 type=range min=0 max=500 value=0 step=10
-                 data-prec=0 disabled>
+                 data-prec=0 data-default=null disabled>
         </label>
         <div class=current-range-val>
           <span style=left:-50%>0</span>
@@ -62,9 +62,9 @@
       </li>
 
       <li class="disabled init-disabled range-wrap" >
-        <label>2150 ($/ton C)
+        <label><span class=parameter-name>2150</span> ($/ton C)
           <input name=c2150 type=range min=0 max=500 value=0 step=10
-                 data-prec=0 disabled>
+                 data-prec=0 data-default=null disabled>
         </label>
         <div class=current-range-val>
           <span style=left:-50%>0</span>
@@ -81,8 +81,8 @@
 
   <div class="parameter-pane halfs" style=width:375px;>
     <label>
-      <input type=radio value=treaty name=policy_type>
-      Climate Treaty
+      <input type=radio value=treaty name=policy_type data-default=default>
+      <span class=parameter-name>Climate Treaty</span>
     </label>
 
     <div style=width:157.5px;margin-right:60px;float:left;>
@@ -92,9 +92,9 @@
       <ul>
 
         <li class="disabled init-disabled range-wrap">
-          <label>2050 (% 2005 emissions)
+          <label><span class=parameter-name>2050</span> (% 2005 emissions)
             <input name=e2050 type=range min=0 max=100 value=0 step=1
-                   data-prec=0 disabled>
+                   data-prec=0 data-default=null disabled>
           </label>
           <div class=current-range-val>
             <span style=left:-50%>0</span>
@@ -107,9 +107,9 @@
         </li>
 
         <li class="disabled init-disabled range-wrap" >
-          <label>2100 (% 2005 emissions)
+          <label><span class=parameter-name>2100</span> (% 2005 emissions)
             <input name=e2100 type=range min=0 max=100 value=0 step=1
-                   data-prec=0 disabled>
+                   data-prec=0 data-default=null disabled>
           </label>
           <div class=current-range-val>
             <span style=left:-50%>0</span>
@@ -122,9 +122,9 @@
         </li>
 
         <li class="disabled init-disabled range-wrap" >
-          <label>2150 (% 2005 emissions)
+          <label><span class=parameter-name>2150</span> (% 2005 emissions)
             <input name=e2150 type=range min=0 max=100 value=0 step=1
-                   data-prec=0 disabled>
+                   data-prec=0 data-default=null disabled>
           </label>
           <div class=current-range-val>
             <span style=left:-50%>0</span>
@@ -147,9 +147,9 @@
       <ul>
 
         <li class="disabled init-disabled range-wrap">
-          <label>2050 (% of globe)
+          <label><span class=parameter-name>2050</span> (% of globe)
             <input name=p2050 type=range min=0 max=100 value=0 step=1
-                   data-prec=0 disabled>
+                   data-prec=0 data-default=null disabled>
           </label>
           <div class=current-range-val>
             <span style=left:-50%>0</span>
@@ -162,9 +162,9 @@
         </li>
 
         <li class="disabled init-disabled range-wrap" >
-          <label>2100 (% of globe)
+          <label><span class=parameter-name>2100</span> (% of globe)
             <input name=p2100 type=range min=0 max=100 value=0 step=1
-                   data-prec=0 disabled>
+                   data-prec=0 data-default=null disabled>
           </label>
           <div class=current-range-val>
             <span style=left:-50%>0</span>
@@ -177,9 +177,9 @@
         </li>
 
         <li class="disabled init-disabled range-wrap" >
-          <label>2150 (% of globe)
+          <label><span class=parameter-name>2150</span> (% of globe)
             <input name=p2150 type=range min=0 max=100 value=0 step=1
-                   data-prec=0 disabled>
+                   data-prec=0 data-default=null disabled>
           </label>
           <div class=current-range-val>
             <span style=left:-50%>0</span>
