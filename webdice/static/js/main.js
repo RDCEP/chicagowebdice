@@ -4,6 +4,7 @@
   var parameters_wrap = d3.select('#parameters_wrap'),
     run_model = d3.select('#run_model'),
     clear_model = d3.select('#clear_model'),
+    clear_runs = d3.select('#clear_runs'),
     runs_list = d3.select('#runs ul'),
 
     initialized = false,
@@ -313,8 +314,10 @@
 
   };
 
-  var remove_run = function() {
-    var index = +d3.select(this).attr('data-run-id');
+  var remove_run = function(index) {
+    if (index === undefined) {
+      index = +d3.select(this).attr('data-run-id');
+    }
     d3.selectAll('#graphs_wrap [data-run-id="' + index + '"]').remove();
     for (var dice_variable in all_data) {
       if (all_data.hasOwnProperty(dice_variable)) {
@@ -505,6 +508,13 @@
   clear_model.on('click', function() {
     d3.event.preventDefault();
     reset_params();
+  });
+
+  clear_runs.on('click', function() {
+    runs_list.selectAll('li').each(function() {
+      remove_run(+d3.select(this).attr('data-run-id'));
+    });
+    d3.select('#runs_wrap').classed('visuallyhidden', true);
   });
 
   d3.select(window).on('resize', function() {
