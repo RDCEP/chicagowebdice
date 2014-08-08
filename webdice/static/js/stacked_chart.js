@@ -441,7 +441,8 @@ var WebDICEGraph = function() {
         .attr('data-type', function(d) { return d.run_name; })
         .attr('cx', segment_width / 2)
         .attr('cy', function(d) { return _y(d.y + d.y0); })
-        .attr('r', function() { return visible ? 4 : 0; });
+        .attr('r', function() { return visible ? 4 : 0; })
+        .style('stroke', function(d, i) { return color(i); });
       handles.data(graph_data.data[0]);
     });
     add_hover();

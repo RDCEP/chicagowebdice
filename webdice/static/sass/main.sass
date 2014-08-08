@@ -261,17 +261,21 @@ path, circle
     letter-spacing: .02em
     fill: #545454
 .data-point
-  stroke-width: 3
+  stroke-width: 0
   cursor: ns-resize
-  stroke: transparent
+  //stroke: transparent
   fill: transparent
+
   pointer-events: none //TODO: only for draggable points
   .loose
     stroke-width: 5
     pointer-events: all
   &.active
+    stroke-width: 2
     fill: $light-gray
-    stroke: black //$red
+    //stroke: black //$red
+  &.visuallyhidden
+    stroke-width: 0
   &.draggable
     pointer-events: all
     &.hovered
@@ -351,3 +355,7 @@ path, circle
 @import parameters
 @import runs
 @import helpers
+
+
+
+
