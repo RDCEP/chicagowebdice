@@ -33,7 +33,7 @@
   },
   "carbon_intensity": {
     "unit": "tons of CO2 / 1000 $USD",
-    "title": "Total emissions"
+    "title": "Carbon intensity"
   },
   "damages": {
     "unit": "trillions $USD year",
