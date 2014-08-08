@@ -10,9 +10,17 @@ var WebDICEGraph = function() {
     _max_domains,
     _x = d3.scale.linear().domain([0, 1]).range([0, width]),
     _y = d3.scale.linear().domain([0, 1]).range([height, 0]),
+    y_axis_format = function(d) {
+      var y = d.toExponential().split('e');
+      if ((d < .01 || d > 99999) && d != 0) {
+        return d3.format('.2f')(parseFloat(y[0])) + 'e' + y[1];
+      }
+      return d3.format('.1f')(d);
+    },
     x_axis = d3.svg.axis().scale(_x).orient('bottom')
       .tickSize(6).innerTickSize(6),
-    y_axis = d3.svg.axis().scale(_y).orient('left'),
+    y_axis = d3.svg.axis().scale(_y).orient('left')
+      .tickFormat(function(d) { return y_axis_format(d); }),
     _line = d3.svg.line()
       .x(function(d) { return _x(d.x); })
       .y(function(d) { return _y(d.y + d.y0); }),

@@ -122,7 +122,12 @@
                 return x.getFullYear();
               })
               .format_y(function (y) {
-                return d3.format('.1f')(y);
+                var fy, e = y.toExponential().split('e');
+                if ((y < .01 || y > 99999) && y != 0) {
+                  return d3.format('.2f')(parseFloat(fy)) + 'e' + e;
+                } else {
+                  return d3.format('.1f')(y);
+                }
               })
               .title(metadata[dice_variable].title || '')
               .h_grid(true)
