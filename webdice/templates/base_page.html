@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 {% block page %}
-  <header id="main_nav">
+  <header id=main_nav>
     <nav>
-      <ul id="top_nav" class="clearfix">
+      <ul id=top_nav class="clearfix">
         <li><h1><a href="{{ url_for('webdice.index') }}">webDICE</a></h1></li>
         <li><a href="{{ url_for('webdice.basic') }}">Standard</a></li>
-        <li id="advanced_pages">
-          <a class="dead-hover">Advanced</a>
+        <li id=advanced_pages>
+          <a class=dead-hover>Advanced</a>
           <ul>
             <li><a href="{{ url_for('webdice.advanced', year=2007) }}">2007</a></li>
             <li><a href="{{ url_for('webdice.advanced', year=2010) }}">2010</a></li>
@@ -39,9 +39,9 @@
     </div>
   </header>
 
-  <article id="main_content">
+  <article id=main_content>
 
-{#  <div id="sidebar">#}
+{#  <div id=sidebar>#}
 {#  {% block sidebar %}{% endblock %}#}
 {#  </div>#}
 
@@ -50,66 +50,66 @@
 
     <div id=graphs_bkgd></div>
 
-    <div id="essential_graphs" class="pane chart-pane selected">
-      <div class="small-chart chart" id="temp_atmosphere_chart"><div class="bkgd"></div></div>
-      <div class="small-chart chart" id="consumption_pc_chart"><div class="bkgd"></div></div>
-      <div class="small-chart chart" id="mass_atmosphere_chart"><div class="bkgd"></div></div>
-      <div class="small-chart chart" id="emissions_total_chart"><div class="bkgd"></div></div>
+    <div id=essential_graphs class="pane chart-pane selected">
+      <div class="small-chart chart" id=temp_atmosphere_chart><div class=bkgd></div></div>
+      <div class="small-chart chart" id=consumption_pc_chart><div class=bkgd></div></div>
+      <div class="small-chart chart" id=mass_atmosphere_chart><div class=bkgd></div></div>
+      <div class="small-chart chart" id=emissions_total_chart><div class=bkgd></div></div>
     </div>
-    <div id="climate_graphs" class="pane chart-pane">
-      <div class="small-chart chart" id="mass_upper_chart"></div>
-      <div class="small-chart chart" id="mass_lower_chart"></div>
-      <div class="small-chart chart" id="temp_lower_chart"></div>
+    <div id=climate_graphs class="pane chart-pane">
+      <div class="small-chart chart" id=mass_upper_chart></div>
+      <div class="small-chart chart" id=mass_lower_chart></div>
+      <div class="small-chart chart" id=temp_lower_chart></div>
     </div>
-    <div id="economy_graphs" class="pane chart-pane">
-      <div class="small-chart chart" id="productivity_chart"></div>
-      <div class="small-chart chart" id="backstop_growth_chart"></div>
-      <div class="small-chart chart" id="carbon_intensity_chart"></div>
-      <div class="small-chart chart" id="damages_chart"></div>
+    <div id=economy_graphs class="pane chart-pane">
+      <div class="small-chart chart" id=productivity_chart></div>
+      <div class="small-chart chart" id=backstop_growth_chart></div>
+      <div class="small-chart chart" id=carbon_intensity_chart></div>
+      <div class="small-chart chart" id=damages_chart></div>
     </div>
-    <div id="policy_graphs" class="pane chart-pane">
-      <div class="small-chart chart" id="scc_chart"></div>
-      <div class="small-chart chart" id="tax_rate_chart"></div>
-      <div class="small-chart chart" id="abatement_chart"></div>
-      <div class="small-chart chart" id="output_abate_chart"></div>
+    <div id=policy_graphs class="pane chart-pane">
+      <div class="small-chart chart" id=scc_chart></div>
+      <div class="small-chart chart" id=tax_rate_chart></div>
+      <div class="small-chart chart" id=abatement_chart></div>
+      <div class="small-chart chart" id=output_abate_chart></div>
     </div>
-    <div id="custom_graph" class="pane chart-pane">
-      <div id="large-graph">
-        <div id="large-graph-chart chart" style="height:90%;"></div>
-        <div id="large-graph-zoom chart" style="height:10%;"></div>
+    <div id=custom_graph class="pane chart-pane">
+      <div id=large-graph>
+        <div id=custom_chart class="large-chart chart" style="height:90%;"></div>
+        <div id=custom_chart_zoom style="height:10%;"></div>
       </div>
-      <div id="graph-controls">
+      <div id=graph-controls>
         <div>
           <h2>X-Axis</h2>
-          <select id="select-x-axis">
-            <option value="year">Year</option>
+          <select id=select-x-axis>
+            <option value=year>Year</option>
             {% block xaxis %}{% endblock %}
            </select>
-           <label><input type="checkbox" id="logarithmic-x"> Logarithmic</label>
+           <label><input type=checkbox id=logarithmic-x> Logarithmic</label>
         </div>
         <div>
           <h2>Y-Axis</h2>
-          <select id="select-y-axis">
+          <select id=select-y-axis>
             {% block yaxis %}{% endblock %}
           </select>
-          <label><input type="checkbox" id="logarithmic-y"> Logarithmic</label>
+          <label><input type=checkbox id=logarithmic-y> Logarithmic</label>
         </div>
         <div>
           <h2>Labels</h2>
-          <select id="series-labels">
-            <option value="none">None</option>
-            <option value="years">Years</option>
+          <select id=series-labels>
+            <option value=none>None</option>
+            <option value=years>Years</option>
           </select>
         </div>
       </div>
     </div>
-{#    <div id="scc_graph" class="pane chart-pane"></div> #}
+{#    <div id=scc_graph class="pane chart-pane"></div> #}
   </div>
   {% block parameters %}{% endblock %}
   {% include 'modules/runs.html' %}
   {% endblock %}
   </article>
-  <div id="help-wrapper">
+  <div id=help-wrapper>
   {% block help %}{% endblock %}
   </div>
 
