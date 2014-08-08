@@ -1,7 +1,7 @@
 (function() {
   "use strict";
 
-  var parameter_tabs = d3.selectAll('#parameter_tabs li'),
+  var parameter_tabs = d3.selectAll('#parameter_tabs li[data-pane]'),
     title_tabs = d3.selectAll('#title_legend li'),
     parameters = d3.select('#parameters_wrap'),
     runs = d3.select('#runs_wrap');
