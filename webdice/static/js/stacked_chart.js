@@ -11,11 +11,28 @@ var WebDICEGraph = function() {
     _x = d3.scale.linear().domain([0, 1]).range([0, width]),
     _y = d3.scale.linear().domain([0, 1]).range([height, 0]),
     y_axis_format = function(d) {
-      var y = d.toExponential().split('e');
-      if ((d < .01 || d > 99999) && d != 0) {
-        return d3.format('.2f')(parseFloat(y[0])) + 'e' + y[1];
+      //FIXME: This is tres sloppy
+      if (_y.domain()[1] < 100) {
+        if ((d < .01 || d > 99999) && d != 0) {
+          return d3.format('.1e')(d);
+        }
+        if (_y.domain()[1] < 0.1) {
+          return d3.format('.3f')(d);
+        }
+        if (_y.domain()[1] < 1) {
+          return d3.format('.2f')(d);
+        }
+
+        if (_y.domain()[0] < 1) {
+          return d3.format('.1f')(d);
+        }
+        return d3.format('.0f')(d);
       }
-      return d3.format('.1f')(d);
+
+      if (d < 1) {
+        return d3.format('.2r')(d);
+      }
+      return d3.format('.0f')(d);
     },
     x_axis = d3.svg.axis().scale(_x).orient('bottom')
       .tickSize(6).innerTickSize(6),
