@@ -6,6 +6,9 @@
     clear_model = d3.select('#clear_model'),
     clear_runs = d3.select('#clear_runs'),
     runs_list = d3.select('#runs ul'),
+    damages_model = d3.selectAll('input[name="damages_model"]'),
+    select_x_axis = d3.select('#select-x-axis'),
+    select_y_axis = d3.select('#select-y-axis'),
 
     initialized = false,
 
@@ -631,7 +634,7 @@
     d3.select('#runs_wrap').classed('visuallyhidden', true);
   });
 
-  d3.selectAll('input[name="damages_model"]').on('click', function() {
+  damages_model.on('click', function() {
     console.log(1);
     var pf = d3.select('#prod_frac'),
       active = d3.select('#productivity_fraction').property('checked');
@@ -644,7 +647,7 @@
     }
   });
 
-  d3.select('#select-x-axis').on('change', function() {
+  select_x_axis.on('change', function() {
 
     var new_x = this.value;
 
@@ -696,7 +699,7 @@
 
   });
 
-  d3.select('#select-y-axis').on('change', function() {
+  select_y_axis.on('change', function() {
 
     custom_vars[0]= this.value;
 
@@ -749,11 +752,8 @@
 
   });
 
-
   /*
    END NEW CODE
    */
 
 })();
-
-//FIXME: Legend doesn't disappear with Cmd+Alt+I
