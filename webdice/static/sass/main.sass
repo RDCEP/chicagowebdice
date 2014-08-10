@@ -232,19 +232,27 @@ path, circle
       width: 100%
       //background-color: #f6f6f6
       z-index: -1
-    h3
+    h3, h4
       font-size: 1em
       font-weight: bold
       position: absolute
       top: 0
       padding: 15px 0 0 $left_pad
+    h4
+      font-size: .8em
+      font-weight: normal
+      top: 1.4em
   .large-chart
-    h3
+    h3, h4
       font-size: 1em
       font-weight: bold
       position: absolute
       top: 0
       padding: 15px 0 0 $left_pad
+    h4
+      font-size: .8em
+      font-weight: normal
+      top: 1.4em
   &.chart-pane
     position: absolute
     top: 0
@@ -269,7 +277,7 @@ path, circle
     fill: #545454
 .data-point
   stroke-width: 0
-  cursor: ns-resize
+  //cursor: ns-resize
   //stroke: transparent
   fill: transparent
 
@@ -282,7 +290,8 @@ path, circle
     fill: $light-gray
     //stroke: black //$red
   &.visuallyhidden
-    stroke-width: 0
+    stroke-width: 0!important
+    fill: transparent!important
   &.draggable
     pointer-events: all
     &.hovered

@@ -71,6 +71,7 @@ var WebDICEGraph = function() {
     ],
     hidden_runs = [],
     _color,
+    _twin = false,
 
     /*********************
      SVG and layer objects
@@ -88,6 +89,8 @@ var WebDICEGraph = function() {
     button_layer,
     segment_width,
     title,
+    subtitle,
+    _custom_graph = false,
 
     /**********************
      X-segments and handles
@@ -95,6 +98,7 @@ var WebDICEGraph = function() {
 
     handles,
     tool_tip,
+    data_points,
 
     /******
      States
@@ -165,9 +169,30 @@ var WebDICEGraph = function() {
           return d.data;
         })));
     },
-    update_legend = function(_d) {
+    normal_legend = function(d, i) {
       var _h = '';
-      var arr = [];
+      if (i == 0) { _h += format_x(d.x) + '<br>';}
+      if (hidden_runs.indexOf(+d.run_id) == -1) {
+        var _c = d3.select('.chart-line[data-run-id="' + d.run_id + '"]').style('stroke');
+        _h += '<span data-run-id=' + d.run_id + '>';
+        _h += '<b style="color:' + _c + '">';
+        _h += d.run_name.replace(/ /g, '&nbsp;') + ':&nbsp;</b>' + format_y(d.y) + '</span><br>';
+      }
+      return _h;
+    },
+    custom_legend = function(d, i) {
+      var _h = '';
+      if (hidden_runs.indexOf(+d.run_id) == -1) {
+        var _c = d3.select('.chart-line[data-run-id="' + d.run_id + '"]').style('stroke');
+        _h += '<span data-run-id=' + d.run_id + '>';
+        _h += '<b style="color:' + _c + '">';
+        _h += d.run_name.replace(/ /g, '&nbsp;') + '</b><br>';
+        _h += format_x(d.x) + ', ' + format_y(d.y) + '</span><br>';
+      }
+      return _h;
+    },
+    update_legend = function(_d) {
+      var arr = [], _h = '';
       _d.forEach(function(d, i) {
         arr.push({
           color: color(i),
@@ -181,12 +206,10 @@ var WebDICEGraph = function() {
         });
       }
       _d.forEach(function(d, i) {
-        if (i == 0) { _h += format_x(d.x) + '<br>';}
-        if (hidden_runs.indexOf(+d.run_id) == -1) {
-          var _c = d3.select('.chart-line[data-run-id="' + d.run_id + '"]').style('stroke');
-          _h += '<span data-run-id=' + d.run_id + '>';
-          _h += '<b style="color:' + _c + '">';
-          _h += d.run_name.replace(/ /g, '&nbsp;') + ':&nbsp;</b>' + format_y(d.y) + '</span><br>';
+        if (_custom_graph) {
+          _h += custom_legend(d, i);
+        } else {
+          _h += normal_legend(d, i);
         }
       });
       tool_tip
@@ -194,6 +217,79 @@ var WebDICEGraph = function() {
         .style('left', (_x(_d[0].x) + padding.left + 10) + 'px')
         .style('top', (_y(_d[0].y) + padding.top) + 'px')
         .classed('active', true);
+    },
+    add_hover_points = function() {
+      segment_width = _x(graph_data.data[0].data[1].x) - _x(graph_data.data[0].data[0].x);
+      handles = handle_layer.selectAll('.segment')
+        .data(graph_data.nested);
+      handles.exit().remove();
+      handles.enter().append('g')
+        .attr('class', 'segment')
+        .attr('transform', function(d) {
+          return 'translate(' + (_x(d.values[0].x) - segment_width / 2) + ',0)';
+        });
+      handles.each(function(d) {
+        var visible = ((_x(d.values[0].x) >= _x.range()[0]) && (_x(d.values[0].x) <= _x.range()[1])),
+          t = d3.select(this);
+        t.append('rect')
+          .attr('class', 'segment-rect')
+          .attr('height', _y.range()[0])
+          .attr('width', segment_width)
+          .attr('data-x', function(d) { return d.values[0].x; })
+          .style('fill', 'transparent')
+          .style('pointer-events', function() { return visible ? 'all' : 'none'; });
+        var dpt = t.selectAll('.data-point.tight')
+          .data(function(d) { return d.values; });
+        dpt.exit().remove();
+        dpt.enter().append('circle')
+          .classed('data-point', function() { return visible; })
+          .classed('hoverable', function() { return visible; })
+          .classed('tight', true)
+          .attr('data-x', function(d) { return d.x; })
+          .attr('data-y', function(d) { return d.y; })
+          .attr('data-run-id', function(d) { return d.run_id; })
+          .attr('data-type', function(d) { return d.run_name; })
+          .attr('cx', segment_width / 2)
+          .attr('cy', function(d) { return _y(d.y + d.y0); })
+          .attr('r', function() { return visible ? 4 : 0; })
+          .style('stroke', function(d, i) { return color(i); });
+        handles.data(graph_data.data[0]);
+      });
+      add_hover();
+    },
+    add_custom_hover_points = function() {
+//      console.log('add');
+      handles = handle_layer.selectAll('.segment')
+        .data(graph_data.data);
+      handles.attr('class', 'segment')
+        .attr('transform', function(d) {
+          return 'translate(0,0)';
+        });
+      handles.enter().append('g');
+      handles.exit().remove();
+      handles.each(function(dd, j) {
+        var t = d3.select(this);
+        data_points = t.selectAll('.data-point.tight')
+          .data(dd.data);
+        data_points.enter().append('circle');
+        data_points.classed('data-point', function() { return true; })
+          .classed('hoverable', function() { return true; })
+          .classed('tight', true)
+          .attr('data-x', function(d) { return d.x; })
+          .attr('data-y', function(d) { return d.y; })
+          .attr('data-run-id', function(d) { return d.run_id; })
+          .attr('data-type', function(d) { return d.run_name; })
+          .attr('cx', function(d) { return _x(d.x); })
+          .attr('cy', function(d) { return _y(d.y + d.y0); })
+          .attr('r', 3)
+          .style('stroke', function(d, i) { return color(j); })
+          .style('stroke-width', 1.5)
+          .style('fill', 'white')
+          .style('pointer-events', 'all');
+        data_points.exit().remove();
+      });
+//      handles.exit().remove();
+//      add_custom_hover();
     },
     add_hover = function() {
       /*
@@ -218,11 +314,28 @@ var WebDICEGraph = function() {
           });
       });
     },
+    add_custom_hover = function() {
+      /*
+       Attach mouse events to <rect>s with hoverable handles (toggle .active)
+       */
+      handles.each(function(d) {
+        var t = d3.select(this);
+        t.selectAll('.data-point').each(function() {
+          d3.select(this).on('mouseover', function(d) {
+            update_legend([d]);
+            tool_tip.classed('hidden', !_hoverable);
+          })
+          .on('mouseout', function() {
+            tool_tip.classed('hidden', true);
+          });
+        });
+      });
+    },
     remove_hover = function() {
       /*
        Remove mouse events from <rect>s with hoverable handles (toggle .active)
        */
-      handles.selectAll('rect')
+      handles.selectAll('rect, .data-point')
         .on('mouseover', function() { return null; })
         .on('mouseout', function() { return null; });
     },
@@ -327,9 +440,14 @@ var WebDICEGraph = function() {
   };
   this.title = function(str, align) {
     if (str === undefined) { return title.text(); }
-    title = d3.select('#' + svg_id).insert('h3', '.chart-wrap');
+    title = title || d3.select('#' + svg_id).insert('h3', '.chart-wrap');
     title.html(str);
-//    if (align) { title.style('padding-left', padding.left + 'px'); }
+    return this;
+  };
+  this.subtitle = function(str) {
+    if (str === undefined) { return subtitle.text(); }
+    subtitle = subtitle || d3.select('#' + svg_id).insert('h4', '.chart-wrap');
+    subtitle.html(str);
     return this;
   };
   this.x = function(val) {
@@ -434,6 +552,7 @@ var WebDICEGraph = function() {
      ...
      */
     if (arr === undefined) { return graph_data.twin_data; }
+    _twin = true;
     graph_data.twin_data = arr;
     graph_data.twin_nested = nested(arr);
     return this;
@@ -479,44 +598,13 @@ var WebDICEGraph = function() {
       remove_hover();
       return this;
     }
-
-    segment_width = _x(graph_data.data[0].data[1].x) - _x(graph_data.data[0].data[0].x);
-    handles = handle_layer.selectAll('.segment')
-      .data(graph_data.nested);
-    handles.exit().remove();
-    handles.enter().append('g')
-      .attr('class', 'segment')
-      .attr('transform', function(d) {
-        return 'translate(' + (_x(d.values[0].x) - segment_width / 2) + ',0)';
-      });
-    handles.each(function(d) {
-      var visible = ((_x(d.values[0].x) >= _x.range()[0]) && (_x(d.values[0].x) <= _x.range()[1])),
-        t = d3.select(this);
-      t.append('rect')
-        .attr('class', 'segment-rect')
-        .attr('height', _y.range()[0])
-        .attr('width', segment_width)
-        .attr('data-x', function(d) { return d.values[0].x; })
-        .style('fill', 'transparent')
-        .style('pointer-events', function() { return visible ? 'all' : 'none'; });
-      var dpt = t.selectAll('.data-point.tight')
-        .data(function(d) { return d.values; });
-      dpt.exit().remove();
-      dpt.enter().append('circle')
-        .classed('data-point', function() { return visible; })
-        .classed('hoverable', function() { return visible; })
-        .classed('tight', true)
-        .attr('data-x', function(d) { return d.x; })
-        .attr('data-y', function(d) { return d.y; })
-        .attr('data-run-id', function(d) { return d.run_id; })
-        .attr('data-type', function(d) { return d.run_name; })
-        .attr('cx', segment_width / 2)
-        .attr('cy', function(d) { return _y(d.y + d.y0); })
-        .attr('r', function() { return visible ? 4 : 0; })
-        .style('stroke', function(d, i) { return color(i); });
-      handles.data(graph_data.data[0]);
-    });
-    add_hover();
+    if (_custom_graph) {
+      add_custom_hover_points();
+      add_custom_hover();
+    } else {
+      add_hover_points();
+      add_hover();
+    }
     return this;
   };
   this.h_grid = function(bool) {
@@ -619,22 +707,35 @@ var WebDICEGraph = function() {
     draw_twin_axes();
     return this;
   };
-  this.delete_run = function() {
-
+  this.custom = function(bool) {
+    if (bool === undefined) { return this; }
+    _custom_graph = bool;
+    //FIXME: Total crap below. Can't rely on this.
+    segment_width = _x(graph_data.data[0].data[1].x) - _x(graph_data.data[0].data[0].x);
+    return this;
   };
   this.update_data = function() {
     graph_data.graphs = graph_layer.selectAll('.chart-line')
       .data(graph_data.data);
-    graph_data.graphs.exit().remove();
-    graph_data.graphs.enter().append('path')
-      .attr('d', function(d) { return _line(d.data); })
-      .attr('class', 'chart-line')
+    graph_data.graphs.enter().append('path');
+    graph_data.graphs.attr('class', 'chart-line')
       .attr('clip-path', 'url(#graph_clip)')
       .attr('data-type', function(d) { return d.run_name ? d.run_name : null; })
       .attr('data-run-id', function(d) { return typeof(d.run_index) == 'number' ? d.run_index : null; })
       .style('stroke', function(d, i) { return color(i); });
-    handles.data(graph_data.nested);
-    add_hover();
+//    graph_data.graphs.exit().remove();
+    if (_custom_graph) {
+//      add_custom_hover_points();
+      add_custom_hover();
+    } else {
+      handles.data(graph_data.nested);
+//      add_hover_points();
+      add_hover();
+    }
+    axes_layer.select('.y.axis').call(y_axis);
+  };
+  this.update_custom_data = function() {
+
   };
   this.update_twin_data = function() {
     graph_data.twin_graphs = graph_layer.selectAll('.chart-line')
@@ -653,9 +754,50 @@ var WebDICEGraph = function() {
   };
   this.redraw = function() {
     redraw();
-    handle_layer.selectAll('.segment').remove();
-    this.hoverable(true);
+    if (_custom_graph) {
+//      add_custom_hover_points();
+      handle_layer.selectAll('.data-point').remove();
+      this.hoverable(true);
+    } else {
+      handle_layer.selectAll('.segment').remove();
+      this.hoverable(true);
+    }
 
     return this;
+  };
+  this.change_y = function() {
+    axes_layer.select('.y.axis').call(y_axis);
+    graph_data.graphs
+      .data(graph_data.data)
+      .attr('d', function(d) { return _line(d.data); });
+    handles.data(graph_data.nested)
+      .each(function(dd, i) {
+        d3.select(this).selectAll('.data-point')
+          .attr('data-x', function(d) { return d.x; })
+          .attr('data-y', function(d) { return d.y; })
+          .attr('cy', function(d) { return _y(d.y + d.y0); })
+          .attr('cx', function(d) {
+            return _x(d.x);
+          });
+      });
+    add_hover();
+  };
+  this.change_x = function() {
+    axes_layer.select('.x.axis').call(x_axis);
+    graph_data.graphs
+      .data(graph_data.data)
+      .attr('d', function(d) { return _line(d.data); });
+    handles.data(graph_data.nested)
+      .each(function(dd, i) {
+        d3.select(this).selectAll('.data-point')
+          .attr('data-x', function(d) { return d.x; })
+          .attr('data-y', function(d) { return d.y; })
+          .attr('cy', function(d) { return _y(d.y + d.y0); })
+          .attr('cx', function(d) {
+//            return _x(d.x) - ((segment_width * i) - segment_width  / 2);
+            return _x(d.x);
+          });
+      });
+    add_hover();
   };
 };

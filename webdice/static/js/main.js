@@ -30,6 +30,9 @@
     end_year = start_year + ((graph_periods-1) * period_length),
     x_domain = [new Date(start_year, 0, 1),
       new Date(start_year + (graph_periods - 1) * period_length, 0, 1)],
+    x_custom_domain = [new Date(start_year, 0, 1),
+      new Date(start_year + (graph_periods - 1) * period_length, 0, 1)],
+    x_custom_domain_var = false,
 
     total_runs = 0,
     visible_runs = 0,
@@ -38,6 +41,7 @@
     charts = {},
     runs = [],
     all_data = {},
+    custom_data = [[], []],
     adjusted_params = [],
     custom_vars = ['productivity', false],
 
@@ -56,16 +60,40 @@
     return {w: w, h: h};
   };
 
-  var flatten_data = function(_data) {
-    var fd = [];
+  var flatten_vars = function(vars, axis) {
+    var flat_vars = [];
+    vars.forEach(function(d) {
+      if (d) {
+        flat_vars = flat_vars.concat(flatten_runs(d, axis));
+      }
+    });
 
-    _data.forEach(function(d) {
-      fd = fd.concat(d.data);
+    return flat_vars;
+
+  };
+
+  var flatten_runs = function(runs, axis) {
+
+    if (axis === undefined) {
+      axis = 'y';
+    }
+
+    var flat_runs = [];
+
+    runs.forEach(function(d) {
+      flat_runs = flat_runs.concat(d.data);
     });
-    fd.forEach(function(d, i) {
-      fd[i] = d.y;
+    flat_runs.forEach(function(d, i) {
+      flat_runs[i] = d[axis];
     });
-    return fd;
+    return flat_runs;
+  };
+
+  var get_min_max = function(ext) {
+    return [
+      ext[0] == 0 ? 0 : ext[0] - (ext[1] - ext[0]) / 10,
+      ext[1] + (ext[1] - ext[0]) / 10
+    ]
   };
 
   var active_tab = function() {
@@ -88,37 +116,26 @@
 
   };
 
-  var update_custom_graph = function(dice_variables) {
+  var update_custom_graph = function(custom_data) {
 
-    var ext, min, max;
+    var extents = d3.extent(flatten_vars(custom_data));
 
-    ext = d3.extent(flatten_data(all_data[dice_variables[0]]));
-    min = ext[0] == 0 ? 0 : ext[0] - (ext[1] - ext[0]) / 10;
-    max = ext[1] + (ext[1] - ext[0]) / 10;
-
-    if (dice_variables[1]) {
-      ext = d3.extent(flatten_data(all_data[dice_variables[1]]));
-      var tmin = ext[0] == 0 ? 0 : ext[0] - (ext[1] - ext[0]) / 10;
-      var tmax = ext[1] + (ext[1] - ext[0]) / 10;
-      min = min < tmin ? min : tmin;
-      max = max < tmax ? max : tmax;
-    }
-
-    // Update chart data and redraw
     charts.custom.chart
-      .data(all_data[dice_variables[0]])
-      .domain(x_domain, [min, max])
+      .data(custom_data[0])
+      .domain(x_custom_domain, get_min_max(extents))
       .colors(used_colors);
+
     if (initialized) {
       charts.custom.chart
         .update_data();
-      if (dice_variables[1]) {
+      if (custom_vars[1]) {
         charts.custom.chart
-          .twin_data(all_data[dice_variables[1]])
+          .twin_data(custom_data[1])
           .update_twin_data();
       }
     } else {
       charts.custom.chart
+        .custom(true)
         .hoverable(true)
         .padding(45, 60, 45, 60)
         .draw();
@@ -161,6 +178,7 @@
           }
         })
         .title(metadata[dice_variable].title || '')
+        .subtitle(metadata[dice_variable].unit || '')
         .h_grid(true)
         .legend(true),
       small: chart_wrap.classed('small-chart')
@@ -172,14 +190,12 @@
     if (charts.hasOwnProperty(dice_variable)) {
 
       // Set domain extents
-      var ext = d3.extent(flatten_data(all_data[dice_variable])),
-        min = ext[0] == 0 ? 0 : ext[0] - (ext[1] - ext[0]) / 10,
-        max = ext[1] + (ext[1] - ext[0]) / 10;
+      var extents = d3.extent(flatten_runs(all_data[dice_variable]));
 
       // Update chart data and redraw
       charts[dice_variable].chart
         .data(all_data[dice_variable])
-        .domain(x_domain, [min, max])
+        .domain(x_domain, get_min_max(extents))
         .colors(used_colors)
       ;
       if (initialized) {
@@ -324,7 +340,14 @@
               update_graph(dice_variable);
             }
           }
-          //TODO: Update custom
+
+          custom_data[0].filter(function(d) {
+            return d.run_name == old_name;
+          }).forEach(function(d) {
+            d.run_name = new_name;
+          });
+          update_custom_graph(custom_data);
+
           h3.text(new_name);
           d3.selectAll('[data-type]').attr('data-type', new_name);
           d3.select(this).remove();
@@ -392,7 +415,10 @@
       }
     }
 
-    //TODO: Update custom
+    custom_data[0] = custom_data[0].filter(function(d) {
+      return d.run_index != index;
+    });
+    update_custom_graph(custom_data);
 
     used_colors.splice(index, 1);
 
@@ -435,6 +461,35 @@
       .on('click', rename_run);
   };
 
+  var build_data_object = function(_data, dice_variable, custom_x_domain) {
+
+    var graph_data = {
+      data: [],
+      var: dice_variable,
+      run_index: total_runs,
+      run_name: 'Run #' + total_runs
+    };
+
+    _data[dice_variable].forEach(function(d, i) {
+      /*
+       Only show periods in first 200 years
+       */
+      if (i < graph_periods) {
+
+        graph_data.data.push({
+          y: d,
+          y0: 0,
+          x: custom_x_domain
+            ? all_data[custom_x_domain][all_data[dice_variable].length - 1].data[i].x
+            : new Date(start_year + i * period_length, 0, 1)
+        })
+      }
+    });
+
+    return graph_data;
+
+  };
+
   var add_run = function(_data, _params) {
     /*
      Add run to interface.
@@ -445,28 +500,10 @@
     for (var dice_variable in _data) {
       if (_data.hasOwnProperty(dice_variable)) {
 
-        var graph_data = {
-          data: [],
-          var: dice_variable,
-          run_index: total_runs,
-          run_name: 'Run #' + total_runs
-        };
-
-        _data[dice_variable].forEach(function(d, i) {
-          /*
-           Only show periods in first 200 years
-           */
-          if (i < graph_periods) {
-            graph_data.data.push({
-              y: d,
-              y0: 0,
-              x: new Date(start_year + i * period_length, 0, 1)
-            })
-          }
-        });
-
         all_data[dice_variable] = all_data[dice_variable] || [];
-        all_data[dice_variable].push(graph_data);
+        all_data[dice_variable].push(
+          build_data_object(_data, dice_variable)
+        );
 
         var chart_wrap = d3.select('#'+dice_variable+'_chart');
 
@@ -482,9 +519,13 @@
     }
 
     if (!initialized) { initialize_graph('custom', d3.select('#custom_chart')); }
-    update_custom_graph(custom_vars);
 
-    //TODO: Draw customizable chart
+    custom_data[0].push(build_data_object(_data, custom_vars[0], x_custom_domain_var));
+    if (custom_vars[1]) {
+      custom_data[1].push(build_data_object(_data, custom_vars[1], x_custom_domain_var));
+    }
+
+    update_custom_graph(custom_data);
 
     add_run_to_list(total_runs);
 
@@ -601,6 +642,96 @@
       pf.classed('disabled', true);
       pf.select('input').property('disabled', true);
     }
+  });
+
+  d3.select('#select-x-axis').on('change', function() {
+
+    var new_x = this.value;
+
+    custom_data.forEach(function(v) {
+      if (v) {
+        v.forEach(function(r, i) {
+          r.data.forEach(function(d, j) {
+            d.x = new_x == 'year'
+              ? new Date(start_year + j * period_length, 0, 1)
+              : all_data[new_x][i].data[j].y;
+          });
+        });
+      }
+    });
+
+    if (new_x == 'year') {
+      charts.custom.chart.format_x(function(x) { return x.getFullYear(); });
+      charts.custom.chart.x(d3.time.scale());
+      x_custom_domain = x_domain;
+      x_custom_domain_var = false;
+    } else {
+      charts.custom.chart.format_x(charts.custom.chart.format_y());
+      charts.custom.chart.x(d3.scale.linear());
+      x_custom_domain = d3.extent(flatten_runs(all_data[new_x]));
+      x_custom_domain_var = new_x;
+    }
+
+    var title = metadata[custom_vars[0]].title + ' v. ';
+    title += x_custom_domain_var ? metadata[x_custom_domain_var].title : 'Time';
+    var subtitle = metadata[custom_vars[0]].unit + ' v. ';
+    subtitle += x_custom_domain_var ? metadata[x_custom_domain_var].unit : 'years';
+
+    charts.custom.chart
+      .data(custom_data[0])
+      .domain(
+        x_custom_domain,
+        d3.extent(flatten_vars(custom_data))
+      )
+      .colors(used_colors)
+      .title(title)
+      .subtitle(subtitle)
+      .change_x();
+
+    if (custom_vars[1]) {
+      charts.custom.chart
+        .twin_data(custom_data[1])
+        .update_twin_data();
+    }
+
+  });
+
+  d3.select('#select-y-axis').on('change', function() {
+
+    custom_vars[0]= this.value;
+
+    custom_data.forEach(function(v) {
+      if (v) {
+        v.forEach(function(r, i) {
+          r.data.forEach(function(d, j) {
+            d.y = all_data[custom_vars[0]][i].data[j].y;
+          });
+        });
+      }
+    });
+
+    var title = metadata[custom_vars[0]].title + ' v. ';
+    title += x_custom_domain_var ? metadata[x_custom_domain_var].title : 'Time';
+    var subtitle = metadata[custom_vars[0]].unit + ' v. ';
+    subtitle += x_custom_domain_var ? metadata[x_custom_domain_var].unit : 'years';
+
+    charts.custom.chart
+      .data(custom_data[0])
+      .domain(
+        x_custom_domain,
+        d3.extent(flatten_vars(custom_data))
+      )
+      .colors(used_colors)
+      .title(title)
+      .subtitle(subtitle)
+      .change_y();
+
+    if (custom_vars[1]) {
+      charts.custom.chart
+        .twin_data(custom_data[1])
+        .update_twin_data();
+    }
+
   });
 
   d3.select(window).on('resize', function() {

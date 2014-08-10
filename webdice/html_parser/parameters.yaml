@@ -543,10 +543,10 @@ measurements:
         graphs:
           - name: climate
             location: bottomright
-  - name: Test
-    options:
-      - name: Consumption Discount
-        machine_name: consumption_discount
+#  - name: Test
+#    options:
+#      - name: Consumption Discount
+#        machine_name: consumption_discount
 
 
 parameter_help:

@@ -1,6 +1,7 @@
 {
   "custom" : {
-    "title": "Productivity"
+    "title": "Productivity v. Time",
+    "unit": "TFP v. year"
   },
   "temp_atmosphere": {
     "unit": "degrees C since 1900",
@@ -31,7 +32,7 @@
     "title": "Consumption per capita"
   },
   "productivity": {
-    "unit": false,
+    "unit": "TFP",
     "title": "Total factor productivity"
   },
   "carbon_intensity": {
@@ -61,6 +62,42 @@
   "backstop_growth": {
     "unit": "thousands $USD / ton of carbon",
     "title": "Clean energy costs"
+  },
+  "backstop": {
+    "unit": "thousands $USD / ton of carbon",
+    "title": "Clean energy costs"
+  },
+  "population": {
+    "unit": "millions",
+    "title": "Population"
+  },
+  "consumption": {
+    "unit": "trillions $USD / year",
+    "title": "Total Consumption"
+  },
+  "emissions_ind": {
+    "unit": "gigatons of carbon / year",
+    "title": "Industrial emissions"
+  },
+  "carbon_emitted": {
+    "unit": "gigatons of carbon",
+    "title": "Total carbon emitted"
+  },
+  "capital": {
+    "unit": "Trillions $USD",
+    "title": "Capital stock"
+  },
+  "utility_discounted": {
+    "unit": false,
+    "title": "Utility discounted"
+  },
+  "utility": {
+    "unit": false,
+    "title": "Utility"
+  },
+  "miu": {
+    "unit": false,
+    "title": "Emissions control rate"
   }
 
 }
