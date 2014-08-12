@@ -102,6 +102,41 @@
   "miu": {
     "unit": false,
     "title": "Emissions control rate"
+  },
+
+  "consumption_discount": {
+    "unit": false,
+    "title": "Consumption discount rate"
+  },
+  "forcing": {
+    "unit": false,
+    "title": "Forcing"
+  },
+  "gross_output": {
+    "unit": "TKTK",
+    "title": "Gross output"
+  },
+  "intensity_decline": {
+    "unit": "TKTK",
+    "title": "Intensity decline"
+  },
+  "investment": {
+    "unit": "TKTK",
+    "title": "Investment"
+  },
+  "output": {
+    "unit": "TKTK",
+    "title": "Output"
+  },
+  "participation": {
+    "unit": "TKTK",
+    "title": "Participation"
+  },
+  "population_growth": {
+    "unit": "TKTK",
+    "title": "Population growth"
   }
+
+
 
 }

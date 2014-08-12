@@ -10,6 +10,7 @@
     select_x_axis = d3.select('#select-x-axis'),
     select_y_axis = d3.select('#select-y-axis'),
     select_y2_axis = d3.select('#select-y2-axis'),
+    logarithmic_axes = d3.selectAll('.logarithmic-axis'),
 
     initialized = false,
 
@@ -77,9 +78,15 @@
 
   var build_data_object = function(_data, dice_variable, custom_x_domain) {
 
+    console.log(custom_x_domain, dice_variable);
+
     var graph_data = {
       data: [],
       var: dice_variable,
+      y_title: metadata[dice_variable].title,
+      x_title: custom_x_domain
+        ? metadata[custom_x_domain].title
+        : 'Year',
       run_index: total_runs,
       run_name: 'Run #' + total_runs
     };
@@ -711,7 +718,11 @@
   select_x_axis.on('change', function() {
 
     update_x_axis(this.value);
-
+    if (!x_custom_domain_var) {
+      d3.select('#logarithmic_x').attr('disabled', true);
+    } else {
+      d3.select('#logarithmic_x').attr('disabled', null);
+    }
   });
 
   select_y_axis.on('change', function() {
@@ -723,7 +734,39 @@
   select_y2_axis.on('change', function() {
 
     update_y_axis('twin', this.value);
+    if (!show_twin) {
+      d3.select('#logarithmic_y2').attr('disabled', true);
+    } else {
+      d3.select('#logarithmic_y2').attr('disabled', null);
+    }
 
+  });
+
+  logarithmic_axes.on('click', function() {
+    var t = d3.select(this),
+      checked = this.checked,
+      axis = t.attr('id').split('_')[1];
+
+    if (checked) {
+      if (axis == 'y2') {
+        charts.twin.chart.y(d3.scale.log());
+      } else if (axis == 'y') {
+        charts.custom.chart.y(d3.scale.log());
+      } else {
+        charts.custom.chart.x(d3.scale.log());
+      }
+    } else {
+      if (axis == 'y2') {
+        charts.twin.chart.y(d3.scale.linear());
+      } else if (axis == 'y') {
+        charts.custom.chart.y(d3.scale.linear());
+      } else {
+        charts.custom.chart.x(d3.scale.linear());
+      }
+    }
+    charts.twin.chart.update_data();
+    charts.custom.chart.update_data();
+    resize_charts();
   });
 
   d3.select(window).on('resize', function() {

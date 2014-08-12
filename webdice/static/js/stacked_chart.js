@@ -160,6 +160,8 @@ var WebDICEGraph = function() {
           d.data.forEach(function(dd) {
             dd.run_name = d.run_name;
             dd.run_id = d.run_index;
+            dd.x_title = d.x_title;
+            dd.y_title = d.y_title;
           });
           return d.data;
         })));
@@ -182,7 +184,8 @@ var WebDICEGraph = function() {
         _h += '<span data-run-id=' + d.run_id + '>';
         _h += '<b style="color:' + _c + '">';
         _h += d.run_name.replace(/ /g, '&nbsp;') + '</b><br>';
-        _h += format_x(d.x) + ',&nbsp;' + format_y(d.y) + '</span><br>';
+        _h += d.x_title.replace(/ /g, '&nbsp;') + ':&nbsp;' + format_x(d.x) + '<br>';
+        _h += d.y_title.replace(/ /g, '&nbsp;') + ':&nbsp;' + format_y(d.y) + '</span><br>';
       }
       return _h;
     },
@@ -356,7 +359,7 @@ var WebDICEGraph = function() {
       } else {
         axes_layer.append('g')
           .attr('class', 'y axis twin')
-          .attr('transform', 'translate(' + (_x(_x.domain()[1]) - padding.right - 15) + ',0)')
+          .attr('transform', 'translate(' + (_x.range()[1] - padding.right - 15) + ',0)')
           .call(y_axis.orient('right'));
       }
 
@@ -399,6 +402,7 @@ var WebDICEGraph = function() {
      */
     if (!val) { return width; }
     width = val - padding.left - padding.right;
+    _x.range([0, width]);
     return this;
   };
   this.height = function(val) {
@@ -461,15 +465,14 @@ var WebDICEGraph = function() {
   };
   this.x = function(val) {
     if (!val) { return _x; }
-    _x = val;
-    _x.range([0, width]);
+    _x = val.range(_x.range()).domain(_x.domain());
     x_axis.scale(_x);
+    if (_twin) { console.log(_x.range()); }
     return this;
   };
   this.y = function(val) {
     if (!val) { return _y; }
-    _y = val;
-    _y.range([height, 0]);
+    _y = val.range(_y.range()).domain(_y.domain());
     y_axis.scale(_y);
     return this;
   };

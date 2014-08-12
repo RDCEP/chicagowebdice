@@ -85,15 +85,17 @@
           <select id=select-x-axis>
             <option value=year>Year</option>
             {% block xaxis %}{% endblock %}
-           </select>
-{#           <label><input type=checkbox id=logarithmic-x> Logarithmic</label>#}
+          </select>
+          <input type=checkbox id=logarithmic_x class=logarithmic-axis disabled>
+          <label for=logarithmic_x>Logarithmic</label>
         </div>
         <div>
           <h2>Y-Axis</h2>
           <select id=select-y-axis>
             {% block yaxis %}{% endblock %}
           </select>
-{#          <label><input type=checkbox id=logarithmic-y> Logarithmic</label>#}
+          <input type=checkbox id=logarithmic_y class=logarithmic-axis>
+          <label for=logarithmic_y>Logarithmic</label>
         </div>
         <div>
           <h2>Y-Axis 2</h2>
@@ -101,7 +103,8 @@
             <option value=none>None</option>
             {% block yaxis2 %}{% endblock %}
           </select>
-{#          <label><input type=checkbox id=logarithmic-y2> Logarithmic</label>#}
+          <input type=checkbox id=logarithmic_y2 class=logarithmic-axis disabled>
+          <label for=logarithmic_y2>Logarithmic</label>
         </div>
 {#        <div>#}
 {#          <h2>Labels</h2>#}

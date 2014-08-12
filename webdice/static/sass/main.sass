@@ -270,6 +270,43 @@ g.visuallyhidden
     left: 0
     right: 0
     bottom: 0
+#graph-controls
+  position: absolute
+  bottom: 0
+  left: 0px
+  right: 0
+  height: 6.5em
+  background-color: #eee
+  border-top: 1px solid #ccc
+  font: 0.8em Helvetica,sans-serif
+  .logarithmic-axis
+    display: inline
+    &+label
+      display: inline
+    &:disabled+label
+      color: #999999
+  div
+    float: left
+    width: 15em
+    border-right: 1px solid #ccc
+    padding: 1em 2em
+    height: 5em
+  h2
+    font: bold 1em Helvetica,sans-serif
+    text-transform: uppercase
+  label, select
+    width: 15em
+    display: block
+  select
+    margin-bottom: 5px
+  label
+    padding: 0.5em 1em
+    font-size: 0.9em
+  div.short
+    width: 7.5em
+  .short
+    input, select
+      width: 7.5em
 .chart-line
   stroke-width: 2
 .chart-legend
@@ -286,6 +323,7 @@ g.visuallyhidden
     font-weight: normal
     letter-spacing: .02em
     fill: #545454
+
 .data-point
   stroke-width: 0
   //cursor: ns-resize
