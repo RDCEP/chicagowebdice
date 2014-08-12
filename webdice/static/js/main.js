@@ -9,10 +9,10 @@
     damages_model = d3.selectAll('input[name="damages_model"]'),
     select_x_axis = d3.select('#select-x-axis'),
     select_y_axis = d3.select('#select-y-axis'),
+    select_y2_axis = d3.select('#select-y2-axis'),
 
     initialized = false,
 
-    colorsUsed = 0,
     color_list = [
       //d3.rgb(0, 0, 0), //black
       d3.rgb(86, 180, 233), // sky blue
@@ -24,32 +24,27 @@
       d3.rgb(204, 121, 167) // reddish purple
     ],
     used_colors = [],
-    padding = [45, 15, 30, 60],// padding[3] needs to match $left_pad in _layout.sass
+    padding = [45, 15, 30, 60],  // padding[3] needs to match $left_pad in _layout.sass
 
-    simulation_periods = 60,
     graph_periods = 20,
     period_length = 10,
     start_year = 2005,
-    end_year = start_year + ((graph_periods-1) * period_length),
-    x_domain = [new Date(start_year, 0, 1),
-      new Date(start_year + (graph_periods - 1) * period_length, 0, 1)],
-    x_custom_domain = [new Date(start_year, 0, 1),
-      new Date(start_year + (graph_periods - 1) * period_length, 0, 1)],
+    end_year = start_year + ((graph_periods - 1) * period_length),
+    x_domain = [new Date(start_year, 0, 1), new Date(end_year, 0, 1)],
+    x_custom_domain = [new Date(start_year, 0, 1), new Date(end_year, 0, 1)],
     x_custom_domain_var = false,
 
     total_runs = 0,
     visible_runs = 0,
-    active_graph_pane,
     metadata,
     charts = {},
     runs = [],
     all_data = {},
     custom_data = [[], []],
     adjusted_params = [],
-    custom_vars = ['productivity', false],
+    custom_vars = ['productivity', 'backstop'],
+    show_twin = false,
 
-    color,
-    width,
     height;
 
   var get_dims = function() {
@@ -61,18 +56,6 @@
       w = visible_chart_wrap.node().clientWidth,
       h = visible_chart_wrap.node().clientHeight;
     return {w: w, h: h};
-  };
-
-  var flatten_vars = function(vars, axis) {
-    var flat_vars = [];
-    vars.forEach(function(d) {
-      if (d) {
-        flat_vars = flat_vars.concat(flatten_runs(d, axis));
-      }
-    });
-
-    return flat_vars;
-
   };
 
   var flatten_runs = function(runs, axis) {
@@ -92,62 +75,37 @@
     return flat_runs;
   };
 
-  var get_min_max = function(ext) {
-    return [
-      ext[0] == 0 ? 0 : ext[0] - (ext[1] - ext[0]) / 10,
-      ext[1] + (ext[1] - ext[0]) / 10
-    ]
-  };
+  var build_data_object = function(_data, dice_variable, custom_x_domain) {
 
-  var active_tab = function() {
-    d3.selectAll('.tabs').each(function() {
-      var t = d3.select(this),
-        current_tab = t.select('.selected'),
-        current_pane = t.select('#'+current_tab.attr('data-pane'));
-      t.selectAll('a').on('click', function() {
-        var tt = d3.select(this);
-        if (current_tab != tt) {
-          current_tab.classed('selected', false);
-          current_pane.classed('selected', false);
-          current_tab = tt;
-          current_pane = tt.select('#'+current_tab.attr('data-pane'));
-        }
-        current_tab.classed('selected', true);
-        current_pane.classed('selected', true);
-      });
+    var graph_data = {
+      data: [],
+      var: dice_variable,
+      run_index: total_runs,
+      run_name: 'Run #' + total_runs
+    };
+
+    _data[dice_variable].forEach(function(d, i) {
+      /*
+       Only show periods in first 200 years
+       */
+      if (i < graph_periods) {
+
+        graph_data.data.push({
+          y: d,
+          y0: 0,
+          x: custom_x_domain
+            ? all_data[custom_x_domain][all_data[dice_variable].length - 1].data[i].y
+            : new Date(start_year + i * period_length, 0, 1)
+        })
+      }
     });
 
-  };
+    return graph_data;
 
-  var update_custom_graph = function(custom_data) {
-
-    var extents = d3.extent(flatten_vars(custom_data));
-
-    charts.custom.chart
-      .data(custom_data[0])
-      .domain(x_custom_domain, get_min_max(extents))
-      .colors(used_colors);
-
-    if (initialized) {
-      charts.custom.chart
-        .update_data();
-      if (custom_vars[1]) {
-        charts.custom.chart
-          .twin_data(custom_data[1])
-          .update_twin_data();
-      }
-    } else {
-      charts.custom.chart
-        .custom(true)
-        .hoverable(true)
-        .padding(45, 60, 45, 60)
-        .draw();
-    }
   };
 
   var initialize_graph = function(dice_variable, chart_wrap) {
 
-    // Set dimensions
     var dims = get_dims(),
       h, w;
     if (chart_wrap.classed('small-chart')) {
@@ -157,12 +115,11 @@
     } else {
       h = dims.h;
       w = dims.w;
-      chart_wrap.style('height', h + 'px');
     }
 
-    // Add chart to charts
     charts[dice_variable] = charts[dice_variable] || {
       chart: new WebDICEGraph()
+        .twin(dice_variable == 'twin')
         .width(w)
         .height(h)
         .padding(padding[0], padding[1], padding[2], padding[3])
@@ -182,10 +139,39 @@
         })
         .title(metadata[dice_variable].title || '')
         .subtitle(metadata[dice_variable].unit || '')
-        .h_grid(true)
         .legend(true),
       small: chart_wrap.classed('small-chart')
     };
+  };
+
+  var update_custom_graph = function() {
+
+    var graphs = [[0, 'custom'], [1, 'twin']];
+    for (var i = 0; i < graphs.length; ++i) {
+
+      var index = graphs[i][0],
+        graph = graphs[i][1];
+
+      var extents = d3.extent(flatten_runs(custom_data[index]));
+
+      charts[graph].chart
+        .data(custom_data[index])
+        .domain(x_custom_domain, extents)
+        .colors(used_colors);
+
+      if (initialized) {
+        charts[graph].chart
+          .update_data();
+      } else {
+        charts[graph].chart
+          .twin(index == 1)
+          .custom(true)
+          .hoverable(true)
+          .padding(45, 60, 45, 60)
+          .draw();
+      }
+    }
+    resize_charts();
   };
 
   var update_graph = function(dice_variable) {
@@ -198,7 +184,7 @@
       // Update chart data and redraw
       charts[dice_variable].chart
         .data(all_data[dice_variable])
-        .domain(x_domain, get_min_max(extents))
+        .domain(x_domain, extents)
         .colors(used_colors)
       ;
       if (initialized) {
@@ -209,8 +195,100 @@
           .hoverable(true)
           .draw();
       }
+    }
+  };
+
+  var update_x_axis = function (dice_variable) {
+
+    var graphs = [[0, 'custom'], [1, 'twin']];
+    for (var i = 0; i < graphs.length; ++i) {
+      var index = graphs[i][0],
+        graph = graphs[i][1];
+
+      custom_data[index].forEach(function(r, i) {
+        r.data.forEach(function(d, j) {
+          d.x = dice_variable == 'year'
+            ? new Date(start_year + j * period_length, 0, 1)
+            : all_data[dice_variable][i].data[j].y;
+        });
+      });
+
+      if (dice_variable == 'year') {
+        charts[graph].chart.format_x(function(x) { return x.getFullYear(); });
+        charts[graph].chart.x(d3.time.scale());
+        x_custom_domain = x_domain;
+        x_custom_domain_var = false;
+      } else {
+        charts[graph].chart.format_x(charts.custom.chart.format_y());
+        charts[graph].chart.x(d3.scale.linear());
+        x_custom_domain = d3.extent(flatten_runs(all_data[dice_variable]));
+        x_custom_domain_var = dice_variable;
+      }
+
+      var title = metadata[custom_vars[index]].title + ' v. ';
+      title += x_custom_domain_var ? metadata[x_custom_domain_var].title : 'Time';
+      var subtitle = metadata[custom_vars[index]].unit + ' v. ';
+      subtitle += x_custom_domain_var ? metadata[x_custom_domain_var].unit : 'years';
+
+      charts[graph].chart
+        .data(custom_data[index])
+        .domain(
+          x_custom_domain,
+          d3.extent(flatten_runs(custom_data[index]))
+        )
+        .colors(used_colors)
+        .title(title)
+        .subtitle(subtitle)
+        .change_x();
 
     }
+  };
+
+  var update_y_axis = function(graph, val) {
+
+    var index = graph == 'custom' ? 0 : 1,
+      title = '',
+      subtitle = '';
+
+    custom_vars[index] = val;
+
+    if ((graph == 'twin') && (val == 'none')) {
+      console.log(1);
+      custom_vars[index] = false;
+      show_twin = false;
+    } else {
+      if ((graph == 'twin') && (val != 'none')) {
+        show_twin = true;
+      }
+      title = metadata[custom_vars[index]].title + ' v. ';
+      title += x_custom_domain_var ? metadata[x_custom_domain_var].title : 'Time';
+      subtitle = metadata[custom_vars[index]].unit + ' v. ';
+      subtitle += x_custom_domain_var ? metadata[x_custom_domain_var].unit : 'years';
+
+      custom_data.forEach(function (v, k) {
+        v.forEach(function (r, i) {
+          r.data.forEach(function (d, j) {
+            if (custom_vars[k]) {
+              d.y = all_data[custom_vars[k]][i].data[j].y;
+            }
+          });
+        });
+      });
+
+      charts[graph].chart
+        .data(custom_data[index])
+        .domain(
+          x_custom_domain,
+          d3.extent(flatten_runs(custom_data[index]))
+        )
+        .colors(used_colors)
+        .title(title)
+        .subtitle(subtitle)
+        .change_y();
+    }
+
+    resize_charts();
+
   };
 
   var toggle_graph_hover = function(bool) {
@@ -219,6 +297,128 @@
         charts[dice_variable].chart.toggle_hover(bool);
       }
     }
+  };
+
+  var add_run = function(_data) {
+    /*
+     Add run to interface.
+     */
+
+    used_colors.push(color_list[total_runs]);
+
+    for (var dice_variable in _data) {
+      if (_data.hasOwnProperty(dice_variable)) {
+
+        all_data[dice_variable] = all_data[dice_variable] || [];
+        all_data[dice_variable].push(
+          build_data_object(_data, dice_variable)
+        );
+
+        var chart_wrap = d3.select('#'+dice_variable+'_chart');
+
+        if (!chart_wrap.empty()) {
+
+          if (!initialized) {
+            initialize_graph(dice_variable, chart_wrap);
+          }
+          update_graph(dice_variable);
+
+        }
+      }
+    }
+
+    if (!initialized) {
+      initialize_graph('custom', d3.select('#custom_chart'));
+      initialize_graph('twin', d3.select('#twin_chart'));
+    }
+
+    custom_data[0].push(build_data_object(_data, custom_vars[0], x_custom_domain_var));
+    custom_data[1].push(build_data_object(_data, custom_vars[1], x_custom_domain_var));
+
+    update_custom_graph();
+
+    add_run_to_list(total_runs);
+
+    initialized = true;
+
+    resize_charts();
+
+    ++total_runs;
+    ++visible_runs;
+
+  };
+
+  var add_run_to_list = function(index) {
+    /*
+     Add item to list of runs
+     */
+
+    var li = runs_list.append('li').attr('data-run-id', index);
+    li.append('div').attr('class', 'run-swatch');
+    li.append('h3').style({
+      'border-right-color': color_list[index]
+    }).append('span').text('Run #' + index);
+    li.append('p').html(get_run_description());
+    var buttons = li.append('p');
+    buttons.append('mark')
+      .attr('class', 'hide-run')
+      .attr('data-run-id', total_runs)
+      .text('hide')
+      .on('click', hide_run);
+    buttons.append('mark')
+      .attr('class', 'delete-run')
+      .attr('data-run-id', total_runs)
+      .text('delete')
+      .on('click', remove_run);
+    buttons.append('mark')
+      .attr('class', 'rename-run')
+      .attr('data-run-id', total_runs)
+      .text('rename')
+      .on('click', rename_run);
+  };
+
+  var start_run = function() {
+    /*
+     Gather parameters and begin AJAX call to run model.
+     */
+
+    var form = d3.select('#parameter_form'),
+      inputs = form.selectAll('input'),
+      run_params = {};
+
+    inputs.each(function() {
+      var t = d3.select(this);
+      if (t.attr('type') == 'range') {
+        run_params[t.attr('name')] = t.property('value');
+      } else {
+        if (t.property('checked')) {
+          run_params[t.attr('name')] = t.property('value');
+        }
+      }
+    });
+
+    d3.xhr(form.attr('action'))
+      .mimeType('application/json')
+      .responseType('text')
+      .post(JSON.stringify(run_params))
+      .on('load', load_run)
+      .on('error', function(e) {})
+      .on('progress', function(r) {});
+
+  };
+
+  var load_run = function(r) {
+    /*
+     Upon successful run of model, add run and hide parameters pane
+     */
+
+    r = JSON.parse(r.response);
+
+    add_run(r.data);
+
+    d3.select('#parameters_tab').classed('selected', false);
+    parameters_wrap.classed('visuallyhidden', true)
+
   };
 
   var get_updated_params = function() {
@@ -233,7 +433,7 @@
       .filter(function() {
         return !this.hasAttribute('disabled');
       })
-      .each(function(d, i) {
+      .each(function() {
         var t = d3.select(this),
           type = t.attr('type'),
           dflt = t.attr('data-default'),
@@ -256,8 +456,6 @@
      Reset all parameters back to default values
      */
 
-    //TODO: Reset policy and model parameters
-
     var change_event, click_event;
 
     if (document.createEvent) {
@@ -277,7 +475,7 @@
 
     d3.selectAll('#parameter_form section')
       .selectAll('input[type="range"], input[type="radio"]')
-      .each(function(d, i) {
+      .each(function() {
         var t = d3.select(this),
           type = t.attr('type'),
           dflt = t.attr('data-default'),
@@ -319,7 +517,7 @@
         if (!(d.dflt === null)) { run_name += ' (' + d.dflt + ')'; }
         run_name += '<br>';
       });
-      return run_name//.substring(0, -1)
+      return run_name;
     }
   };
 
@@ -349,7 +547,7 @@
           }).forEach(function(d) {
             d.run_name = new_name;
           });
-          update_custom_graph(custom_data);
+          update_custom_graph();
 
           h3.text(new_name);
           d3.selectAll('[data-type]').attr('data-type', new_name);
@@ -400,14 +598,16 @@
       toggle_graph_hover(false);
     }
 
-
-
   };
 
   var remove_run = function(index) {
     if (index === undefined) {
       index = +d3.select(this).attr('data-run-id');
     }
+
+    used_colors.splice(used_colors.indexOf(color_list[index]), 1);
+//    used_colors.splice(index, 1);
+
     d3.selectAll('#graphs_wrap [data-run-id="' + index + '"]').remove();
     for (var dice_variable in all_data) {
       if (all_data.hasOwnProperty(dice_variable)) {
@@ -418,12 +618,12 @@
       }
     }
 
-    custom_data[0] = custom_data[0].filter(function(d) {
-      return d.run_index != index;
+    custom_data.forEach(function(d, i) {
+      custom_data[i] = custom_data[i].filter(function(dd) {
+        return dd.run_index != index;
+      });
     });
-    update_custom_graph(custom_data);
-
-    used_colors.splice(index, 1);
+    update_custom_graph();
 
     --visible_runs;
 
@@ -431,157 +631,9 @@
       toggle_graph_hover(false);
     }
 
+
+    console.log(index, d3.selectAll('#runs li[data-run-id="' + index + '"]'));
     d3.selectAll('#runs li[data-run-id="' + index + '"]').remove();
-
-  };
-
-  var add_run_to_list = function(index) {
-    /*
-     Add item to list of runs
-     */
-
-    var li = runs_list.append('li').attr('data-run-id', index);
-    li.append('div').attr('class', 'run-swatch');
-    li.append('h3').style({
-      'border-right-color': color_list[index]
-    }).append('span').text('Run #' + index);
-    li.append('p').html(get_run_description());
-    var buttons = li.append('p');
-    buttons.append('mark')
-      .attr('class', 'hide-run')
-      .attr('data-run-id', total_runs)
-      .text('hide')
-      .on('click', hide_run);
-    buttons.append('mark')
-      .attr('class', 'delete-run')
-      .attr('data-run-id', total_runs)
-      .text('delete')
-      .on('click', remove_run);
-    buttons.append('mark')
-      .attr('class', 'rename-run')
-      .attr('data-run-id', total_runs)
-      .text('rename')
-      .on('click', rename_run);
-  };
-
-  var build_data_object = function(_data, dice_variable, custom_x_domain) {
-
-    var graph_data = {
-      data: [],
-      var: dice_variable,
-      run_index: total_runs,
-      run_name: 'Run #' + total_runs
-    };
-
-    _data[dice_variable].forEach(function(d, i) {
-      /*
-       Only show periods in first 200 years
-       */
-      if (i < graph_periods) {
-
-        graph_data.data.push({
-          y: d,
-          y0: 0,
-          x: custom_x_domain
-            ? all_data[custom_x_domain][all_data[dice_variable].length - 1].data[i].x
-            : new Date(start_year + i * period_length, 0, 1)
-        })
-      }
-    });
-
-    return graph_data;
-
-  };
-
-  var add_run = function(_data, _params) {
-    /*
-     Add run to interface.
-     */
-
-    used_colors.push(color_list[total_runs]);
-
-    for (var dice_variable in _data) {
-      if (_data.hasOwnProperty(dice_variable)) {
-
-        all_data[dice_variable] = all_data[dice_variable] || [];
-        all_data[dice_variable].push(
-          build_data_object(_data, dice_variable)
-        );
-
-        var chart_wrap = d3.select('#'+dice_variable+'_chart');
-
-        if (!chart_wrap.empty()) {
-
-          if (!initialized) {
-            initialize_graph(dice_variable, chart_wrap);
-          }
-          update_graph(dice_variable);
-
-        }
-      }
-    }
-
-    if (!initialized) { initialize_graph('custom', d3.select('#custom_chart')); }
-
-    custom_data[0].push(build_data_object(_data, custom_vars[0], x_custom_domain_var));
-    if (custom_vars[1]) {
-      custom_data[1].push(build_data_object(_data, custom_vars[1], x_custom_domain_var));
-    }
-
-    update_custom_graph(custom_data);
-
-    add_run_to_list(total_runs);
-
-    if (!initialized) { initialized = true; }
-
-    resize_charts();
-
-    ++total_runs;
-    ++visible_runs;
-
-  };
-
-  var start_run = function() {
-    /*
-     Gather parameters and begin AJAX call to run model.
-     */
-
-    var form = d3.select('#parameter_form'),
-      inputs = form.selectAll('input'),
-      run_params = {};
-
-    inputs.each(function() {
-      var t = d3.select(this);
-      if (t.attr('type') == 'range') {
-        run_params[t.attr('name')] = t.property('value');
-      } else {
-        if (t.property('checked')) {
-          run_params[t.attr('name')] = t.property('value');
-        }
-      }
-    });
-
-    d3.xhr(form.attr('action'))
-      .mimeType('application/json')
-      .responseType('text')
-      .post(JSON.stringify(run_params))
-      .on('load', load_run)
-      .on('error', function(e) {})
-      .on('progress', function(r) {});
-
-  };
-
-  var load_run = function(r) {
-    /*
-     Upon successful run of model, add run and hide parameters pane
-     */
-
-    r = JSON.parse(r.response);
-
-    add_run(r.data, r.parameters);
-
-    d3.select('#parameters_tab').classed('selected', false);
-    parameters_wrap.classed('visuallyhidden', true)
 
   };
 
@@ -599,7 +651,7 @@
           chart_wrap.style('height', (dims.h / 2 - 15) + 'px');
           chart_svg.style('height', (dims.h / 2 - 15) + 'px');
         } else {
-          chart_wrap.style('height', tall + 'px');
+//          chart_wrap.style('height', tall + 'px');
           chart_svg.style('height', tall + 'px');
         }
         if (charts[chart].small) {
@@ -609,6 +661,14 @@
         }
       }
     }
+
+    if (!show_twin) {
+        d3.selectAll('.chart-line.twin, .data-point.twin, h3.twin, h4.twin, .y.axis.twin')
+          .classed('visuallyhidden', true);
+      } else {
+        d3.selectAll('.chart-line.twin, .data-point.twin, h3.twin, h4.twin, .y.axis.twin')
+          .classed('visuallyhidden', false);
+      }
 
   };
 
@@ -629,6 +689,7 @@
   clear_runs.on('click', function() {
     used_colors = [];
     runs_list.selectAll('li').each(function() {
+      console.log(d3.select(this).attr('data-run-id'));
       remove_run(+d3.select(this).attr('data-run-id'));
     });
     d3.select('#runs_wrap').classed('visuallyhidden', true);
@@ -649,91 +710,19 @@
 
   select_x_axis.on('change', function() {
 
-    var new_x = this.value;
-
-    custom_data.forEach(function(v) {
-      if (v) {
-        v.forEach(function(r, i) {
-          r.data.forEach(function(d, j) {
-            d.x = new_x == 'year'
-              ? new Date(start_year + j * period_length, 0, 1)
-              : all_data[new_x][i].data[j].y;
-          });
-        });
-      }
-    });
-
-    if (new_x == 'year') {
-      charts.custom.chart.format_x(function(x) { return x.getFullYear(); });
-      charts.custom.chart.x(d3.time.scale());
-      x_custom_domain = x_domain;
-      x_custom_domain_var = false;
-    } else {
-      charts.custom.chart.format_x(charts.custom.chart.format_y());
-      charts.custom.chart.x(d3.scale.linear());
-      x_custom_domain = d3.extent(flatten_runs(all_data[new_x]));
-      x_custom_domain_var = new_x;
-    }
-
-    var title = metadata[custom_vars[0]].title + ' v. ';
-    title += x_custom_domain_var ? metadata[x_custom_domain_var].title : 'Time';
-    var subtitle = metadata[custom_vars[0]].unit + ' v. ';
-    subtitle += x_custom_domain_var ? metadata[x_custom_domain_var].unit : 'years';
-
-    charts.custom.chart
-      .data(custom_data[0])
-      .domain(
-        x_custom_domain,
-        d3.extent(flatten_vars(custom_data))
-      )
-      .colors(used_colors)
-      .title(title)
-      .subtitle(subtitle)
-      .change_x();
-
-    if (custom_vars[1]) {
-      charts.custom.chart
-        .twin_data(custom_data[1])
-        .update_twin_data();
-    }
+    update_x_axis(this.value);
 
   });
 
   select_y_axis.on('change', function() {
 
-    custom_vars[0]= this.value;
+    update_y_axis('custom', this.value);
 
-    custom_data.forEach(function(v) {
-      if (v) {
-        v.forEach(function(r, i) {
-          r.data.forEach(function(d, j) {
-            d.y = all_data[custom_vars[0]][i].data[j].y;
-          });
-        });
-      }
-    });
+  });
 
-    var title = metadata[custom_vars[0]].title + ' v. ';
-    title += x_custom_domain_var ? metadata[x_custom_domain_var].title : 'Time';
-    var subtitle = metadata[custom_vars[0]].unit + ' v. ';
-    subtitle += x_custom_domain_var ? metadata[x_custom_domain_var].unit : 'years';
+  select_y2_axis.on('change', function() {
 
-    charts.custom.chart
-      .data(custom_data[0])
-      .domain(
-        x_custom_domain,
-        d3.extent(flatten_vars(custom_data))
-      )
-      .colors(used_colors)
-      .title(title)
-      .subtitle(subtitle)
-      .change_y();
-
-    if (custom_vars[1]) {
-      charts.custom.chart
-        .twin_data(custom_data[1])
-        .update_twin_data();
-    }
+    update_y_axis('twin', this.value);
 
   });
 

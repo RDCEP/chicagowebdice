@@ -39,7 +39,14 @@
 {%- endfor %}
 {%- endfor %}
 {%- endblock %}
-
+{% block yaxis2 -%}
+{% for group in dropdowns -%}
+<optgroup label="-- {{ group.name }} --"></optgroup>
+{% for option in group.options -%}
+<option value="{{ option.machine_name }}">{{ option.name }}</option>
+{%- endfor %}
+{%- endfor %}
+{%- endblock %}
 {% block parameters %}
 <div id=parameters_wrap class=visuallyhidden>
   <div id=parameters_bkgd></div>

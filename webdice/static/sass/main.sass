@@ -39,7 +39,8 @@ path, circle
   fill: none
   &.visuallyhidden
     stroke-width: 0
-
+g.visuallyhidden
+  display: none
 //MENUS
 #main_nav, #title_legend_wrap
   width: 100%
@@ -242,13 +243,23 @@ path, circle
       font-size: .8em
       font-weight: normal
       top: 1.4em
+
   .large-chart
+    position: absolute
+    top: 0
+    height: 0
+    pointer-events: none
+    & *
+      pointer-events: none
     h3, h4
       font-size: 1em
       font-weight: bold
       position: absolute
       top: 0
       padding: 15px 0 0 $left_pad
+      &.twin
+        right: 0
+        padding: 15px 0 0 0
     h4
       font-size: .8em
       font-weight: normal

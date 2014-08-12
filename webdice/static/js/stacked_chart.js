@@ -36,11 +36,11 @@ var WebDICEGraph = function() {
       }
       return d3.format('.0f')(d);
     },
-    x_axis = d3.svg.axis().scale(_x).orient('bottom')
+    x_axis = d3.svg.axis().scale(_x)
+      .orient('bottom')
       .tickSize(6).innerTickSize(6),
-    y_axis = d3.svg.axis().scale(_y).orient('left')
-      .tickFormat(function(d) { return y_axis_format(d); }),
-    y_twin_axis = d3.svg.axis().scale(_y).orient('right')
+    y_axis = d3.svg.axis().scale(_y)
+      .orient('left')
       .tickFormat(function(d) { return y_axis_format(d); }),
     _line = d3.svg.line()
       .x(function(d) { return _x(d.x); })
@@ -53,11 +53,7 @@ var WebDICEGraph = function() {
     graph_data = {
       graphs: [],       // Graph objects
       data: [],         // Data
-      nested: [],       // Nested data needed for handles when graphing multiple series
-      twin_graphs: [],  // Twin graph objects
-      twin_data: [],    // Twin data
-      twin_nested: []   // Twin nested data needed for handles when graphing multiple series
-
+      nested: []        // Nested data needed for handles when graphing multiple series
     },
     color_list = [
       //d3.rgb(0, 0, 0), //black
@@ -82,7 +78,6 @@ var WebDICEGraph = function() {
     svg,
     svg_defs,
     grid_layer,
-    twin_graph_layer,
     graph_layer,
     axes_layer,
     handle_layer,
@@ -187,7 +182,7 @@ var WebDICEGraph = function() {
         _h += '<span data-run-id=' + d.run_id + '>';
         _h += '<b style="color:' + _c + '">';
         _h += d.run_name.replace(/ /g, '&nbsp;') + '</b><br>';
-        _h += format_x(d.x) + ', ' + format_y(d.y) + '</span><br>';
+        _h += format_x(d.x) + ',&nbsp;' + format_y(d.y) + '</span><br>';
       }
       return _h;
     },
@@ -219,15 +214,18 @@ var WebDICEGraph = function() {
         .classed('active', true);
     },
     add_hover_points = function() {
-      segment_width = _x(graph_data.data[0].data[1].x) - _x(graph_data.data[0].data[0].x);
+      segment_width = graph_data.data.length > 0
+        ? _x(graph_data.data[0].data[1].x) - _x(graph_data.data[0].data[0].x)
+        : 0;
       handles = handle_layer.selectAll('.segment')
         .data(graph_data.nested);
+      handles.enter().append('g');
       handles.exit().remove();
-      handles.enter().append('g')
-        .attr('class', 'segment')
+      handles.attr('class', 'segment')
         .attr('transform', function(d) {
           return 'translate(' + (_x(d.values[0].x) - segment_width / 2) + ',0)';
         });
+//      handles.exit().remove();
       handles.each(function(d) {
         var visible = ((_x(d.values[0].x) >= _x.range()[0]) && (_x(d.values[0].x) <= _x.range()[1])),
           t = d3.select(this);
@@ -238,10 +236,10 @@ var WebDICEGraph = function() {
           .attr('data-x', function(d) { return d.values[0].x; })
           .style('fill', 'transparent')
           .style('pointer-events', function() { return visible ? 'all' : 'none'; });
-        var dpt = t.selectAll('.data-point.tight')
+        data_points = t.selectAll('.data-point.tight')
           .data(function(d) { return d.values; });
-        dpt.exit().remove();
-        dpt.enter().append('circle')
+        data_points.exit().remove();
+        data_points.enter().append('circle')
           .classed('data-point', function() { return visible; })
           .classed('hoverable', function() { return visible; })
           .classed('tight', true)
@@ -258,15 +256,15 @@ var WebDICEGraph = function() {
       add_hover();
     },
     add_custom_hover_points = function() {
-//      console.log('add');
       handles = handle_layer.selectAll('.segment')
         .data(graph_data.data);
+      handles.enter().append('g');
+      handles.exit().remove();
       handles.attr('class', 'segment')
         .attr('transform', function(d) {
           return 'translate(0,0)';
         });
-      handles.enter().append('g');
-      handles.exit().remove();
+
       handles.each(function(dd, j) {
         var t = d3.select(this);
         data_points = t.selectAll('.data-point.tight')
@@ -275,6 +273,7 @@ var WebDICEGraph = function() {
         data_points.classed('data-point', function() { return true; })
           .classed('hoverable', function() { return true; })
           .classed('tight', true)
+          .classed('twin', _twin)
           .attr('data-x', function(d) { return d.x; })
           .attr('data-y', function(d) { return d.y; })
           .attr('data-run-id', function(d) { return d.run_id; })
@@ -288,8 +287,6 @@ var WebDICEGraph = function() {
           .style('pointer-events', 'all');
         data_points.exit().remove();
       });
-//      handles.exit().remove();
-//      add_custom_hover();
     },
     add_hover = function() {
       /*
@@ -323,9 +320,13 @@ var WebDICEGraph = function() {
         t.selectAll('.data-point').each(function() {
           d3.select(this).on('mouseover', function(d) {
             update_legend([d]);
+            var t = d3.select(this);
+            t.style('fill', t.style('stroke'));
             tool_tip.classed('hidden', !_hoverable);
           })
           .on('mouseout', function() {
+            var t = d3.select(this);
+            t.style('fill', 'white');
             tool_tip.classed('hidden', true);
           });
         });
@@ -343,23 +344,22 @@ var WebDICEGraph = function() {
       /*
        Draw x and y axes, ticks, etc.
        */
-      axes_layer.append('g')
-        .attr('class', 'x axis')
-        .attr('transform', 'translate(0,' + (height + 5) + ')')
-        .call(x_axis);
-      axes_layer.append('g')
-        .attr('class', 'y axis')
-        .attr('transform', 'translate(-5,0)')
-        .call(y_axis);
-    },
-    draw_twin_axes = function() {
-      /*
-       Draw x and y axes, ticks, etc.
-       */
-      axes_layer.append('g')
-        .attr('class', 'y twin axis')
-        .attr('transform', 'translate('+ (width + 5) + ',0)')
-        .call(y_twin_axis);
+      if (!_twin) {
+        axes_layer.append('g')
+          .attr('class', 'x axis')
+          .attr('transform', 'translate(0,' + (height + 5) + ')')
+          .call(x_axis);
+        axes_layer.append('g')
+          .attr('class', 'y axis')
+          .attr('transform', 'translate(-5,0)')
+          .call(y_axis);
+      } else {
+        axes_layer.append('g')
+          .attr('class', 'y axis twin')
+          .attr('transform', 'translate(' + (_x(_x.domain()[1]) - padding.right - 15) + ',0)')
+          .call(y_axis.orient('right'));
+      }
+
     },
     pre_id = function(str) {
       return svg_id + '_' + str;
@@ -423,11 +423,11 @@ var WebDICEGraph = function() {
         'width': width + padding.left + padding.right,
         'height': height + padding.top + padding.bottom,
         'id': pre_id('chart_svg') })
+      .classed('twin', _twin)
       .append('g')
       .attr('transform', 'translate(' + padding.left + ',' + padding.top + ')');
     svg_defs = svg.append('defs');
     grid_layer = svg.append('g').attr('id', pre_id('grid_layer'));
-    twin_graph_layer = svg.append('g').attr('id', pre_id('twin_graph_layer'));
     graph_layer = svg.append('g').attr('id', pre_id('graph_layer'));
     svg_defs.append('clipPath').attr("id", "graph_clip").append("rect")
       .attr({'width': width, 'height': height });
@@ -440,14 +440,23 @@ var WebDICEGraph = function() {
   };
   this.title = function(str, align) {
     if (str === undefined) { return title.text(); }
-    title = title || d3.select('#' + svg_id).insert('h3', '.chart-wrap');
+    title = title || d3.select('#' + svg_id)
+      .insert('h3', '.chart-wrap')
+      .classed('twin', _twin);;
     title.html(str);
     return this;
   };
   this.subtitle = function(str) {
     if (str === undefined) { return subtitle.text(); }
-    subtitle = subtitle || d3.select('#' + svg_id).insert('h4', '.chart-wrap');
+    subtitle = subtitle || d3.select('#' + svg_id)
+      .insert('h4', '.chart-wrap')
+      .classed('twin', _twin);
     subtitle.html(str);
+    return this;
+  };
+  this.twin = function(bool) {
+    if (bool == undefined) { return _twin; }
+    _twin = bool;
     return this;
   };
   this.x = function(val) {
@@ -536,25 +545,6 @@ var WebDICEGraph = function() {
     if (arr === undefined) { return graph_data.data; }
     graph_data.data = arr;
     graph_data.nested = nested(arr);
-    return this;
-  };
-  this.twin_data = function(arr) {
-    /*
-     Set twin data series to graph.
-     ...
-     Args
-     ----
-     arr (Array): Array of Arrays of Objects {x: foo, y: bar, y0: [0]}
-     ...
-     Returns
-     -------
-     RPSGraph
-     ...
-     */
-    if (arr === undefined) { return graph_data.twin_data; }
-    _twin = true;
-    graph_data.twin_data = arr;
-    graph_data.twin_nested = nested(arr);
     return this;
   };
   this.hide_run = function(index) {
@@ -677,41 +667,16 @@ var WebDICEGraph = function() {
       .attr('clip-path', 'url(#graph_clip)')
       .attr('data-type', function(d) { return d.run_name ? d.run_name : null; })
       .attr('data-run-id', function(d) { return typeof(d.run_index) == 'number' ? d.run_index : null; })
+      .classed('twin', _twin)
       .style('fill', function(d, i) { return null; })
-      .style('stroke', function(d, i) { return color(i); });
+      .style('stroke', function(d, i) { return color(i); })
+      .style('stroke-dasharray', function(d, i) { return (_twin) ? '2, 2' : null; });
     draw_axes();
-    return this;
-  };
-  this.twin_draw = function() {
-    /*
-     Draw all data
-     ...
-     Args
-     ----
-     null
-     ...
-     Returns
-     -------
-     RPSGraph
-     ...
-     */
-    graph_data.twin_graphs = twin_graph_layer.selectAll('.chart-line')
-      .data(graph_data.twin_data).enter().append('path')
-      .attr('d', function(d) { return _line(d.data); })
-      .attr('class', 'chart-line')
-      .attr('clip-path', 'url(#graph_clip)')
-      .attr('data-type', function(d) { return d.run_name ? d.run_name : null; })
-      .attr('data-run-id', function(d) { return typeof(d.run_index) == 'number' ? d.run_index : null; })
-      .attr('stroke-dasharray', '5, 5')
-      .style('stroke', function(d, i) { return color(i); });
-    draw_twin_axes();
     return this;
   };
   this.custom = function(bool) {
     if (bool === undefined) { return this; }
     _custom_graph = bool;
-    //FIXME: Total crap below. Can't rely on this.
-    segment_width = _x(graph_data.data[0].data[1].x) - _x(graph_data.data[0].data[0].x);
     return this;
   };
   this.update_data = function() {
@@ -722,54 +687,36 @@ var WebDICEGraph = function() {
       .attr('clip-path', 'url(#graph_clip)')
       .attr('data-type', function(d) { return d.run_name ? d.run_name : null; })
       .attr('data-run-id', function(d) { return typeof(d.run_index) == 'number' ? d.run_index : null; })
-      .style('stroke', function(d, i) { return color(i); });
-//    graph_data.graphs.exit().remove();
+      .classed('twin', _twin)
+      .style('stroke', function(d, i) { return color(i); })
+      .style('stroke-dasharray', function(d, i) { return (_twin) ? '2, 2' : null; });
     if (_custom_graph) {
-//      add_custom_hover_points();
+      add_custom_hover_points();
       add_custom_hover();
     } else {
       handles.data(graph_data.nested);
-//      add_hover_points();
+      add_hover_points();
       add_hover();
     }
     axes_layer.select('.y.axis').call(y_axis);
   };
-  this.update_custom_data = function() {
-
-  };
-  this.update_twin_data = function() {
-    graph_data.twin_graphs = graph_layer.selectAll('.chart-line')
-      .data(graph_data.data);
-    graph_data.twin_graphs.exit().remove();
-    graph_data.twin_graphs.enter().append('path')
-      .attr('d', function(d) { return _line(d.data); })
-      .attr('class', 'chart-line')
-      .attr('clip-path', 'url(#graph_clip)')
-      .attr('data-type', function(d) { return d.run_name ? d.run_name : null; })
-      .attr('data-run-id', function(d) { return typeof(d.run_index) == 'number' ? d.run_index : null; })
-      .attr('stroke-dasharray', '5, 5')
-      .style('stroke', function(d, i) { return color(i); });
-    handles.data(graph_data.twin_nested);
-    add_hover();
-  };
   this.redraw = function() {
     redraw();
     if (_custom_graph) {
-//      add_custom_hover_points();
       handle_layer.selectAll('.data-point').remove();
       this.hoverable(true);
     } else {
       handle_layer.selectAll('.segment').remove();
       this.hoverable(true);
     }
-
     return this;
   };
   this.change_y = function() {
     axes_layer.select('.y.axis').call(y_axis);
     graph_data.graphs
       .data(graph_data.data)
-      .attr('d', function(d) { return _line(d.data); });
+      .attr('d', function(d) { return _line(d.data); })
+      .classed('twin', _twin);
     handles.data(graph_data.nested)
       .each(function(dd, i) {
         d3.select(this).selectAll('.data-point')
@@ -794,7 +741,6 @@ var WebDICEGraph = function() {
           .attr('data-y', function(d) { return d.y; })
           .attr('cy', function(d) { return _y(d.y + d.y0); })
           .attr('cx', function(d) {
-//            return _x(d.x) - ((segment_width * i) - segment_width  / 2);
             return _x(d.x);
           });
       });

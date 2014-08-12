@@ -3,6 +3,10 @@
     "title": "Productivity v. Time",
     "unit": "TFP v. year"
   },
+  "twin" : {
+    "title": "",
+    "unit": ""
+  },
   "temp_atmosphere": {
     "unit": "degrees C since 1900",
     "title": "Atmospheric temperature increase"
