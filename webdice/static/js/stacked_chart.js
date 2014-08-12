@@ -467,7 +467,6 @@ var WebDICEGraph = function() {
     if (!val) { return _x; }
     _x = val.range(_x.range()).domain(_x.domain());
     x_axis.scale(_x);
-    if (_twin) { console.log(_x.range()); }
     return this;
   };
   this.y = function(val) {

@@ -11,6 +11,7 @@
     select_y_axis = d3.select('#select-y-axis'),
     select_y2_axis = d3.select('#select-y2-axis'),
     logarithmic_axes = d3.selectAll('.logarithmic-axis'),
+    loader_gif = d3.select('#loader_gif'),
 
     initialized = false,
 
@@ -77,8 +78,6 @@
   };
 
   var build_data_object = function(_data, dice_variable, custom_x_domain) {
-
-    console.log(custom_x_domain, dice_variable);
 
     var graph_data = {
       data: [],
@@ -389,6 +388,9 @@
      Gather parameters and begin AJAX call to run model.
      */
 
+    run_model.attr('disabled', true);
+    loader_gif.style('display', 'block');
+
     var form = d3.select('#parameter_form'),
       inputs = form.selectAll('input'),
       run_params = {};
@@ -424,7 +426,9 @@
     add_run(r.data);
 
     d3.select('#parameters_tab').classed('selected', false);
-    parameters_wrap.classed('visuallyhidden', true)
+    parameters_wrap.classed('visuallyhidden', true);
+    run_model.attr('disabled', null);
+    loader_gif.style('display', 'none');
 
   };
 
