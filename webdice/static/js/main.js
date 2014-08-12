@@ -212,6 +212,7 @@
         graph = graphs[i][1];
 
       custom_data[index].forEach(function(r, i) {
+        r.x_title = metadata[dice_variable].title;
         r.data.forEach(function(d, j) {
           d.x = dice_variable == 'year'
             ? new Date(start_year + j * period_length, 0, 1)
@@ -259,7 +260,6 @@
     custom_vars[index] = val;
 
     if ((graph == 'twin') && (val == 'none')) {
-      console.log(1);
       custom_vars[index] = false;
       show_twin = false;
     } else {
@@ -273,6 +273,7 @@
 
       custom_data.forEach(function (v, k) {
         v.forEach(function (r, i) {
+          if (custom_vars[k]) {r.y_title = metadata[custom_vars[k]].title;}
           r.data.forEach(function (d, j) {
             if (custom_vars[k]) {
               d.y = all_data[custom_vars[k]][i].data[j].y;
