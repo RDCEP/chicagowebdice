@@ -427,14 +427,15 @@ var WebDICEGraph = function() {
         'width': width + padding.left + padding.right,
         'height': height + padding.top + padding.bottom,
         'id': pre_id('chart_svg') })
-      .classed('twin', _twin)
-      .append('g')
-      .attr('transform', 'translate(' + padding.left + ',' + padding.top + ')');
+      .classed('twin', _twin);
     svg_defs = svg.append('defs');
+    svg = svg.append('g')
+      .attr('transform', 'translate(' + padding.left + ',' + padding.top + ')');
     grid_layer = svg.append('g').attr('id', pre_id('grid_layer'));
     graph_layer = svg.append('g').attr('id', pre_id('graph_layer'));
     svg_defs.append('clipPath').attr("id", "graph_clip").append("rect")
       .attr({'width': width, 'height': height });
+
     axes_layer = svg.append('g').attr('id', pre_id('axes_layer'));
     handle_layer = svg.append('g').attr('id', pre_id('handle_layer'));
     button_layer = svg.append('g').attr('id', pre_id('button_layer'));

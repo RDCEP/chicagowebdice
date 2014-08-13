@@ -693,6 +693,12 @@ g.visuallyhidden {
 .nowrap {
   white-space: nowrap; }
 
+#download_svg {
+  position: absolute;
+  top: 100%;
+  font-size: 0.8em;
+  font-weight: bold; }
+
 .grid-boundary {
   fill: transparent;
   stroke: transparent;

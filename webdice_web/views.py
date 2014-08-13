@@ -1,7 +1,10 @@
 import json
+import zipfile
+import StringIO
 from datetime import datetime
 
 from flask import render_template, request, make_response, Blueprint, jsonify
+from flask import send_file
 
 from webdice.dice import Dice2007, Dice2010
 from webdice_web.html_parser.web import DiceWebParser
@@ -217,10 +220,29 @@ def graphs_d3(year=2007):
     return jsonify(**this_dice.format_output())
 
 
+@mod.route('/zip_svgs', methods=['POST', ])
+def zip_svgs():
+    # form = json.loads(request.data)
+    form = request.form
+    buffer = StringIO.StringIO()
+    zipped = zipfile.ZipFile(buffer, 'w')
+    for k in form.keys():
+        s = StringIO.StringIO()
+        s.write(str(form[k]))
+        zipped.writestr('{}.svg'.format(k), s.getvalue())
+    zipped.close()
+    buffer.seek(0)
+    return send_file(buffer, attachment_filename='{}.zip'.format('WebDICE-SVGs'),
+                     as_attachment=True)
+    # response = make_response(buffer)
+    # response.headers['Content-Disposition'] = 'attachment; filename="{}.zip"'.format('WebDICE-SVGs')
+    # return response
+
+
 @mod.route('/csv', methods=['POST',])
 def csv_output():
     data = request.form['data']
-    response =  make_response(data)
+    response = make_response(data)
     response.headers['Content-Disposition'] = 'attachment; filename="{}.csv"'.\
         format('WebDICE-Data')
     return response

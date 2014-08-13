@@ -431,6 +431,7 @@
     run_model.attr('disabled', null);
     loader_gif.style('display', 'none');
 
+
   };
 
   var get_updated_params = function() {
