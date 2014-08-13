@@ -98,6 +98,7 @@ g.visuallyhidden
         &.selected
           background-color: #eee
           position: relative
+          font-weight: bold
           //&:after
             content: ' '
             height: $inner_pad * 1.414
@@ -312,116 +313,14 @@ g.visuallyhidden
   .short
     input, select
       width: 7.5em
-.chart-line
-  stroke-width: 2
-.chart-legend
-  display: none
-.grid-line
-  stroke: white
-  stroke-width: 1
-.axis
-  .domain
-    stroke: #222222
-    stroke-width: .5
-  text
-    font-size: .66em
-    font-weight: normal
-    letter-spacing: .02em
-    fill: #545454
-
-.data-point
-  stroke-width: 0
-  //cursor: ns-resize
-  //stroke: transparent
-  fill: transparent
-
-  pointer-events: none //TODO: only for draggable points
-  .loose
-    stroke-width: 5
-    pointer-events: all
-  &.active
-    stroke-width: 2
-    fill: $light-gray
-    //stroke: black //$red
-  &.visuallyhidden
-    stroke-width: 0!important
-    fill: transparent!important
-  &.draggable
-    pointer-events: all
-    &.hovered
-      fill: black
-
-
-
-
-
 #menu_glossary
   margin-left: 2em!important
-
 #sidebar
   display: none
-
-
-.world-boundary
-  stroke: #eeeeee
-  stroke-width: .5
-  fill: #cccccc
-  &.active
-    stroke: red
-    stroke-width: 3px
-.grid-boundary
-  fill: transparent
-  stroke: transparent
-  stroke-width: 0
-.data-line
-  stroke: red
-  stroke-width: 2px
-  fill: transparent
-#corner_legend
-  position: absolute
-  top: 50px
-  left: 20px
-  font-size: .8em
-  dt
-    font-weight: bold
-#hover_legend
-  background-color: black
-  opacity: .8
-  padding: .5em
-  color: white
-  display: none
-  position: absolute
-  font-size: .8em
-  pointer-events: none
-.x, .y
-  &.axis line
-    fill: transparent
-    stroke-width: .5
-    stroke: #999999
-#graph_cursor
-  stroke: #999999
-  stroke-width: 1
-.domain
-  stroke: transparent
-  fill: transparent
-
 .nowrap
   white-space: nowrap
 
-
-.tool_tip
-  position: absolute
-  //position: fixed
-  visibility: hidden
-  padding: 2px 5px
-  color: white
-  background-color: black
-  opacity: .8
-  font-size: .7em
-  pointer-events: none
-  &.active
-    visibility: visible
-
+@import graphs
 @import parameters
 @import runs
 @import helpers

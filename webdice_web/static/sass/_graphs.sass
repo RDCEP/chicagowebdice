@@ -1,24 +1,48 @@
-#graphs_wrap
-  width: $site_width + $inner_pad * 2
-  z-index: 999
-  top: 6em
-  left: 15px
-  right: 15px
-  bottom: 0
-  font-size: .8em
+.grid-boundary
+  fill: transparent
+  stroke: transparent
+  stroke-width: 0
+.chart-line
+  stroke-width: 2
+.chart-legend
+  display: none
+.grid-line
+  stroke: white
+  stroke-width: 1
+.axis
+  .domain
+    stroke: #222222
+    stroke-width: .5
+  text
+    font-size: .66em
+    font-weight: normal
+    letter-spacing: .02em
+    fill: #545454
+.data-point
+  stroke-width: 0
+  fill: transparent
+  pointer-events: none //TODO: only for draggable points
+  .loose
+    stroke-width: 5
+    pointer-events: all
+  &.active
+    stroke-width: 2
+    fill: $light-gray
+  &.visuallyhidden
+    stroke-width: 0!important
+    fill: transparent!important
+  &.draggable
+    pointer-events: all
+    &.hovered
+      fill: black
+.tool_tip
   position: absolute
-#graphs_bkgd
-  background-color: #ffffff
-  opacity: .95
-  height: 100%
-  width: 100%
-  position: absolute
-#graphs_arrow
-  height: $inner_pad * 1.414
-  width: $inner_pad * 1.414
-  -webkit-transform: rotate(45deg)
-  transform: rotate(45deg)
-  position: absolute
-  top: -4px
-  right: 25px
-  background-color: #ffffff
+  visibility: hidden
+  padding: 2px 5px
+  color: white
+  background-color: black
+  opacity: .8
+  font-size: .7em
+  pointer-events: none
+  &.active
+    visibility: visible

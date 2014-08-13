@@ -481,7 +481,8 @@ g.visuallyhidden {
         line-height: 1em; }
         #title_legend_wrap #title_legend .tabs li.selected {
           background-color: #eeeeee;
-          position: relative; }
+          position: relative;
+          font-weight: bold; }
       #title_legend_wrap #title_legend .tabs.notselected {
         display: none; }
 
@@ -683,6 +684,20 @@ g.visuallyhidden {
   #graph-controls .short input, #graph-controls .short select {
     width: 7.5em; }
 
+#menu_glossary {
+  margin-left: 2em !important; }
+
+#sidebar {
+  display: none; }
+
+.nowrap {
+  white-space: nowrap; }
+
+.grid-boundary {
+  fill: transparent;
+  stroke: transparent;
+  stroke-width: 0; }
+
 .chart-line {
   stroke-width: 2; }
 
@@ -719,64 +734,6 @@ g.visuallyhidden {
     pointer-events: all; }
     .data-point.draggable.hovered {
       fill: black; }
-
-#menu_glossary {
-  margin-left: 2em !important; }
-
-#sidebar {
-  display: none; }
-
-.world-boundary {
-  stroke: #eeeeee;
-  stroke-width: 0.5;
-  fill: #cccccc; }
-  .world-boundary.active {
-    stroke: red;
-    stroke-width: 3px; }
-
-.grid-boundary {
-  fill: transparent;
-  stroke: transparent;
-  stroke-width: 0; }
-
-.data-line {
-  stroke: red;
-  stroke-width: 2px;
-  fill: transparent; }
-
-#corner_legend {
-  position: absolute;
-  top: 50px;
-  left: 20px;
-  font-size: 0.8em; }
-  #corner_legend dt {
-    font-weight: bold; }
-
-#hover_legend {
-  background-color: black;
-  opacity: 0.8;
-  padding: 0.5em;
-  color: white;
-  display: none;
-  position: absolute;
-  font-size: 0.8em;
-  pointer-events: none; }
-
-.x.axis line, .y.axis line {
-  fill: transparent;
-  stroke-width: 0.5;
-  stroke: #999999; }
-
-#graph_cursor {
-  stroke: #999999;
-  stroke-width: 1; }
-
-.domain {
-  stroke: transparent;
-  fill: transparent; }
-
-.nowrap {
-  white-space: nowrap; }
 
 .tool_tip {
   position: absolute;
