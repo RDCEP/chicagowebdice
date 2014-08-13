@@ -4,7 +4,7 @@
     <nav>
       <ul id=top_nav class="clearfix">
         <li><h1><a href="{{ url_for('webdice.index') }}">webDICE</a></h1></li>
-        <li><a href="{{ url_for('webdice.basic') }}">Standard</a></li>
+        <li><a href="{{ url_for('webdice.standard') }}">Standard</a></li>
         <li id=advanced_pages>
           <a class=dead-hover>Advanced</a>
           <ul>
@@ -29,7 +29,6 @@
           <li id=link-to-economy data-pane=economy_graphs class=graph-tab>Economy</li>
           <li id=link-to-policy data-pane=policy_graphs class=graph-tab>Policy</li>
           <li id=link-to-custom data-pane=custom_graph class=graph-tab>Customizable</li>
-{#          <li id=link-to-scc-graph data-pane=scc_graph class=graph-tab>SCC</li>#}
         </ul>
         <ul id=parameters_and_runs class=tabs>
           <li id=parameters_tab data-pane=parameters class=option-tab>Parameters</li>
@@ -115,15 +114,11 @@
 {#        </div>#}
       </div>
     </div>
-{#    <div id=scc_graph class="pane chart-pane"></div> #}
   </div>
   {% block parameters %}{% endblock %}
   {% include 'modules/runs.html' %}
   {% endblock %}
   </article>
-  <div id=help-wrapper>
-  {% block help %}{% endblock %}
-  </div>
 
 {% block bodyjs %}
 <script src="{{ url_for('webdice.static', filename='js/stacked_chart.js') }}?{{ now }}"></script>

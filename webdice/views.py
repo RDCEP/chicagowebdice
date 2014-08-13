@@ -62,7 +62,7 @@ def advanced(year):
 
 
 @mod.route('/standard')
-def basic():
+def standard():
     s, parser = do_session(request, 2007)
     tabs = parser.get_basic_tabs()
     return page(tabs, parser, None, 'standard')
