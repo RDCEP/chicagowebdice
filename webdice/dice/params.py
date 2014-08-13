@@ -299,22 +299,12 @@ class Dice2010Params(DiceParams):
         self.backstop_2005 = 1.26
 
         self.vars.intensity_decline[0] = .158
-        self.scc.intensity_decline[0] = .158
         self.vars.population[0] = self.population_2005
-        self.scc.population[0] = self.population_2005
         self.vars.temp_atmosphere[0] = self.temp_atmosphere_2000
         self.vars.temp_atmosphere[1] = self.temp_atmosphere_2010
-        self.scc.temp_atmosphere[0] = self.temp_atmosphere_2000
-        self.scc.temp_atmosphere[1] = self.temp_atmosphere_2010
         self.vars.carbon_intensity[0] = self.intensity_2005
-        self.scc.carbon_intensity[0] = self.intensity_2005
         self.vars.productivity[0] = self.productivity
-        self.scc.productivity[0] = self.productivity
         self.vars.output[0] = self.output_2005
-        self.scc.output[0] = self.output_2005
         self.vars.mass_atmosphere[0] = self.mass_atmosphere_2005
-        self.scc.mass_atmosphere[0] = self.mass_atmosphere_2005
         self.vars.mass_upper[0] = self.mass_upper_2005
-        self.scc.mass_upper[0] = self.mass_upper_2005
         self.vars.mass_lower[0] = self.mass_lower_2005
-        self.scc.mass_lower[0] = self.mass_lower_2005

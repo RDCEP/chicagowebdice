@@ -3,7 +3,7 @@
   are assumed to be floats unless otherwise specified, and have the given
   range and precision values.
 
-  Things should be pretty self-explanatory. basic_tabs and advanced_tabs
+  Things should be pretty self-explanatory. standard_tabs and advanced_tabs
   contain the parameters for those two pages. measurements controls the
   graphing operations. parameter_help contains help text for each parameter.
 
@@ -41,7 +41,7 @@ initial_help:
       outcomes change.
 
 
-  basic: >
+  standard: >
       To run a simulation click on the “Run Model” button at the bottom of
       the page. The variables are set to the defaults based on our best guess
       of the correct values. You can change the variables to reflect your
@@ -550,7 +550,7 @@ measurements:
 
 
 parameter_help:
-  basic:
+  standard:
     default: >
         Business as usual simulates the model with no political restraint
         on carbon emissions.  Projections are solely based on the values
@@ -716,7 +716,7 @@ parameter_help:
         with how people actually make choices. The default value is 1.5% but you can
         set it anywhere from 0% to 10%.
 
-  basic:
+  standard:
     damages_exponent: >
         This model assumes that an increase in global mean temperature will harm
         the economy.  By adjusting this slider, you can not only discover the

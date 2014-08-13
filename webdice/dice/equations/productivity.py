@@ -189,10 +189,10 @@ class Dice2010(ProductivityModel):
 
     def carbon_intensity(self, i, df):
         intensity_decline = self.intensity_decline(i, df)
-        return intensity_decline, (
+        return (
             df.carbon_intensity[i - 1] *
             (1 - df.intensity_decline[i - 1])
-        )
+        ), intensity_decline
 
     def population(self, i, df):
         """

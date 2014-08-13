@@ -1,0 +1,72 @@
+<section id=economy_parameters class="pane clearfix">
+
+  <div class=parameter-pane-intro>
+    <p>TKTK</p>
+  </div>
+
+
+  <div class="parameter-pane thirds">
+
+    <div class=range-wrap>
+      <label><span class="parameter-name">Productivity decline</span> (%)
+        <input name=productivity_decline type=range min=1 max=5 value=3
+               step=1 data-prec=0 data-default=3>
+      </label>
+      <span class=min-range-val>slower growth</span>
+      <span class=max-range-val>faster growth</span>
+    </div>
+    <div class=parameter-help>
+      <p>Decline in the rate of growth in productivity over time.</p>
+    </div>
+
+  </div>
+
+  <div class="parameter-pane thirds">
+
+    <div class=range-wrap>
+      <label><span class="parameter-name">Energy intensity</span> (%)
+        <input name=intensity_decline_rate type=range min=1 max=5 value=3
+               step=1 data-prec=0 data-default=3>
+      </label>
+      <span class=min-range-val>less energy efficient</span>
+      <span class=max-range-val>more energy efficient</span>
+    </div>
+    <div class=parameter-help>
+      <p>Reduction in energy intensity per decade. Or the rate of decline
+        in energy use per $ of GDP.</p>
+    </div>
+
+  </div>
+
+  <div class="parameter-pane thirds">
+
+    <div class=range-wrap>
+      <label><span class="parameter-name">Cost ratio</span>
+        <input name=backstop_ratio type=range min=1 max=5 value=3 step=1
+               data-prec=0 data-default=3>
+      </label>
+      <span class=min-range-val>less expensive</span>
+      <span class=max-range-val>more expensive</span>
+    </div>
+    <div class=parameter-help>
+      <p>How low will the costs of renewables go? This represents the cost
+        of replacing all emissions in 2012 dollars per ton of CO<sub>2</sub>,
+        relative to future costs.</p>
+    </div>
+
+  </div>
+
+  <div class=parameter-previews style=clear:left>
+    <div class="parameter-pane thirds">
+      <figure class=parameter-preview data-input-parameters=productivity_decline></figure>
+    </div>
+    <div class="parameter-pane thirds">
+      <figure class=parameter-preview data-input-parameters=intensity_decline_rate></figure>
+    </div>
+    <div class="parameter-pane thirds">
+      <figure class=parameter-preview
+              data-input-parameters="backstop_ratio"></figure>
+    </div>
+  </div>
+
+</section>

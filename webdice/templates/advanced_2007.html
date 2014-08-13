@@ -1,0 +1,95 @@
+{% extends 'base_page.html' %}
+{% block headjs -%}
+  <script type="text/javascript">
+    Options = window.Options || { };
+    Options.measurements = {{ measurements|safe }};
+    Options.locations = {{ graph_locations|safe }};
+    Options.graphs = {{  graph_names|safe }};
+    Options.dice_version = {% if dice_version %}{{ dice_version|safe }}{% else %}2007{% endif %};
+  </script>
+{%- endblock %}
+{% block mainlink %}<div id="back-to-rdcep">Switch to:
+  <a href="/basic">Basic</a>
+  {%- for v in other_versions -%}
+  <a href="/advanced/{{ v }}">Advanced {{ v }}</a>
+  {%- endfor -%}
+  </div>{% endblock %}
+{% block doclinks %}
+  <li><a target="_blank" href="/webdice/static/docs/webdice_advanced_faq.pdf">Basic</a></li>
+  <li><a target="_blank" href="/webdice/static/docs/webdice_advanced_manual.pdf">Intermediate</a></li>
+  <li><a target="_blank" href="/webdice/static/docs/webdice_equation_help.pdf">Equations</a></li>
+{% endblock %}
+
+{% block text -%}
+  {# paragraphs_html|safe #}
+{%- endblock %}
+{% block xaxis -%}
+{% for group in dropdowns -%}
+<optgroup label="-- {{ group.name }} --"></optgroup>
+{% for option in group.options -%}
+<option value="{{ option.machine_name }}">{{ option.name }}</option>
+{% endfor %}
+{%- endfor %}
+{%- endblock %}
+{% block yaxis -%}
+{% for group in dropdowns -%}
+<optgroup label="-- {{ group.name }} --"></optgroup>
+{% for option in group.options -%}
+<option value="{{ option.machine_name }}">{{ option.name }}</option>
+{%- endfor %}
+{%- endfor %}
+{%- endblock %}
+{% block yaxis2 -%}
+{% for group in dropdowns -%}
+<optgroup label="-- {{ group.name }} --"></optgroup>
+{% for option in group.options -%}
+<option value="{{ option.machine_name }}">{{ option.name }}</option>
+{%- endfor %}
+{%- endfor %}
+{%- endblock %}
+{% block parameters %}
+<div id=parameters_wrap class=visuallyhidden>
+  <div id=parameters_bkgd></div>
+  <div id=parameters>
+
+    <div id=parameter_tabs_wrap>
+      <ul id=parameter_tabs class=clearfix>
+        <li class=selected  data-pane=policy_parameters>Policy</li>
+        <li data-pane=climate_parameters>Climate</li>
+        <li data-pane=economy_parameters>Economy</li>
+        <li data-pane=technology_parameters>Technology</li>
+        <li data-pane=energy_parameters>Energy</li>
+        <li data-pane=discount_parameters>Discount</li>
+        <li data-pane=model_parameters>Model</li>
+        <li id=run_clear>
+          <input id=clear_model type=button value="Clear Model">
+          <input id=run_model type=submit value="Run Model">
+          <img id=loader_gif src="{{ url_for('webdice.static', filename='images/loadinfo_1.gif') }}">
+        </li>
+      </ul>
+    </div>
+    <form id=parameter_form class="clearfix advanced" action=/run/{{ dice_version }}>
+      {% block parameter_includes %}
+      {% include 'modules/parameters/2007/policy.html' %}
+      {% include 'modules/parameters/2007/climate.html' %}
+      {% include 'modules/parameters/2007/economy.html' %}
+      {% include 'modules/parameters/2007/technology.html' %}
+      {% include 'modules/parameters/2007/energy.html' %}
+      {% include 'modules/parameters/2007/discount.html' %}
+      {% include 'modules/parameters/2007/model.html' %}
+      {% endblock %}
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block help %}{% for parameter in all_parameters %}{% if parameter.help %}
+  <div class="help-text" id="{{ parameter.machine_name }}-help">{{ parameter.help|safe }}
+  </div>{% endif %}{% endfor %}
+{% endblock %}
+
+{% block bodyjs %}
+  {{ super() }}
+  <script src="{{ url_for('webdice.static', filename='js/webdice_range_slider.js') }}?{{ now }}"></script>
+  <script src="{{ url_for('webdice.static', filename='js/webdice_tabs.js') }}?{{ now }}"></script>
+{% endblock %}

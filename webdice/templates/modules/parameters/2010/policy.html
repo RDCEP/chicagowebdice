@@ -1,0 +1,199 @@
+<section id=policy_parameters class="pane selected clearfix">
+
+  <div class=parameter-pane-intro>
+    <p>You can choose among four types of policies. Business as usual is
+      exactly that—no policy TKTK. Choosing an optimized policy
+      allows the computer to choose an emissions reduction plan that
+      will maximize social utility. Or you can simulate a simple global
+      carbon tax, or global climate treaty.</p>
+  </div>
+  <div class=parameter-pane
+       style="border-top:1px solid #ccc;border-bottom:1px solid #ccc;float:none;padding-top:1em;">
+    <label>
+      <input type=radio value=default name=policy_type data-default=default checked>
+      <span class=parameter-name>Business as usual</span>
+    </label>
+  </div>
+  <div class="parameter-pane fourths">
+    <label>
+      <input type=radio value=optimized name=policy_type data-default=default>
+      <span class=parameter-name>Optimized policy</span>
+    </label>
+  </div>
+
+  <div class="parameter-pane fourths">
+    <label>
+      <input type=radio value=carbon_tax name=policy_type data-default=default>
+      <span class=parameter-name>Simulated carbon tax</span>
+    </label>
+
+    <h4 class=disabled>Tax rate</h4>
+
+    <ul>
+
+      <li class="disabled init-disabled range-wrap">
+        <label><span class=parameter-name>2050</span> ($/ton C)
+          <input name=c2050 type=range min=0 max=500 value=0 step=10
+                 data-prec=0 data-default=null disabled>
+        </label>
+        <div class=current-range-val>
+          <span style=left:-50%>0</span>
+        </div>
+        <span class=min-range-val>0</span>
+        <span class=max-range-val>500</span>
+        <div class=tick-wrap>
+          <span class=tick style=left:-50% >&bullet;</span>
+        </div>
+      </li>
+
+      <li class="disabled init-disabled range-wrap" >
+        <label><span class=parameter-name>2100</span> ($/ton C)
+          <input name=c2100 type=range min=0 max=500 value=0 step=10
+                 data-prec=0 data-default=null disabled>
+        </label>
+        <div class=current-range-val>
+          <span style=left:-50%>0</span>
+        </div>
+        <span class=min-range-val>0</span>
+        <span class=max-range-val>500</span>
+        <div class=tick-wrap>
+          <span class=tick style=left:-50% >&bullet;</span>
+        </div>
+      </li>
+
+      <li class="disabled init-disabled range-wrap" >
+        <label><span class=parameter-name>2150</span> ($/ton C)
+          <input name=c2150 type=range min=0 max=500 value=0 step=10
+                 data-prec=0 data-default=null disabled>
+        </label>
+        <div class=current-range-val>
+          <span style=left:-50%>0</span>
+        </div>
+        <span class=min-range-val>0</span>
+        <span class=max-range-val>500</span>
+        <div class=tick-wrap>
+          <span class=tick style=left:-50% >&bullet;</span>
+        </div>
+      </li>
+
+    </ul>
+  </div>
+
+  <div class="parameter-pane halfs" style=width:375px;>
+    <label>
+      <input type=radio value=treaty name=policy_type data-default=default>
+      <span class=parameter-name>Climate Treaty</span>
+    </label>
+
+    <div style=width:157.5px;margin-right:60px;float:left;>
+
+      <h4 class=disabled>Emissions reduction</h4>
+
+      <ul>
+
+        <li class="disabled init-disabled range-wrap">
+          <label><span class=parameter-name>2050</span> (% 2005 emissions)
+            <input name=e2050 type=range min=0 max=100 value=0 step=1
+                   data-prec=0 data-default=null disabled>
+          </label>
+          <div class=current-range-val>
+            <span style=left:-50%>0</span>
+          </div>
+          <span class=min-range-val>0</span>
+          <span class=max-range-val>100</span>
+          <div class=tick-wrap>
+            <span class=tick style=left:-50% >&bullet;</span>
+          </div>
+        </li>
+
+        <li class="disabled init-disabled range-wrap" >
+          <label><span class=parameter-name>2100</span> (% 2005 emissions)
+            <input name=e2100 type=range min=0 max=100 value=0 step=1
+                   data-prec=0 data-default=null disabled>
+          </label>
+          <div class=current-range-val>
+            <span style=left:-50%>0</span>
+          </div>
+          <span class=min-range-val>0</span>
+          <span class=max-range-val>100</span>
+          <div class=tick-wrap>
+            <span class=tick style=left:-50% >&bullet;</span>
+          </div>
+        </li>
+
+        <li class="disabled init-disabled range-wrap" >
+          <label><span class=parameter-name>2150</span> (% 2005 emissions)
+            <input name=e2150 type=range min=0 max=100 value=0 step=1
+                   data-prec=0 data-default=null disabled>
+          </label>
+          <div class=current-range-val>
+            <span style=left:-50%>0</span>
+          </div>
+          <span class=min-range-val>0</span>
+          <span class=max-range-val>100</span>
+          <div class=tick-wrap>
+            <span class=tick style=left:-50% >&bullet;</span>
+          </div>
+        </li>
+
+      </ul>
+
+    </div>
+
+    <div style=width:157.5px;float:left;>
+
+      <h4 class=disabled>Participation</h4>
+
+      <ul>
+
+        <li class="disabled init-disabled range-wrap">
+          <label><span class=parameter-name>2050</span> (% of globe)
+            <input name=p2050 type=range min=0 max=100 value=0 step=1
+                   data-prec=0 data-default=null disabled>
+          </label>
+          <div class=current-range-val>
+            <span style=left:-50%>0</span>
+          </div>
+          <span class=min-range-val>0</span>
+          <span class=max-range-val>100</span>
+          <div class=tick-wrap>
+            <span class=tick style=left:-50% >&bullet;</span>
+          </div>
+        </li>
+
+        <li class="disabled init-disabled range-wrap" >
+          <label><span class=parameter-name>2100</span> (% of globe)
+            <input name=p2100 type=range min=0 max=100 value=0 step=1
+                   data-prec=0 data-default=null disabled>
+          </label>
+          <div class=current-range-val>
+            <span style=left:-50%>0</span>
+          </div>
+          <span class=min-range-val>0</span>
+          <span class=max-range-val>100</span>
+          <div class=tick-wrap>
+            <span class=tick style=left:-50% >&bullet;</span>
+          </div>
+        </li>
+
+        <li class="disabled init-disabled range-wrap" >
+          <label><span class=parameter-name>2150</span> (% of globe)
+            <input name=p2150 type=range min=0 max=100 value=0 step=1
+                   data-prec=0 data-default=null disabled>
+          </label>
+          <div class=current-range-val>
+            <span style=left:-50%>0</span>
+          </div>
+          <span class=min-range-val>0</span>
+          <span class=max-range-val>100</span>
+          <div class=tick-wrap>
+            <span class=tick style=left:-50% >&bullet;</span>
+          </div>
+        </li>
+
+      </ul>
+
+    </div>
+  </div>
+
+</section>

@@ -58,14 +58,14 @@ def index():
 def advanced(year):
     s, parser = do_session(request, year)
     tabs = parser.get_advanced_tabs()
-    return page(tabs, parser, year, 'advanced')
+    return page(tabs, parser, year, 'advanced_{}'.format(year))
 
 
-@mod.route('/basic')
+@mod.route('/standard')
 def basic():
     s, parser = do_session(request, 2007)
     tabs = parser.get_basic_tabs()
-    return page(tabs, parser, None, 'basic')
+    return page(tabs, parser, None, 'standard')
 
 
 def page(tabs, parser, year, tpl='index'):
@@ -97,7 +97,7 @@ def page(tabs, parser, year, tpl='index'):
         graph_names=graph_names,
         tabs=tabs,
         dropdowns=measurements,
-        paragraphs_html=parser.paragraphs_html(tpl),
+        paragraphs_html=parser.paragraphs_html(tpl.split('_')[0]),
         all_parameters=all_parameters,
         now=now,
         dice_version=year,
@@ -105,8 +105,59 @@ def page(tabs, parser, year, tpl='index'):
     )
 
 
+@mod.route('/run/standard', methods=['POST', 'GET'])
+def graphs_standard():
+    s, parser = do_session(request, 2010)
+    this_dice = s['dice']
+    this_dice.loop()
+    form = json.loads(request.data)
+    new_data = {
+        'temp_co2_doubling': [1, 2, 3.2, 4, 5],
+        'damages_exponent': [1, 1.4, 2.0, 2.8, 4.0],
+        'productivity_decline': [.015, .011, .009, .003, 0.0],
+        'backstop_ratio': [1, 1.4, 2.0, 2.8, 4.0],
+        'intensity_decline_rate': [.060, .02, .0065, .0006, 0.0],
+    }
+    for field in new_data.keys():
+        try:
+            if form[field]:
+                form[field] = new_data[field][int(form[field]) - 1]
+        except KeyError:
+            pass
+
+    all_parameters = parser.get_all_parameters()
+
+    for p in all_parameters:
+        try:
+            p['disabled']
+        except (KeyError, AttributeError):
+            try:
+                getattr(this_dice.params, p['machine_name'])
+            except AttributeError:
+                pass
+            else:
+                try:
+                    this_dice.params.__dict__[p['machine_name']] = float(form[p['machine_name']])
+                except (ValueError, AttributeError, KeyError):
+                    pass
+    this_dice.params.carbon_model = 'dice_2007'
+    this_dice.params.damages_model = 'dice_2007'
+    opt = False
+    policy = form['policy_type']
+    this_dice.params._treaty = False
+    this_dice.params._carbon_tax = False
+    if policy == 'treaty':
+        this_dice.params._treaty = True
+    elif policy == 'optimized':
+        opt = True
+    elif policy == 'carbon_tax':
+        this_dice.params._carbon_tax = True
+    this_dice.loop(opt=opt)
+    return jsonify(**this_dice.format_output())
+
+
 @mod.route('/run/<int:year>', methods=['POST', 'GET'])
-def graphs_d3(year):
+def graphs_d3(year=2007):
     """
     Get data from <form>, run DICE loop.
     ...
@@ -119,13 +170,14 @@ def graphs_d3(year):
     this_dice = s['dice']
     this_dice.loop()
     form = json.loads(request.data)
-    form['depreciation'] = float(form['depreciation']) / 100
-    form['savings'] = float(form['savings']) / 100
-    form['prstp'] = float(form['prstp']) / 100
-    form['backstop_decline'] = float(form['backstop_decline']) / 100
-    form['productivity_decline'] = float(form['productivity_decline']) / 100
-    form['intensity_decline_rate'] = float(form['intensity_decline_rate']) / 100
-    form['prod_frac'] = float(form['prod_frac']) / 100
+    for field in ['depreciation', 'savings', 'prstp', 'backstop_decline',
+                  'productivity_decline', 'intensity_decline_rate',
+                  'prod_frac', ]:
+        try:
+            if form[field]:
+                form[field] = float(form[field]) / 100
+        except KeyError:
+            pass
 
     all_parameters = parser.get_all_parameters()
 

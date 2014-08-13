@@ -1,6 +1,7 @@
-
-
 (function() {
+
+
+
   var WebDICEPreview = function() {
     "use strict";
       var _f, _n, _h, _w, _t, _s,
@@ -48,9 +49,12 @@
     radios = d3.selectAll('#parameters input[type="radio"]'),
     sliders = d3.selectAll('#parameters .range-wrap input[type="range"]'),
 
-    update_slider = function () {
+    update_slider = function() {
       var t = d3.select(this),
         p = d3.select(this.parentNode.parentNode),
+        _eq = d3.select(this.form).classed('advanced')
+          ? advanced_equations
+          : standard_equations,
         current = p.select('.current-range-val span'),
         preview = p.select('.parameter-preview-line'),
         name = t.attr('name'),
@@ -64,8 +68,8 @@
       current.text(val.toFixed(prec).toString()).style('left', pct + '%');
 
       if (preview_graphs.hasOwnProperty(name)) {
-        var eq = equations[name],
-          o = false;
+        var o = false,
+          eq = _eq[name];
 
         if (eq.hasOwnProperty('other_input')) {
           o = +d3.select('input[name="' + eq.other_input + '"]').property('value');
@@ -84,11 +88,14 @@
 
     var input = d3.select(this),
       name = input.attr('name'),
+      _eq = d3.select(this.form).classed('advanced')
+        ? advanced_equations
+        : standard_equations,
       t = d3.select('.parameter-preview[data-input-parameters*="' + name + '"]');
 
-    if (!t.empty() && equations.hasOwnProperty(name)) {
+    if (!t.empty() && _eq.hasOwnProperty(name)) {
       var value = input.property('value'),
-        eq = equations[name];
+        eq = _eq[name];
       if (!eq.shared) {
         var max = +input.attr(eq['max']),
           s = eq['scale'],
