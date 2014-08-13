@@ -238,7 +238,7 @@ var WebDICEGraph = function() {
           .attr('height', _y.range()[0])
           .attr('width', segment_width)
           .attr('data-x', function(d) { return d.values[0].x; })
-          .style('fill', 'transparent')
+          .style('fill', 'none')
           .style('pointer-events', function() { return visible ? 'all' : 'none'; });
         data_points = t.selectAll('.data-point.tight')
           .data(function(d) { return d.values; });

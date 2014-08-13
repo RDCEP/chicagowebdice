@@ -732,7 +732,7 @@ g.visuallyhidden {
 
 .data-point {
   stroke-width: 0;
-  fill: transparent;
+  fill: none;
   pointer-events: none; }
   .data-point .loose {
     stroke-width: 5;
@@ -742,7 +742,7 @@ g.visuallyhidden {
     fill: #eeeeee; }
   .data-point.visuallyhidden {
     stroke-width: 0 !important;
-    fill: transparent !important; }
+    fill: none !important; }
   .data-point.draggable {
     pointer-events: all; }
     .data-point.draggable.hovered {
