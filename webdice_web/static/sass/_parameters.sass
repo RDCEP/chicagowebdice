@@ -93,7 +93,20 @@
         .parameter-preview-line
           stroke: $blue
           stroke-width: 3
-
+#parameter_form.standard
+  .max-range-val, .min-range-val, .current-range-val
+    position: absolute
+    //bottom: $range_minmax_v_offset
+    bottom: auto
+    top: 100%
+  .max-range-val
+    right: 0
+    left: auto!important
+    text-align: right
+  .min-range-val
+    left: 0
+    right: auto!important
+    text-align: left
 #run_clear
   position: absolute
   right: 15px

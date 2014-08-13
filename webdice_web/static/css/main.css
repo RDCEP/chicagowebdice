@@ -855,6 +855,19 @@ g.visuallyhidden {
           stroke: #0072b2;
           stroke-width: 3; }
 
+#parameter_form.standard .max-range-val, #parameter_form.standard .min-range-val, #parameter_form.standard .current-range-val {
+  position: absolute;
+  bottom: auto;
+  top: 100%; }
+#parameter_form.standard .max-range-val {
+  right: 0;
+  left: auto !important;
+  text-align: right; }
+#parameter_form.standard .min-range-val {
+  left: 0;
+  right: auto !important;
+  text-align: left; }
+
 #run_clear {
   position: absolute;
   right: 15px; }
