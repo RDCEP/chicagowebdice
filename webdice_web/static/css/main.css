@@ -419,6 +419,10 @@ h1 a {
   height: 100%;
   width: 100%; }
 
+text {
+  font-family: Helveltica, Arial, sans-serif;
+  color: #222222; }
+
 path, circle {
   fill: none; }
   path.visuallyhidden, circle.visuallyhidden {
@@ -722,6 +726,9 @@ g.visuallyhidden {
   font-weight: normal;
   letter-spacing: 0.02em;
   fill: #545454; }
+
+.segment-rect {
+  fill: transparent; }
 
 .data-point {
   stroke-width: 0;

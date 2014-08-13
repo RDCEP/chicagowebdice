@@ -10,8 +10,8 @@ var WebDICEGraph = function() {
      ***********************/
 
     _max_domains,
-    _x = d3.scale.linear().domain([0, 1]).range([0, width]),
-    _y = d3.scale.linear().domain([0, 1]).range([height, 0]),
+    _x = d3.scale.linear().domain([0, 1]).range([1, width - 1]),
+    _y = d3.scale.linear().domain([0, 1]).range([height - 1, 1]),
     y_axis_format = function(d) {
       //FIXME: This is tres sloppy
       if (_y.domain()[1] < 100) {
@@ -83,6 +83,7 @@ var WebDICEGraph = function() {
     handle_layer,
     button_layer,
     segment_width,
+    title_layer,
     title,
     subtitle,
     _custom_graph = false,
@@ -132,8 +133,8 @@ var WebDICEGraph = function() {
       svg_defs.select('rect').attr({
         width: width,
         height: height});
-      _x.range([0, width]);
-      _y.range([height, 0]);
+      _x.range([1, width - 1]);
+      _y.range([height - 1, 1]);
       graph_data.graphs
         .data(graph_data.data)
         .attr('d', function(d) { return _line(d.data); });
@@ -429,13 +430,14 @@ var WebDICEGraph = function() {
         'id': pre_id('chart_svg') })
       .classed('twin', _twin);
     svg_defs = svg.append('defs');
+    title_layer = svg.append('g')
+      .attr('transform', 'translate(' + padding.left + ',' + (padding.top - 5) + ')');
     svg = svg.append('g')
       .attr('transform', 'translate(' + padding.left + ',' + padding.top + ')');
     grid_layer = svg.append('g').attr('id', pre_id('grid_layer'));
     graph_layer = svg.append('g').attr('id', pre_id('graph_layer'));
     svg_defs.append('clipPath').attr("id", "graph_clip").append("rect")
       .attr({'width': width, 'height': height });
-
     axes_layer = svg.append('g').attr('id', pre_id('axes_layer'));
     handle_layer = svg.append('g').attr('id', pre_id('handle_layer'));
     button_layer = svg.append('g').attr('id', pre_id('button_layer'));
@@ -445,16 +447,22 @@ var WebDICEGraph = function() {
   };
   this.title = function(str, align) {
     if (str === undefined) { return title.text(); }
-    title = title || d3.select('#' + svg_id)
-      .insert('h3', '.chart-wrap')
-      .classed('twin', _twin);;
+    title = title || title_layer.append('text')
+      .attr('transform', 'translate(0,-12)')
+      .style({
+        'font-weight': 'bold',
+        'font-size': 12
+      })
+      .classed('twin', _twin);
     title.html(str);
     return this;
   };
   this.subtitle = function(str) {
     if (str === undefined) { return subtitle.text(); }
-    subtitle = subtitle || d3.select('#' + svg_id)
-      .insert('h4', '.chart-wrap')
+    subtitle = subtitle || title_layer.append('text')
+      .style({
+        'font-size': 10
+      })
       .classed('twin', _twin);
     subtitle.html(str);
     return this;
