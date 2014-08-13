@@ -660,14 +660,14 @@
         var chart_wrap = d3.select('#'+chart+'_chart'),
           chart_svg = chart_wrap.select('svg');
         if (chart_wrap.classed('small-chart')) {
-          chart_wrap.style('height', (dims.h / 2 - 15) + 'px');
-          chart_svg.style('height', (dims.h / 2 - 15) + 'px');
+          chart_wrap.style('height', (dims.h / 2 - 30) + 'px');
+          chart_svg.style('height', (dims.h / 2 - 30) + 'px');
         } else {
 //          chart_wrap.style('height', tall + 'px');
           chart_svg.style('height', tall + 'px');
         }
         if (charts[chart].small) {
-          charts[chart].chart.width(dims.w / 2 - 15).height(dims.h / 2 - 15).redraw();
+          charts[chart].chart.width(dims.w / 2 - 15).height(dims.h / 2 - 30).redraw();
         } else {
           charts[chart].chart.width(dims.w - 1).height(tall).redraw();
         }
