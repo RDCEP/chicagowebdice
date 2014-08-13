@@ -1,8 +1,10 @@
 import json
 from datetime import datetime
+
 from flask import render_template, request, make_response, Blueprint, jsonify
+
 from webdice.dice import Dice2007, Dice2010
-from webdice.html_parser.web import DiceWebParser
+from webdice_web.html_parser.web import DiceWebParser
 
 
 mod = Blueprint('webdice', __name__, static_folder='static',
