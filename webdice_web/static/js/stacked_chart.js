@@ -447,11 +447,16 @@ var WebDICEGraph = function() {
   };
   this.title = function(str, align) {
     if (str === undefined) { return title.text(); }
+    var xo = _twin ? (width - padding.left - padding.right - 5) : 0,
+      talign =  _twin ? 'right' : 'left',
+      tanchor = _twin ? 'end' : 'start';
     title = title || title_layer.append('text')
-      .attr('transform', 'translate(0,-12)')
+      .attr('transform', 'translate(' + xo + ',-12)')
       .style({
         'font-weight': 'bold',
-        'font-size': 12
+        'font-size': 12,
+        'text-align': talign,
+        'text-anchor': tanchor
       })
       .classed('twin', _twin);
     title.html(str);
@@ -459,9 +464,16 @@ var WebDICEGraph = function() {
   };
   this.subtitle = function(str) {
     if (str === undefined) { return subtitle.text(); }
+    var xo = _twin ? (width - padding.left - padding.right - 5) : 0,
+      talign =  _twin ? 'right' : 'left',
+      tanchor = _twin ? 'end' : 'start';
+
     subtitle = subtitle || title_layer.append('text')
+      .attr('transform', 'translate(' + xo + ',0)')
       .style({
-        'font-size': 10
+        'font-size': 10,
+        'text-align': talign,
+        'text-anchor': tanchor
       })
       .classed('twin', _twin);
     subtitle.html(str);
