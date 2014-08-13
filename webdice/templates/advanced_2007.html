@@ -83,11 +83,6 @@
 </div>
 {% endblock %}
 
-{% block help %}{% for parameter in all_parameters %}{% if parameter.help %}
-  <div class="help-text" id="{{ parameter.machine_name }}-help">{{ parameter.help|safe }}
-  </div>{% endif %}{% endfor %}
-{% endblock %}
-
 {% block bodyjs %}
   {{ super() }}
   <script src="{{ url_for('webdice.static', filename='js/webdice_range_slider.js') }}?{{ now }}"></script>
