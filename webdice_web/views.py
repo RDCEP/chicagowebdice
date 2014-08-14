@@ -1,6 +1,7 @@
 import json
 import zipfile
 import StringIO
+from lxml import etree
 from datetime import datetime
 
 from flask import render_template, request, make_response, Blueprint, jsonify
@@ -222,21 +223,40 @@ def graphs_d3(year=2007):
 
 @mod.route('/zip_svgs', methods=['POST', ])
 def zip_svgs():
-    # form = json.loads(request.data)
+
+    def combine_custom(c, t):
+        c = etree.fromstring(c)
+        t = etree.fromstring(t)
+        cg = c.xpath('/n:svg/n:g',
+                    namespaces={'n': 'http://www.w3.org/2000/svg'})
+        tg = t.xpath('/n:svg/n:g',
+                    namespaces={'n': 'http://www.w3.org/2000/svg'})
+        tgg = tg[1].xpath('./n:g',
+                          namespaces={'n': 'http://www.w3.org/2000/svg'})
+        c.append(tg[0])
+        for t in tgg:
+            cg[1].append(t)
+        # c = etree.SubElement(g, t)
+        return etree.tostring(c)
+
     form = request.form
     buffer = StringIO.StringIO()
     zipped = zipfile.ZipFile(buffer, 'w')
+
     for k in form.keys():
         s = StringIO.StringIO()
-        s.write(str(form[k]))
+        if k == 'custom_chart':
+            s.write(combine_custom(str(form['custom_chart']),
+                                   str(form['twin_chart'])))
+        else:
+            s.write(str(form[k]))
         zipped.writestr('{}.svg'.format(k), s.getvalue())
+
     zipped.close()
     buffer.seek(0)
+
     return send_file(buffer, attachment_filename='{}.zip'.format('WebDICE-SVGs'),
                      as_attachment=True)
-    # response = make_response(buffer)
-    # response.headers['Content-Disposition'] = 'attachment; filename="{}.zip"'.format('WebDICE-SVGs')
-    # return response
 
 
 @mod.route('/csv', methods=['POST',])
