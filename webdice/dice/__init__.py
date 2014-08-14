@@ -337,7 +337,7 @@ class Dice(object):
         output = dict(parameters=None, data=None)
         output['parameters'] = {
             p: getattr(self.params, p) for p in self.user_params
-            if type(p) in ['float', 'integer']
+            if type(getattr(self.params, p)) in [type(10), type(.10)]
         }
         output['data'] = {
             p: list(getattr(self.vars, p)) for p in self.model_vars
