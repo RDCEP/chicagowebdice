@@ -75,6 +75,7 @@ var WebDICEGraph = function() {
 
     svg_id = null,
     svg_wrap,
+    svg_root,
     svg,
     svg_defs,
     grid_layer,
@@ -127,6 +128,9 @@ var WebDICEGraph = function() {
     },
     redraw = function() {
       tool_tip.classed('hidden', true);
+      svg_root.attr({
+        width: (width + padding.left + padding.right) + 'px',
+        height: (height + padding.top + padding.bottom) + 'px'});
       svg_wrap.style({
         width: (width + padding.left) + 'px',
         height: (height + padding.top + padding.bottom) + 'px'});
@@ -420,7 +424,7 @@ var WebDICEGraph = function() {
         'left': '-' + padding.left + 'px',
         'width': (width + padding.left) + 'px'
       });
-    svg = svg_wrap
+    svg_root = svg_wrap
       .append('svg')
       .attr({ 'xmlns': 'http://www.w3.org/2000/svg',
         'xmlns:xmlns:xlink': 'http://www.w3.org/1999/xlink',
@@ -429,10 +433,10 @@ var WebDICEGraph = function() {
         'height': height + padding.top + padding.bottom,
         'id': pre_id('graph_svg') })
       .classed('twin', _twin);
-    svg_defs = svg.append('defs');
-    title_layer = svg.append('g')
+    svg_defs = svg_root.append('defs');
+    title_layer = svg_root.append('g')
       .attr('transform', 'translate(' + padding.left + ',' + (padding.top - 5) + ')');
-    svg = svg.append('g')
+    svg = svg_root.append('g')
       .attr('transform', 'translate(' + padding.left + ',' + padding.top + ')');
     grid_layer = svg.append('g').attr('id', pre_id('grid_layer'));
     graph_layer = svg.append('g').attr('id', pre_id('graph_layer'));
