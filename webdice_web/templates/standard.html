@@ -1,13 +1,4 @@
 {% extends 'base_page.html' %}
-{% block headjs -%}
-  <script type="text/javascript">
-    Options = window.Options || { };
-    Options.measurements = {{ measurements|safe }};
-    Options.locations = {{ graph_locations|safe }};
-    Options.graphs = {{  graph_names|safe }};
-    Options.dice_version = {% if dice_version %}{{ dice_version|safe }}{% else %}2007{% endif %};
-  </script>
-{%- endblock %}
 {% block mainlink %}<div id="back-to-rdcep">Switch to:
   <a href="/basic">Basic</a>
   {%- for v in other_versions -%}

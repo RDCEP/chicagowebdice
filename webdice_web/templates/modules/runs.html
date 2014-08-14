@@ -5,5 +5,14 @@
 
     </ul>
     <input id=clear_runs type=button value="Clear All Runs">
+    <div id=downloads>
+      <div>Download runs as:</div>
+      <form id=download_svg action=/get_svg method=post>
+        <input type=button value="SVG">
+      </form>
+      <form id=download_csv action=/get_csv method=post>
+        <input type=button value="CSV">
+      </form>
+    </div>
   </div>
 </section>

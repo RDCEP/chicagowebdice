@@ -1,4 +1,11 @@
 {% extends 'base.html' %}
+{% block headjs -%}
+  <script type="text/javascript">
+    Options = window.Options || { };
+    Options.runs = {};
+    Options.dice_version = {% if dice_version %}{{ dice_version|safe }}{% else %}2007{% endif %};
+  </script>
+{%- endblock %}
 {% block page %}
   <header id=main_nav>
     <nav>
@@ -118,15 +125,15 @@
   {% block parameters %}{% endblock %}
   {% include 'modules/runs.html' %}
   {% endblock %}
-  <form id=download_svg action=/zip_svgs method=post>
-    <input type=button value="Download SVG">
-  </form>
+
+
   </article>
 
 {% block bodyjs %}
 <script src="{{ url_for('webdice.static', filename='js/stacked_chart.js') }}?{{ now }}"></script>
 <script src="{{ url_for('webdice.static', filename='js/webdice_param_eq.js') }}?{{ now }}"></script>
 <script src="{{ url_for('webdice.static', filename='js/webdice_download_svg.js') }}?{{ now }}"></script>
+<script src="{{ url_for('webdice.static', filename='js/webdice_download_csv.js') }}?{{ now }}"></script>
 <script src="{{ url_for('webdice.static', filename='js/main.js') }}?{{ now }}"></script>
 
 {% endblock %}

@@ -1,5 +1,6 @@
 import json
 import zipfile
+import csv
 import StringIO
 from lxml import etree
 from datetime import datetime
@@ -91,16 +92,16 @@ def page(tabs, parser, year, tpl='index'):
         for m in s['options']:
             without_sections.append(m)
     graph_locations = ['topleft', 'topright', 'bottomleft', 'bottomright', ]
-    graph_names = ['essential', 'climate', 'economy', 'policy']
+    # graph_names = ['essential', 'climate', 'economy', 'policy']
     m = json.JSONEncoder().encode(without_sections)
     graph_locations = json.JSONEncoder().encode(graph_locations)
-    graph_names = json.JSONEncoder().encode(graph_names)
+    # graph_names = json.JSONEncoder().encode(graph_names)
     now = datetime.now().strftime('%Y%m%d%H%M%S')
     return render_template(
         tpl + '.html',
         measurements=m,
         graph_locations=graph_locations,
-        graph_names=graph_names,
+        # graph_names=graph_names,
         tabs=tabs,
         dropdowns=measurements,
         paragraphs_html=parser.paragraphs_html(tpl.split('_')[0]),
@@ -174,7 +175,7 @@ def graphs_d3(year=2007):
     """
     s, parser = do_session(request, year)
     this_dice = s['dice']
-    this_dice.loop()
+    # this_dice.loop()
     form = json.loads(request.data)
     for field in ['depreciation', 'savings', 'prstp', 'backstop_decline',
                   'productivity_decline', 'intensity_decline_rate',
@@ -221,28 +222,22 @@ def graphs_d3(year=2007):
     return jsonify(**this_dice.format_output())
 
 
-@mod.route('/zip_svgs', methods=['POST', ])
-def zip_svgs():
-
+@mod.route('/get_svg', methods=['POST', ])
+def get_svg():
     def combine_custom(c, t):
+        ns = 'http://www.w3.org/2000/svg'
         c = etree.fromstring(c)
         t = etree.fromstring(t)
-        cg = c.xpath('/n:svg/n:g',
-                    namespaces={'n': 'http://www.w3.org/2000/svg'})
-        tg = t.xpath('/n:svg/n:g',
-                    namespaces={'n': 'http://www.w3.org/2000/svg'})
-        tgg = tg[1].xpath('./n:g',
-                          namespaces={'n': 'http://www.w3.org/2000/svg'})
+        cg = c.xpath('/n:svg/n:g', namespaces={'n': ns})
+        tg = t.xpath('/n:svg/n:g', namespaces={'n': ns})
+        tgg = tg[1].xpath('./n:g', namespaces={'n': ns})
         c.append(tg[0])
         for t in tgg:
             cg[1].append(t)
-        # c = etree.SubElement(g, t)
         return etree.tostring(c)
-
     form = request.form
     buffer = StringIO.StringIO()
     zipped = zipfile.ZipFile(buffer, 'w')
-
     for k in form.keys():
         s = StringIO.StringIO()
         if k == 'custom_chart':
@@ -251,18 +246,30 @@ def zip_svgs():
         else:
             s.write(str(form[k]))
         zipped.writestr('{}.svg'.format(k), s.getvalue())
-
     zipped.close()
     buffer.seek(0)
-
-    return send_file(buffer, attachment_filename='{}.zip'.format('WebDICE-SVGs'),
+    return send_file(buffer,
+                     attachment_filename='{}.zip'.format('WebDICE-SVGs'),
                      as_attachment=True)
 
 
-@mod.route('/csv', methods=['POST',])
-def csv_output():
-    data = request.form['data']
-    response = make_response(data)
-    response.headers['Content-Disposition'] = 'attachment; filename="{}.csv"'.\
-        format('WebDICE-Data')
-    return response
+@mod.route('/get_csv', methods=['POST',])
+def get_csv():
+    buffer = StringIO.StringIO()
+    data = json.loads(request.form['data'])
+    print(data)
+    writer = csv.writer(buffer)
+    for run in data.keys():
+        writer.writerow([data[run]['name']])
+        writer.writerow(data[run]['parameters'].keys())
+        writer.writerow(data[run]['parameters'].values())
+        for var in data[run]['data'].keys():
+            writer.writerow([var] + data[run]['data'][var])
+    buffer.seek(0)
+    return send_file(buffer,
+                     attachment_filename='{}.csv'.format('WebDICE-CSV'),
+                     as_attachment=True)
+    # response = make_response()
+    # response.headers['Content-Disposition'] = 'attachment; filename="{}.csv"'.\
+    #     format('WebDICE-Data')
+    # return response

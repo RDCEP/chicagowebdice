@@ -697,11 +697,25 @@ g.visuallyhidden {
 .nowrap {
   white-space: nowrap; }
 
-#download_svg {
-  position: absolute;
-  top: 100%;
-  font-size: 0.8em;
-  font-weight: bold; }
+#downloads {
+  font-size: 0.9em;
+  font-weight: bold;
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid #cccccc; }
+  #downloads form {
+    display: inline;
+    margin-top: 5px; }
+    #downloads form + form {
+      margin-left: 5px; }
+    #downloads form input {
+      border: none;
+      padding: 5px 10px;
+      background-color: #666666;
+      color: white;
+      font-weight: bold;
+      font-family: Helveltica, Arial, sans-serif;
+      cursor: pointer; }
 
 .grid-boundary {
   fill: transparent;

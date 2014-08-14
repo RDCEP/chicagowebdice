@@ -306,7 +306,7 @@
     }
   };
 
-  var add_run = function(_data) {
+  var add_run = function(_data, parameters) {
     /*
      Add run to interface.
      */
@@ -345,6 +345,12 @@
     update_custom_graph();
 
     add_run_to_list(total_runs);
+
+    Options.runs[total_runs] = {
+      parameters: parameters,
+      data: _data,
+      name: 'Run #' + total_runs
+    };
 
     initialized = true;
 
@@ -424,13 +430,12 @@
 
     r = JSON.parse(r.response);
 
-    add_run(r.data);
+    add_run(r.data, r.parameters);
 
     d3.select('#parameters_tab').classed('selected', false);
     parameters_wrap.classed('visuallyhidden', true);
     run_model.attr('disabled', null);
     loader_gif.style('display', 'none');
-
 
   };
 
@@ -565,8 +570,10 @@
           h3.text(new_name);
           d3.selectAll('[data-type]').attr('data-type', new_name);
           d3.select(this).remove();
+          Options.runs[index].name = new_name;
         });
     input.node().select();
+
   };
 
   var show_run = function() {
@@ -637,6 +644,8 @@
       });
     });
     update_custom_graph();
+
+    delete Options.runs[index];
 
     --visible_runs;
 

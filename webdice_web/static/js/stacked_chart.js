@@ -467,7 +467,6 @@ var WebDICEGraph = function() {
     var xo = _twin ? (width - padding.left - padding.right - 5) : 0,
       talign =  _twin ? 'right' : 'left',
       tanchor = _twin ? 'end' : 'start';
-
     subtitle = subtitle || title_layer.append('text')
       .attr('transform', 'translate(' + xo + ',0)')
       .style({
