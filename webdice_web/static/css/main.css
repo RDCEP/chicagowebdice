@@ -596,54 +596,54 @@ g.visuallyhidden {
   .pane.selected {
     display: block;
     z-index: 2; }
-  .pane .graph {
-    overflow: visible; }
-  .pane .small-graph {
-    float: left;
-    position: relative;
-    width: 420px;
-    margin: 7.5px; }
-    .pane .small-graph .bkgd {
-      position: absolute;
-      height: 100%;
-      width: 100%;
-      z-index: -1; }
-    .pane .small-graph h3, .pane .small-graph h4 {
-      font-size: 1em;
-      font-weight: bold;
-      position: absolute;
-      top: 0;
-      padding: 15px 0 0 60px; }
-    .pane .small-graph h4 {
-      font-size: 0.8em;
-      font-weight: normal;
-      top: 1.4em; }
-  .pane .large-graph {
-    position: absolute;
-    top: 0;
-    height: 0;
-    pointer-events: none; }
-    .pane .large-graph * {
-      pointer-events: none; }
-    .pane .large-graph h3, .pane .large-graph h4 {
-      font-size: 1em;
-      font-weight: bold;
-      position: absolute;
-      top: 0;
-      padding: 15px 0 0 60px; }
-      .pane .large-graph h3.twin, .pane .large-graph h4.twin {
-        right: 0;
-        padding: 15px 0 0 0; }
-    .pane .large-graph h4 {
-      font-size: 0.8em;
-      font-weight: normal;
-      top: 1.4em; }
   .pane.graph-pane {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0; }
+    .pane.graph-pane .graph {
+      overflow: visible; }
+    .pane.graph-pane .small-graph {
+      float: left;
+      position: relative;
+      width: 420px;
+      margin: 7.5px; }
+      .pane.graph-pane .small-graph .bkgd {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        z-index: -1; }
+      .pane.graph-pane .small-graph h3, .pane.graph-pane .small-graph h4 {
+        font-size: 1em;
+        font-weight: bold;
+        position: absolute;
+        top: 0;
+        padding: 15px 0 0 60px; }
+      .pane.graph-pane .small-graph h4 {
+        font-size: 0.8em;
+        font-weight: normal;
+        top: 1.4em; }
+    .pane.graph-pane .large-graph {
+      position: absolute;
+      top: 0;
+      height: 0;
+      pointer-events: none; }
+      .pane.graph-pane .large-graph * {
+        pointer-events: none; }
+      .pane.graph-pane .large-graph h3, .pane.graph-pane .large-graph h4 {
+        font-size: 1em;
+        font-weight: bold;
+        position: absolute;
+        top: 0;
+        padding: 15px 0 0 60px; }
+        .pane.graph-pane .large-graph h3.twin, .pane.graph-pane .large-graph h4.twin {
+          right: 0;
+          padding: 15px 0 0 0; }
+      .pane.graph-pane .large-graph h4 {
+        font-size: 0.8em;
+        font-weight: normal;
+        top: 1.4em; }
 
 #graphs_wrap .loader_gif {
   right: 15px;

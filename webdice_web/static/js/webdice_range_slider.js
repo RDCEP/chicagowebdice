@@ -92,7 +92,6 @@
         ? advanced_equations
         : standard_equations,
       t = d3.select('.parameter-preview[data-input-parameters*="' + name + '"]');
-
     if (!t.empty() && _eq.hasOwnProperty(name)) {
       var value = input.property('value'),
         eq = _eq[name];

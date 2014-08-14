@@ -221,54 +221,55 @@ g.visuallyhidden
   &.selected
     display: block
     z-index: 2
-  .graph
-    overflow: visible
-  .small-graph
-    float: left
-    position: relative
-    width: $small_graph_width
-    margin: $outer_pad / 2
-    .bkgd
-      position: absolute
-      height: 100%
-      width: 100%
-      z-index: -1
-    h3, h4
-      font-size: 1em
-      font-weight: bold
-      position: absolute
-      top: 0
-      padding: 15px 0 0 $left_pad
-    h4
-      font-size: .8em
-      font-weight: normal
-      top: 1.4em
-  .large-graph
-    position: absolute
-    top: 0
-    height: 0
-    pointer-events: none
-    & *
-      pointer-events: none
-    h3, h4
-      font-size: 1em
-      font-weight: bold
-      position: absolute
-      top: 0
-      padding: 15px 0 0 $left_pad
-      &.twin
-        right: 0
-        padding: 15px 0 0 0
-    h4
-      font-size: .8em
-      font-weight: normal
-      top: 1.4em
   &.graph-pane
     position: absolute
     top: 0
     left: 0
     right: 0
     bottom: 0
+    .graph
+      overflow: visible
+    .small-graph
+      float: left
+      position: relative
+      width: $small_graph_width
+      margin: $outer_pad / 2
+      .bkgd
+        position: absolute
+        height: 100%
+        width: 100%
+        z-index: -1
+      h3, h4
+        font-size: 1em
+        font-weight: bold
+        position: absolute
+        top: 0
+        padding: 15px 0 0 $left_pad
+      h4
+        font-size: .8em
+        font-weight: normal
+        top: 1.4em
+    .large-graph
+      position: absolute
+      top: 0
+      height: 0
+      pointer-events: none
+      & *
+        pointer-events: none
+      h3, h4
+        font-size: 1em
+        font-weight: bold
+        position: absolute
+        top: 0
+        padding: 15px 0 0 $left_pad
+        &.twin
+          right: 0
+          padding: 15px 0 0 0
+      h4
+        font-size: .8em
+        font-weight: normal
+        top: 1.4em
+
 #graphs_wrap .loader_gif
   right: 15px
   left: auto

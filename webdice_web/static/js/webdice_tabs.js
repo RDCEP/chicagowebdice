@@ -13,12 +13,15 @@
 
   if (hash_section == 'graph') {
 
-    var pane = d3.select('#' + hash_tab + '_graphs')
+    var tab = d3.select('.graph-tab[data-pane="' + hash_tab + '"]')
+      , pane = d3.select('#' + hash_tab + '_graphs')
       , parent = d3.select(pane.node().parentNode)
     ;
 
-    t = d3.select('#' + hash_tab + '_graph')
+    console.log(hash_tab, tab);
+
     d3.selectAll('.graph-tab').classed('selected', false);
+    tab.classed('selected', true);
     parent.select('.pane.selected').classed('selected', false);
     pane.classed('selected', true).style('z-index', 998);
 
@@ -30,13 +33,16 @@
     ;
 
     d3.selectAll('.option-tab').classed('selected', false);
-    t = d3.select('#' + tab + '_tab')
+    t = d3.select('#' + hash_tab + '_tab')
 
-    if (tab == 'parameters') {
+    if (hash_tab == 'parameters') {
 
       vis = !parameters.classed('visuallyhidden');
       t.classed('selected', !vis);
-      parameters.classed('visuallyhidden', vis).style('z-index', 998);
+      parameters
+        .classed('selected', !vis)
+        .classed('visuallyhidden', vis)
+        .style('z-index', 998);
       runs.classed('visuallyhidden', true);
 
     } else if (tab == 'runs') {
@@ -67,13 +73,14 @@
     var t = d3.select(this),
       tab = t.attr('data-pane'),
       pane = d3.select('.pane[data-pane="' + tab + '"]'),
-//      parent = d3.select(pane.node().parentNode),
       vis;
 
     if (t.classed('graph-tab')) {
       d3.selectAll('.graph-tab').classed('selected', false);
+      d3.selectAll('.graph-tab').style('font-weight', null);
     } else {
       d3.selectAll('.option-tab').classed('selected', false);
+      d3.selectAll('.graph-tab').style('font-weight', 'normal');
     }
 
     t.classed('selected', true);
@@ -81,7 +88,10 @@
     if (tab == 'parameters') {
       vis = !parameters.classed('visuallyhidden');
       t.classed('selected', !vis);
-      parameters.classed('visuallyhidden', vis).style('z-index', 998);
+      parameters
+        .classed('selected', !vis)
+        .classed('visuallyhidden', vis)
+        .style('z-index', 998);
       runs.classed('visuallyhidden', true);
       window.location.hash = 'option:parameters';
     } else if (tab == 'runs') {
