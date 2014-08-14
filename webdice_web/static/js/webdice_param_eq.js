@@ -217,11 +217,11 @@
     },
     intensity_decline_rate: {
       width: 230,
-      max: 'min',
+      max: 'max',
       scale: 'linear',
       legend: 'Carbon intensity decline v. Time',
       output: function (v) {
-        v = [.060, .02, .0065, .0006, 0.0][v - 1];
+        v = [6.0, 2., 0.65, 0.06, 0.0][v - 1];
         var o = [],
           p = 0.13418;
         for (var i = 0; i < 10; ++i) {
