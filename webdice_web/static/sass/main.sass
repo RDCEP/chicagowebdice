@@ -196,7 +196,7 @@ g.visuallyhidden
   min-height: 480px
   max-height: 960px
   padding-bottom: 30px
-  .chart-pane
+  .graph-pane
     width: $site_width + $outer_pad * 2
     margin: 0 auto
 #parameters_wrap, #graphs_wrap, #runs_wrap
@@ -221,12 +221,12 @@ g.visuallyhidden
   &.selected
     display: block
     z-index: 2
-  .chart
+  .graph
     overflow: visible
-  .small-chart
+  .small-graph
     float: left
     position: relative
-    width: $small_chart_width
+    width: $small_graph_width
     margin: $outer_pad / 2
     .bkgd
       position: absolute
@@ -243,7 +243,7 @@ g.visuallyhidden
       font-size: .8em
       font-weight: normal
       top: 1.4em
-  .large-chart
+  .large-graph
     position: absolute
     top: 0
     height: 0
@@ -263,13 +263,17 @@ g.visuallyhidden
       font-size: .8em
       font-weight: normal
       top: 1.4em
-  &.chart-pane
+  &.graph-pane
     position: absolute
     top: 0
     left: 0
     right: 0
     bottom: 0
-#loader_gif
+#graphs_wrap .loader_gif
+  right: 15px
+  left: auto
+
+.loader_gif
   display: none
   position: absolute
   left: 100%
@@ -341,6 +345,8 @@ g.visuallyhidden
 @import parameters
 @import runs
 @import helpers
+
+
 
 
 

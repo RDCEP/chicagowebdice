@@ -91,17 +91,11 @@ def page(tabs, parser, year, tpl='index'):
     for s in measurements:
         for m in s['options']:
             without_sections.append(m)
-    graph_locations = ['topleft', 'topright', 'bottomleft', 'bottomright', ]
-    # graph_names = ['essential', 'climate', 'economy', 'policy']
     m = json.JSONEncoder().encode(without_sections)
-    graph_locations = json.JSONEncoder().encode(graph_locations)
-    # graph_names = json.JSONEncoder().encode(graph_names)
     now = datetime.now().strftime('%Y%m%d%H%M%S')
     return render_template(
         tpl + '.html',
         measurements=m,
-        graph_locations=graph_locations,
-        # graph_names=graph_names,
         tabs=tabs,
         dropdowns=measurements,
         paragraphs_html=parser.paragraphs_html(tpl.split('_')[0]),
@@ -240,9 +234,9 @@ def get_svg():
     zipped = zipfile.ZipFile(buffer, 'w')
     for k in form.keys():
         s = StringIO.StringIO()
-        if k == 'custom_chart':
-            s.write(combine_custom(str(form['custom_chart']),
-                                   str(form['twin_chart'])))
+        if k == 'custom_graph':
+            s.write(combine_custom(str(form['custom_graph']),
+                                   str(form['twin_graph'])))
         else:
             s.write(str(form[k]))
         zipped.writestr('{}.svg'.format(k), s.getvalue())

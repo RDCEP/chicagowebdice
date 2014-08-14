@@ -569,7 +569,7 @@ g.visuallyhidden {
   min-height: 480px;
   max-height: 960px;
   padding-bottom: 30px; }
-  #main_content .chart-pane {
+  #main_content .graph-pane {
     width: 930px;
     margin: 0 auto; }
 
@@ -596,56 +596,60 @@ g.visuallyhidden {
   .pane.selected {
     display: block;
     z-index: 2; }
-  .pane .chart {
+  .pane .graph {
     overflow: visible; }
-  .pane .small-chart {
+  .pane .small-graph {
     float: left;
     position: relative;
     width: 420px;
     margin: 7.5px; }
-    .pane .small-chart .bkgd {
+    .pane .small-graph .bkgd {
       position: absolute;
       height: 100%;
       width: 100%;
       z-index: -1; }
-    .pane .small-chart h3, .pane .small-chart h4 {
+    .pane .small-graph h3, .pane .small-graph h4 {
       font-size: 1em;
       font-weight: bold;
       position: absolute;
       top: 0;
       padding: 15px 0 0 60px; }
-    .pane .small-chart h4 {
+    .pane .small-graph h4 {
       font-size: 0.8em;
       font-weight: normal;
       top: 1.4em; }
-  .pane .large-chart {
+  .pane .large-graph {
     position: absolute;
     top: 0;
     height: 0;
     pointer-events: none; }
-    .pane .large-chart * {
+    .pane .large-graph * {
       pointer-events: none; }
-    .pane .large-chart h3, .pane .large-chart h4 {
+    .pane .large-graph h3, .pane .large-graph h4 {
       font-size: 1em;
       font-weight: bold;
       position: absolute;
       top: 0;
       padding: 15px 0 0 60px; }
-      .pane .large-chart h3.twin, .pane .large-chart h4.twin {
+      .pane .large-graph h3.twin, .pane .large-graph h4.twin {
         right: 0;
         padding: 15px 0 0 0; }
-    .pane .large-chart h4 {
+    .pane .large-graph h4 {
       font-size: 0.8em;
       font-weight: normal;
       top: 1.4em; }
-  .pane.chart-pane {
+  .pane.graph-pane {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0; }
 
-#loader_gif {
+#graphs_wrap .loader_gif {
+  right: 15px;
+  left: auto; }
+
+.loader_gif {
   display: none;
   position: absolute;
   left: 100%;
@@ -722,10 +726,10 @@ g.visuallyhidden {
   stroke: transparent;
   stroke-width: 0; }
 
-.chart-line {
+.graph-line {
   stroke-width: 2; }
 
-.chart-legend {
+.graph-legend {
   display: none; }
 
 .grid-line {

@@ -11,7 +11,7 @@
     select_y_axis = d3.select('#select-y-axis'),
     select_y2_axis = d3.select('#select-y2-axis'),
     logarithmic_axes = d3.selectAll('.logarithmic-axis'),
-    loader_gif = d3.select('#loader_gif'),
+    loader_gif = d3.selectAll('.loader_gif'),
 
     initialized = false,
 
@@ -39,7 +39,7 @@
     total_runs = 0,
     visible_runs = 0,
     metadata,
-    charts = {},
+    graphs = {},
     runs = [],
     all_data = {},
     custom_data = [[], []],
@@ -54,9 +54,9 @@
      Get dimensions of current pane in interface
      */
 
-    var visible_chart_wrap = d3.select('.chart-pane.selected'),
-      w = visible_chart_wrap.node().clientWidth,
-      h = visible_chart_wrap.node().clientHeight;
+    var visible_graph_wrap = d3.select('.graph-pane.selected'),
+      w = visible_graph_wrap.node().clientWidth,
+      h = visible_graph_wrap.node().clientHeight;
     return {w: w, h: h};
   };
 
@@ -110,26 +110,25 @@
 
   };
 
-  var initialize_graph = function(dice_variable, chart_wrap) {
+  var initialize_graph = function(dice_variable, graph_wrap) {
 
     var dims = get_dims(),
       h, w;
-    if (chart_wrap.classed('small-chart')) {
+    if (graph_wrap.classed('small-graph')) {
       h = dims.h / 2 - 15;
       w = dims.w / 2 - 15;
-      chart_wrap.style('height', h + 'px');
+      graph_wrap.style('height', h + 'px');
     } else {
       h = dims.h;
       w = dims.w;
     }
-
-    charts[dice_variable] = charts[dice_variable] || {
-      chart: new WebDICEGraph()
+    graphs[dice_variable] = graphs[dice_variable] || {
+      graph: new WebDICEGraph()
         .twin(dice_variable == 'twin')
         .width(w)
         .height(h)
         .padding(padding[0], padding[1], padding[2], padding[3])
-        .select(dice_variable + '_chart')
+        .select(dice_variable + '_graph')
         .x(d3.time.scale())
         .y(d3.scale.linear())
         .domain(x_domain, [0, 1])
@@ -146,30 +145,30 @@
         .title(metadata[dice_variable].title || '')
         .subtitle(metadata[dice_variable].unit || '')
         .legend(true),
-      small: chart_wrap.classed('small-chart')
+      small: graph_wrap.classed('small-graph')
     };
   };
 
   var update_custom_graph = function() {
 
-    var graphs = [[0, 'custom'], [1, 'twin']];
-    for (var i = 0; i < graphs.length; ++i) {
+    var _graphs = [[0, 'custom'], [1, 'twin']];
+    for (var i = 0; i < _graphs.length; ++i) {
 
-      var index = graphs[i][0],
-        graph = graphs[i][1];
+      var index = _graphs[i][0],
+        graph = _graphs[i][1];
 
       var extents = d3.extent(flatten_runs(custom_data[index]));
 
-      charts[graph].chart
+      graphs[graph].graph
         .data(custom_data[index])
         .domain(x_custom_domain, extents)
         .colors(used_colors);
 
       if (initialized) {
-        charts[graph].chart
+        graphs[graph].graph
           .update_data();
       } else {
-        charts[graph].chart
+        graphs[graph].graph
           .twin(index == 1)
           .custom(true)
           .hoverable(true)
@@ -177,27 +176,27 @@
           .draw();
       }
     }
-    resize_charts();
+    resize_graphs();
   };
 
   var update_graph = function(dice_variable) {
 
-    if (charts.hasOwnProperty(dice_variable)) {
+    if (graphs.hasOwnProperty(dice_variable)) {
 
       // Set domain extents
       var extents = d3.extent(flatten_runs(all_data[dice_variable]));
 
-      // Update chart data and redraw
-      charts[dice_variable].chart
+      // Update graph data and redraw
+      graphs[dice_variable].graph
         .data(all_data[dice_variable])
         .domain(x_domain, extents)
         .colors(used_colors)
       ;
       if (initialized) {
-        charts[dice_variable].chart
+        graphs[dice_variable].graph
           .update_data();
       } else {
-        charts[dice_variable].chart
+        graphs[dice_variable].graph
           .hoverable(true)
           .draw();
       }
@@ -206,10 +205,10 @@
 
   var update_x_axis = function (dice_variable) {
 
-    var graphs = [[0, 'custom'], [1, 'twin']];
-    for (var i = 0; i < graphs.length; ++i) {
-      var index = graphs[i][0],
-        graph = graphs[i][1];
+    var _graphs = [[0, 'custom'], [1, 'twin']];
+    for (var i = 0; i < _graphs.length; ++i) {
+      var index = _graphs[i][0],
+        graph = _graphs[i][1];
 
       custom_data[index].forEach(function(r, i) {
         r.x_title = metadata[dice_variable].title;
@@ -221,13 +220,13 @@
       });
 
       if (dice_variable == 'year') {
-        charts[graph].chart.format_x(function(x) { return x.getFullYear(); });
-        charts[graph].chart.x(d3.time.scale());
+        graphs[graph].graph.format_x(function(x) { return x.getFullYear(); });
+        graphs[graph].graph.x(d3.time.scale());
         x_custom_domain = x_domain;
         x_custom_domain_var = false;
       } else {
-        charts[graph].chart.format_x(charts.custom.chart.format_y());
-        charts[graph].chart.x(d3.scale.linear());
+        graphs[graph].graph.format_x(graphs.custom.graph.format_y());
+        graphs[graph].graph.x(d3.scale.linear());
         x_custom_domain = d3.extent(flatten_runs(all_data[dice_variable]));
         x_custom_domain_var = dice_variable;
       }
@@ -237,7 +236,7 @@
       var subtitle = metadata[custom_vars[index]].unit + ' v. ';
       subtitle += x_custom_domain_var ? metadata[x_custom_domain_var].unit : 'years';
 
-      charts[graph].chart
+      graphs[graph].graph
         .data(custom_data[index])
         .domain(
           x_custom_domain,
@@ -282,7 +281,7 @@
         });
       });
 
-      charts[graph].chart
+      graphs[graph].graph
         .data(custom_data[index])
         .domain(
           x_custom_domain,
@@ -294,14 +293,14 @@
         .change_y();
     }
 
-    resize_charts();
+    resize_graphs();
 
   };
 
   var toggle_graph_hover = function(bool) {
-    for (var dice_variable in charts) {
-      if (charts.hasOwnProperty(dice_variable)) {
-        charts[dice_variable].chart.toggle_hover(bool);
+    for (var dice_variable in graphs) {
+      if (graphs.hasOwnProperty(dice_variable)) {
+        graphs[dice_variable].graph.toggle_hover(bool);
       }
     }
   };
@@ -321,12 +320,12 @@
           build_data_object(_data, dice_variable)
         );
 
-        var chart_wrap = d3.select('#'+dice_variable+'_chart');
+        var graph_wrap = d3.select('#'+dice_variable+'_graph');
 
-        if (!chart_wrap.empty()) {
+        if (!graph_wrap.empty()) {
 
           if (!initialized) {
-            initialize_graph(dice_variable, chart_wrap);
+            initialize_graph(dice_variable, graph_wrap);
           }
           update_graph(dice_variable);
 
@@ -335,8 +334,8 @@
     }
 
     if (!initialized) {
-      initialize_graph('custom', d3.select('#custom_chart'));
-      initialize_graph('twin', d3.select('#twin_chart'));
+      initialize_graph('custom', d3.select('#custom_graph'));
+      initialize_graph('twin', d3.select('#twin_graph'));
     }
 
     custom_data[0].push(build_data_object(_data, custom_vars[0], x_custom_domain_var));
@@ -354,7 +353,7 @@
 
     initialized = true;
 
-    resize_charts();
+    resize_graphs();
 
     ++total_runs;
     ++visible_runs;
@@ -396,7 +395,10 @@
      */
 
     run_model.attr('disabled', true);
-    loader_gif.style('display', 'block');
+    loader_gif.style({
+      display: 'block',
+      'z-index': 999
+    });
 
     var form = d3.select('#parameter_form'),
       inputs = form.selectAll('input'),
@@ -432,8 +434,8 @@
 
     add_run(r.data, r.parameters);
 
-    d3.select('#parameters_tab').classed('selected', false);
-    parameters_wrap.classed('visuallyhidden', true);
+//    d3.select('#parameters_tab').classed('selected', false);
+//    parameters_wrap.classed('visuallyhidden', true);
     run_model.attr('disabled', null);
     loader_gif.style('display', 'none');
 
@@ -584,9 +586,9 @@
     t.text('hide')
       .on('click', hide_run);
 
-    for(var dice_variable in charts) {
-      if (charts.hasOwnProperty(dice_variable)) {
-        charts[dice_variable].chart.show_run(index);
+    for(var dice_variable in graphs) {
+      if (graphs.hasOwnProperty(dice_variable)) {
+        graphs[dice_variable].graph.show_run(index);
       }
     }
 
@@ -606,9 +608,9 @@
     t.text('show')
       .on('click', show_run);
 
-    for(var dice_variable in charts) {
-      if (charts.hasOwnProperty(dice_variable)) {
-        charts[dice_variable].chart.hide_run(index);
+    for(var dice_variable in graphs) {
+      if (graphs.hasOwnProperty(dice_variable)) {
+        graphs[dice_variable].graph.hide_run(index);
       }
     }
 
@@ -626,7 +628,6 @@
     }
 
     used_colors.splice(used_colors.indexOf(color_list[index]), 1);
-//    used_colors.splice(index, 1);
 
     d3.selectAll('#graphs_wrap [data-run-id="' + index + '"]').remove();
     for (var dice_variable in all_data) {
@@ -659,36 +660,36 @@
 
   };
 
-  var resize_charts = function() {
+  var resize_graphs = function() {
 
     var dims = get_dims(),
       tall = (dims.h - 15) - 70; //TODO: Get height of #graph-controls
 
-    for (var chart in charts) {
-      if (charts.hasOwnProperty(chart)) {
+    for (var graph in graphs) {
+      if (graphs.hasOwnProperty(graph)) {
 
-        var chart_wrap = d3.select('#'+chart+'_chart'),
-          chart_svg = chart_wrap.select('svg');
-        if (chart_wrap.classed('small-chart')) {
-          chart_wrap.style('height', (dims.h / 2 - 30) + 'px');
-          chart_svg.style('height', (dims.h / 2 - 30) + 'px');
+        var graph_wrap = d3.select('#'+graph+'_graph'),
+          graph_svg = graph_wrap.select('svg');
+        if (graph_wrap.classed('small-graph')) {
+          graph_wrap.style('height', (dims.h / 2 - 30) + 'px');
+          graph_svg.style('height', (dims.h / 2 - 30) + 'px');
         } else {
-//          chart_wrap.style('height', tall + 'px');
-          chart_svg.style('height', tall + 'px');
+//          graph_wrap.style('height', tall + 'px');
+          graph_svg.style('height', tall + 'px');
         }
-        if (charts[chart].small) {
-          charts[chart].chart.width(dims.w / 2 - 15).height(dims.h / 2 - 30).redraw();
+        if (graphs[graph].small) {
+          graphs[graph].graph.width(dims.w / 2 - 15).height(dims.h / 2 - 30).redraw();
         } else {
-          charts[chart].chart.width(dims.w - 1).height(tall).redraw();
+          graphs[graph].graph.width(dims.w - 1).height(tall).redraw();
         }
       }
     }
 
     if (!show_twin) {
-        d3.selectAll('.chart-line.twin, .data-point.twin, h3.twin, h4.twin, .y.axis.twin')
+        d3.selectAll('.graph-line.twin, .data-point.twin, h3.twin, h4.twin, .y.axis.twin')
           .classed('visuallyhidden', true);
       } else {
-        d3.selectAll('.chart-line.twin, .data-point.twin, h3.twin, h4.twin, .y.axis.twin')
+        d3.selectAll('.graph-line.twin, .data-point.twin, h3.twin, h4.twin, .y.axis.twin')
           .classed('visuallyhidden', false);
       }
 
@@ -764,28 +765,28 @@
 
     if (checked) {
       if (axis == 'y2') {
-        charts.twin.chart.y(d3.scale.log());
+        graphs.twin.graph.y(d3.scale.log());
       } else if (axis == 'y') {
-        charts.custom.chart.y(d3.scale.log());
+        graphs.custom.graph.y(d3.scale.log());
       } else {
-        charts.custom.chart.x(d3.scale.log());
+        graphs.custom.graph.x(d3.scale.log());
       }
     } else {
       if (axis == 'y2') {
-        charts.twin.chart.y(d3.scale.linear());
+        graphs.twin.graph.y(d3.scale.linear());
       } else if (axis == 'y') {
-        charts.custom.chart.y(d3.scale.linear());
+        graphs.custom.graph.y(d3.scale.linear());
       } else {
-        charts.custom.chart.x(d3.scale.linear());
+        graphs.custom.graph.x(d3.scale.linear());
       }
     }
-    charts.twin.chart.update_data();
-    charts.custom.chart.update_data();
-    resize_charts();
+    graphs.twin.graph.update_data();
+    graphs.custom.graph.update_data();
+    resize_graphs();
   });
 
   d3.select(window).on('resize', function() {
-    resize_charts();
+    resize_graphs();
   });
 
   /********************************************

@@ -171,7 +171,7 @@ var WebDICEGraph = function() {
       var _h = '';
       if (i == 0) { _h += format_x(d.x) + '<br>';}
       if (hidden_runs.indexOf(+d.run_id) == -1) {
-        var _c = d3.select('.chart-line[data-run-id="' + d.run_id + '"]').style('stroke');
+        var _c = d3.select('.graph-line[data-run-id="' + d.run_id + '"]').style('stroke');
         _h += '<span data-run-id=' + d.run_id + '>';
         _h += '<b style="color:' + _c + '">';
         _h += d.run_name.replace(/ /g, '&nbsp;') + ':&nbsp;</b>' + format_y(d.y) + '</span><br>';
@@ -181,7 +181,7 @@ var WebDICEGraph = function() {
     custom_legend = function(d, i) {
       var _h = '';
       if (hidden_runs.indexOf(+d.run_id) == -1) {
-        var _c = d3.select('.chart-line[data-run-id="' + d.run_id + '"]').style('stroke');
+        var _c = d3.select('.graph-line[data-run-id="' + d.run_id + '"]').style('stroke');
         _h += '<span data-run-id=' + d.run_id + '>';
         _h += '<b style="color:' + _c + '">';
         _h += d.run_name.replace(/ /g, '&nbsp;') + '</b><br>';
@@ -415,7 +415,7 @@ var WebDICEGraph = function() {
     if (!el) { return svg_id; }
     svg_id = el.replace('#', '');
     svg_wrap = d3.select('#'+svg_id).append('div')
-      .attr('class', 'chart-wrap')
+      .attr('class', 'graph-wrap')
       .style({
         'left': '-' + padding.left + 'px',
         'width': (width + padding.left) + 'px'
@@ -427,7 +427,7 @@ var WebDICEGraph = function() {
         'version': '1.1',
         'width': width + padding.left + padding.right,
         'height': height + padding.top + padding.bottom,
-        'id': pre_id('chart_svg') })
+        'id': pre_id('graph_svg') })
       .classed('twin', _twin);
     svg_defs = svg.append('defs');
     title_layer = svg.append('g')
@@ -441,7 +441,7 @@ var WebDICEGraph = function() {
     axes_layer = svg.append('g').attr('id', pre_id('axes_layer'));
     handle_layer = svg.append('g').attr('id', pre_id('handle_layer'));
     button_layer = svg.append('g').attr('id', pre_id('button_layer'));
-    svg.selectAll('g').attr('class', 'chart-layer');
+    svg.selectAll('g').attr('class', 'graph-layer');
     tool_tip = d3.select('#'+svg_id).append('div').attr('class', 'tool_tip');
     return this;
   };
@@ -656,8 +656,8 @@ var WebDICEGraph = function() {
     //TODO: Don't return this without bool
     if (bool === undefined) { return this; }
     if (bool) {
-      var legend = d3.select('#' + svg_id).insert('div', '.chart-wrap')
-        .attr('class', 'chart-legend');
+      var legend = d3.select('#' + svg_id).insert('div', '.graph-wrap')
+        .attr('class', 'graph-legend');
       graph_data.data.forEach(function(d, i) {
         var legend_unit = legend.append('span')
           .attr('class', 'legend-row');
@@ -682,10 +682,10 @@ var WebDICEGraph = function() {
      RPSGraph
      ...
      */
-    graph_data.graphs = graph_layer.selectAll('.chart-line')
+    graph_data.graphs = graph_layer.selectAll('.graph-line')
       .data(graph_data.data).enter().append('path')
       .attr('d', function(d) { return _line(d.data); })
-      .attr('class', 'chart-line')
+      .attr('class', 'graph-line')
       .attr('clip-path', 'url(#graph_clip)')
       .attr('data-type', function(d) { return d.run_name ? d.run_name : null; })
       .attr('data-run-id', function(d) { return typeof(d.run_index) == 'number' ? d.run_index : null; })
@@ -702,10 +702,10 @@ var WebDICEGraph = function() {
     return this;
   };
   this.update_data = function() {
-    graph_data.graphs = graph_layer.selectAll('.chart-line')
+    graph_data.graphs = graph_layer.selectAll('.graph-line')
       .data(graph_data.data);
     graph_data.graphs.enter().append('path');
-    graph_data.graphs.attr('class', 'chart-line')
+    graph_data.graphs.attr('class', 'graph-line')
       .attr('clip-path', 'url(#graph_clip)')
       .attr('data-type', function(d) { return d.run_name ? d.run_name : null; })
       .attr('data-run-id', function(d) { return typeof(d.run_index) == 'number' ? d.run_index : null; })

@@ -28,7 +28,7 @@
 
     svgs.each(function() {
       var t = d3.select(this)
-        , name = t.attr('id').replace('_chart_svg', '')
+        , name = t.attr('id').replace('_graph_svg', '')
       ;
 
       xml = serializer.serializeToString(t.node())
