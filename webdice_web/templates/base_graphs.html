@@ -1,0 +1,111 @@
+{% extends 'base_page.html' %}
+{% block graph_controls %}
+<div>
+  <h2>X-Axis</h2>
+  <select id=select-x-axis>
+  <option value=year>Year</option>
+  <optgroup label="-- User-controlled Inputs --"></optgroup>
+    <option value="productivity">Total Factor Productivity</option>
+    <option value="backstop">Clean Energy Costs</option>
+    <option value="carbon_intensity">Carbon Intensity</option>
+    <option value="population">Labor Supply</option>
+  <optgroup label="-- Economic Results --"></optgroup>
+    <option value="consumption_pc">Consumption per Capita</option>
+    <option value="consumption">Total Consumption</option>
+    <option value="damages">Damages</option>
+    <option value="emissions_total">Total Emissions per Year</option>
+    <option value="emissions_ind">Industrial Emissions</option>
+    <option value="carbon_emitted">Total Carbon Emitted</option>
+    <option value="capital">Capital Stock</option>
+    <option value="utility_discounted">Utility Discounted</option>
+    <option value="utility">Utility</option>
+    <option value="scc">Social Cost of Carbon</option>
+  <optgroup label="-- Emissions Controls --"></optgroup>
+    <option value="abatement">Abatement</option>
+    <option value="miu">Emissions Control Rate</option>
+    <option value="output_abate">Abatement Cost as a Percentage of Output</option>
+    <option value="tax_rate">Tax Rate</option>
+  <optgroup label="-- Carbon Cycle --"></optgroup>
+    <option value="mass_atmosphere">Carbon Mass in Atmosphere</option>
+    <option value="mass_upper">Carbon Mass in Upper Oceans</option>
+    <option value="mass_lower">Carbon Mass in Lower Oceans</option>
+    <option value="temp_atmosphere">Atmospheric Temperature Increase</option>
+    <option value="temp_lower">Lower Ocean Temperature Increase</option>
+  </select>
+  <input type=checkbox id=logarithmic_x class=logarithmic-axis disabled>
+  <label for=logarithmic_x>Logarithmic</label>
+</div>
+<div>
+  <h2>Y-Axis</h2>
+  <select id=select-y-axis>
+    <optgroup label="-- User-controlled Inputs --"></optgroup>
+      <option value="productivity">Total Factor Productivity</option>
+      <option value="backstop">Clean Energy Costs</option>
+      <option value="carbon_intensity">Carbon Intensity</option>
+      <option value="population">Labor Supply</option>
+    <optgroup label="-- Economic Results --"></optgroup>
+      <option value="consumption_pc">Consumption per Capita</option>
+      <option value="consumption">Total Consumption</option>
+      <option value="damages">Damages</option>
+      <option value="emissions_total">Total Emissions per Year</option>
+      <option value="emissions_ind">Industrial Emissions</option>
+      <option value="carbon_emitted">Total Carbon Emitted</option>
+      <option value="capital">Capital Stock</option>
+      <option value="utility_discounted">Utility Discounted</option>
+      <option value="utility">Utility</option>
+      <option value="scc">Social Cost of Carbon</option>
+    <optgroup label="-- Emissions Controls --"></optgroup>
+      <option value="abatement">Abatement</option>
+      <option value="miu">Emissions Control Rate</option>
+      <option value="output_abate">Abatement Cost as a Percentage of Output</option>
+      <option value="tax_rate">Tax Rate</option>
+    <optgroup label="-- Carbon Cycle --"></optgroup>
+      <option value="mass_atmosphere">Carbon Mass in Atmosphere</option>
+      <option value="mass_upper">Carbon Mass in Upper Oceans</option>
+      <option value="mass_lower">Carbon Mass in Lower Oceans</option>
+      <option value="temp_atmosphere">Atmospheric Temperature Increase</option>
+      <option value="temp_lower">Lower Ocean Temperature Increase</option>
+  </select>
+  <input type=checkbox id=logarithmic_y class=logarithmic-axis>
+  <label for=logarithmic_y>Logarithmic</label>
+</div>
+<div>
+  <h2>Y-Axis 2</h2>
+  <select id=select-y2-axis>
+  <option value=none>None</option>
+  <optgroup label="-- User-controlled Inputs --"></optgroup>
+    <option value="productivity">Total Factor Productivity</option>
+    <option value="backstop">Clean Energy Costs</option>
+    <option value="carbon_intensity">Carbon Intensity</option>
+    <option value="population">Labor Supply</option><optgroup label="-- Economic Results --"></optgroup>
+    <option value="consumption_pc">Consumption per Capita</option>
+    <option value="consumption">Total Consumption</option>
+    <option value="damages">Damages</option>
+    <option value="emissions_total">Total Emissions per Year</option>
+    <option value="emissions_ind">Industrial Emissions</option>
+    <option value="carbon_emitted">Total Carbon Emitted</option>
+    <option value="capital">Capital Stock</option>
+    <option value="utility_discounted">Utility Discounted</option>
+    <option value="utility">Utility</option>
+    <option value="scc">Social Cost of Carbon</option><optgroup label="-- Emissions Controls --"></optgroup>
+    <option value="abatement">Abatement</option>
+    <option value="miu">Emissions Control Rate</option>
+    <option value="output_abate">Abatement Cost as a Percentage of Output</option>
+    <option value="tax_rate">Tax Rate</option><optgroup label="-- Carbon Cycle --"></optgroup>
+    <option value="mass_atmosphere">Carbon Mass in Atmosphere</option>
+    <option value="mass_upper">Carbon Mass in Upper Oceans</option>
+    <option value="mass_lower">Carbon Mass in Lower Oceans</option>
+    <option value="temp_atmosphere">Atmospheric Temperature Increase</option>
+    <option value="temp_lower">Lower Ocean Temperature Increase</option>
+  </select>
+  <input type=checkbox id=logarithmic_y2 class=logarithmic-axis disabled>
+  <label for=logarithmic_y2>Logarithmic</label>
+</div>
+{#<div>#}
+{#  <h2>Labels</h2>#}
+{#  <select id=series-labels>#}
+{#    <option value=none>None</option>#}
+{#    <option value=years>Years</option>#}
+{#  </select>#}
+{#</div>#}
+{% endblock %}

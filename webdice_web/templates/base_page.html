@@ -20,7 +20,6 @@
           </ul>
         </li>
         <li><a href>Documentation</a><ul>
-          <!-- switch help forbasic and advanced -->
           <li><a target=_blank href="{{ url_for('webdice.static', filename='docs/webdice_basic_help.pdf') }}">Basic</a></li>
           <li><a target=_blank href="{{ url_for('webdice.static', filename='docs/webdice_intermediate_help.pdf') }}">Intermediate</a></li>
           <li><a target=_blank href="{{ url_for('webdice.static', filename='docs/webdice_equation_help.pdf') }}">Equations</a></li>
@@ -86,42 +85,11 @@
         <div id=custom_graph_zoom style="height:10%;"></div>
       </div>
       <div id=graph-controls>
-        <div>
-          <h2>X-Axis</h2>
-          <select id=select-x-axis>
-            <option value=year>Year</option>
-            {% block xaxis %}{% endblock %}
-          </select>
-          <input type=checkbox id=logarithmic_x class=logarithmic-axis disabled>
-          <label for=logarithmic_x>Logarithmic</label>
-        </div>
-        <div>
-          <h2>Y-Axis</h2>
-          <select id=select-y-axis>
-            {% block yaxis %}{% endblock %}
-          </select>
-          <input type=checkbox id=logarithmic_y class=logarithmic-axis>
-          <label for=logarithmic_y>Logarithmic</label>
-        </div>
-        <div>
-          <h2>Y-Axis 2</h2>
-          <select id=select-y2-axis>
-            <option value=none>None</option>
-            {% block yaxis2 %}{% endblock %}
-          </select>
-          <input type=checkbox id=logarithmic_y2 class=logarithmic-axis disabled>
-          <label for=logarithmic_y2>Logarithmic</label>
-        </div>
-{#        <div>#}
-{#          <h2>Labels</h2>#}
-{#          <select id=series-labels>#}
-{#            <option value=none>None</option>#}
-{#            <option value=years>Years</option>#}
-{#          </select>#}
-{#        </div>#}
+        {% block graph_controls %}
+        {% endblock %}
       </div>
     </div>
-  <img class=loader_gif src="{{ url_for('webdice.static', filename='images/loadinfo_1.gif') }}">
+  <img class=loader_gif src="{{ url_for('webdice.static', filename='images/gui/loadinfo_1.gif') }}">
   </div>
   {% block parameters %}{% endblock %}
   {% include 'modules/runs.html' %}
@@ -131,7 +99,6 @@
   </article>
 
 {% block bodyjs %}
-<script src="{{ url_for('webdice.static', filename='js/webdice_hash.js') }}?{{ now }}"></script>
 <script src="{{ url_for('webdice.static', filename='js/stacked_chart.js') }}?{{ now }}"></script>
 <script src="{{ url_for('webdice.static', filename='js/webdice_param_eq.js') }}?{{ now }}"></script>
 <script src="{{ url_for('webdice.static', filename='js/webdice_download_svg.js') }}?{{ now }}"></script>

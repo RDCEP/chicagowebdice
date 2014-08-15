@@ -1,4 +1,4 @@
-<div id=parameters_wrap class=visuallyhidden>
+<div id=parameters_wrap class="pane visuallyhidden" data-pane=parameters>
   <div id=parameters_bkgd></div>
   <div id=parameters>
 
@@ -12,24 +12,15 @@
         <li data-pane=discount_parameters>Discount</li>
         <li data-pane=model_parameters>Model</li>
         <li id=run_clear>
-          <input id=clear_model type=button value="Clear Model" form=parameter_form>
-          <input id=run_model type=submit value="Run Model" form=parameter_form>
+          <input id=clear_model type=button value="Clear Model">
+          <input id=run_model type=submit value="Run Model">
+          <img class=loader_gif src="{{ url_for('webdice.static', filename='images/gui/loadinfo_1.gif') }}">
         </li>
       </ul>
     </div>
-    <form id=parameter_form class=clearfix action=/run/{{ dice_version }}>
-
-      {% include 'modules/parameters/2010/policy.html' %}
-      {% include 'modules/parameters/2010/climate.html' %}
-      {% include 'modules/parameters/2010/economy.html' %}
-      {% include 'modules/parameters/2010/technology.html' %}
-      {% include 'modules/parameters/2010/energy.html' %}
-      {% include 'modules/parameters/2010/discount.html' %}
-      {% include 'modules/parameters/2010/model.html' %}
-
-
-
-
+    <form id=parameter_form class="clearfix advanced" action=/run/{{ dice_version }}>
+      {% block parameter_includes %}
+      {% endblock %}
     </form>
   </div>
 </div>
