@@ -5,10 +5,7 @@
 
   for (var i = 0; i < hashes.length; ++i) {
 
-
-//  var hash = window.location.hash.split(':')
     var hash = hashes[i].split(':')
-//      , hash_section = hash[0].slice(1)
       , hash_section = hash[0]
       , hash_tab = hash[1]
       , parameter_tabs = d3.selectAll('#parameter_tabs li[data-pane]')
@@ -89,7 +86,7 @@
       d3.selectAll('.graph-tab').style('font-weight', null);
     } else {
       d3.selectAll('.option-tab').classed('selected', false);
-      d3.selectAll('.graph-tab').style('font-weight', 'normal');
+//      d3.selectAll('.graph-tab').style('font-weight', 'normal');
     }
 
     t.classed('selected', true);
@@ -102,7 +99,15 @@
         .classed('visuallyhidden', vis)
         .style('z-index', 998);
       runs.classed('visuallyhidden', true);
-      window.location.hash = 'option:parameters';
+      if (!vis) {
+        d3.selectAll('.graph-tab').style('font-weight', 'normal');
+        window.location.hash = 'option:parameters';
+      } else {
+        var g = d3.select('.graph-tab.selected');
+        g.style('font-weight', null);
+        window.location.hash = 'graph:' + g.attr('data-pane');
+      }
+
     } else if (tab == 'runs') {
       vis = !runs.classed('visuallyhidden');
       t.classed('selected', !vis);
