@@ -1,57 +1,66 @@
 (function() {
   "use strict";
 
-  var hash = window.location.hash.split(':')
-    , hash_section = hash[0].slice(1)
-    , hash_tab = hash[1]
-    , parameter_tabs = d3.selectAll('#parameter_tabs li[data-pane]')
-    , title_tabs = d3.selectAll('#title_legend li')
-    , parameters = d3.select('#parameters_wrap')
-    , runs = d3.select('#runs_wrap')
-    , t
-  ;
+  var hashes = window.location.hash.slice(1).split(',');
 
-  if (hash_section == 'graph') {
+  for (var i = 0; i < hashes.length; ++i) {
 
-    var tab = d3.select('.graph-tab[data-pane="' + hash_tab + '"]')
-      , pane = d3.select('#' + hash_tab + '_graphs')
-      , parent = d3.select(pane.node().parentNode)
-    ;
 
-    console.log(hash_tab, tab);
+//  var hash = window.location.hash.split(':')
+    var hash = hashes[i].split(':')
+//      , hash_section = hash[0].slice(1)
+      , hash_section = hash[0]
+      , hash_tab = hash[1]
+      , parameter_tabs = d3.selectAll('#parameter_tabs li[data-pane]')
+      , title_tabs = d3.selectAll('#title_legend li')
+      , parameters = d3.select('#parameters_wrap')
+      , runs = d3.select('#runs_wrap')
+      , t
+      ;
 
-    d3.selectAll('.graph-tab').classed('selected', false);
-    tab.classed('selected', true);
-    parent.select('.pane.selected').classed('selected', false);
-    pane.classed('selected', true).style('z-index', 998);
+    if (hash_section == 'graph') {
 
-  }
+      var tab = d3.select('.graph-tab[data-pane="' + hash_tab + '"]')
+        , pane = d3.select('#' + hash_tab + '_graphs')
+        , parent = d3.select(pane.node().parentNode)
+        ;
 
-  if (hash_section == 'option') {
+      d3.selectAll('.graph-tab').classed('selected', false);
+      tab.classed('selected', true);
+      parent.select('.pane.selected').classed('selected', false);
+      pane.classed('selected', true).style('z-index', 998);
 
-    var vis
-    ;
-
-    d3.selectAll('.option-tab').classed('selected', false);
-    t = d3.select('#' + hash_tab + '_tab')
-
-    if (hash_tab == 'parameters') {
-
-      vis = !parameters.classed('visuallyhidden');
-      t.classed('selected', !vis);
-      parameters
-        .classed('selected', !vis)
-        .classed('visuallyhidden', vis)
-        .style('z-index', 998);
-      runs.classed('visuallyhidden', true);
-
-    } else if (tab == 'runs') {
-      vis = !runs.classed('visuallyhidden');
-      t.classed('selected', !vis);
-      runs.classed('visuallyhidden', vis).style('z-index', 998);
-      parameters.classed('visuallyhidden', true);
     }
 
+    if (hash_section == 'option') {
+
+      var vis
+        ;
+
+      d3.selectAll('.option-tab').classed('selected', false);
+      t = d3.select('#' + hash_tab + '_tab');
+
+      if (hash_tab == 'parameters') {
+
+        vis = !parameters.classed('visuallyhidden');
+        t.classed('selected', !vis);
+        parameters
+          .classed('selected', !vis)
+          .classed('visuallyhidden', vis)
+          .style('z-index', 998);
+        runs.classed('visuallyhidden', true);
+
+      } else if (tab == 'runs') {
+        vis = !runs.classed('visuallyhidden');
+        t.classed('selected', !vis);
+        runs
+          .classed('selected', !vis)
+          .classed('visuallyhidden', vis)
+          .style('z-index', 998);
+        parameters.classed('visuallyhidden', true);
+      }
+
+    }
   }
 
   parameter_tabs.on('click', function() {

@@ -185,16 +185,24 @@ var WebDICEGraph = function() {
     custom_legend = function(d, i) {
       var _h = '';
       if (hidden_runs.indexOf(+d.run_id) == -1) {
+        var x_runs = d3.selectAll('#custom_graphs .data-point[data-x="' + d.x + '"][data-run-id="' + d.run_id + '"]')
+          .filter(function() { return !d3.select(this).classed('visuallyhidden'); })
+          .sort(function(a, b) {
+            return d3.descending(a.y, b.y);
+          });
         var _c = d3.select('.graph-line[data-run-id="' + d.run_id + '"]').style('stroke');
         _h += '<span data-run-id=' + d.run_id + '>';
         _h += '<b style="color:' + _c + '">';
         _h += d.run_name.replace(/ /g, '&nbsp;') + '</b><br>';
         _h += d.x_title.replace(/ /g, '&nbsp;') + ':&nbsp;' + format_x(d.x) + '<br>';
-        _h += d.y_title.replace(/ /g, '&nbsp;') + ':&nbsp;' + format_y(d.y) + '</span><br>';
+        x_runs.each(function(dd) {
+          _h += dd.y_title.replace(/ /g, '&nbsp;') + ':&nbsp;' + format_y(dd.y) + '</span><br>';
+        });
+
       }
       return _h;
     },
-    update_legend = function(_d) {
+    update_legend = function(_d, rect) {
       var arr = [], _h = '';
       _d.forEach(function(d, i) {
         arr.push({
@@ -217,8 +225,8 @@ var WebDICEGraph = function() {
       });
       tool_tip
         .html(_h)
-        .style('left', (_x(_d[0].x) + padding.left + 10) + 'px')
-        .style('top', (_y(_d[0].y) + padding.top) + 'px')
+        .style('left', (rect.right + 5) + 'px')
+        .style('top', (rect.top + 5 + document.body.scrollTop) + 'px')
         .classed('active', true);
     },
     add_hover_points = function() {
@@ -272,7 +280,6 @@ var WebDICEGraph = function() {
         .attr('transform', function(d) {
           return 'translate(0,0)';
         });
-
       handles.each(function(dd, j) {
         var t = d3.select(this);
         data_points = t.selectAll('.data-point.tight')
@@ -304,10 +311,13 @@ var WebDICEGraph = function() {
         var handle = d3.select(this);
         handle.select('.segment-rect')
           .on('mouseover', function() {
-            update_legend(d.values);
+            var  dp = handle.selectAll('.data-point.tight')
+                .classed('active', true),
+              rect = dp.sort(function(a, b) {
+                return d3.descending(a.y, b.y);
+              }).filter(function(d, i) { return i == 0; });
+            update_legend(d.values, rect.node().getBoundingClientRect());
             tool_tip.classed('hidden', !_hoverable);
-            handle.selectAll('.data-point.tight')
-              .classed('active', true);
           })
           .on('mouseout', function() {
             tool_tip.classed('hidden', true);
@@ -324,17 +334,28 @@ var WebDICEGraph = function() {
        Attach mouse events to <rect>s with hoverable handles (toggle .active)
        */
       handles.each(function(d) {
-        var t = d3.select(this);
-        t.selectAll('.data-point').each(function() {
-          d3.select(this).on('mouseover', function(d) {
-            update_legend([d]);
-            var t = d3.select(this);
-            t.style('fill', t.style('stroke'));
+        d3.select(this).selectAll('.data-point').each(function() {
+          var t = d3.select(this);
+          t.on('mouseover', function(d) {
+            var rect = this.getBoundingClientRect()
+              , dps = d3.selectAll('#custom_graphs .data-point[data-x="' + d.x + '"]')
+              , dpys = [];
+            update_legend([d], rect);
+            dps
+              .filter(function(dd) { return dd.run_id == d.run_id; })
+              .each(function(d) { dpys.push(d.y); });
+            dps
+              .filter(function(dd) { return dpys.indexOf(dd.y) > -1; })
+              .style('fill', 'none');
+            dps
+              .filter(function(dd) { return dd.run_id == d.run_id; })
+              .style('fill', t.style('stroke'));
             tool_tip.classed('hidden', !_hoverable);
           })
           .on('mouseout', function() {
             var t = d3.select(this);
-            t.style('fill', 'white');
+            d3.selectAll('#custom_graphs .data-point[data-x="' + t.attr('data-x') + '"]')
+              .style('fill', 'white');
             tool_tip.classed('hidden', true);
           });
         });
@@ -446,7 +467,7 @@ var WebDICEGraph = function() {
     handle_layer = svg.append('g').attr('id', pre_id('handle_layer'));
     button_layer = svg.append('g').attr('id', pre_id('button_layer'));
     svg.selectAll('g').attr('class', 'graph-layer');
-    tool_tip = d3.select('#'+svg_id).append('div').attr('class', 'tool_tip');
+    tool_tip = d3.select('#tool_tip');
     return this;
   };
   this.title = function(str, align) {
