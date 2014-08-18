@@ -199,7 +199,7 @@ g.visuallyhidden
   .graph-pane
     width: $site_width + $outer_pad * 2
     margin: 0 auto
-#parameters_wrap, #graphs_wrap, #runs_wrap
+#parameters_wrap, #graphs_wrap, #runs_wrap, #text_wrap
   width: $site_width + $inner_pad * 2
   z-index: 997
   top: 6em
@@ -208,7 +208,7 @@ g.visuallyhidden
   bottom: 30px
   font-size: .8em
   position: absolute
-#parameters_bkgd, #graphs_bkgd, #runs_bkgd
+#parameters_bkgd, #graphs_bkgd, #runs_bkgd, #text_bkgd
   background-color: #ffffff
   opacity: .95
   height: 100%
@@ -343,10 +343,10 @@ g.visuallyhidden
       cursor: pointer
 
 @import graphs
+@import index
 @import parameters
 @import runs
 @import helpers
-
 
 
 

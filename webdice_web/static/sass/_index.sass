@@ -1,0 +1,29 @@
+@import vars_layout
+@import vars_color
+
+#text_wrap
+  bottom: auto
+  .pane
+    padding: 15px
+    display: block
+    position: relative
+    &.half
+      width: ($site_width - 60px) / 2
+      float: left
+  h3
+    font-weight: bold
+  p
+    margin-bottom: .5em
+    line-height: 1.5em
+    &+h3
+      margin-top: 2em
+  a
+    color: #ffffff
+    font-weight: bold
+    background-color: $sky-blue
+    padding: 2px 5px
+    display: block
+    margin-bottom: 5px
+    &:hover
+      color: #ffffff!important
+      background-color: $blue

@@ -29,6 +29,7 @@
     </nav>
     <div id=title_legend_wrap>
       <div id=title_legend>
+        {% block title_tabs %}
         <ul class=tabs>
           <li id=link-to-essential data-pane=essential class="graph-tab selected">Essential</li>
           <li id=link-to-climate data-pane=climate class=graph-tab>Climate</li>
@@ -40,6 +41,7 @@
           <li id=parameters_tab data-pane=parameters class=option-tab>Parameters</li>
           <li id=runs_tab data-pane=runs class=option-tab>Runs</li>
         </ul>
+        {% endblock %}
       </div>
     </div>
   </header>
@@ -89,7 +91,7 @@
         {% endblock %}
       </div>
     </div>
-  <img class=loader_gif src="{{ url_for('webdice.static', filename='images/gui/loadinfo_1.gif') }}">
+    <img class=loader_gif src="{{ url_for('webdice.static', filename='images/gui/loadinfo_1.gif') }}">
   </div>
   {% block parameters %}{% endblock %}
   {% include 'modules/runs.html' %}
@@ -97,7 +99,7 @@
 
 
   </article>
-
+  <div id=tool_tip></div>
 {% block bodyjs %}
 <script src="{{ url_for('webdice.static', filename='js/stacked_chart.js') }}?{{ now }}"></script>
 <script src="{{ url_for('webdice.static', filename='js/webdice_param_eq.js') }}?{{ now }}"></script>

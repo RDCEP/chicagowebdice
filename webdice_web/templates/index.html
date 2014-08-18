@@ -1,85 +1,37 @@
-{% extends 'base.html' %}
-{% block headcss %}<link rel="stylesheet" href="/static/css/home.css">{% endblock %}
-{% block page %}
-  <div id="home-wrapper" class="clearfix">
-    <div class="home-column">
-      <div class="home-cell">
-        <h3>About</h3>
-        <img class="home-head-image" src="../static/images/home/coral.jpg" alt="">
-        <p>The DICE 2007 model, developed by Professor William Nordhaus of Yale
-          University, is the most widely used model of the economics of climate
-          change.  webDICE is an online simulation of this model which allows users
-          to see the effects of climate change on the economy and society.</p>
-        <p>The default values in the model only present the user with one set of
-          projected potential impacts.  In order to understand the range of
-          potential impacts as a result of climate change, the user can adjust
-          parameters within the model to reflect differing beliefs about climate,
-          the economy and the future. </p>
-      </div>
-      <div class="home-cell">
-        <h3>Contact</h3>
-        <p>This model has been developed by researchers at the University of
-          Chicago supported by RDCEP.  We are continually working to improve the
-          model and the interface. If you have suggestions, contact us at:</p>
-        <p><a href="mailto:info-rdcep@ci.uchicago.edu">info-rdcep@ci.uchicago.edu</a></p>
-      </div>
+{% extends 'base_page.html' %}
+{% block title_tabs %}{% endblock %}
+{% block content %}
+  <div id=text_wrap>
+    <div id=text_bkgd></div>
+    <div class="pane half">
+      <h3>About</h3>
+      <p>The DICE 2007 model, developed by Professor William Nordhaus of Yale
+        University, is the most widely used model of the economics of climate
+        change.  webDICE is an online simulation of this model which allows users
+        to see the effects of climate change on the economy and society.</p>
+      <p>The default values in the model only present the user with one set of
+        projected potential impacts.  In order to understand the range of
+        potential impacts as a result of climate change, the user can adjust
+        parameters within the model to reflect differing beliefs about climate,
+        the economy and the future. </p>
+      <h3>Contact</h3>
+      <p>This model has been developed by researchers at the University of
+        Chicago supported by RDCEP.  We are continually working to improve the
+        model and the interface. If you have suggestions, contact us at:</p>
+      <p><a href="mailto:info-rdcep@ci.uchicago.edu">info-rdcep@ci.uchicago.edu</a></p>
     </div>
-    <div class="home-column">
-      <div class="home-cell">
-        <h3>Basic Inputs</h3>
-        <p>The basic inputs section is designed for students and new users.
-          By limiting the set of adjustable variables to those deemed most
-          important, users can view the predicted effects of their beliefs about
-          the climate, the economy and the future.</p>
-        <p><a href="/basic">Go to basic inputs</a></p>
-      </div>
-      <div class="home-cell">
-        <h3>Advanced Inputs</h3>
-        <p>The advanced inputs section is designed for more experienced users.
-          The complete set of adjustable variables has been made available,
-          allowing the user to assess the effect their beliefs have on the model.</p>
-        <p><a href="/advanced/2007">Go to advanced 2007 inputs</a></p>
-        <p><a href="/advanced/2010">Go to advanced 2010 inputs</a></p>
-      </div>
-      <!--<div class="home-cell home-image-cell">
-        <img class="home-head-image" src="../static/images/home/polar-bear.jpg">
-      </div>-->
-      <div class="home-cell">
-        <h3>Watch a webDICE tutorial</h3>
-        <div class="home-head-image">
-          <div id="tutorial-flv">Loading...</div>
-        </div>
-        <p>We&rsquo;ve tried to make the webDICE interface as user-friendly as
-        possible, given the complexity of the DICE model. Nonetheless, for
-        new users, we&rsquo;ve created this video tutorial to make its use
-        as clear as possible.</p>
-      </div>
+    <div class="pane half">
+      <h3><a href="{{ url_for('webdice.standard') }}">Standard inputs</a></h3>
+      <p>The standard inputs section is designed for students and new users.
+        By limiting the set of adjustable variables to those deemed most
+        important, users can view the predicted effects of their beliefs about
+        the climate, the economy and the future.</p>
+      <h3><a href={{ url_for('webdice.advanced', year=2007) }}>Advanced 2007</a></h3>
+      <h3><a href={{ url_for('webdice.advanced', year=2010) }}>Advanced 2010</a></h3>
+      <p>The advanced inputs section is designed for more experienced users.
+        The complete set of adjustable variables has been made available,
+        allowing the user to assess the effect their beliefs have on the model.</p>
     </div>
   </div>
 {% endblock %}
-{% block bodyjs -%}
-<script src="/static/js/vendor/jwplayer/jwplayer.js"></script>
-<script>
-  jwplayer("tutorial-flv").setup({
-    playlist: [{
-      sources: [
-        {
-          file: "/static/video/webDICE_tutorial_new.mp4",
-          label: "MP4 Tutorial"
-        },
-        {
-          file: "/static/video/webDICE_tutorial_new.ogv",
-          label: "OGV Tutorial"
-        },
-        {
-          file: "/static/video/webDICE_tutorial_new.flv",
-          label: "FLV Tutorial"
-        }
-      ]
-    }],
-    title: 'webDICE Tutorial',
-    width: 450,
-    image: "/static/images/home/graph_001.png"
-  });
-</script>
-{%- endblock %}
+{% block bodyjs %}{% endblock %}
