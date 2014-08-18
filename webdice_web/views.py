@@ -49,137 +49,7 @@ def do_session(request, year=None):
     return s, DiceWebParser(year)
 
 
-@mod.route('/')
-def index():
-    """Returns index page."""
-    s, parser = do_session(request, 2007)
-    now = datetime.now().strftime('%Y%m%d%H%M%S')
-    return render_template(
-        'index.html',
-        now=now,
-        paragraphs_html=parser.paragraphs_html('index'),
-    )
-
-
-@mod.route('/advanced/<int:year>')
-def advanced(year):
-    s, parser = do_session(request, year)
-    tabs = parser.get_advanced_tabs()
-    return page(tabs, parser, year, 'advanced_{}'.format(year))
-
-
-@mod.route('/standard')
-def standard():
-    s, parser = do_session(request, 2007)
-    tabs = parser.get_basic_tabs()
-    return page(tabs, parser, None, 'standard')
-
-
-def page(tabs, parser, year, tpl='index'):
-    """
-    Return HTML for all pages.
-    ...
-    Args:
-        None
-    Returns:
-        HTML
-    """
-    measurements = parser.get_measurements()
-    # tabs = get_tabs()
-    all_parameters = parser.get_all_parameters()
-    without_sections = []
-    for s in measurements:
-        for m in s['options']:
-            without_sections.append(m)
-    m = json.JSONEncoder().encode(without_sections)
-    now = datetime.now().strftime('%Y%m%d%H%M%S')
-    return render_template(
-        tpl + '.html',
-        measurements=m,
-        tabs=tabs,
-        dropdowns=measurements,
-        paragraphs_html=parser.paragraphs_html(tpl.split('_')[0]),
-        all_parameters=all_parameters,
-        now=now,
-        dice_version=year,
-        other_versions=[x for x in [2007, 2010] if x != year],
-    )
-
-
-@mod.route('/run/standard', methods=['POST', 'GET'])
-def graphs_standard():
-    s, parser = do_session(request, 2010)
-    this_dice = s['dice']
-    this_dice.loop()
-    form = json.loads(request.data)
-    new_data = {
-        'temp_co2_doubling': [1, 2, 3.2, 4, 5],
-        'damages_exponent': [1, 1.4, 2.0, 2.8, 4.0],
-        'productivity_decline': [.015, .011, .009, .003, 0.0],
-        'backstop_ratio': [1, 1.4, 2.0, 2.8, 4.0],
-        'intensity_decline_rate': [.060, .02, .0065, .0006, 0.0],
-    }
-    for field in new_data.keys():
-        try:
-            if form[field]:
-                form[field] = new_data[field][int(form[field]) - 1]
-        except KeyError:
-            pass
-
-    all_parameters = parser.get_all_parameters()
-
-    for p in all_parameters:
-        try:
-            p['disabled']
-        except (KeyError, AttributeError):
-            try:
-                getattr(this_dice.params, p['machine_name'])
-            except AttributeError:
-                pass
-            else:
-                try:
-                    this_dice.params.__dict__[p['machine_name']] = float(form[p['machine_name']])
-                except (ValueError, AttributeError, KeyError):
-                    pass
-    this_dice.params.carbon_model = 'dice_2007'
-    this_dice.params.damages_model = 'dice_2007'
-    opt = False
-    policy = form['policy_type']
-    this_dice.params._treaty = False
-    this_dice.params._carbon_tax = False
-    if policy == 'treaty':
-        this_dice.params._treaty = True
-    elif policy == 'optimized':
-        opt = True
-    elif policy == 'carbon_tax':
-        this_dice.params._carbon_tax = True
-    this_dice.loop(opt=opt)
-    return jsonify(**this_dice.format_output())
-
-
-@mod.route('/run/<int:year>', methods=['POST', 'GET'])
-def graphs_d3(year=2007):
-    """
-    Get data from <form>, run DICE loop.
-    ...
-    Args:
-        None
-    Returns:
-        Formatted step values
-    """
-    s, parser = do_session(request, year)
-    this_dice = s['dice']
-    # this_dice.loop()
-    form = json.loads(request.data)
-    for field in ['depreciation', 'savings', 'prstp', 'backstop_decline',
-                  'productivity_decline', 'intensity_decline_rate',
-                  'prod_frac', ]:
-        try:
-            if form[field]:
-                form[field] = float(form[field]) / 100
-        except KeyError:
-            pass
-
+def run_loop(this_dice, form, parser):
     all_parameters = parser.get_all_parameters()
 
     for p in all_parameters:
@@ -204,16 +74,102 @@ def graphs_d3(year=2007):
         this_dice.params.damages_model = 'dice_2007'
     opt = False
     policy = form['policy_type']
-    this_dice.params._treaty = False
-    this_dice.params._carbon_tax = False
+    print policy
+    this_dice.params.treaty = False
+    this_dice.params.carbon_tax = False
     if policy == 'treaty':
-        this_dice.params._treaty = True
+        this_dice.params.treaty = True
     elif policy == 'optimized':
         opt = True
     elif policy == 'carbon_tax':
-        this_dice.params._carbon_tax = True
+        this_dice.params.carbon_tax = True
     this_dice.loop(opt=opt)
     return jsonify(**this_dice.format_output())
+
+
+@mod.route('/')
+def index():
+    """Returns index page."""
+    s, parser = do_session(request, 2007)
+    now = datetime.now().strftime('%Y%m%d%H%M%S')
+    return render_template(
+        'index.html',
+        now=now,
+        paragraphs_html=parser.paragraphs_html('index'),
+    )
+
+
+@mod.route('/advanced/<int:year>')
+def advanced(year):
+    return render_template(
+        'versions/advanced_{}.html'.format(year),
+        now = datetime.now().strftime('%Y%m%d%H%M%S'),
+        dice_version=year,
+    )
+
+
+@mod.route('/standard')
+def standard():
+    now = datetime.now().strftime('%Y%m%d%H%M%S')
+    return render_template(
+        'versions/standard.html',
+        now=now,
+    )
+
+
+@mod.route('/run/standard', methods=['POST', 'GET'])
+def graphs_standard():
+    s, parser = do_session(request, 2010)
+    this_dice = s['dice']
+    form = json.loads(request.data)
+    new_data = {
+        'temp_co2_doubling': [1, 2, 3.2, 4, 5],
+        'damages_exponent': [1, 1.4, 2.0, 2.8, 4.0],
+        'productivity_decline': [.015, .011, .009, .003, 0.0],
+        'backstop_ratio': [1, 1.4, 2.0, 2.8, 4.0],
+        'intensity_decline_rate': [.060, .02, .0065, .0006, 0.0],
+    }
+    for field in new_data.keys():
+        try:
+            if form[field]:
+                form[field] = new_data[field][int(form[field]) - 1]
+        except KeyError:
+            pass
+
+    for field in ['depreciation', 'savings', 'prstp', 'backstop_decline',
+                  'prod_frac', ]:
+        try:
+            if form[field]:
+                form[field] = float(form[field]) / 100
+        except KeyError:
+            pass
+
+    return run_loop(this_dice, form, parser)
+
+
+@mod.route('/run/<int:year>', methods=['POST', 'GET'])
+def graphs_d3(year=2007):
+    """
+    Get data from <form>, run DICE loop.
+    ...
+    Args:
+        None
+    Returns:
+        Formatted step values
+    """
+    s, parser = do_session(request, year)
+    this_dice = s['dice']
+    form = json.loads(request.data)
+    for field in ['depreciation', 'savings', 'prstp', 'backstop_decline',
+                  'productivity_decline', 'intensity_decline_rate',
+                  'prod_frac', ]:
+        try:
+            if form[field]:
+                form[field] = float(form[field]) / 100
+        except KeyError:
+            pass
+
+    return run_loop(this_dice, form, parser)
 
 
 @mod.route('/get_svg', methods=['POST', ])
