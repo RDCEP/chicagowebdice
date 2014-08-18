@@ -1,6 +1,25 @@
-{% extends 'modules/parameters.html' %}
-{% block parameter_includes %}
-{% include 'modules/parameters/2010/policy.html' %}
-{% include 'modules/parameters/standard/climate_standard.html' %}
-{% include 'modules/parameters/standard/economy_standard.html' %}
-{% endblock %}
+<div id=parameters_wrap class="pane visuallyhidden" data-pane=parameters>
+  <div id=parameters_bkgd></div>
+  <div id=parameters>
+
+    <div id=parameter_tabs_wrap>
+      <ul id=parameter_tabs class=clearfix>
+        <li class=selected  data-pane=policy_parameters>Policy</li>
+        <li data-pane=climate_parameters>Climate</li>
+        <li data-pane=economy_parameters>Economy</li>
+        <li id=run_clear>
+          <input id=clear_model type=button value="Clear Model">
+          <input id=run_model type=submit value="Run Model">
+          <img class=loader_gif src="{{ url_for('webdice.static', filename='images/gui/loadinfo_1.gif') }}">
+        </li>
+      </ul>
+    </div>
+    <form id=parameter_form class="clearfix standard" action=/run/{% if dice_version %}{{ dice_version|safe }}{% else %}standard{% endif %}>
+      {% block parameter_includes %}
+        {% include 'modules/parameters/2010/policy.html' %}
+        {% include 'modules/parameters/standard/climate_standard.html' %}
+        {% include 'modules/parameters/standard/economy_standard.html' %}
+      {% endblock %}
+    </form>
+  </div>
+</div>
