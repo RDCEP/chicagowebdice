@@ -6,6 +6,7 @@
     Options.dice_version = {% if dice_version %}{{ dice_version|safe }}{% else %}2007{% endif %};
   </script>
 {%- endblock %}
+
 {% block page %}
   <header id=main_nav>
     <nav>
@@ -97,9 +98,35 @@
   {% include 'modules/runs.html' %}
   {% endblock %}
 
-
   </article>
   <div id=tool_tip></div>
+
+  <div id=wrapper>
+
+
+
+{% block footer %}
+<div id=footer_wrap>
+  <footer id=main_footer>
+    <div id=footer_logo>
+      <a href="https://www.rdcep.org/">
+        <img src="{{ url_for('webdice.static', filename='images/brand/rdcep_logo_60.png') }}" alt>
+      </a>
+    </div>
+    <div id=footer_attribution>
+      <h2><a href="https://www.rdcep.org/">RDCEP</a></h2>
+      <p>webDICE is built and maintained by the Center for
+        Robust Decision Making on Climate and Energy Policy at the University
+        of Chicago. Questions and comments should be directed to
+        <a href=mailto:info-rdcep@ci.uchicago.edu>info-rdcep@ci.uchicago.edu</a>.
+        </p>
+      <p>Funded under NSF Decision Making Under Uncertainty Program.
+        Award No. 0951576</p>
+    </div>
+  </footer>
+</div>
+{% endblock %}
+</div>
 {% block bodyjs %}
 <script src="{{ url_for('webdice.static', filename='js/stacked_chart.js') }}?{{ now }}"></script>
 <script src="{{ url_for('webdice.static', filename='js/webdice_param_eq.js') }}?{{ now }}"></script>

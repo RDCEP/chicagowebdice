@@ -416,8 +416,12 @@ h1 a {
   color: white; }
 
 #wrapper {
+  position: absolute;
   height: 100%;
-  width: 100%; }
+  top: 0;
+  min-height: 1180px;
+  width: 100%;
+  margin-bottom: -230px; }
 
 text {
   font-family: Helveltica, Arial, sans-serif;
@@ -1001,6 +1005,33 @@ g.visuallyhidden {
   cursor: pointer;
   background-color: #d55e00;
   margin-top: 15px; }
+
+#footer_wrap, #footer_push {
+  position: absolute;
+  bottom: 0;
+  height: 200px; }
+
+#footer_wrap {
+  width: 100%;
+  background-color: white; }
+  #footer_wrap #main_footer {
+    width: 900px;
+    margin: 30px auto;
+    padding: 60px 0; }
+    #footer_wrap #main_footer #footer_logo {
+      width: 60px;
+      height: 60px;
+      margin: 0 15px 0 0;
+      float: left; }
+    #footer_wrap #main_footer #footer_attribution {
+      width: 825px;
+      float: left; }
+    #footer_wrap #main_footer h2 {
+      font-weight: bold; }
+    #footer_wrap #main_footer p {
+      font-size: 0.9em;
+      color: #666666;
+      margin-top: 0.5em; }
 
 .ir {
   background-color: transparent;
