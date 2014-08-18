@@ -18,7 +18,7 @@
         </li>
       </ul>
     </div>
-    <form id=parameter_form class="clearfix advanced" action=/run/{{ dice_version }}>
+    <form id=parameter_form class="clearfix advanced" action=/run/{% if dice_version %}{{ dice_version|safe }}{% else %}standard{% endif %}>
       {% block parameter_includes %}
       {% endblock %}
     </form>

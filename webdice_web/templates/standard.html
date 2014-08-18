@@ -1,74 +1,7 @@
-{% extends 'base_page.html' %}
-{% block mainlink %}<div id="back-to-rdcep">Switch to:
-  <a href="/basic">Basic</a>
-  {%- for v in other_versions -%}
-  <a href="/advanced/{{ v }}">Advanced {{ v }}</a>
-  {%- endfor -%}
-  </div>{% endblock %}
-{% block doclinks %}
-  <li><a target="_blank" href="//docs/webdice_advanced_faq.pdf">Basic</a></li>
-  <li><a target="_blank" href="//docs/webdice_advanced_manual.pdf">Intermediate</a></li>
-  <li><a target="_blank" href="//docs/webdice_equation_help.pdf">Equations</a></li>
-{% endblock %}
+{% extends 'base_graphs.html' %}
 
-{% block text -%}
-  {# paragraphs_html|safe #}
-{%- endblock %}
-{% block xaxis -%}
-{% for group in dropdowns -%}
-<optgroup label="-- {{ group.name }} --"></optgroup>
-{% for option in group.options -%}
-<option value="{{ option.machine_name }}">{{ option.name }}</option>
-{% endfor %}
-{%- endfor %}
-{%- endblock %}
-{% block yaxis -%}
-{% for group in dropdowns -%}
-<optgroup label="-- {{ group.name }} --"></optgroup>
-{% for option in group.options -%}
-<option value="{{ option.machine_name }}">{{ option.name }}</option>
-{%- endfor %}
-{%- endfor %}
-{%- endblock %}
-{% block yaxis2 -%}
-{% for group in dropdowns -%}
-<optgroup label="-- {{ group.name }} --"></optgroup>
-{% for option in group.options -%}
-<option value="{{ option.machine_name }}">{{ option.name }}</option>
-{%- endfor %}
-{%- endfor %}
-{%- endblock %}
 {% block parameters %}
-<div id=parameters_wrap class="visuallyhidden pane" data-pane=parameters>
-  <div id=parameters_bkgd></div>
-  <div id=parameters>
-
-    <div id=parameter_tabs_wrap>
-      <ul id=parameter_tabs class=clearfix>
-        <li class=selected  data-pane=policy_parameters>Policy</li>
-        <li data-pane=climate_parameters>Climate</li>
-        <li data-pane=economy_parameters>Economy</li>
-        <li id=run_clear>
-          <input id=clear_model type=button value="Clear Model">
-          <input id=run_model type=submit value="Run Model">
-          <img class=loader_gif src="{{ url_for('webdice.static', filename='images/loadinfo_1.gif') }}">
-        </li>
-      </ul>
-    </div>
-    <form id=parameter_form class="clearfix standard" action=/run/standard>
-
-      {% include 'modules/parameters/2010/policy.html' %}
-      {% include 'modules/parameters/standard/climate_standard.html' %}
-      {% include 'modules/parameters/standard/economy_standard.html' %}
-
-    </form>
-  </div>
-</div>
-{% endblock %}
-
-{% block help %}{% for parameter in all_parameters %}{% if parameter.help %}
-  <div class="help-text" id="{{ parameter.machine_name }}-help">{{ parameter.help|safe }}
-  </div>{% endif %}{% endfor %}
+{% include 'modules/parameters_standard.html' %}
 {% endblock %}
 
 {% block bodyjs %}
