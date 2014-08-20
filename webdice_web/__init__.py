@@ -56,6 +56,16 @@ js = Bundle('js/stacked_chart.js', 'js/webdice_param_eq.js',
             'js/webdice_tabs.js',
             filters='jsmin', output='gen/webdice.js')
 assets.register('js_webdice', js)
+js = Bundle('js/vendor/d3.v3.min.js', 'js/vendor/json2.js',
+            'js/vendor/modernizr.custom.27311.js',
+            filters='jsmin', output='gen/vendor.js')
+assets.register('js_vendor', js)
+js = Bundle('js/vendor/fd-slider.min.js',
+            filters='jsmin', output='gen/fd-slider.js')
+assets.register('js_slider', js)
+css = Bundle('css/main.css', 'css/fd-slider.min.css',
+            filters='cssmin', output='gen/main.css')
+assets.register('css_main', css)
 
 
 if __name__ == '__main__':

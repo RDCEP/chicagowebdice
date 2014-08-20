@@ -1,7 +1,7 @@
-@import globals
-@import old
-@import "vars_color"
-@import "vars_layout"
+@import "import/globals"
+@import "import/old"
+@import "import/_vars_color"
+@import "import/_vars_layout"
 
 @mixin columns($c, $g)
   -moz-column-count: $c /* Firefox */
@@ -323,11 +323,10 @@ g.visuallyhidden
       font-family: Helveltica,Arial,sans-serif
       cursor: pointer
 
-@import graphs
-@import index
-@import parameters
-@import runs
-@import footer
-@import helpers
-
+@import "import/graphs"
+@import "import/index"
+@import "import/parameters"
+@import "import/runs"
+@import "import/footer"
+@import "import/helpers"
 @import media/large

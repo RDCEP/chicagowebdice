@@ -8,23 +8,24 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>RDCEP | WebDICE</title>
-  <link rel="stylesheet" href="{{ url_for('webdice.static', filename='css/main.css') }}?{{ now }}" media="screen" title="Default Stylesheet">
-  <link rel="stylesheet" href="{{ url_for('webdice.static', filename='css/fd-slider.min.css') }}?{{ now }}" media="screen" title="Default Stylesheet">
+  <title>RDCEP | webDICE</title>
+  {% assets 'css_main' %}
+  <link rel="stylesheet" href="{{ ASSET_URL }}" media="screen" title="Default Stylesheet">
+  {% endassets %}
+  {% assets 'js_vendor' %}
+      <script src=//cdnjs.cloudflare.com/ajax/libs/json2/20130526/json2.min.js></script>
+      <script src=//cdnjs.cloudflare.com/ajax/libs/d3/3.4.11/d3.min.js></script>
+      <script src=//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.2/modernizr.min.js></script>
+      <script>(window.d3 && window.JSON && window.Modernizr) || document.write('<script src="{{ ASSET_URL }}">\x3C/script>')</script>
+    {% endassets %}
   <link rel=icon href={{ url_for('webdice.static', filename='images/brand/rdcep_logo_16.png') }}>
-  <script src="{{ url_for('webdice.static', filename='js/vendor/d3.v3.min.js') }}"></script>
-  <script src="{{ url_for('webdice.static', filename='js/vendor/json2.js') }}"></script>
-  <script src="{{ url_for('webdice.static', filename='js/vendor/serialize-0.2.min.js') }}"></script>
   {% block headcss %}{% endblock %}
   {% block headjs %}{% endblock %}
-  <script src="{{ url_for('webdice.static', filename='js/vendor/modernizr.custom.09813.js') }}"></script>
 </head>
 <body>
   <!--[if lt IE 7]>
   <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
   <![endif]-->
   {% block page %}{% endblock %}
-
-
 </body>
 </html>

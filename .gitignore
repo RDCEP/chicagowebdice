@@ -1,1 +1,4 @@
 *.pyc
+webdice_web/static/gen
+webdice_web/static/.webassets-cache
+test

@@ -1,5 +1,9 @@
 (function() {
   "use strict";
+  /*
+   Some of the below borrowed heavily from SVG-Crowbar developed at the
+   New York Times (http://nytimes.github.io/svg-crowbar/).
+   */
 
   var download_svg = d3.select('#download_svg')
     , serializer = new XMLSerializer()

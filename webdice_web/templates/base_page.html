@@ -117,7 +117,7 @@
   </div>
 
   {% block bodyjs %}
-    {% assets 'js_webdice' %}
+    {% assets 'js_slider', 'js_webdice' %}
     <script src={{ ASSET_URL }}></script>
     {% endassets %}
   {% endblock %}
