@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
+{% import '_macros.html' as macros %}
+
 {% block headjs -%}
   <script type="text/javascript">
     Options = window.Options || { };
@@ -9,25 +11,15 @@
 
 {% block page %}
   <header id=main_nav>
+
     <nav>
       <ul id=top_nav class="clearfix">
-        <li><h1><a href="{{ url_for('webdice.index') }}">webDICE</a></h1></li>
-        <li><a href="{{ url_for('webdice.standard') }}">Standard</a></li>
-        <li id=advanced_pages>
-          <a class=dead-hover>Advanced</a>
-          <ul>
-            <li><a href="{{ url_for('webdice.advanced', year=2007) }}">2007</a></li>
-            <li><a href="{{ url_for('webdice.advanced', year=2010) }}">2010</a></li>
-          </ul>
-        </li>
-        <li><a href>Documentation</a><ul>
-          <li><a target=_blank href="{{ url_for('webdice.static', filename='docs/webdice_basic_help.pdf') }}">Basic</a></li>
-          <li><a target=_blank href="{{ url_for('webdice.static', filename='docs/webdice_intermediate_help.pdf') }}">Intermediate</a></li>
-          <li><a target=_blank href="{{ url_for('webdice.static', filename='docs/webdice_equation_help.pdf') }}">Equations</a></li>
-          <li><a target=_blank href="https://www.github.com/RDCEP/chicagowebdice/">View source</a></li>
-        </ul></li>
+        {% block main_menu %}
+        {{ macros.render_menu() }}
+        {% endblock %}
       </ul>
     </nav>
+
     <div id=title_legend_wrap>
       <div id=title_legend>
         {% block title_tabs %}
@@ -45,6 +37,7 @@
         {% endblock %}
       </div>
     </div>
+
   </header>
 
   <article id=main_content>
@@ -99,36 +92,36 @@
 
   <div id=wrapper>
 
+  {% block footer %}
+  <div id=footer_wrap>
+    <footer id=main_footer>
+      <div id=footer_logo>
+        <a href="https://www.rdcep.org/">
+          <img src="{{ url_for('webdice.static', filename='images/brand/rdcep_logo_60.png') }}" alt>
+        </a>
+      </div>
+      <div id=footer_attribution>
+        <h2><a href="https://www.rdcep.org/">RDCEP</a></h2>
+        <p>webDICE is built and maintained by the Center for
+          Robust Decision Making on Climate and Energy Policy at the University
+          of Chicago. Questions and comments should be directed to
+          <a href=mailto:info-rdcep@ci.uchicago.edu>info-rdcep@ci.uchicago.edu</a>.
+          </p>
+        <p>Funded under NSF Decision Making Under Uncertainty Program.
+          Award No. 0951576</p>
+      </div>
+    </footer>
+  </div>
+  {% endblock %}
 
+  </div>
 
-{% block footer %}
-<div id=footer_wrap>
-  <footer id=main_footer>
-    <div id=footer_logo>
-      <a href="https://www.rdcep.org/">
-        <img src="{{ url_for('webdice.static', filename='images/brand/rdcep_logo_60.png') }}" alt>
-      </a>
-    </div>
-    <div id=footer_attribution>
-      <h2><a href="https://www.rdcep.org/">RDCEP</a></h2>
-      <p>webDICE is built and maintained by the Center for
-        Robust Decision Making on Climate and Energy Policy at the University
-        of Chicago. Questions and comments should be directed to
-        <a href=mailto:info-rdcep@ci.uchicago.edu>info-rdcep@ci.uchicago.edu</a>.
-        </p>
-      <p>Funded under NSF Decision Making Under Uncertainty Program.
-        Award No. 0951576</p>
-    </div>
-  </footer>
-</div>
-{% endblock %}
-</div>
-{% block bodyjs %}
-<script src="{{ url_for('webdice.static', filename='js/stacked_chart.js') }}?{{ now }}"></script>
-<script src="{{ url_for('webdice.static', filename='js/webdice_param_eq.js') }}?{{ now }}"></script>
-<script src="{{ url_for('webdice.static', filename='js/webdice_download_svg.js') }}?{{ now }}"></script>
-<script src="{{ url_for('webdice.static', filename='js/webdice_download_csv.js') }}?{{ now }}"></script>
-<script src="{{ url_for('webdice.static', filename='js/main.js') }}?{{ now }}"></script>
+  {% block bodyjs %}
+  <script src="{{ url_for('webdice.static', filename='js/stacked_chart.js') }}?{{ now }}"></script>
+  <script src="{{ url_for('webdice.static', filename='js/webdice_param_eq.js') }}?{{ now }}"></script>
+  <script src="{{ url_for('webdice.static', filename='js/webdice_download_svg.js') }}?{{ now }}"></script>
+  <script src="{{ url_for('webdice.static', filename='js/webdice_download_csv.js') }}?{{ now }}"></script>
+  <script src="{{ url_for('webdice.static', filename='js/main.js') }}?{{ now }}"></script>
+  {% endblock %}
 
-{% endblock %}
 {% endblock %}

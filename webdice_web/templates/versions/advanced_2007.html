@@ -1,4 +1,9 @@
 {% extends 'base_graphs.html' %}
+{% import '_macros.html' as macros %}
+
+{% block main_menu %}
+{{ macros.render_menu(2007) }}
+{% endblock %}
 
 {% block parameters %}
 {% include 'modules/parameters_2007.html' %}

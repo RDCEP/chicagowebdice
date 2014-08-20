@@ -504,6 +504,8 @@ g.visuallyhidden {
     border: none;
     display: inline-block;
     margin: 0; }
+    #top_nav > li.active > a {
+      color: #b7b7b7 !important; }
     #top_nav > li + li {
       padding: 0 0 0 1em;
       position: relative; }
