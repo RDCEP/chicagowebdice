@@ -117,11 +117,9 @@
   </div>
 
   {% block bodyjs %}
-  <script src="{{ url_for('webdice.static', filename='js/stacked_chart.js') }}?{{ now }}"></script>
-  <script src="{{ url_for('webdice.static', filename='js/webdice_param_eq.js') }}?{{ now }}"></script>
-  <script src="{{ url_for('webdice.static', filename='js/webdice_download_svg.js') }}?{{ now }}"></script>
-  <script src="{{ url_for('webdice.static', filename='js/webdice_download_csv.js') }}?{{ now }}"></script>
-  <script src="{{ url_for('webdice.static', filename='js/main.js') }}?{{ now }}"></script>
+    {% assets 'js_webdice' %}
+    <script src={{ ASSET_URL }}></script>
+    {% endassets %}
   {% endblock %}
 
 {% endblock %}

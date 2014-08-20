@@ -1,5 +1,5 @@
 from flask import Flask
-# from flask.ext.assets import Environment, Bundle
+from flask.ext.assets import Environment, Bundle
 from flask import render_template
 
 from flask_beaker import BeakerSession
@@ -19,7 +19,11 @@ session_opts = {
 
 app = Flask(__name__)
 app.config.from_object('config')
-
+# api = Api(app)
+# api_parser = reqparse.RequestParser()
+app.config['DEBUG'] = True
+app.config['SECRET_KEY'] = 'Ad78gii#$3979oklaklf'
+BeakerSession(app)
 
 @app.errorhandler(404)
 def not_found(error):
@@ -41,14 +45,17 @@ def context_globals():
     return dict()
 
 
-# api = Api(app)
-# api_parser = reqparse.RequestParser()
-app.config['DEBUG'] = True
-app.config['SECRET_KEY'] = 'Ad78gii#$3979oklaklf'
-BeakerSession(app)
-
 from webdice_web.views import mod as work_module
 app.register_blueprint(work_module)
+
+
+assets = Environment(app)
+js = Bundle('js/stacked_chart.js', 'js/webdice_param_eq.js',
+            'js/webdice_download_svg.js', 'js/webdice_download_csv.js',
+            'js/main.js', 'js/webdice_range_slider.js',
+            'js/webdice_tabs.js',
+            filters='jsmin', output='gen/webdice.js')
+assets.register('js_webdice', js)
 
 
 if __name__ == '__main__':

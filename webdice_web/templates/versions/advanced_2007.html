@@ -8,9 +8,3 @@
 {% block parameters %}
 {% include 'modules/parameters_2007.html' %}
 {% endblock %}
-
-{% block bodyjs %}
-  {{ super() }}
-  <script src="{{ url_for('webdice.static', filename='js/webdice_range_slider.js') }}?{{ now }}"></script>
-  <script src="{{ url_for('webdice.static', filename='js/webdice_tabs.js') }}?{{ now }}"></script>
-{% endblock %}
