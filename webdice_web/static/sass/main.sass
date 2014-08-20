@@ -62,23 +62,11 @@ g.visuallyhidden
     padding: .75em 0
     position: relative
     z-index: 999
-#loader_wrap
-  position: absolute
-  top: 2.3em
-  z-index: 999
-  height: 1px
-  width: 960px
-  margin: 0 auto
-  img
-    width: 100%
-    display: block
-    height: 1px
 #title_legend_wrap
   position: absolute
   top: 2.3em
   background-color: #ffffff
   border-bottom: 8px solid $light-gray
-  //opacity: .8
   height: 2em
   z-index: 800
   #title_legend
@@ -96,7 +84,6 @@ g.visuallyhidden
         display: block
         float: left
         padding: .9em $inner_pad .7em
-
         border-right: 1px solid transparent
         border-left: 1px solid transparent
         cursor: pointer
@@ -105,17 +92,6 @@ g.visuallyhidden
           background-color: #eee
           position: relative
           font-weight: bold
-          //&:after
-            content: ' '
-            height: $inner_pad * 1.414
-            width: $inner_pad * 1.414
-            -webkit-transform: rotate(45deg)
-            transform: rotate(45deg)
-            position: absolute
-            top: 100%
-            left: 15%
-            background-color: #ffffff
-            z-index: 900
       &.notselected
         display: none
 
@@ -145,7 +121,6 @@ g.visuallyhidden
       padding: 0 0 0 1em
       position: relative
       ul
-        //@include columns(2, 2em)
         border: none
         display: none
         position: absolute
@@ -158,7 +133,6 @@ g.visuallyhidden
         margin: 0
       li
         margin-bottom: .5em
-        //position: relative
         height: 0
         font-size: 1em
         overflow: hidden
@@ -353,4 +327,4 @@ g.visuallyhidden
 @import footer
 @import helpers
 
-
+@import media/large
