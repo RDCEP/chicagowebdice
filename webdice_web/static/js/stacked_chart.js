@@ -185,19 +185,25 @@ var WebDICEGraph = function() {
     custom_legend = function(d, i) {
       var _h = '';
       if (hidden_runs.indexOf(+d.run_id) == -1) {
-        var x_runs = d3.selectAll('#custom_graphs .data-point[data-x="' + d.x + '"][data-run-id="' + d.run_id + '"]')
-          .filter(function() { return !d3.select(this).classed('visuallyhidden'); })
-          .sort(function(a, b) {
-            return d3.descending(a.y, b.y);
-          });
         var _c = d3.select('.graph-line[data-run-id="' + d.run_id + '"]').style('stroke');
         _h += '<span data-run-id=' + d.run_id + '>';
         _h += '<b style="color:' + _c + '">';
         _h += d.run_name.replace(/ /g, '&nbsp;') + '</b><br>';
         _h += d.x_title.replace(/ /g, '&nbsp;') + ':&nbsp;' + format_x(d.x) + '<br>';
-        x_runs.each(function(dd) {
-          _h += dd.y_title.replace(/ /g, '&nbsp;') + ':&nbsp;' + format_y(dd.y) + '</span><br>';
-        });
+        /*
+         This is a bit hackish. Using .slice() so d3 doesn't reorder the DOM
+         on sort().
+         */
+        var x_runs = d3.selectAll('#custom_graphs .data-point[data-x="' + d.x + '"][data-run-id="' + d.run_id + '"]')
+          .filter(function() { return !d3.select(this).classed('visuallyhidden'); })
+          .slice(0)[0]
+          .sort(function(a, b) {
+            return a.cy.baseVal.value - b.cy.baseVal.value;
+          })
+          .forEach(function(dd) {
+            dd = dd.__data__;
+            _h += dd.y_title.replace(/ /g, '&nbsp;') + ':&nbsp;' + format_y(dd.y) + '</span><br>';
+          });
 
       }
       return _h;
@@ -211,11 +217,9 @@ var WebDICEGraph = function() {
           name: d.run_name
         });
       });
-      if (_d.length > 1) {
-        _d = _d.sort(function(a, b) {
-          return d3.descending(a.y, b.y);
-        });
-      }
+      _d = _d.sort(function(a, b) {
+        return d3.descending(a.y, b.y);
+      });
       _d.forEach(function(d, i) {
         if (_custom_graph) {
           _h += custom_legend(d, i);
@@ -239,7 +243,7 @@ var WebDICEGraph = function() {
       handles.exit().remove();
       handles.attr('class', 'segment')
         .attr('transform', function(d) {
-          return 'translate(' + (_x(d.values[0].x) - segment_width / 2) + ',0)';
+          return 'translate(' + (_x(d.values[0].x) - segment_width / 2) + ',-' + padding.top + ')';
         });
 //      handles.exit().remove();
       handles.each(function(d) {
@@ -247,7 +251,7 @@ var WebDICEGraph = function() {
           t = d3.select(this);
         t.append('rect')
           .attr('class', 'segment-rect')
-          .attr('height', _y.range()[0])
+          .attr('height', _y.range()[0] + padding.top + padding.bottom)
           .attr('width', segment_width)
           .attr('data-x', function(d) { return d.values[0].x; })
           .style('fill', 'none')
@@ -264,7 +268,7 @@ var WebDICEGraph = function() {
           .attr('data-run-id', function(d) { return d.run_id; })
           .attr('data-type', function(d) { return d.run_name; })
           .attr('cx', segment_width / 2)
-          .attr('cy', function(d) { return _y(d.y + d.y0); })
+          .attr('cy', function(d) { return _y(d.y + d.y0) + padding.top; })
           .attr('r', function() { return visible ? 4 : 0; })
           .style('stroke', function(d, i) { return color(i); });
         handles.data(graph_data.data[0]);
@@ -295,7 +299,7 @@ var WebDICEGraph = function() {
           .attr('data-type', function(d) { return d.run_name; })
           .attr('cx', function(d) { return _x(d.x); })
           .attr('cy', function(d) { return _y(d.y + d.y0); })
-          .attr('r', 3)
+          .attr('r', 3.5)
           .style('stroke', function(d, i) { return color(j); })
           .style('stroke-width', 1.5)
           .style('fill', 'white')
@@ -333,14 +337,13 @@ var WebDICEGraph = function() {
       /*
        Attach mouse events to <rect>s with hoverable handles (toggle .active)
        */
-      handles.each(function(d) {
+      handles.each(function() {
         d3.select(this).selectAll('.data-point').each(function() {
           var t = d3.select(this);
           t.on('mouseover', function(d) {
             var rect = this.getBoundingClientRect()
               , dps = d3.selectAll('#custom_graphs .data-point[data-x="' + d.x + '"]')
               , dpys = [];
-            update_legend([d], rect);
             dps
               .filter(function(dd) { return dd.run_id == d.run_id; })
               .each(function(d) { dpys.push(d.y); });
@@ -350,11 +353,12 @@ var WebDICEGraph = function() {
             dps
               .filter(function(dd) { return dd.run_id == d.run_id; })
               .style('fill', t.style('stroke'));
+            update_legend([d], rect);
             tool_tip.classed('hidden', !_hoverable);
           })
-          .on('mouseout', function() {
+          .on('mouseout', function(d) {
             var t = d3.select(this);
-            d3.selectAll('#custom_graphs .data-point[data-x="' + t.attr('data-x') + '"]')
+            d3.selectAll('#custom_graphs .data-point')
               .style('fill', 'white');
             tool_tip.classed('hidden', true);
           });
