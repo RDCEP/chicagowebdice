@@ -1,1 +1,3 @@
-{% extends 'base.html' %}
+{% extends 'errors/base_error.html' %}
+{% block error_code %}403{% endblock %}
+{% block error_text %}You’ve reached a location that is forbidden.{% endblock %}

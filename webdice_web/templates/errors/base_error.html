@@ -1,0 +1,18 @@
+{% extends 'base_page.html' %}
+{% block content %}
+<div id=text_wrap>
+<div id=text_bkgd></div>
+  <div class="pane half error">
+    <h2>{% block error_code %}{% endblock %}</h2>
+    <p>{% block error_text %}{% endblock %}
+      If you think this is an error, you can contact us at
+      <a href=mailto:info-rdcep@ci.uchicago.edu>info-rdcep@ci.uchicago.edu</a>.
+      Otherwise, you might try one of the links below:</p>
+    <ul>
+      <li><a class="block blue" href={{ url_for('webdice.standard') }}>Standard webDICE</a></li>
+      <li><a class="block orange" href={{ url_for('webdice.advanced', year=2007) }}>Advanced 2007 webDICE</a></li>
+      <li><a class="block vermilion" href={{ url_for('webdice.advanced', year=2010) }}>Advanced 2010 webDICE</a></li>
+    </ul>
+  </div>
+</div>
+{% endblock %}

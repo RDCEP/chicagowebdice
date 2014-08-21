@@ -17,17 +17,17 @@
       <h3>Contact</h3>
       <p>This model has been developed by researchers at the University of
         Chicago supported by RDCEP.  We are continually working to improve the
-        model and the interface. If you have suggestions, contact us at:</p>
-      <p><a href="mailto:info-rdcep@ci.uchicago.edu">info-rdcep@ci.uchicago.edu</a></p>
+        model and the interface. If you have suggestions, contact us at:
+        <a href="mailto:info-rdcep@ci.uchicago.edu">info-rdcep@ci.uchicago.edu</a></p>
     </div>
     <div class="pane half">
-      <h3><a href="{{ url_for('webdice.standard') }}">Standard inputs</a></h3>
+      <h3><a class="block blue" href="{{ url_for('webdice.standard') }}">Standard inputs</a></h3>
       <p>The standard inputs section is designed for students and new users.
         By limiting the set of adjustable variables to those deemed most
         important, users can view the predicted effects of their beliefs about
         the climate, the economy and the future.</p>
-      <h3><a href={{ url_for('webdice.advanced', year=2007) }}>Advanced 2007</a></h3>
-      <h3><a href={{ url_for('webdice.advanced', year=2010) }}>Advanced 2010</a></h3>
+      <h3><a class="block orange" href={{ url_for('webdice.advanced', year=2007) }}>Advanced 2007</a></h3>
+      <h3><a class="block vermilion" href={{ url_for('webdice.advanced', year=2010) }}>Advanced 2010</a></h3>
       <p>The advanced inputs section is designed for more experienced users.
         The complete set of adjustable variables has been made available,
         allowing the user to assess the effect their beliefs have on the model.</p>
