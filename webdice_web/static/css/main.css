@@ -504,6 +504,8 @@ g.visuallyhidden {
     border: none;
     display: inline-block;
     margin: 0; }
+    #top_nav > li.active > a {
+      color: #b7b7b7 !important; }
     #top_nav > li + li {
       padding: 0 0 0 1em;
       position: relative; }
@@ -599,7 +601,7 @@ g.visuallyhidden {
     .pane.graph-pane .small-graph {
       float: left;
       position: relative;
-      width: 420px;
+      width: 435px;
       margin: 7.5px; }
       .pane.graph-pane .small-graph .bkgd {
         position: absolute;
@@ -774,12 +776,16 @@ g.visuallyhidden {
 #text_wrap {
   bottom: auto; }
   #text_wrap .pane {
-    padding: 15px;
+    padding: 30px;
     display: block;
     position: relative; }
     #text_wrap .pane.half {
       width: 420px;
-      float: left; }
+      float: left;
+      padding-right: 0; }
+    #text_wrap .pane.error h2 {
+      font-size: 3em;
+      margin: 0; }
   #text_wrap h3 {
     font-weight: bold; }
   #text_wrap p {
@@ -787,16 +793,28 @@ g.visuallyhidden {
     line-height: 1.5em; }
     #text_wrap p + h3 {
       margin-top: 2em; }
-  #text_wrap a {
+  #text_wrap a.block {
     color: white;
     font-weight: bold;
     background-color: #56b4e9;
     padding: 2px 5px;
     display: block;
     margin-bottom: 5px; }
-    #text_wrap a:hover {
-      color: white !important;
+    #text_wrap a.block.sky-blue {
+      background-color: #56b4e9; }
+    #text_wrap a.block.blue {
       background-color: #0072b2; }
+    #text_wrap a.block.vermilion {
+      background-color: #d55e00; }
+    #text_wrap a.block.orange {
+      background-color: #e69f00; }
+    #text_wrap a.block.green {
+      background-color: #009e73; }
+    #text_wrap a.block.purple {
+      background-color: #cc79a7; }
+    #text_wrap a.block:hover {
+      color: white !important;
+      background-color: black; }
 
 #parameters {
   width: 100%;
@@ -1112,32 +1130,3 @@ g.visuallyhidden {
 
   h2, h3 {
     page-break-after: avoid; } }
-@media only screen and (min-width: 1300px) {
-  #title_legend_wrap #title_legend {
-    width: 1200px; }
-
-  #top_nav {
-    font-size: 0.9em;
-    width: 1200px; }
-
-  #main_content {
-    width: 1260px;
-    min-height: 480px;
-    max-height: 960px; }
-    #main_content .graph-pane {
-      width: 1230px; }
-
-  #parameters_wrap, #graphs_wrap, #text_wrap {
-    width: 1230px; }
-
-  #parameters #parameter_tabs_wrap {
-    width: 1170px; }
-
-  .pane.graph-pane .small-graph {
-    width: 570px; }
-
-  #footer_wrap #main_footer {
-    width: 1200px; }
-
-  #text_wrap .pane.half {
-    width: 570px; } }
