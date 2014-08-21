@@ -504,8 +504,6 @@ g.visuallyhidden {
     border: none;
     display: inline-block;
     margin: 0; }
-    #top_nav > li.active > a {
-      color: #b7b7b7 !important; }
     #top_nav > li + li {
       padding: 0 0 0 1em;
       position: relative; }
@@ -534,6 +532,7 @@ g.visuallyhidden {
           #top_nav > li + li li.active a {
             color: black; }
         #top_nav > li + li li:hover {
+          overflow: visible;
           height: auto; }
       #top_nav > li + li:hover ul {
         display: block;
@@ -600,7 +599,7 @@ g.visuallyhidden {
     .pane.graph-pane .small-graph {
       float: left;
       position: relative;
-      width: 435px;
+      width: 420px;
       margin: 7.5px; }
       .pane.graph-pane .small-graph .bkgd {
         position: absolute;
@@ -775,16 +774,12 @@ g.visuallyhidden {
 #text_wrap {
   bottom: auto; }
   #text_wrap .pane {
-    padding: 30px;
+    padding: 15px;
     display: block;
     position: relative; }
     #text_wrap .pane.half {
       width: 420px;
-      float: left;
-      padding-right: 0; }
-    #text_wrap .pane.error h2 {
-      font-size: 3em;
-      margin: 0; }
+      float: left; }
   #text_wrap h3 {
     font-weight: bold; }
   #text_wrap p {
@@ -792,28 +787,16 @@ g.visuallyhidden {
     line-height: 1.5em; }
     #text_wrap p + h3 {
       margin-top: 2em; }
-  #text_wrap a.block {
+  #text_wrap a {
     color: white;
     font-weight: bold;
     background-color: #56b4e9;
     padding: 2px 5px;
     display: block;
     margin-bottom: 5px; }
-    #text_wrap a.block.sky-blue {
-      background-color: #56b4e9; }
-    #text_wrap a.block.blue {
-      background-color: #0072b2; }
-    #text_wrap a.block.vermilion {
-      background-color: #d55e00; }
-    #text_wrap a.block.orange {
-      background-color: #e69f00; }
-    #text_wrap a.block.green {
-      background-color: #009e73; }
-    #text_wrap a.block.purple {
-      background-color: #cc79a7; }
-    #text_wrap a.block:hover {
+    #text_wrap a:hover {
       color: white !important;
-      background-color: black; }
+      background-color: #0072b2; }
 
 #parameters {
   width: 100%;
