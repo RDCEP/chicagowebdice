@@ -12,8 +12,12 @@
     </ul>
   </li>
   <li><a href>Documentation</a><ul>
-    <li><a target=_blank href="{{ url_for('webdice.static', filename='docs/webdice_basic_help.pdf') }}">Basic</a></li>
-    <li><a target=_blank href="{{ url_for('webdice.static', filename='docs/webdice_intermediate_help.pdf') }}">Intermediate</a></li>
+    {% if version == 'standard' %}
+    <li><a target=_blank href="{{ url_for('webdice.static', filename='docs/webdice_standard_faq.pdf') }}">Basic</a></li>
+    {% elif version in [2007, 2010] %}
+    <li><a target=_blank href="{{ url_for('webdice.static', filename='docs/webdice_advanced_faq.pdf') }}">Basic</a></li>
+    <li><a target=_blank href="{{ url_for('webdice.static', filename='docs/webdice_advanced_manual.pdf') }}">Intermediate</a></li>
+    {% endif %}
     <li><a target=_blank href="{{ url_for('webdice.static', filename='docs/webdice_equation_help.pdf') }}">Equations</a></li>
     <li><a target=_blank href="https://www.github.com/RDCEP/chicagowebdice/">View source</a></li>
   </ul></li>
