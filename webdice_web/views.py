@@ -4,12 +4,10 @@ import csv
 import StringIO
 from lxml import etree
 from datetime import datetime
-
 from flask import render_template, request, make_response, Blueprint, jsonify
 from flask import send_file
-
 from webdice.dice import Dice2007, Dice2010
-from webdice_web.html_parser.web import DiceWebParser
+from webdice_web import app
 
 
 mod = Blueprint('webdice', __name__, static_folder='static',
@@ -46,29 +44,22 @@ def do_session(request, year=None):
         elif year == 2010:
             dice = Dice2010()
     s['dice'] = dice if dice else s['dice']
-    return s, DiceWebParser(year)
+    return s
 
 
-def run_loop(this_dice, form, parser, year=2010):
-    all_parameters = parser.get_all_parameters()
+def run_loop(this_dice, form, year=2010):
 
-    for p in all_parameters:
+    for p in this_dice.user_params:
         try:
-            p['disabled']
-        except (KeyError, AttributeError):
-            try:
-                getattr(this_dice.params, p['machine_name'])
-            except AttributeError:
-                pass
-            else:
-                try:
-                    this_dice.params.__dict__[p['machine_name']] = float(form[p['machine_name']])
-                except (ValueError, AttributeError, KeyError):
-                    pass
+            setattr(this_dice, p, float(form[p]))
+        except KeyError:
+            pass
+        except ValueError:
+            pass
+
     try:
         this_dice.params.damages_model = form['damages_model']
         this_dice.params.carbon_model = form['carbon_model']
-        # this_dice.params.temperature_model = form['temperature_model']
     except KeyError:
         this_dice.params.carbon_model = 'dice_{}'.format(year)
         this_dice.params.damages_model = 'dice_{}'.format(year)
@@ -89,12 +80,11 @@ def run_loop(this_dice, form, parser, year=2010):
 @mod.route('/')
 def index():
     """Returns index page."""
-    s, parser = do_session(request, 2007)
+    s = do_session(request, 2007)
     now = datetime.now().strftime('%Y%m%d%H%M%S')
     return render_template(
         'index.html',
         now=now,
-        paragraphs_html=parser.paragraphs_html('index'),
     )
 
 
@@ -118,7 +108,7 @@ def standard():
 
 @mod.route('/run/standard', methods=['POST', 'GET'])
 def graphs_standard():
-    s, parser = do_session(request, 2010)
+    s = do_session(request, 2010)
     this_dice = s['dice']
     form = json.loads(request.data)
     new_data = {
@@ -143,7 +133,7 @@ def graphs_standard():
         except KeyError:
             pass
 
-    return run_loop(this_dice, form, parser)
+    return run_loop(this_dice, form)
 
 
 @mod.route('/run/<int:year>', methods=['POST', 'GET'])
@@ -156,7 +146,7 @@ def graphs_d3(year=2007):
     Returns:
         Formatted step values
     """
-    s, parser = do_session(request, year)
+    s = do_session(request, year)
     this_dice = s['dice']
     form = json.loads(request.data)
     for field in ['depreciation', 'savings', 'prstp', 'backstop_decline',
@@ -168,7 +158,7 @@ def graphs_d3(year=2007):
         except KeyError:
             pass
 
-    return run_loop(this_dice, form, parser, year)
+    return run_loop(this_dice, form, year)
 
 
 @mod.route('/get_svg', methods=['POST', ])
@@ -218,7 +208,3 @@ def get_csv():
     return send_file(buffer,
                      attachment_filename='{}.csv'.format('WebDICE-CSV'),
                      as_attachment=True)
-    # response = make_response()
-    # response.headers['Content-Disposition'] = 'attachment; filename="{}.csv"'.\
-    #     format('WebDICE-Data')
-    # return response
