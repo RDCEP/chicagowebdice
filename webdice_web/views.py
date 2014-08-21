@@ -49,7 +49,7 @@ def do_session(request, year=None):
     return s, DiceWebParser(year)
 
 
-def run_loop(this_dice, form, parser):
+def run_loop(this_dice, form, parser, year=2010):
     all_parameters = parser.get_all_parameters()
 
     for p in all_parameters:
@@ -70,11 +70,10 @@ def run_loop(this_dice, form, parser):
         this_dice.params.carbon_model = form['carbon_model']
         # this_dice.params.temperature_model = form['temperature_model']
     except KeyError:
-        this_dice.params.carbon_model = 'dice_2007'
-        this_dice.params.damages_model = 'dice_2007'
+        this_dice.params.carbon_model = 'dice_{}'.format(year)
+        this_dice.params.damages_model = 'dice_{}'.format(year)
     opt = False
     policy = form['policy_type']
-    print policy
     this_dice.params.treaty = False
     this_dice.params.carbon_tax = False
     if policy == 'treaty':
@@ -169,7 +168,7 @@ def graphs_d3(year=2007):
         except KeyError:
             pass
 
-    return run_loop(this_dice, form, parser)
+    return run_loop(this_dice, form, parser, year)
 
 
 @mod.route('/get_svg', methods=['POST', ])
