@@ -654,8 +654,6 @@
       toggle_graph_hover(false);
     }
 
-
-    console.log(index, d3.selectAll('#runs li[data-run-id="' + index + '"]'));
     d3.selectAll('#runs li[data-run-id="' + index + '"]').remove();
 
   };
@@ -719,7 +717,6 @@
   });
 
   damages_model.on('click', function() {
-    console.log(1);
     var pf = d3.select('#prod_frac'),
       active = d3.select('#productivity_fraction').property('checked');
     if (active) {
