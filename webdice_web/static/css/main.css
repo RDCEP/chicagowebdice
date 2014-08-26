@@ -534,7 +534,6 @@ g.visuallyhidden {
           #top_nav > li + li li.active a {
             color: black; }
         #top_nav > li + li li:hover {
-          overflow: visible;
           height: auto; }
       #top_nav > li + li:hover ul {
         display: block;
