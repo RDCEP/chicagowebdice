@@ -4,10 +4,9 @@ import csv
 import StringIO
 from lxml import etree
 from datetime import datetime
-from flask import render_template, request, make_response, Blueprint, jsonify
+from flask import render_template, request, Blueprint, jsonify
 from flask import send_file
 from webdice.dice import Dice2007, Dice2010
-from webdice_web import app
 
 
 mod = Blueprint('webdice', __name__, static_folder='static',
