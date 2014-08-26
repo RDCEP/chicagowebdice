@@ -46,7 +46,7 @@ class Dice(object):
 
         """
         u_p = DiceUserParams()
-        return [k for k, v in u_p.__dict__.iteritems() if k[0] != '_']
+        return [k for k in u_p.__dict__.keys() if k[0] != '_']
 
     @property
     def model_vars(self):
