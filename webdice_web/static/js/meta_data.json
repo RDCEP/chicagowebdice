@@ -1,140 +1,173 @@
 {
   "custom" : {
     "title": "Productivity v. Time",
-    "unit": "TFP v. year"
+    "title_unit": "TFP v. year",
+    "unit": null
   },
   "twin" : {
     "title": "",
-    "unit": ""
+    "title_unit": "",
+    "unit": null
   },
   "temp_atmosphere": {
-    "unit": "degrees C since 1900",
-    "title": "Atmospheric temperature increase"
+    "title_unit": "degrees C since 1900",
+    "title": "Atmospheric temperature increase",
+    "unit": "°C"
   },
   "temp_lower": {
-    "unit": "degrees C since 1900",
-    "title": "Lower ocean temperature increase"
+    "title_unit": "degrees C since 1900",
+    "title": "Lower ocean temperature increase",
+    "unit": "°C"
   },
   "mass_atmosphere": {
-    "unit": "gigatons of carbon",
-    "title": "Carbon mass in atmosphere"
+    "title_unit": "gigatons of carbon",
+    "title": "Carbon mass in atmosphere",
+    "unit": "GtC"
   },
   "mass_upper": {
-    "unit": "gigatons of carbon",
-    "title": "Carbon mass in upper oceans"
+    "title_unit": "gigatons of carbon",
+    "title": "Carbon mass in upper oceans",
+    "unit": "GtC"
   },
   "mass_lower": {
-    "unit": "gigatons of carbon",
-    "title": "Carbon mass in lower oceans"
+    "title_unit": "gigatons of carbon",
+    "title": "Carbon mass in lower oceans",
+    "unit": "GtC"
   },
   "emissions_total": {
-    "unit": "gigatons of carbon / year",
-    "title": "Total emissions"
+    "title_unit": "gigatons of carbon / year",
+    "title": "Total emissions",
+    "unit": "GtC"
   },
   "consumption_pc": {
-    "unit": "thousands $USD / person / year",
-    "title": "Consumption per capita"
+    "title_unit": "thousands $USD / person / year",
+    "title": "Consumption per capita",
+    "unit": "thousand USD"
   },
   "productivity": {
-    "unit": "TFP",
+    "title_unit": "TFP",
     "title": "Total factor productivity"
   },
   "carbon_intensity": {
-    "unit": "tons of CO2 / 1000 $USD",
-    "title": "Carbon intensity"
+    "title_unit": "tons of CO2 / 1000 USD",
+    "title": "Carbon intensity",
+    "unit": "tC / 1000 USD"
   },
   "damages": {
-    "unit": "trillions $USD year",
-    "title": "Damages"
+    "title_unit": "trillions USD year",
+    "title": "Damages",
+    "unit": "trillion USD"
   },
   "tax_rate": {
-    "unit": "$USD / ton of carbon",
-    "title": "Tax rate"
+    "title_unit": "$USD / ton of carbon",
+    "title": "Tax rate",
+    "unit": "USD / tC"
   },
   "abatement": {
-    "unit": "trillions $USD / year",
-    "title": "Abatement"
+    "title_unit": "trillions USD / year",
+    "title": "Abatement",
+    "unit": "trillion USD"
   },
   "scc": {
-    "unit": "$USD / ton of carbon",
-    "title": "Social cost of carbon"
+    "title_unit": "$USD / ton of CO2",
+    "title": "Social cost of carbon",
+    "unit": "USD / tCO2"
   },
   "output_abate": {
-    "unit": "%",
-    "title": "Abatement cost as a percentage of output"
+    "title_unit": "percentage of output",
+    "title": "Abatement cost as a percentage of output",
+    "unit": "%"
   },
   "backstop_growth": {
-    "unit": "thousands $USD / ton of carbon",
-    "title": "Clean energy costs"
+    "title_unit": "",
+    "title": "Clean energy costs",
+    "unit": null
   },
   "backstop": {
-    "unit": "thousands $USD / ton of carbon",
-    "title": "Clean energy costs"
+    "title_unit": "thousands USD / ton of carbon",
+    "title": "Clean energy costs",
+    "unit": "1000 USD / tC"
   },
   "population": {
-    "unit": "millions",
-    "title": "Population"
+    "title_unit": "millions",
+    "title": "Population",
+    "unit": "millions"
   },
   "consumption": {
-    "unit": "trillions $USD / year",
-    "title": "Total Consumption"
+    "title_unit": "trillions USD / year",
+    "title": "Total Consumption",
+    "unit": "trillion USD"
   },
   "emissions_ind": {
-    "unit": "gigatons of carbon / year",
-    "title": "Industrial emissions"
+    "title_unit": "gigatons of carbon / year",
+    "title": "Industrial emissions",
+    "unit": "GtC"
   },
   "carbon_emitted": {
-    "unit": "gigatons of carbon",
-    "title": "Total carbon emitted"
+    "title_unit": "gigatons of carbon",
+    "title": "Total carbon emitted",
+    "unit": "GtC"
   },
   "capital": {
-    "unit": "Trillions $USD",
-    "title": "Capital stock"
+    "title_unit": "Trillions USD",
+    "title": "Capital stock",
+    "unit": "trillion USD"
   },
   "utility_discounted": {
-    "unit": false,
-    "title": "Utility discounted"
+    "title_unit": false,
+    "title": "Utility discounted",
+    "unit": null
   },
   "utility": {
-    "unit": false,
-    "title": "Utility"
+    "title_unit": false,
+    "title": "Utility",
+    "unit": null
   },
   "miu": {
-    "unit": false,
-    "title": "Emissions control rate"
+    "title_unit": false,
+    "title": "Emissions control rate",
+    "unit": null
   },
 
   "consumption_discount": {
-    "unit": false,
-    "title": "Consumption discount rate"
+    "title_unit": false,
+    "title": "Consumption discount rate",
+    "unit": null
   },
   "forcing": {
-    "unit": false,
-    "title": "Forcing"
+    "title_unit": false,
+    "title": "Forcing",
+    "unit": null
   },
   "gross_output": {
-    "unit": "TKTK",
-    "title": "Gross output"
+    "title_unit": "TKTK",
+    "title": "Gross output",
+    "unit": null
   },
   "intensity_decline": {
-    "unit": "TKTK",
-    "title": "Intensity decline"
+    "title_unit": "TKTK",
+    "title": "Intensity decline",
+    "unit": null
   },
   "investment": {
-    "unit": "TKTK",
-    "title": "Investment"
+    "title_unit": "TKTK",
+    "title": "Investment",
+    "unit": null
   },
   "output": {
-    "unit": "TKTK",
-    "title": "Output"
+    "title_unit": "TKTK",
+    "title": "Output",
+    "unit": null
   },
   "participation": {
-    "unit": "TKTK",
-    "title": "Participation"
+    "title_unit": "TKTK",
+    "title": "Participation",
+    "unit": null
   },
   "population_growth": {
-    "unit": "TKTK",
-    "title": "Population growth"
+    "title_unit": "TKTK",
+    "title": "Population growth",
+    "unit": null
   }
 
 

@@ -87,7 +87,8 @@
         ? metadata[custom_x_domain].title
         : 'Year',
       run_index: total_runs,
-      run_name: 'Run #' + total_runs
+      run_name: 'Run #' + total_runs,
+      unit: metadata[dice_variable].unit
     };
 
     _data[dice_variable].forEach(function(d, i) {
@@ -143,7 +144,7 @@
           }
         })
         .title(metadata[dice_variable].title || '')
-        .subtitle(metadata[dice_variable].unit || '')
+        .subtitle(metadata[dice_variable].title_unit || '')
         .legend(true),
       small: graph_wrap.classed('small-graph')
     };
@@ -233,8 +234,8 @@
 
       var title = metadata[custom_vars[index]].title + ' v. ';
       title += x_custom_domain_var ? metadata[x_custom_domain_var].title : 'Time';
-      var subtitle = metadata[custom_vars[index]].unit + ' v. ';
-      subtitle += x_custom_domain_var ? metadata[x_custom_domain_var].unit : 'years';
+      var subtitle = metadata[custom_vars[index]].title_unit + ' v. ';
+      subtitle += x_custom_domain_var ? metadata[x_custom_domain_var].title_unit : 'years';
 
       graphs[graph].graph
         .data(custom_data[index])
@@ -267,12 +268,15 @@
       }
       title = metadata[custom_vars[index]].title + ' v. ';
       title += x_custom_domain_var ? metadata[x_custom_domain_var].title : 'Time';
-      subtitle = metadata[custom_vars[index]].unit + ' v. ';
-      subtitle += x_custom_domain_var ? metadata[x_custom_domain_var].unit : 'years';
+      subtitle = metadata[custom_vars[index]].title_unit + ' v. ';
+      subtitle += x_custom_domain_var ? metadata[x_custom_domain_var].title_unit : 'years';
 
       custom_data.forEach(function (v, k) {
         v.forEach(function (r, i) {
-          if (custom_vars[k]) {r.y_title = metadata[custom_vars[k]].title;}
+          if (custom_vars[k]) {
+            r.y_title = metadata[custom_vars[k]].title;
+            r.unit = metadata[custom_vars[k]].unit;
+          }
           r.data.forEach(function (d, j) {
             if (custom_vars[k]) {
               d.y = all_data[custom_vars[k]][i].data[j].y;
@@ -710,7 +714,6 @@
   clear_runs.on('click', function() {
     used_colors = [];
     runs_list.selectAll('li').each(function() {
-      console.log(d3.select(this).attr('data-run-id'));
       remove_run(+d3.select(this).attr('data-run-id'));
     });
     d3.select('#runs_wrap').classed('visuallyhidden', true);

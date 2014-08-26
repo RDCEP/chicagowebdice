@@ -164,6 +164,7 @@ var WebDICEGraph = function() {
         .entries([].concat.apply([], arr.map(function(d) {
           d.data.forEach(function(dd) {
             dd.run_name = d.run_name;
+            dd.unit = d.unit || '';
             dd.run_id = d.run_index;
             dd.x_title = d.x_title;
             dd.y_title = d.y_title;
@@ -178,7 +179,8 @@ var WebDICEGraph = function() {
         var _c = d3.select('.graph-line[data-run-id="' + d.run_id + '"]').style('stroke');
         _h += '<span data-run-id=' + d.run_id + '>';
         _h += '<b style="color:' + _c + '">';
-        _h += d.run_name.replace(/ /g, '&nbsp;') + ':&nbsp;</b>' + format_y(d.y) + '</span><br>';
+        _h += d.run_name.replace(/ /g, '&nbsp;') + ':&nbsp;</b>';
+        _h += format_y(d.y) + '&nbsp;' + d.unit + '</span><br>';
       }
       return _h;
     },
@@ -202,7 +204,8 @@ var WebDICEGraph = function() {
           })
           .forEach(function(dd) {
             dd = dd.__data__;
-            _h += dd.y_title.replace(/ /g, '&nbsp;') + ':&nbsp;' + format_y(dd.y) + '</span><br>';
+            _h += dd.y_title.replace(/ /g, '&nbsp;') + ':&nbsp;';
+            _h += format_y(dd.y) + '&nbsp;' + dd.unit + '</span><br>';
           });
 
       }
@@ -214,7 +217,8 @@ var WebDICEGraph = function() {
         arr.push({
           color: color(i),
           y: d.y,
-          name: d.run_name
+          name: d.run_name,
+          unit: d.unit
         });
       });
       _d = _d.sort(function(a, b) {
