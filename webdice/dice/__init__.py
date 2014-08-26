@@ -1,5 +1,5 @@
+# -*- coding: utf-8 -*-
 from __future__ import division
-import json
 import numpy as np
 from params import DiceParams, Dice2010Params, DiceUserParams, DiceDataMatrix
 from equations.loop import Loop
@@ -7,38 +7,16 @@ from equations_ne.loop import LoopOpt
 
 
 class Dice(object):
-    """Variables, parameters, and step function for DICE 2007.
-    ...
-    Args
-    ----
-    optimize : boolean
-    ...
-    Attributes
-    ----------
-    eq : object
-        webdice.equations.loop.Loop object
-    ...
-    Properties
-    ----------
-    parameters : list
-        Names of all parameters to DICE
-    vars : list
-        Names of all DICE variables
-    ...
-    Methods
-    -------
-    loop()
-        Initiate step() loop, get_ipopt_mu(), and scc()
-    step()
-        Step function for calculating endogenous variables
-    get_scc()
-        Call loop() to run calculations for SCC
-    get_ipopt_mu()
-        Interface with pyipopt to optimize miu
-    format_output()
-        Output text for Google Visualizer graph functions
+    """Dice object
+
+    Variables, parameters, loop/step, and optimization functions
+    for DICE objects.
+
+    Args:
+        None
+
     """
-    def __init__(self, optimize=False):
+    def __init__(self):
         self.params = DiceParams()
         self.vars = self.params.vars
         self.scc = self.params.scc
@@ -54,49 +32,72 @@ class Dice(object):
 
     @property
     def user_params(self):
-        """
+        """List of parameters
+
         List of model parameters to be included with output to graphs and CSV.
+        This list purposely leaves out model parameters whose names begin with
+        an _, as they're assumed to be immutable.
+
+        Args:
+            None
+
+        Returns:
+            list: List of parameter names (strings)
+
         """
         u_p = DiceUserParams()
         return [k for k, v in u_p.__dict__.iteritems() if k[0] != '_']
 
     @property
     def model_vars(self):
-        """
+        """Model variables
+
         List of model variables to be included with output to graphs and CSV.
+        This list purposely leaves out model variables whose names begin with
+        an _, though currently (Aug 2014) none exist.
+
+        Args:
+            None
+
+        Returns:
+            list: List of variable names as strings
+
         """
         return [k for k, v in self.vars.__dict__.iteritems() if k[0] != '_']
 
     @property
     def welfare(self):
-        """
-        Objective function
-        ...
-        Returns
-        -------
-        float
+        """Objective function: ∑(discounted utility)
+
+        Args:
+            None
+
+        Returns:
+            float: Value of objective function
+
         """
         return np.sum(self.vars.utility_discounted)
 
-    def step(self, i, df, miu=None, deriv=False, opt=False, emissions_shock=0.0):
-        """
-        Single step for calculating endogenous variables
-        ...
-        Args
-        ----
-        i : int, index of current step
-        df : object, DiceDataMatrix
-        ...
-        Kwargs
-        ------
-        miu : array, values for miu
-        deriv : boolean
-        f0 : float
-        emissions_shock : float
-        ...
-        Returns
-        -------
-        pandas.DataFrame : 60 steps of all variables in df
+    def step(self, i, df, miu=None, deriv=False, opt=False,
+             emissions_shock=0.0):
+        """Step function
+
+        Single step for calculating model variables at t. This is called from
+        the loop() method.
+
+        Args:
+            i (int): index of current step
+            df (DiceDataMatrix): numpy array of model variables
+
+        Kwargs:
+            miu (nd.array): values for miu
+            deriv (bool): Whether or not to calculate a derivative
+            opt (bool): Whether or not to optimize the scenario
+            emissions_shock (float): Emissions shock for calculating SCC
+
+        Returns:
+            DiceDataMatrix: numpy array of model variables
+
         """
 
         (
@@ -113,7 +114,8 @@ class Dice(object):
             df.emissions_total[i], df.carbon_emitted[i],
             df.tax_rate[i]
         ) = self.eq.emissions_model.get_model_values(
-            i, df, miu=miu, emissions_shock=emissions_shock, deriv=deriv, opt=opt
+            i, df, miu=miu, emissions_shock=emissions_shock, deriv=deriv,
+            opt=opt
         )
         df.mass_atmosphere[i], df.mass_upper[i], df.mass_lower[i] = (
             self.eq.carbon_model.get_model_values(i, df)
@@ -133,18 +135,21 @@ class Dice(object):
         return df
 
     def loop(self, miu=None, deriv=False, scc=True, opt=False):
-        """
-        Loop through step function for calculating endogenous variables
-        ...
-        Kwargs
-        ------
-        miu : array
-        deriv : boolean
-        scc : boolean
-        ...
-        Returns
-        -------
-        pd.DataFrame : self.vars
+        """Main loop
+
+        Loop through step function for calculating endogenous variables. This
+        method is called by hand, but also during derivative calculations
+        when optimizing.
+
+        Kwargs:
+            miu (nd.array): values for miu
+            deriv (bool): Whether or not to calculate a derivative
+            scc (bool): Whether or not to calculate SCC
+            opt (bool): Whether or not to optimize the scenario
+
+        Returns:
+            DiceDataMatrix: Array of model variables
+
         """
         _miu = None
         if opt:
@@ -161,6 +166,19 @@ class Dice(object):
         return self.vars
 
     def set_opt_values(self, df):
+        """Save current optimal values
+
+        Save last gradient and last objective function. Speeds up optimization
+        in the instance that miu (x) is unchanged form one iteration to the
+        next.
+
+        Args:
+            df (DiceDataMatrix): Array of model variables
+
+        Returns:
+            None
+
+        """
         gf = (
             df.utility_discounted[:, :60].sum(axis=0) -
             df.utility_discounted[:, 60].sum()
@@ -170,17 +188,17 @@ class Dice(object):
             df.utility_discounted[:, 60].sum() * self.opt_scale)
 
     def obj_loop(self, miu):
-        """
-        Calculate gradient of objective function using finite differences
-        ...
-        Args
-        ----
-        miu : array, 60 values of miu
-        ...
-        Returns
-        -------
-        float : value of objective (utility)
-        ...
+        """Objective function for optimization
+
+        Calculate objective function. Is called by get_ipopt_miu().
+        Calls loop(). Stores and returns result.
+
+        Args:
+            miu (nd.array): Array of values for miu, n = Dice().params.tmax
+
+        Returns:
+            float: value of objective (utility)
+
         """
         df = DiceDataMatrix(np.tile(self.vars, (61, 1, 1)).transpose(1, 2, 0))
         for i in xrange(self.params.tmax):
@@ -191,17 +209,17 @@ class Dice(object):
         return self.opt_obj
 
     def grad_loop(self, miu):
-        """
-        Calculate gradient of objective function using finite differences
-        ...
-        Args
-        ----
-        miu : array, 60 values of miu
-        ...
-        Returns
-        -------
-        array : gradient of objective
-        ...
+        """Gradient function for optimization
+
+        Calculate gradient of objective function using finite differences.
+        Is called by get_ipopt_miu(). Calls loop(). Stores and returns result.
+
+        Args:
+            miu (nd.array): Array of values for miu, n = Dice().params.tmax
+
+        Returns:
+            nd.array: gradient of objective
+
         """
         df = DiceDataMatrix(np.tile(self.vars, (61, 1, 1)).transpose(1, 2, 0))
         for i in xrange(self.params.tmax):
@@ -212,24 +230,15 @@ class Dice(object):
         return self.opt_grad_f
 
     def get_scc(self, miu):
-        """
-        Calculate social cost of carbon
-        ...
-        Args
-        ----
-        miu : array, 60 values of miu
-        ...
-        Returns
-        -------
-        None
-        ...
-        Internal Variables
-        ------------------
-        x_range : integer, number of periods in output graph
-        future_indices : integer, number of periods to
-            calculate future consumption
-        time_horizon : integer, last period of to calculate consumption
-        shock : float, amount to 'shock' the emissions of the current period
+        """Calculate SCC
+
+        Calculate social cost of carbon. Called automatically from loop().
+
+        Args:
+            miu (nd.array): Array of values for miu, n = Dice().params.tmax
+
+        Returns:
+            None
         """
         for i in xrange(20):
             th = self.params.scc_horizon
@@ -247,31 +256,21 @@ class Dice(object):
             self.vars.scc[i] = np.sum(diff) * 1000 * 10 * (12 / 44)
 
     def get_ipopt_miu(self):
-        """
-        Calculate optimal miu
+        """Optimized miu
+
+        Calculate optimal miu. Called when opt=True is passed to loop().
         ...
-        Args
-        ----
-        None
-        ...
+        Args:
+            None
+
         Returns
-        -------
-        array : optimal miu
-        ...
-        Internal Variables
-        ------------------
-        x0 : array, initial guess
-        M : integer, size of constraints
-        nnzj : integer, number of non-zero values in Jacobian
-        nnzh : integer, number of non-zero values in Hessian
-        xl : array, lower bounds of objective
-        xu : array, upper bounds of objective
-        gl : array, lower bounds of constraints
-        gu : array, upper bounds of constraints
+            nd.array: Array of optimal miu, n = params.tmax
+
         """
         try:
             import pyipopt
         except ImportError:
+            pyipopt = None
             print('OPTIMIZATION ERROR: It appears that you do not have '
                   'pyipopt installed. Please install it before running '
                   'optimization.')
@@ -327,12 +326,16 @@ class Dice(object):
         return x
 
     def format_output(self):
-        """
-        Output text for Google Visualizer graph functions.
-        ...
-        Returns
-        -------
-        str
+        """Output as dict()
+
+        Output model variables as dictionary.
+
+        Args:
+            None
+
+        Returns:
+            dict: Dictionary of model variables with lists of values
+
         """
         output = dict(parameters=None, data=None)
         output['parameters'] = {
@@ -346,7 +349,15 @@ class Dice(object):
 
 
 class Dice2010(Dice):
-    def __init__(self, optimize=False):
+    """Convenience object for DICE2010 scenarios.
+
+    Example:
+        d = Dice2010()
+        d.loop(opt=False)
+        print(d.vars)
+
+    """
+    def __init__(self):
         super(Dice2010, self).__init__()
         self.params = Dice2010Params()
         self.vars = self.params.vars
@@ -355,20 +366,20 @@ class Dice2010(Dice):
 
 
 class Dice2007(Dice):
-    def __init__(self, optimize=False):
-        super(Dice2007, self).__init__()
-        self.dice_version = 2007
-        self.opt_tol = 1e-5
+    """Convenience object for DICE2007 scenarios.
 
-
-if __name__ == '__main__':
-    run_scenario = 1
-    if run_scenario:
+    Example:
         d = Dice2007()
         d.params.elasmu = 2
         d.params.prstp = .01
         d.params.carbon_model = 'beam_carbon'
         d.params.damages_model = 'productivity_fraction'
         d.params.prod_frac = .1
-        d.loop(opt=0)
-        print d.vars.scc[:2].mean()
+        d.loop(opt=True)
+        print(d.vars)
+
+    """
+    def __init__(self):
+        super(Dice2007, self).__init__()
+        self.dice_version = 2007
+        self.opt_tol = 1e-5

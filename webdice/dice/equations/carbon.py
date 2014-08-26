@@ -6,28 +6,19 @@ import numexpr as ne
 class CarbonModel(object):
     """
     CarbonModel base class
-    ...
-    Properties
-    ----------
-    initial_carbon : tuple
-        Values for M_AT, M_UP, and M_LO at t=0
-    carbon_matrix : array
-        Carbon transfer coefficients
-    forcing_ghg : array
-        Forcing for GHGs
-    ...
-    Methods
-    -------
-    get_model_values()
-        Return values for M_AT, M_UP, M_LO
-    mass_atmosphere()
-        Calculate M_AT at t
-    mass_upper()
-        Calculate M_UP at t
-    mass_lower()
-        Calculate M_LO at t
-    forcing()
-        Calculate forcing at t
+
+    Properties:
+        initial_carbon
+        carbon_matrix
+        forcing_ghg
+
+    Methods:
+        get_model_values()
+        mass_atmosphere()
+        mass_upper()
+        mass_lower()
+        forcing()
+
     """
     def __init__(self, params):
         self.params = params
@@ -42,6 +33,12 @@ class CarbonModel(object):
 
     @property
     def initial_carbon(self):
+        """Carbon mass at t=0
+
+        Returns:
+            tuple: Carbon in atmosphere, upper and lower oceans in Gt
+
+        """
         return (
             self._mass_atmosphere_2005,
             self._mass_upper_2005,
@@ -56,6 +53,12 @@ class CarbonModel(object):
 
     @property
     def carbon_matrix(self):
+        """Carbon transfer matrix
+
+        Returns:
+            nd.array: 3 x 3 array of transfer coefficients
+
+        """
         return self._carbon_matrix
 
     @carbon_matrix.setter
@@ -64,7 +67,13 @@ class CarbonModel(object):
 
     @property
     def initial_temps(self):
-        return [self._temp_atmosphere_2005, self._temp_lower_2005]
+        """Temperature at t=0
+
+        Returns:
+            tuple: Temperature in atmosphere and oceans at t=0
+
+        """
+        return (self._temp_atmosphere_2005, self._temp_lower_2005)
 
     @initial_temps.setter
     def initial_temps(self, value):
@@ -73,12 +82,13 @@ class CarbonModel(object):
 
     @property
     def forcing_ghg(self):
-        """
+        """Forcing equation
+
         F_EX, Exogenous forcing for other greenhouse gases
-        ...
-        Returns
-        -------
-        array
+
+        Returns:
+            nd.array: Array of forcing values, n=params.tmax
+
         """
         return np.concatenate((
             self.params.forcing_ghg_2000 + .1 * (
@@ -88,12 +98,13 @@ class CarbonModel(object):
         ))
 
     def mass_atmosphere(self, emissions_total, mass_atmosphere, mass_upper):
-        """
+        """Equation for carbon mass in atmosphere
+
         M_AT, Carbon concentration in atmosphere, GtC
-        ...
-        Returns
-        -------
-        float
+
+        Returns:
+            float: Mass in atmosphere in GtC
+
         """
         return (
             self.carbon_matrix[0][0] * mass_atmosphere +
@@ -102,12 +113,13 @@ class CarbonModel(object):
         )
 
     def mass_upper(self, mass_atmosphere, mass_upper, mass_lower):
-        """
+        """Equation for carbon mass in shallow oceans
+
         M_UP, Carbon concentration in shallow oceans, GtC
-        ...
-        Returns
-        -------
-        float
+
+        Returns:
+            float: Mass in shallow oceans in GtC
+
         """
         return (
             self.carbon_matrix[0][1] * mass_atmosphere +
@@ -116,12 +128,13 @@ class CarbonModel(object):
         )
 
     def mass_lower(self, mass_upper, mass_lower):
-        """
-        M_LO, Carbon concentration in lower oceans, GtC
-        ...
-        Returns
-        -------
-        float
+        """Equation for carbon mass in deep oceans
+
+        M_LO, Carbon concentration in deep oceans, GtC
+
+        Returns:
+            float: Mass in deep oceans in GtC
+
         """
         return (
             self.carbon_matrix[1][2] * mass_upper +
@@ -129,12 +142,13 @@ class CarbonModel(object):
         )
 
     def forcing(self, i, df):
-        """
+        """Forcing equation
+
         F, Forcing, W/m^2
-        ...
-        Returns
-        -------
-        float
+
+        Returns:
+            float: Forcing
+
         """
         return (
             self.params.forcing_co2_doubling *
@@ -144,18 +158,17 @@ class CarbonModel(object):
         )
 
     def get_model_values(self, i, df):
-        """
+        """Get results for t
+
         Return values for M_AT, M_UP, M_LO
-        ...
-        Args
-        ----
-        index : int
-        data : pd.DataFrame
-        ...
-        Returns
-        -------
-        tuple
-            M_AT, M_UP, M_LO at t
+
+        Args:
+            i (int): time step
+            df (DiceDataMatrix): model variables
+
+        Returns:
+            tuple: M_AT, M_UP, M_LO at t
+
         """
         if i == 0:
             return self.initial_carbon
@@ -175,13 +188,12 @@ class Dice2007(CarbonModel):
 
 
 class BeamCarbon(CarbonModel):
-    """
-    CarbonModel for simplified BEAM
-    ...
-    Methods
-    -------
-    get_model_values()
-        Set BEAM transfer matrix, and return values for M_AT, M_UP, M_LO
+    """CarbonModel for simplified BEAM
+
+    Methods:
+        get_model_values()
+            Set BEAM transfer matrix, and return values for M_AT, M_UP, M_LO
+
     """
     def __init__(self, params):
         CarbonModel.__init__(self, params)
@@ -195,19 +207,17 @@ class BeamCarbon(CarbonModel):
 
     # @profile
     def get_model_values(self, i, df):
-        """
+        """Get results for t
+
         Set BEAM transfer matrix, and return values for M_AT, M_UP, M_LO
-        ...
-        Args
-        ----
-        index : int
-        data : pd.DataFrame
-        ...
-        Returns
-        -------
-        tuple
-            M_AT, M_UP, M_LO at t
-        ...
+
+        Args:
+            i (int): time step
+            df (DiceDataMatrix): model variables
+
+        Returns:
+            tuple: M_AT, M_UP, M_LO at t
+
         -----------------------------------
         Background regarding BEAM equations
         -----------------------------------
@@ -215,17 +225,14 @@ class BeamCarbon(CarbonModel):
         k_d = .05      /yr
         delta = 50
         k_h = 1.91e3
-        --k_1 = 1e-6     mol/kg--
-        --k_2 = 7.53e-10 mol/kg--
-        AM = 1.77e20   mol
-        OM = 7.8e22    mol
-        --Alk = 662.7    GtC--
-
         k_1 = 8e-7
         k_2 = 4.53e-10
+        AM = 1.77e20   mol
+        OM = 7.8e22    mol
         Alk = 767.0
 
         _a = k_h * (AM / (OM * (delta + 1)))
+
         """
         _dims = 61 if df.ndim > 2 else 1
         if i == 0:
@@ -252,6 +259,16 @@ class BeamCarbon(CarbonModel):
 
 
 class LinearCarbon(CarbonModel):
+    """CarbonModel for Linear Carbon / Temp
+
+    Methods:
+        get_model_values()
+            Return None for carbon
+        forcing()
+            Return None for forcing
+
+    """
+
     def get_model_values(self, i, df):
         return (
             None, None, None
@@ -262,14 +279,23 @@ class LinearCarbon(CarbonModel):
 
 
 class Dice2010(CarbonModel):
+    """CarbonModel for DICE2010
+
+    Methods:
+        forcing_ghg()
+            Override for DICE2007 equation
+
+    """
+
     @property
     def forcing_ghg(self):
-        """
+        """Forcing equation
+
         F_EX, Exogenous forcing for other greenhouse gases
-        ...
-        Returns
-        -------
-        array
+
+        Returns:
+            nd.array: Array of forcing values, n=params.tmax
+
         """
         return np.concatenate((
             self.params.forcing_ghg_2000 + .1 * (
