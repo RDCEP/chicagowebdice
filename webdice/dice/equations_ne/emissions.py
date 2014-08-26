@@ -149,7 +149,7 @@ class EmissionsModel(object):
                 return miu[i]
         elif miu is None:
             if i > 0:
-                if df.carbon_emitted[i - 1] > self.params.fosslim:
+                if df.carbon_emitted[i - 1].any() > self.params.fosslim:
                     return 1.0
                 if self.params.treaty:
                     return min(self.miu(
