@@ -765,7 +765,7 @@ g.visuallyhidden {
   padding: 2px 5px;
   color: white;
   background-color: black;
-  opacity: 0.8;
+  opacity: 0.95;
   font-size: 0.7em;
   pointer-events: none;
   z-index: 999; }
