@@ -1,3 +1,4 @@
+from __future__ import division
 import json
 import zipfile
 import csv
@@ -48,9 +49,15 @@ def do_session(request, year=None):
 
 def run_loop(this_dice, form, year=2010):
 
+    for field in ['e2050', 'e2100', 'e2150']:
+        form[field] = float(form[field]) / 100
+
+    for field in ['p2050', 'p2100', 'p2150']:
+        form[field] = float(form[field]) / 100
+
     for p in this_dice.user_params:
         try:
-            setattr(this_dice, p, float(form[p]))
+            setattr(this_dice.params, p, float(form[p]))
         except KeyError:
             pass
         except ValueError:
@@ -62,6 +69,7 @@ def run_loop(this_dice, form, year=2010):
     except KeyError:
         this_dice.params.carbon_model = 'dice_{}'.format(year)
         this_dice.params.damages_model = 'dice_{}'.format(year)
+
     opt = False
     policy = form['policy_type']
     this_dice.params.treaty = False
@@ -195,7 +203,6 @@ def get_svg():
 def get_csv():
     buffer = StringIO.StringIO()
     data = json.loads(request.form['data'])
-    print(data)
     writer = csv.writer(buffer)
     for run in data.keys():
         writer.writerow([data[run]['name']])

@@ -183,9 +183,9 @@ class EmissionsModel(object):
         """
         if emissions_cap == 0:
             return 1
-        elif round(emissions_ind, 2) < round((_e2005 * emissions_cap), 2):
-            return 0
-        else: return 1 - ((_e2005 * emissions_cap) / (intensity * gross_output))
+        # elif round(emissions_ind, 2) < round((_e2005 * emissions_cap), 2):
+        #     return 0
+        return 1 - ((_e2005 * emissions_cap) / (intensity * gross_output))
 
     def tax_rate(self, miu, backstop):
         """

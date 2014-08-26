@@ -90,8 +90,12 @@ class ConsumptionModel(object):
     # def consumption_discount(self, c0, c1, i, discount_type='constant'):
         """Equation for consumption discount rate
 
-        Discount rate for consumption"""
+        Discount rate for consumption
+        """
         if discount_type == 'ramsey':
+            # If consumption[t] = 0 (eg, if abatement = output), discount = 1
+            if c1 <= 0:
+                return 1
             return np.exp(-(
                 self.params.elasmu * np.log(c1 / c0) / (i * 10 + .000001) +
                 self.params.prstp
