@@ -58,10 +58,12 @@
         current = p.select('.current-range-val span'),
         preview = p.select('.parameter-preview-line'),
         name = t.attr('name'),
-        min = parseFloat(t.attr('min')),
-        max = parseFloat(t.attr('max')),
+        reverse = t.classed('reverse'),
+        min = reverse ? parseFloat(t.attr('max')) : parseFloat(t.attr('min')),
+        max = reverse ? parseFloat(t.attr('min')) : parseFloat(t.attr('max')),
         dot = p.select('.tick'),
         val = parseFloat(t.property('value')),
+        val = reverse ? Math.abs(100 - val) : val,
         prec = parseInt(t.attr('data-prec')),
         pct = ((parseFloat(val) - min) / (max - min) - .5) * 100;
 
