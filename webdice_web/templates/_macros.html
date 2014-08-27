@@ -11,7 +11,7 @@
         <a href="{{ url_for('webdice.advanced', year=2010) }}">2010</a></li>
     </ul>
   </li>
-  <li><a href>Documentation</a><ul>
+  <li><a class=dead-hover>Documentation</a><ul>
     {% if version == 'standard' %}
     <li><a target=_blank href="{{ url_for('webdice.static', filename='docs/webdice_standard_faq.pdf') }}">Basic</a></li>
     <li><a target=_blank href="{{ url_for('webdice.static', filename='docs/webdice_equation_help.pdf') }}">Equations</a></li>
