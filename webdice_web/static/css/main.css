@@ -79,6 +79,9 @@ sub {
 b {
   font-weight: bold; }
 
+em {
+  font-style: italic; }
+
 #parameters {
   position: absolute;
   top: 0;
@@ -1125,3 +1128,61 @@ g.visuallyhidden {
 
   h2, h3 {
     page-break-after: avoid; } }
+@media only screen and (min-width: 1300px) {
+  #title_legend_wrap #title_legend {
+    width: 1200px; }
+
+  #top_nav {
+    font-size: 0.9em;
+    width: 1200px; }
+
+  #main_content {
+    width: 1260px;
+    min-height: 480px;
+    max-height: 960px; }
+    #main_content .graph-pane {
+      width: 1230px; }
+
+  #parameters_wrap, #graphs_wrap, #text_wrap {
+    width: 1230px; }
+
+  #parameters #parameter_tabs_wrap {
+    width: 1170px; }
+
+  .pane.graph-pane .small-graph {
+    width: 570px; }
+
+  #footer_wrap #main_footer {
+    width: 1200px; }
+
+  #text_wrap .pane.half {
+    width: 570px; } }
+@media only screen and (min-width: 1824px) {
+  #title_legend_wrap #title_legend {
+    width: 1600px; }
+
+  #top_nav {
+    font-size: 0.9em;
+    width: 1600px; }
+
+  #main_content {
+    width: 1660px;
+    min-height: 480px;
+    max-height: 1200px; }
+    #main_content .graph-pane {
+      width: 1630px; }
+
+  #parameters_wrap, #graphs_wrap, #text_wrap {
+    width: 1630px; }
+
+  #parameters #parameter_tabs_wrap {
+    width: 1570px; }
+
+  .pane.graph-pane .small-graph {
+    width: 770px; }
+
+  #footer_wrap #main_footer {
+    width: 1600px; }
+
+  #text_wrap .pane.half {
+    width: 770px; } }

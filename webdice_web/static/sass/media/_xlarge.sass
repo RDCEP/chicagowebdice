@@ -1,0 +1,46 @@
+$site_width: 1600px
+$small_graph_width: ($site_width - 60px) / 2
+
+@media only screen and (min-width : 1824px)
+  #title_legend_wrap
+    #title_legend
+      width: $site_width
+
+  #top_nav
+    font-size: .9em
+    width: $site_width
+
+  #main_content
+    width: $site_width + $inner_pad * 2 + $outer_pad * 2
+    min-height: 480px
+    max-height: 1200px
+    .graph-pane
+      width: $site_width + $outer_pad * 2
+
+  #parameters_wrap, #graphs_wrap, #text_wrap
+    width: $site_width + $inner_pad * 2
+
+  #parameters
+    #parameter_tabs_wrap
+      width: $site_width - $inner_pad * 2
+
+
+  .pane
+    &.graph-pane
+      .small-graph
+        width: $small_graph_width
+
+  #footer_wrap
+    #main_footer
+      width: $site_width
+
+  #text_wrap
+    .pane
+      &.half
+        width: ($site_width - 60px) / 2
+
+//@media only screen and (min-width: 1300px) and (min-height: 1200px)
+//  #wrapper
+//    min-height: 1420px
+//  #main_content
+//    max-height: 1200px
