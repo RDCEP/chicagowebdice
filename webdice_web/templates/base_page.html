@@ -36,10 +36,9 @@
 
   <div id=tool_tip></div>
 
-  <div id=wrapper>
-  {% block footer %}
+
   <div id=footer_wrap>
-    <footer id=main_footer>
+    <footer id=main_footer class=clearfix>
       <div id=footer_logo>
         <a href="https://www.rdcep.org/">
           <img src="{{ url_for('webdice.static', filename='images/brand/rdcep_logo_60.png') }}" alt>
@@ -56,8 +55,6 @@
           Award No. 0951576</p>
       </div>
     </footer>
-  </div>
-  {% endblock %}
   </div>
 
   {% block bodyjs %}
