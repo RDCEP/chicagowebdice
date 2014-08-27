@@ -462,15 +462,24 @@
         var t = d3.select(this),
           type = t.attr('type'),
           dflt = t.attr('data-default'),
+          name = t.attr('name'),
           val = t.property('value');
         val = type == 'range' ? +val : val;
         dflt = type == 'range' ? dflt == 'null' ? null : +dflt : dflt;
         if (dflt != val) {
-          adjusted_params.push({
+          var param = {
             name: d3.select(this.parentNode).select('.parameter-name').text(),
             value: type == 'radio' ? null : val,
             dflt: dflt == 'null' ? null : type == 'radio' ? null : dflt
-          });
+          };
+          //This is pretty dull
+          if (name.slice(0, 2) == 'p2') {
+            param.name = 'Participation ' + param.name;
+          }
+          if (name.slice(0, 2) == 'e2') {
+            param.name = 'Reduction ' + param.name;
+          }
+          adjusted_params.push(param);
         }
       });
     return adjusted_params;
