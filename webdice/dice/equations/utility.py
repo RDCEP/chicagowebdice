@@ -50,9 +50,6 @@ class UtilityModel(object):
         """
         if self.params.elasmu == 1:
             return np.log(consumption_pc)
-        if consumption_pc == 0:
-            # If consumption[t] = 0 (eg, if abatement = output), utility = 0
-            return 0
         denom = 1.0 - self.params.elasmu
         return (1 / denom) * (consumption_pc ** denom - 1)
 

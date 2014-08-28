@@ -60,6 +60,17 @@
     return {w: w, h: h};
   };
 
+  var get_extents = function(data, index, v) {
+    /**
+     * Clips utility when consumption = twigs + beetles
+     */
+    var extents = d3.extent(data);
+    extents = v == 'utility'
+      ? [d3.max([extents[0], -1]), extents[1]]
+      : extents;
+    return extents;
+  };
+
   var flatten_runs = function(runs, axis) {
 
     if (axis === undefined) {
@@ -158,11 +169,11 @@
       var index = _graphs[i][0],
         graph = _graphs[i][1];
 
-      var extents = d3.extent(flatten_runs(custom_data[index]));
-
       graphs[graph].graph
         .data(custom_data[index])
-        .domain(x_custom_domain, extents)
+        .domain(x_custom_domain,
+                get_extents(flatten_runs(custom_data[index]),
+                index, custom_data[index][0].var))
         .colors(used_colors);
 
       if (initialized) {
@@ -228,7 +239,8 @@
       } else {
         graphs[graph].graph.format_x(graphs.custom.graph.format_y());
         graphs[graph].graph.x(d3.scale.linear());
-        x_custom_domain = d3.extent(flatten_runs(all_data[dice_variable]));
+        x_custom_domain = get_extents(flatten_runs(all_data[dice_variable]),
+                                      index, dice_variable);
         x_custom_domain_var = dice_variable;
       }
 
@@ -238,17 +250,12 @@
       subtitle += x_custom_domain_var ? metadata[x_custom_domain_var].title_unit : 'years';
 
       graphs[graph].graph
-        .data(custom_data[index])
-        .domain(
-          x_custom_domain,
-          d3.extent(flatten_runs(custom_data[index]))
-        )
-        .colors(used_colors)
         .title(title)
         .subtitle(subtitle)
         .change_x();
 
     }
+    update_custom_graph();
   };
 
   var update_y_axis = function(graph, val) {
@@ -258,6 +265,7 @@
       subtitle = '';
 
     custom_vars[index] = val;
+    custom_data[index][0].var = val;
 
     if ((graph == 'twin') && (val == 'none')) {
       custom_vars[index] = false;
@@ -286,18 +294,12 @@
       });
 
       graphs[graph].graph
-        .data(custom_data[index])
-        .domain(
-          x_custom_domain,
-          d3.extent(flatten_runs(custom_data[index]))
-        )
-        .colors(used_colors)
         .title(title)
         .subtitle(subtitle)
         .change_y();
     }
 
-    resize_graphs();
+    update_custom_graph();
 
   };
 
@@ -315,7 +317,6 @@
      */
 
     used_colors.push(color_list[total_runs % color_list.length]);
-    console.log(used_colors);
 
     for (var dice_variable in _data) {
       if (_data.hasOwnProperty(dice_variable)) {

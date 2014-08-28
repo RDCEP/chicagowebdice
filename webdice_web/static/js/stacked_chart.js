@@ -15,7 +15,7 @@ var WebDICEGraph = function() {
     y_axis_format = function(d) {
       //FIXME: This is tres sloppy
       if (_y.domain()[1] < 100) {
-        if ((d < .01 || d > 99999) && d != 0) {
+        if ((d < .01 || d > 99999) && d > 0) {
           return d3.format('.1e')(d);
         }
         if (_y.domain()[1] < 0.1) {
@@ -43,6 +43,7 @@ var WebDICEGraph = function() {
       .orient('left')
       .tickFormat(function(d) { return y_axis_format(d); }),
     _line = d3.svg.line()
+      .defined(function(d) { return d.y != null; })
       .x(function(d) { return _x(d.x); })
       .y(function(d) { return _y(d.y + d.y0); }),
 
@@ -205,7 +206,8 @@ var WebDICEGraph = function() {
           .forEach(function(dd) {
             dd = dd.__data__;
             _h += dd.y_title.replace(/ /g, '&nbsp;') + ':&nbsp;';
-            _h += format_y(dd.y) + '&nbsp;' + dd.unit + '</span><br>';
+            var yval = dd.y == -999999 ? '–Infinity' : format_y(dd.y);
+            _h += yval + '&nbsp;' + dd.unit + '</span><br>';
           });
 
       }
