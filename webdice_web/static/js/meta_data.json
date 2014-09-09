@@ -9,6 +9,9 @@
     "title_unit": "",
     "unit": null
   },
+  "year": {
+    "title": "Year"
+  },
   "temp_atmosphere": {
     "title_unit": "degrees C since 1900",
     "title": "Atmospheric temperature increase",

@@ -15,7 +15,7 @@ var WebDICEGraph = function() {
     y_axis_format = function(d) {
       //FIXME: This is tres sloppy
       if (_y.domain()[1] < 100) {
-        if ((d < .01 || d > 99999) && d != 0) {
+        if ((d < .01 || d > 99999) && d > 0) {
           return d3.format('.1e')(d);
         }
         if (_y.domain()[1] < 0.1) {
@@ -43,6 +43,7 @@ var WebDICEGraph = function() {
       .orient('left')
       .tickFormat(function(d) { return y_axis_format(d); }),
     _line = d3.svg.line()
+      .defined(function(d) { return d.y != null; })
       .x(function(d) { return _x(d.x); })
       .y(function(d) { return _y(d.y + d.y0); }),
 
@@ -205,7 +206,8 @@ var WebDICEGraph = function() {
           .forEach(function(dd) {
             dd = dd.__data__;
             _h += dd.y_title.replace(/ /g, '&nbsp;') + ':&nbsp;';
-            _h += format_y(dd.y) + '&nbsp;' + dd.unit + '</span><br>';
+            var yval = dd.y == -999999 ? '-Infinity' : format_y(dd.y);
+            _h += yval + '&nbsp;' + dd.unit + '</span><br>';
           });
 
       }
@@ -267,6 +269,9 @@ var WebDICEGraph = function() {
           .classed('data-point', function() { return visible; })
           .classed('hoverable', function() { return visible; })
           .classed('tight', true)
+          .classed('visuallyhidden', function(dd) {
+            return hidden_runs.indexOf(+dd.run_id) > -1; })
+
           .attr('data-x', function(d) { return d.x; })
           .attr('data-y', function(d) { return d.y; })
           .attr('data-run-id', function(d) { return d.run_id; })
@@ -297,6 +302,8 @@ var WebDICEGraph = function() {
           .classed('hoverable', function() { return true; })
           .classed('tight', true)
           .classed('twin', _twin)
+          .classed('visuallyhidden', function(d) {
+            return hidden_runs.indexOf(+d.run_id) > -1; })
           .attr('data-x', function(d) { return d.x; })
           .attr('data-y', function(d) { return d.y; })
           .attr('data-run-id', function(d) { return d.run_id; })
@@ -723,6 +730,7 @@ var WebDICEGraph = function() {
       .attr('data-type', function(d) { return d.run_name ? d.run_name : null; })
       .attr('data-run-id', function(d) { return typeof(d.run_index) == 'number' ? d.run_index : null; })
       .classed('twin', _twin)
+      .classed('visuallyhidden', function(d) { return hidden_runs.indexOf(+d.run_index) > -1; })
       .style('fill', function(d, i) { return null; })
       .style('stroke', function(d, i) { return color(i); })
       .style('stroke-dasharray', function(d, i) { return (_twin) ? '2, 2' : null; });
@@ -743,6 +751,7 @@ var WebDICEGraph = function() {
       .attr('data-type', function(d) { return d.run_name ? d.run_name : null; })
       .attr('data-run-id', function(d) { return typeof(d.run_index) == 'number' ? d.run_index : null; })
       .classed('twin', _twin)
+      .classed('visuallyhidden', function(d) { return hidden_runs.indexOf(+d.run_index) > -1; })
       .style('stroke', function(d, i) { return color(i); })
       .style('stroke-dasharray', function(d, i) { return (_twin) ? '2, 2' : null; });
     if (_custom_graph) {
@@ -788,7 +797,8 @@ var WebDICEGraph = function() {
     axes_layer.select('.x.axis').call(x_axis);
     graph_data.graphs
       .data(graph_data.data)
-      .attr('d', function(d) { return _line(d.data); });
+      .attr('d', function(d) { return _line(d.data); })
+      .style('stroke-width', function(d) { return hidden_runs.indexOf(d.run_index) > -1 ? null : null; });
     handles.data(graph_data.nested)
       .each(function(dd, i) {
         d3.select(this).selectAll('.data-point')
@@ -800,5 +810,6 @@ var WebDICEGraph = function() {
           });
       });
     add_hover();
+    console.log(_x.domain())
   };
 };

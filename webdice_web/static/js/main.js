@@ -60,6 +60,17 @@
     return {w: w, h: h};
   };
 
+  var get_extents = function(data, index, val) {
+    /**
+     * Clips utility when consumption = twigs + beetles
+     */
+    var extents = d3.extent(data);
+    extents = (val == 'utility') || (val == 'utility_discounted')
+      ? [d3.max([extents[0], -1]), extents[1]]
+      : extents;
+    return extents;
+  };
+
   var flatten_runs = function(runs, axis) {
 
     if (axis === undefined) {
@@ -88,7 +99,8 @@
         : 'Year',
       run_index: total_runs,
       run_name: 'Run #' + total_runs,
-      unit: metadata[dice_variable].unit
+      unit: metadata[dice_variable].unit,
+      visible: true
     };
 
     _data[dice_variable].forEach(function(d, i) {
@@ -150,34 +162,46 @@
     };
   };
 
-  var update_custom_graph = function() {
+  var update_custom_graphs = function() {
 
     var _graphs = [[0, 'custom'], [1, 'twin']];
     for (var i = 0; i < _graphs.length; ++i) {
+      update_custom_graph(
+        _graphs[i][1],
+        _graphs[i][0]
+      );
+    }
 
-      var index = _graphs[i][0],
-        graph = _graphs[i][1];
+    resize_graphs();
 
-      var extents = d3.extent(flatten_runs(custom_data[index]));
+  };
 
-      graphs[graph].graph
-        .data(custom_data[index])
-        .domain(x_custom_domain, extents)
+  var update_custom_graph = function(g, i) {
+
+      console.log(get_extents(flatten_runs(custom_data[i]),
+                            i,
+                            custom_data[i][0].var));
+
+      graphs[g].graph
+        .data(custom_data[i])
+        .domain(x_custom_domain,
+                get_extents(flatten_runs(custom_data[i]),
+                            i,
+                            custom_data[i][0].var))
         .colors(used_colors);
 
       if (initialized) {
-        graphs[graph].graph
+        graphs[g].graph
           .update_data();
       } else {
-        graphs[graph].graph
-          .twin(index == 1)
+        graphs[g].graph
+          .twin(i == 1)
           .custom(true)
           .hoverable(true)
           .padding(45, 60, 45, 60)
           .draw();
       }
-    }
-    resize_graphs();
+
   };
 
   var update_graph = function(dice_variable) {
@@ -228,8 +252,13 @@
       } else {
         graphs[graph].graph.format_x(graphs.custom.graph.format_y());
         graphs[graph].graph.x(d3.scale.linear());
-        x_custom_domain = d3.extent(flatten_runs(all_data[dice_variable]));
+        x_custom_domain = get_extents(flatten_runs(all_data[dice_variable]),
+                                      index,
+                                      dice_variable);
         x_custom_domain_var = dice_variable;
+        console.log(x_custom_domain[0], x_custom_domain[1], x_custom_domain_var,
+          x_domain);
+
       }
 
       var title = metadata[custom_vars[index]].title + ' v. ';
@@ -238,17 +267,20 @@
       subtitle += x_custom_domain_var ? metadata[x_custom_domain_var].title_unit : 'years';
 
       graphs[graph].graph
-        .data(custom_data[index])
-        .domain(
-          x_custom_domain,
-          d3.extent(flatten_runs(custom_data[index]))
-        )
-        .colors(used_colors)
         .title(title)
-        .subtitle(subtitle)
-        .change_x();
+        .subtitle(subtitle);
+//        .change_x();
+
+      /*TODO: This is being called twice because change_x() needs to be
+        called for each graph*/
+      update_custom_graph(graph, index);
+
+      graphs[graph].graph.change_x();
 
     }
+
+    resize_graphs();
+
   };
 
   var update_y_axis = function(graph, val) {
@@ -258,6 +290,7 @@
       subtitle = '';
 
     custom_vars[index] = val;
+    custom_data[index][0].var = val;
 
     if ((graph == 'twin') && (val == 'none')) {
       custom_vars[index] = false;
@@ -286,18 +319,12 @@
       });
 
       graphs[graph].graph
-        .data(custom_data[index])
-        .domain(
-          x_custom_domain,
-          d3.extent(flatten_runs(custom_data[index]))
-        )
-        .colors(used_colors)
         .title(title)
         .subtitle(subtitle)
         .change_y();
     }
 
-    resize_graphs();
+    update_custom_graphs();
 
   };
 
@@ -315,7 +342,6 @@
      */
 
     used_colors.push(color_list[total_runs % color_list.length]);
-    console.log(used_colors);
 
     for (var dice_variable in _data) {
       if (_data.hasOwnProperty(dice_variable)) {
@@ -346,7 +372,7 @@
     custom_data[0].push(build_data_object(_data, custom_vars[0], x_custom_domain_var));
     custom_data[1].push(build_data_object(_data, custom_vars[1], x_custom_domain_var));
 
-    update_custom_graph();
+    update_custom_graphs();
 
     add_run_to_list(total_runs);
 
@@ -581,7 +607,7 @@
           }).forEach(function(d) {
             d.run_name = new_name;
           });
-          update_custom_graph();
+          update_custom_graphs();
 
           h3.text(new_name);
           d3.selectAll('[data-type]').attr('data-type', new_name);
@@ -701,7 +727,8 @@
         d3.selectAll('.graph-line.twin, .data-point.twin, h3.twin, h4.twin, .y.axis.twin')
           .classed('visuallyhidden', true);
       } else {
-        d3.selectAll('.graph-line.twin, .data-point.twin, h3.twin, h4.twin, .y.axis.twin')
+//        d3.selectAll('.graph-line.twin, .data-point.twin, h3.twin, h4.twin, .y.axis.twin')
+        d3.selectAll('h3.twin, h4.twin, .y.axis.twin')
           .classed('visuallyhidden', false);
       }
 

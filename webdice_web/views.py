@@ -3,6 +3,7 @@ import json
 import zipfile
 import csv
 import StringIO
+from numpy import inf
 from lxml import etree
 from datetime import datetime
 from flask import render_template, request, Blueprint, jsonify
@@ -81,7 +82,11 @@ def run_loop(this_dice, form, year=2010):
     elif policy == 'carbon_tax':
         this_dice.params.carbon_tax = True
     this_dice.loop(opt=opt)
-    return jsonify(**this_dice.format_output())
+    out = this_dice.format_output()
+    out['data'] = {
+        k: [l if l > -inf else -999 for l in v] for k, v in out['data'].iteritems()
+    }
+    return jsonify(**out)
 
 
 @mod.route('/')
