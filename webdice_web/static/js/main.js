@@ -46,6 +46,7 @@
     adjusted_params = [],
     custom_vars = ['productivity', 'backstop'],
     show_twin = false,
+    unphysical = false,
 
     height;
 
@@ -177,10 +178,6 @@
   };
 
   var update_custom_graph = function(g, i) {
-
-      console.log(get_extents(flatten_runs(custom_data[i]),
-                            i,
-                            custom_data[i][0].var));
 
       graphs[g].graph
         .data(custom_data[i])
@@ -462,6 +459,7 @@
      */
 
     r = JSON.parse(r.response);
+    unphysical = false;
 
     add_run(r.data, r.parameters);
 
@@ -470,6 +468,54 @@
     run_model.attr('disabled', null);
     loader_gif.style('display', 'none');
 
+    r.data['consumption_pc'].forEach(function(d) {
+      if (!unphysical) {
+        unphysical = d < .25;
+      }
+    });
+
+    if (unphysical) {
+      show_warning();
+    }
+
+  };
+
+  var show_warning = function() {
+    var wr = d3.select('#wrapper'),
+      modal_click = function() {
+        console.log('click');
+        d3.selectAll('.modal').remove();
+      },
+      modal_screen = wr.append('div').attr({
+        id: 'modal_screen',
+        class: 'modal'
+      }).on('click', modal_click),
+      modal_dialogue = wr.append('div').attr({
+        id: 'modal_wrap',
+        class: 'modal'
+      }).on('click', modal_click)
+      .append('div').attr({
+        id: 'modal_dialogue',
+        class: 'modal'
+      }).on('click', modal_click),
+      modal_head = modal_dialogue.append('h2')
+        .text('Warning');
+    modal_dialogue.append('p')
+      .text('This run contains unphysical results which may or may not be ' +
+        'clear in the graphs. These types of results are typically indicated ' +
+        'by consumption per capita dropping below subsistence levels, ' +
+        'which webDICE currently assumes to be $250/capita/year. Results ' +
+        'like these are usually caused by overly restrictive climate ' +
+        'treaties, increased damages exponents, a large fraction ' +
+        'of damages being applied to productivity; or any of the above in ' +
+        'tandem with the BEAM carbon model.');
+    modal_dialogue.append('p')
+      .text('Bear in mind that webDICE is run over 60 decades, though only ' +
+        'the first 20 are graphed. So the evidence of this may not be seen, ' +
+        'though it should be clear if you download the output as a CSV file ' +
+        '(available in the ‘Runs’ menu).');
+      modal_dialogue.append('p').append('em')
+        .text('Click this dialogue to dismiss it.');
   };
 
   var get_updated_params = function() {
