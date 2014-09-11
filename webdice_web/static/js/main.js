@@ -157,7 +157,7 @@
           }
         })
         .title(metadata[dice_variable].title || '')
-        .subtitle(metadata[dice_variable].title_unit || '')
+        .subtitle(get_subtitle(dice_variable))
         .legend(true),
       small: graph_wrap.classed('small-graph')
     };
@@ -260,12 +260,10 @@
 
       var title = metadata[custom_vars[index]].title + ' v. ';
       title += x_custom_domain_var ? metadata[x_custom_domain_var].title : 'Time';
-      var subtitle = metadata[custom_vars[index]].title_unit + ' v. ';
-      subtitle += x_custom_domain_var ? metadata[x_custom_domain_var].title_unit : 'years';
 
       graphs[graph].graph
         .title(title)
-        .subtitle(subtitle);
+        .subtitle(get_subtitle(index));
 //        .change_x();
 
       /*TODO: This is being called twice because change_x() needs to be
@@ -280,11 +278,22 @@
 
   };
 
+  var get_subtitle = function (index) {
+
+    if (typeof index == 'string') {
+      return metadata[index].title_unit || metadata[index].title;
+    }
+    var subtitle = (metadata[custom_vars[index]].title_unit || metadata[custom_vars[index]].title);
+    subtitle += ' v. ';
+    subtitle += x_custom_domain_var ? metadata[x_custom_domain_var].title_unit : 'years';
+    return subtitle;
+
+  };
+
   var update_y_axis = function(graph, val) {
 
     var index = graph == 'custom' ? 0 : 1,
-      title = '',
-      subtitle = '';
+      title = '';
 
     custom_vars[index] = val;
     custom_data[index][0].var = val;
@@ -298,8 +307,6 @@
       }
       title = metadata[custom_vars[index]].title + ' v. ';
       title += x_custom_domain_var ? metadata[x_custom_domain_var].title : 'Time';
-      subtitle = metadata[custom_vars[index]].title_unit + ' v. ';
-      subtitle += x_custom_domain_var ? metadata[x_custom_domain_var].title_unit : 'years';
 
       custom_data.forEach(function (v, k) {
         v.forEach(function (r, i) {
@@ -317,7 +324,7 @@
 
       graphs[graph].graph
         .title(title)
-        .subtitle(subtitle)
+        .subtitle(get_subtitle(index))
         .change_y();
     }
 

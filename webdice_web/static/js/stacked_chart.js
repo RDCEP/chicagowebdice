@@ -503,6 +503,7 @@ var WebDICEGraph = function() {
     return this;
   };
   this.subtitle = function(str) {
+    console.log(str);
     if (str === undefined) { return subtitle.text(); }
     var xo = _twin ? (width - padding.left - padding.right - 5) : 0,
       talign =  _twin ? 'right' : 'left',
