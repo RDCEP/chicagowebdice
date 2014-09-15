@@ -179,25 +179,26 @@
 
   var update_custom_graph = function(g, i) {
 
-      graphs[g].graph
-        .data(custom_data[i])
-        .domain(x_custom_domain,
-                get_extents(flatten_runs(custom_data[i]),
-                            i,
-                            custom_data[i][0].var))
-        .colors(used_colors);
+    graphs[g].graph
+      .data(custom_data[i])
+      .domain(x_custom_domain,
+              get_extents(flatten_runs(custom_data[i]),
+                          i,
+                          //FIXME This next line seems really kludgy
+                          custom_data[i][0] ? custom_data[i][0].var : ''))
+      .colors(used_colors);
 
-      if (initialized) {
-        graphs[g].graph
-          .update_data();
-      } else {
-        graphs[g].graph
-          .twin(i == 1)
-          .custom(true)
-          .hoverable(true)
-          .padding(45, 60, 45, 60)
-          .draw();
-      }
+    if (initialized) {
+      graphs[g].graph
+        .update_data();
+    } else {
+      graphs[g].graph
+        .twin(i == 1)
+        .custom(true)
+        .hoverable(true)
+        .padding(45, 60, 45, 60)
+        .draw();
+    }
 
   };
 
