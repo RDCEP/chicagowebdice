@@ -15,25 +15,13 @@ var WebDICEGraph = function() {
     y_axis_format = function(d) {
       //FIXME: This is tres sloppy
       if (_y.domain()[1] < 100) {
-        if ((d < .01 || d > 99999) && d > 0) {
-          return d3.format('.1e')(d);
-        }
-        if (_y.domain()[1] < 0.1) {
-          return d3.format('.3f')(d);
-        }
-        if (_y.domain()[1] < 1) {
-          return d3.format('.2f')(d);
-        }
-
-        if (_y.domain()[0] < 1) {
-          return d3.format('.1f')(d);
-        }
+        if (0 < d < .01 || d > 9999) { return d3.format('.1e')(d); }
+        if (_y.domain()[1] < 0.1) { return d3.format('.3f')(d); }
+        if (_y.domain()[1] < 1) { return d3.format('.2f')(d); }
+        if (_y.domain()[0] < 1) { return d3.format('.1f')(d); }
         return d3.format('.0f')(d);
       }
-
-      if (d < 1) {
-        return d3.format('.2r')(d);
-      }
+      if (d < 1) { return d3.format('.2r')(d); }
       return d3.format('.0f')(d);
     },
     x_axis = d3.svg.axis().scale(_x)
@@ -348,33 +336,40 @@ var WebDICEGraph = function() {
       /*
        Attach mouse events to <rect>s with hoverable handles (toggle .active)
        */
-      handles.each(function() {
-        d3.select(this).selectAll('.data-point').each(function() {
-          var t = d3.select(this);
-          t.on('mouseover', function(d) {
-            var rect = this.getBoundingClientRect()
-              , dps = d3.selectAll('#custom_graphs .data-point[data-x="' + d.x + '"]')
-              , dpys = [];
-            dps
-              .filter(function(dd) { return dd.run_id == d.run_id; })
-              .each(function(d) { dpys.push(d.y); });
-            dps
-              .filter(function(dd) { return dpys.indexOf(dd.y) > -1; })
-              .style('fill', 'none');
-            dps
-              .filter(function(dd) { return dd.run_id == d.run_id; })
-              .style('fill', t.style('stroke'));
-            update_legend([d], rect);
-            tool_tip.classed('hidden', !_hoverable);
-          })
-          .on('mouseout', function(d) {
-            var t = d3.select(this);
-            d3.selectAll('#custom_graphs .data-point')
-              .style('fill', 'white');
-            tool_tip.classed('hidden', true);
-          });
+      d3.selectAll('.data-point')
+        .on('mouseover', function(d) {
+          console.log(d);
+          var t = d3.select(this)
+            , rect = this.getBoundingClientRect()
+            , dpxs = d3.selectAll('#custom_graphs .data-point[data-x="' + d.x + '"]')
+            , dpys = []
+          ;
+          dpxs
+            .filter(function(dd) {
+              return dd.run_id == d.run_id;
+            })
+            .each(function(d) {
+              dpys.push(Math.floor(this.getBoundingClientRect().bottom / 4));
+            });
+          dpxs
+            .filter(function(dd) {
+              return dpys.indexOf(
+                Math.floor(this.getBoundingClientRect().bottom / 4)) > -1;
+            })
+            .style('fill', 'none');
+          dpxs
+            .filter(function(dd) { return dd.run_id == d.run_id; })
+            .style('fill', t.style('stroke'));
+
+          update_legend([d], rect);
+
+          tool_tip.classed('hidden', !_hoverable);
+        })
+        .on('mouseout', function() {
+          d3.selectAll('#custom_graphs .data-point')
+            .style('fill', 'white');
+          tool_tip.classed('hidden', true);
         });
-      });
     },
     remove_hover = function() {
       /*
@@ -503,7 +498,6 @@ var WebDICEGraph = function() {
     return this;
   };
   this.subtitle = function(str) {
-    console.log(str);
     if (str === undefined) { return subtitle.text(); }
     var xo = _twin ? (width - padding.left - padding.right - 5) : 0,
       talign =  _twin ? 'right' : 'left',
