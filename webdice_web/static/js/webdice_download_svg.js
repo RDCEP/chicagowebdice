@@ -45,9 +45,10 @@
           name: name,
           value: xml
         });
-      download_svg.node().submit();
 
     });
+
+    download_svg.node().submit();
 
   });
 
