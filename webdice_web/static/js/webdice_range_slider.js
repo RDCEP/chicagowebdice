@@ -55,7 +55,7 @@
         _eq = d3.select(this.form).classed('advanced')
           ? advanced_equations
           : standard_equations,
-        current = p.select('.current-range-val span'),
+        current = p.select('.current-range-val'),
         preview = p.select('.parameter-preview-line'),
         name = t.attr('name'),
         reverse = t.classed('reverse'),

@@ -53,24 +53,32 @@
       h4
         margin-bottom: 1em
         font-weight: bold
+        .unit
+          font-weight: normal
       li
         margin-bottom: 2em
       input[type=range]
         width: 100%
-        margin-top: $range_current_value_gap
-      .max-range-val, .min-range-val, .current-range-val
+        margin-top: .5em
+        //margin-top: $range_current_value_gap
+
+      .max-range-val, .min-range-val
         position: absolute
         bottom: $range_minmax_v_offset
         font-size: .6em
       .current-range-val
-        bottom: 2.25em
-        left: 8px
-        right: 8px
-        span
-          text-align: center
-          display: block
-          width: 100%
-          position: relative
+        padding: 2px 4px
+        font-weight: bold
+        color: white
+        background-color: #ccc
+        //bottom: 2.25em
+        //left: 8px
+        //right: 8px
+        //span
+        //  text-align: center
+        //  display: block
+        //  width: 100%
+        //  position: relative
       .max-range-val
         left: 102%
       .min-range-val
@@ -95,7 +103,7 @@
           stroke-width: 3
 #parameter_form.standard
   #climate_parameters, #economy_parameters
-    .max-range-val, .min-range-val, .current-range-val
+    .max-range-val, .min-range-val
       position: absolute
       //bottom: $range_minmax_v_offset
       bottom: auto
@@ -142,4 +150,6 @@
 
 .disabled, .disabled .label
   color: #dddddd!important
+.disabled .current-range-val
+  background-color: #eee!important
 
