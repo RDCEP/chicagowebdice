@@ -491,7 +491,6 @@
   var show_warning = function() {
     var wr = d3.select('#wrapper'),
       modal_click = function() {
-        console.log('click');
         d3.selectAll('.modal').remove();
       },
       modal_screen = wr.append('div').attr({
@@ -738,7 +737,7 @@
         return dd.run_index != index;
       });
     });
-    update_custom_graph();
+    update_custom_graphs();
 
     delete Options.runs[index];
 

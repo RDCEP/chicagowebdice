@@ -338,7 +338,6 @@ var WebDICEGraph = function() {
        */
       d3.selectAll('.data-point')
         .on('mouseover', function(d) {
-          console.log(d);
           var t = d3.select(this)
             , rect = this.getBoundingClientRect()
             , dpxs = d3.selectAll('#custom_graphs .data-point[data-x="' + d.x + '"]')
