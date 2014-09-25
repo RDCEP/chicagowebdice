@@ -6,21 +6,22 @@
 
   <div class="parameter-pane thirds">
 
-    <div class=select-wrap>
-      <h3><span class="parameter-name">Carbon model</span></h3>
-      <label><span class=parameter-name>DICE carbon</span>
-        <input name=carbon_model type=radio value=dice_2007
-               data-default=dice_2007 checked></label>
-      <label><span class=parameter-name>BEAM simplified</span>
-        <input name=carbon_model type=radio value=beam_carbon
-               data-default=dice_2007></label>
-      <label><span class=parameter-name>Linear</span> (2° C / 1000 GtC)
-        <input name=carbon_model type=radio value=linear_carbon
-               data-default=dice_2007>
+    <div class=range-wrap>
+      <label><span class="parameter-name">Harms</span><br>
+        <span class=current-range-val>2.0</span>
+        <input name=damages_exponent type=range min=1 max=4 value=2 step=0.5
+               data-prec=1 data-default=2>
       </label>
+
+      <span class=min-range-val>1</span>
+      <span class=max-range-val>4</span>
+      <div class=tick-wrap>
+        <span class=tick style=left:{{ (2.0 - 1.0) / (4.0 - 1.0) * 100 - 50 }}% >&bullet;</span>
+      </div>
     </div>
     <div class=parameter-help>
-      <p></p>
+      <p>How large will the harms to the climate be, due to an increase
+        in temperatures?</p>
     </div>
 
   </div>
@@ -47,13 +48,12 @@
     </div>
 
     <div id=prod_frac class="disabled init-disabled range-wrap">
-      <label><span class="parameter-name">Damages to productivity</span> (%)
+      <label><span class="parameter-name">Damages to productivity</span> (%)<br>
+        <span class=current-range-val>5</span>
         <input name=prod_frac type=range min=0 max=50 value=5
                step=1 data-prec=0 data-default=5 disabled>
       </label>
-      <div class=current-range-val>
-        <span style=left:{{ (5 - 0.0) / (50 - 0.0) * 100 - 50 }}%>5</span>
-      </div>
+
       <span class=min-range-val>0</span>
       <span class=max-range-val>50</span>
       <div class=tick-wrap>
@@ -62,7 +62,12 @@
 
     </div>
 
+  </div>
 
+  <div class=parameter-previews style=clear:left>
+    <div class="parameter-pane thirds">
+      <figure class=parameter-preview data-input-parameters=damages_exponent></figure>
+    </div>
   </div>
 
 </section>
