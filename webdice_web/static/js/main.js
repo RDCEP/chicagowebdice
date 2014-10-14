@@ -394,6 +394,11 @@
     ++total_runs;
     ++visible_runs;
 
+    /* Switch back to graphs after running model */
+    d3.select('#parameters_wrap').classed('visuallyhidden', true);
+    d3.select('#parameters_tab').classed('selected', false);
+    /* End switch*/
+
   };
 
   var add_run_to_list = function(index) {
