@@ -493,7 +493,7 @@ var WebDICEGraph = function() {
         'text-anchor': tanchor
       })
       .classed('twin', _twin);
-    title.html(str);
+    title.text(str);
     return this;
   };
   this.subtitle = function(str) {
@@ -509,7 +509,7 @@ var WebDICEGraph = function() {
         'text-anchor': tanchor
       })
       .classed('twin', _twin);
-    subtitle.html(str);
+    subtitle.text(str);
     return this;
   };
   this.twin = function(bool) {
