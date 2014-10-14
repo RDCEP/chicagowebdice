@@ -36,14 +36,12 @@
     productivity_decline: {
       width: 158,
       max: 'min',
-      scale: 'log',
+      scale: 'linear',
       legend: 'Productivity v. Time',
       output: function (v) {
-        var p = [.02722],
-          output = [{y: p[0], x: 1}];
+        var output = [{y: 0.0303, x: 1}];
         for (var i = 1; i < 10; ++i) {
-          var y = p[i - 1] / (1 - 0.092 * Math.exp(-v * 10 * i));
-          p.push(y);
+          var y = output[i - 1].y / (1 - 0.16 * Math.exp(-v / 100 * i * 10 ));
           output.push({
             y: y,
             x: i + 1
