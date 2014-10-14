@@ -680,6 +680,12 @@
     var t = d3.select(this),
       index = +t.attr('data-run-id');
     d3.selectAll('#graphs_wrap [data-run-id="' + index + '"]')
+      .filter(function() {
+        if (d3.select('#select-y2-axis').property('value') == 'none') {
+          return !d3.select(this).classed('twin');
+        }
+        return true;
+      })
       .classed('visuallyhidden', false);
     t.text('hide')
       .on('click', hide_run);
