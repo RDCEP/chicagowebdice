@@ -302,6 +302,9 @@
     if ((graph == 'twin') && (val == 'none')) {
       custom_vars[index] = false;
       show_twin = false;
+      graphs[graph].graph
+        .title('')
+        .subtitle('');
     } else {
       if ((graph == 'twin') && (val != 'none')) {
         show_twin = true;
@@ -324,6 +327,7 @@
       });
 
       graphs[graph].graph
+        .twin(show_twin)
         .title(title)
         .subtitle(get_subtitle(index))
         .change_y();
