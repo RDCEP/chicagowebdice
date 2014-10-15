@@ -29,6 +29,29 @@
   <div id=wrapper>
   {% block page %}{% endblock %}
   {% block footer %}{% endblock %}
+  <div id=modal_screen class="modal visuallyhidden"></div>
+  <div id=modal_wrap class="modal visuallyhidden">
+    <div id=modal_dialogue class="modal visuallyhidden">
+      <h2>Warning</h2>
+      <p>The parameters you chose produce a result that is physically
+        impossible. This can occur because climate change causes harms
+        that are sufficiently bad that the economy is forced to operate
+        below subsistence levels. It may also occur because you have
+        specified emissions reductions that are greater than the emissions
+        from the participating countries. webDICE does not contain the
+        flexibility to predict what might happen as we approach these
+        circumstances so it continues to produce the graphs under the
+        parameters you chose.</p>
+      <p>Although the results are not physically possible, it does not mean
+        that they are not meaningful. webDICE is telling you that under the
+        parameter choices you made, something very extreme will happen:
+        the population will have to shrink because the economy cannot support
+        the full population, or the emissions reductions cannot be achieved
+        with the participation rates. The particular results in the graphs,
+        however, are not meaningful.</p>
+      <p><em>Click this dialogue to dismiss it.</em></p>
+    </div>
+  </div>
   </div>
 </body>
 </html>

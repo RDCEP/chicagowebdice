@@ -494,40 +494,12 @@
   };
 
   var show_warning = function() {
-    var wr = d3.select('#wrapper'),
-      modal_click = function() {
-        d3.selectAll('.modal').remove();
-      },
-      modal_screen = wr.append('div').attr({
-        id: 'modal_screen',
-        class: 'modal'
-      }).on('click', modal_click),
-      modal_dialogue = wr.append('div').attr({
-        id: 'modal_wrap',
-        class: 'modal'
-      }).on('click', modal_click)
-      .append('div').attr({
-        id: 'modal_dialogue',
-        class: 'modal'
-      }).on('click', modal_click),
-      modal_head = modal_dialogue.append('h2')
-        .text('Warning');
-    modal_dialogue.append('p')
-      .text('This run contains unphysical results which may or may not be ' +
-        'clear in the graphs. These types of results are typically indicated ' +
-        'by consumption per capita dropping below subsistence levels, ' +
-        'which webDICE currently assumes to be $250/capita/year. Results ' +
-        'like these are usually caused by overly restrictive climate ' +
-        'treaties, increased damages exponents, a large fraction ' +
-        'of damages being applied to productivity; or any of the above in ' +
-        'tandem with the BEAM carbon model.');
-    modal_dialogue.append('p')
-      .text('Bear in mind that webDICE is run over 60 decades, though only ' +
-        'the first 20 are graphed. So the evidence of this may not be seen, ' +
-        'though it should be clear if you download the output as a CSV file ' +
-        '(available in the ‘Runs’ menu).');
-      modal_dialogue.append('p').append('em')
-        .text('Click this dialogue to dismiss it.');
+    var modal_click = function() {
+      d3.selectAll('.modal').classed('visuallyhidden', true);
+    };
+    d3.selectAll('.modal')
+      .classed('visuallyhidden', false)
+      .on('click', modal_click);
   };
 
   var get_updated_params = function() {
