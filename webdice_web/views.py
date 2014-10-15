@@ -103,7 +103,7 @@ def index():
 @mod.route('/advanced')
 def advanced():
     return render_template(
-        'versions/advanced_2010.html',
+        'versions/advanced.html',
         now = datetime.now().strftime('%Y%m%d%H%M%S'),
         dice_version=2010,
     )
