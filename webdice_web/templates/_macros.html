@@ -2,7 +2,7 @@
   <li><h1><a href="{{ url_for('webdice.index') }}">webDICE</a></h1></li>
   <li{% if version == 'standard' %} class=active{% endif %}>
     <a href="{{ url_for('webdice.standard') }}">Standard</a></li>
-  <li id=advanced_pages{% if version in [2007, 2010] %} class=active{% endif %}>
+  <li id=advanced_pages{% if version == 'advanced' %} class=active{% endif %}>
     <a href="{{ url_for('webdice.advanced') }}">Advanced</a></li>
   <li><a class=dead-hover>Documentation</a><ul>
     {% if version == 'standard' %}
