@@ -14,7 +14,7 @@
         </li>
       </ul>
     </div>
-    <form id=parameter_form class="clearfix standard" action=/run/{% if dice_version %}{{ dice_version|safe }}{% else %}standard{% endif %}>
+    <form id=parameter_form class="clearfix standard" action={{ url_for('webdice.graphs_standard') }}>
       {% block parameter_includes %}
         {% include 'modules/parameters/policy.html' %}
         {% include 'modules/parameters/standard/climate_standard.html' %}
