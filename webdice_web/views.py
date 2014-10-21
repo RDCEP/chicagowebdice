@@ -64,6 +64,8 @@ def run_loop(this_dice, form, year=2010):
         except ValueError:
             pass
 
+    this_dice.params.productivity_model = 'dice_backstop_2013'
+
     try:
         this_dice.params.damages_model = form['damages_model']
         this_dice.params.carbon_model = form['carbon_model']
@@ -148,8 +150,8 @@ def graphs_standard():
     return run_loop(this_dice, form)
 
 
-@mod.route('/run/<int:year>', methods=['POST', 'GET'])
-def graphs_d3(year=2007):
+@mod.route('/run/advanced', methods=['POST', 'GET'])
+def graphs_advanced():
     """
     Get data from <form>, run DICE loop.
     ...
@@ -158,7 +160,7 @@ def graphs_d3(year=2007):
     Returns:
         Formatted step values
     """
-    s = do_session(request, year)
+    s = do_session(request, 2010)
     this_dice = s['dice']
     form = json.loads(request.data)
     for field in ['depreciation', 'savings', 'prstp', 'backstop_decline',
@@ -170,7 +172,7 @@ def graphs_d3(year=2007):
         except KeyError:
             pass
 
-    return run_loop(this_dice, form, year)
+    return run_loop(this_dice, form, 2010)
 
 
 @mod.route('/get_svg', methods=['POST', ])
