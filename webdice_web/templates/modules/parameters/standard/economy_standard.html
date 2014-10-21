@@ -1,14 +1,23 @@
 <section id=economy_parameters class="pane clearfix">
 
   <div class=parameter-pane-intro>
-    <p>TKTK</p>
+    <p>How will the economy perform without climate change? <i>Growth</i>
+      determines how fast the economy grows. A higher value means that the
+      economy grows more quickly. <i>Energy efficiency</i> determines how
+      much CO<sub>2</sub> the economy produces for a given level of output.
+      A higher value means that the economy becomes energy efficient over
+      time more quickly. <i>Cost of clean energy</i> determines how much it
+      costs to replace fossil fuels with clean energy such as solar or
+      wind. The model assumes that the costs of clean energy goes down
+      over time. A higher value means that the costs decline slowly so that
+      clean energy is more expensive.</p>
   </div>
 
 
   <div class="parameter-pane thirds">
 
     <div class=range-wrap>
-      <label><span class="parameter-name">Productivity decline</span> (%)
+      <label><span class="parameter-name">Growth</span> (%)
         <input name=productivity_decline type=range min=1 max=5 value=3
                step=1 data-prec=0 data-default=3>
       </label>
@@ -24,7 +33,7 @@
   <div class="parameter-pane thirds">
 
     <div class=range-wrap>
-      <label><span class="parameter-name">Energy intensity</span> (%)
+      <label><span class="parameter-name">Energy efficiency</span> (%)
         <input name=intensity_decline_rate type=range min=1 max=5 value=3
                step=1 data-prec=0 data-default=3>
       </label>
@@ -41,7 +50,7 @@
   <div class="parameter-pane thirds">
 
     <div class=range-wrap>
-      <label><span class="parameter-name">Cost ratio</span>
+      <label><span class="parameter-name">Cost of clean energy</span>
         <input name=backstop_ratio type=range min=1 max=5 value=3 step=1
                data-prec=0 data-default=3>
       </label>
