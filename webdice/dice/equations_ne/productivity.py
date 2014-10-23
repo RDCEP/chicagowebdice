@@ -205,3 +205,54 @@ class Dice2010(ProductivityModel):
                 pa / population_prev
             ) ** pg
         )
+
+
+class DiceBackstop2013(Dice2010):
+
+    def get_model_values(self, i, df):
+        if i > 0:
+            ii = i - 1
+            idp = df.intensity_decline[ii]
+            intensity_decline = self.intensity_decline(i, idp)
+            carbon_intensity = self.carbon_intensity(
+                df.carbon_intensity[ii], intensity_decline,
+                idp)
+            pg = self.productivity_growth[ii]
+            p = df.productivity[ii]
+            productivity = ne.evaluate('p / (1 - pg)')
+            capital = self.capital(
+                df.capital[ii], self.params.depreciation,
+                df.investment[ii]
+            )
+            population = self.population(
+                self.population_growth_rate[i], df.population[ii])
+            gross_output = self.gross_output(
+                productivity, capital, self.params.output_elasticity,
+                population
+            )
+            bg = df.backstop_growth[ii]
+            b = df.backstop[ii]
+            df.backstop[i] = ne.evaluate('b * (1 - bg)')
+        else:
+            intensity_decline = self.params.intensity_growth
+            df.backstop[0][:] = self.params.backstop_2005
+            # df.backstop[:] = self.backstop
+            carbon_intensity = self.params.intensity_2005
+            productivity = self.params.productivity
+            capital = self.params.capital_2005
+            gross_output = self.params.output_2005
+            population = self.params.population_2005
+
+        bs = self.backstop[i]
+        ae = self.params.abatement_exponent
+        backstop_growth = ne.evaluate('(bs * carbon_intensity / ae) * (44 / 12)')
+
+        return (
+            carbon_intensity,
+            productivity,
+            capital,
+            backstop_growth,
+            gross_output,
+            intensity_decline,
+            population,
+        )

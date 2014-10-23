@@ -225,10 +225,11 @@ class DiceBackstop2013(Dice2010):
                 productivity, capital, self.params.output_elasticity,
                 population
             )
-            df.backstop[i] = df.backstop[i - 1] * (1 - df.backstop_growth[i - 1])
+            df.backstop[i] = df.backstop[i - 1] * (1 - self.params.backstop_decline)
+            # df.backstop[i] = df.backstop[i - 1] * (1 - df.backstop_growth[i - 1])
         else:
             # df.backstop[:] = self.backstop
-            df.backstop[0] = self.params.backstop_2005
+            df.backstop[i] = self.params.backstop_2005 * 12 / 44
             carbon_intensity = self.params.intensity_2005
             productivity = self.params.productivity
             capital = self.params.capital_2005
