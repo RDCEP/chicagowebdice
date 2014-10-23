@@ -1,7 +1,6 @@
 from flask import Flask
 from flask.ext.assets import Environment, Bundle
 from flask import render_template
-from flask_beaker import BeakerSession
 # from flask_restful import Api, reqparse
 
 session_opts = {
@@ -19,7 +18,6 @@ app.config.from_object('config')
 # api_parser = reqparse.RequestParser()
 app.config['DEBUG'] = True
 app.config['SECRET_KEY'] = 'Ad78gii#$3979oklaklf'
-BeakerSession(app)
 
 
 @app.errorhandler(404)
