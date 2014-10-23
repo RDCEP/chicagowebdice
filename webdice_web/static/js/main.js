@@ -46,7 +46,6 @@
     adjusted_params = [],
     custom_vars = ['damages', 'backstop'],
     show_twin = false,
-    unphysical = false,
 
     height;
 
@@ -470,28 +469,30 @@
 
   };
 
+  var unphysical = function(r) {
+    var uphys = false;
+    r.data['consumption_pc'].forEach(function(d) {
+      if (d <= .25) { uphys = true; }
+    });
+    return uphys;
+  };
+
   var load_run = function(r) {
     /*
      Upon successful run of model, add run and hide parameters pane
      */
 
     r = JSON.parse(r.response);
-    unphysical = false;
 
     add_run(r.data, r.parameters);
 
 //    d3.select('#parameters_tab').classed('selected', false);
 //    parameters_wrap.classed('visuallyhidden', true);
+
     run_model.attr('disabled', null);
     loader_gif.style('display', 'none');
 
-    r.data['consumption_pc'].forEach(function(d) {
-      if (!unphysical) {
-        unphysical = d < .25;
-      }
-    });
-
-    if (unphysical) {
+    if (unphysical(r)) {
       show_warning();
     }
 
