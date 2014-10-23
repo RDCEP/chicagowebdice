@@ -44,7 +44,7 @@
     all_data = {},
     custom_data = [[], []],
     adjusted_params = [],
-    custom_vars = ['productivity', 'backstop'],
+    custom_vars = ['damages', 'backstop'],
     show_twin = false,
     unphysical = false,
 
