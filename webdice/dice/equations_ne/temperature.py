@@ -82,12 +82,16 @@ class LinearTemperature(TemperatureModel):
     def get_model_values(self, i, df):
         if i == 0:
             return self.initial_temps[0], None
-        temp_atmosphere = (
-            self.initial_temps[0] +
-            df.carbon_emitted[i - 1] * .002
-        )
+        t0 = self.initial_temps[0]
+        e0 = df.carbon_emitted[i - 1]
+        t2c = self.params.temp_co2_doubling
+        mpi = self.params.mass_preindustrial
+        ma0 = self.params.mass_atmosphere_2005
+        mu0 = self.params.mass_upper_2005
+        phi1 = self.params.carbon_matrix[0][0]
+        phi2 = self.params.carbon_matrix[1][0]
         return (
-            temp_atmosphere,
+            ne.evaluate('t0 + e0 * (t2c / ((2 * mpi - ma0 * phi1 - mu0 * phi2) * 1e-3 )) * 1e-3'),
             None
         )
 

@@ -87,18 +87,15 @@ class LinearTemperature(TemperatureModel):
         if index == 0:
             return self.initial_temps[0], None
         temp_atmosphere = (
-            # TODO: Change slope based on climate sensitivity
-            # self.initial_temps[0] +
-            # data.carbon_emitted[index - 1] * (
-            #     self.params.temp_co2_doubling / ((
-            #         2 * self.params.mass_preindustrial + (
-            #             2 * self.params.mass_preindustrial -
-            #             (self.params.mass_atmosphere_2005 * self.params.carbon_matrix[0][0]) -
-            #             (self.params.mass_upper_2005 * self.params.carbon_matrix[1][0])
-            #         )) * 1e-3)
-            # ) * 1e-3
             self.initial_temps[0] +
-            data.carbon_emitted[index - 1] * .002
+            data.carbon_emitted[index - 1] * (
+                self.params.temp_co2_doubling / ((
+                    2 * self.params.mass_preindustrial + (
+                        2 * self.params.mass_preindustrial -
+                        (self.params.mass_atmosphere_2005 * self.params.carbon_matrix[0][0]) -
+                        (self.params.mass_upper_2005 * self.params.carbon_matrix[1][0])
+                    )) * 1e-3)
+            ) * 1e-3
         )
         return (
             temp_atmosphere,
