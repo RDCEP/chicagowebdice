@@ -89,26 +89,11 @@
       max: 'max',
       scale: 'linear',
       legend: 'Clean Energy Cost v. Time',
-      other_input: 'backstop_ratio',
-      output: function (v, v2) {
-        var o = [];
-        for (var i = 0; i < 10; ++i) {
-          var y = 1.17 * (v2 - 1 + Math.exp(-v/100 * i)) / v2 * 12 / 44;
-          o.push({
-            y: y,
-            x: i + 1
-          });
-        }
-        return o;
-      }
-    },
-    backstop_ratio: {
-      shared: true,
-      other_input: 'backstop_decline',
-      output: function (v, v2) {
-        var o = [];
-        for (var i = 0; i < 10; ++i) {
-          var y = 1.17 * (v - 1 + Math.exp(-v2/100 * i)) / v * 12 / 44;
+      output: function (v) {
+        var o = [{y: 0.344, x: 1}];
+        for (var i = 1; i < 10; ++i) {
+          console.log(v);
+          var y = o[i - 1].y * (1 - v / 100);
           o.push({
             y: y,
             x: i + 1
