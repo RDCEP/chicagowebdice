@@ -1,0 +1,25 @@
+{% extends 'base_page.html' %}
+{% block headjs %}
+<script type="text/javascript"
+{#  src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">#}
+  src="/static/js/vendor/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['\\(','\\)']]} });
+</script>
+{% endblock %}
+{% block content %}
+  <div id=text_wrap>
+    <div id=text_bkgd></div>
+    <div class="pane one-third">
+      <h3>Glossary</h3>
+      <div>
+        <span>A</span>
+      </div>
+    </div>
+    <div class="pane two-thirds">
+      {% include 'modules/glossary/terms/abatement.html' %}
+      {% include 'modules/glossary/advanced/abatement.html' %}
+    </div>
+  </div>
+{% endblock %}

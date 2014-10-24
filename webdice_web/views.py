@@ -71,10 +71,24 @@ def run_loop(form):
 @mod.route('/')
 def index():
     """Returns index page."""
-    now = datetime.now().strftime('%Y%m%d%H%M%S')
     return render_template(
         'index.html',
-        now=now,
+    )
+
+
+@mod.route('/documentation')
+def documentation():
+    """Returns index page."""
+    return render_template(
+        'modules/documentation/index.html',
+    )
+
+
+@mod.route('/glossary')
+def glossary():
+    """Returns index page."""
+    return render_template(
+        'modules/glossary/index.html',
     )
 
 
@@ -82,17 +96,14 @@ def index():
 def advanced():
     return render_template(
         'versions/advanced.html',
-        now = datetime.now().strftime('%Y%m%d%H%M%S'),
         dice_version=2010,
     )
 
 
 @mod.route('/standard')
 def standard():
-    now = datetime.now().strftime('%Y%m%d%H%M%S')
     return render_template(
         'versions/standard.html',
-        now=now,
     )
 
 

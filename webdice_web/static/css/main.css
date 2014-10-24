@@ -773,10 +773,14 @@ g.visuallyhidden {
     padding: 30px;
     display: block;
     position: relative; }
-    #text_wrap .pane.half {
+    #text_wrap .pane.half, #text_wrap .pane.one-third, #text_wrap .pane.two-thirds {
       width: 420px;
       float: left;
       padding-right: 0; }
+    #text_wrap .pane.one-third {
+      width: 260px; }
+    #text_wrap .pane.two-thirds {
+      width: 580px; }
     #text_wrap .pane.error h2 {
       font-size: 3em;
       margin: 0; }

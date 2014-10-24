@@ -7,10 +7,14 @@
     padding: 30px
     display: block
     position: relative
-    &.half
+    &.half, &.one-third, &.two-thirds
       width: ($site_width - 60px) / 2
       float: left
       padding-right: 0
+    &.one-third
+      width: ($site_width - 120px) / 3
+    &.two-thirds
+      width: ($site_width - 120px) / 3 * 2 + 60px
     &.error
       h2
         font-size: 3em
