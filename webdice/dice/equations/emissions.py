@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import division
 import numpy as np
 
@@ -5,37 +6,31 @@ import numpy as np
 class EmissionsModel(object):
     """
     EmissionsModel base class
-    ...
-    Properties
-    ----------
-    emissions_deforest : array
-        Emission from deforestation
-    emissions_cap : array
-        Emissions caps for treaty
-    user_tax_rate : array
-        Array of user-determined annual tax rates
-    ...
-    Methods
-    -------
-    get_model_values()
-    emissions_ind()
-    emissions_total()
-    carbon_emitted()
-    get_miu()
-    miu()
-    tax_rate()
+
+    Properties:
+        emissions_deforest: Emission from deforestation
+        emissions_cap: Emissions caps for treaty
+        user_tax_rate: Array of user-determined annual tax rates
+
+    Methods:
+        get_model_values()
+        emissions_ind()
+        emissions_total()
+        carbon_emitted()
+        get_miu()
+        miu()
+        tax_rate()
     """
     def __init__(self, params):
         self.params = params
 
     @property
     def emissions_deforest(self):
-        """
-        E_land, Emissions from deforestation
-        ...
+        """E_land, Emissions from deforestation
+
         Returns
-        -------
-        array
+            :returns: E_land(0) * (1 - .1) ^ (t - 1)
+            :rtype: np.ndarray
         """
         return (
             self.params.emissions_deforest_2005 *
@@ -44,12 +39,11 @@ class EmissionsModel(object):
 
     @property
     def emissions_cap(self):
-        """
-        Emissions caps from treaty inputs
-        ...
+        """E_cap, Emissions caps from treaty inputs
+
         Returns
-        -------
-        array
+            :returns: Array of emissions caps
+            :rtype: np.ndarray
         """
         return np.concatenate((
             np.ones(5),
@@ -60,12 +54,11 @@ class EmissionsModel(object):
 
     @property
     def user_tax_rate(self):
-        """
-        Optional user-defined carbon tax
-        ...
+        """Optional user-defined carbon tax
+
         Returns
-        -------
-        array
+            :returns: Array of tax rates
+            :rtype: np.ndarray
         """
         c = [0, self.params.c2050, self.params.c2100,
              self.params.c2150, self.params.cmax]
@@ -78,6 +71,28 @@ class EmissionsModel(object):
 
     def get_model_values(self, i, df, deriv=False, opt=False,
                          miu=None, emissions_shock=0):
+        """Get values for model variables.
+
+        Args:
+            :param i: current time step
+            :type i: int
+            :param df: Matrix of variables
+            :type df: DiceDataMatrix
+
+        Kwargs:
+            :param deriv: Calculating derivative or not
+            :type deriv: bool
+            :param opt: Running optimized loop or not
+            :type opt: bool
+            :param miu: Emissions control array
+            :type miu: np.ndarray
+            :param emissions_shock: Amount to increase emissions for SCC
+            :type emissions_shock: float
+
+        Returns:
+            :return: Model variables: μ, E_ind, E, CCum, τ
+            :rtype: tuple
+        """
         miu = self.get_miu(i, df, deriv=deriv, opt=opt, miu=miu)
         emissions_ind = self.emissions_ind(
             df.carbon_intensity[i], miu, df.gross_output[i]
@@ -101,45 +116,65 @@ class EmissionsModel(object):
         )
 
     def emissions_ind(self, intensity, miu, gross_output):
+        """E_ind, Industrial emissions, GtC
+
+        Args:
+            :param intensity:
+             :type intensity: float
+            :param miu:
+             :type intensity: float
+            :param gross_output:
+             :type intensity: float
+
+        Returns:
+            :return: σ(t) * (1 - μ) * Q
+             :rtype: float
         """
-        E_ind, Industrial emissions, GtC
-        ...
-        Returns
-        -------
-        float
-        """
+
         return intensity * (1 - miu) * gross_output
 
     def emissions_total(self, emissions_ind, etree):
-        """
-        E, Total emissions, GtC
-        ...
-        Returns
-        -------
-        float
+        """E, Total emissions, GtC
+
+        Args:
+            :param emissions_ind: Industrial emissions
+             :type emissions_ind: float
+            :param etree: Emissions from deforestation
+             :type etree: float
+
+        Returns:
+            :return: E_ind + E_tree
+             :rtype: float
         """
         return emissions_ind + etree
 
     def carbon_emitted(self, emissions_total, carbon_emitted):
+        """CCum, Total carbon emitted, GtC
+
+        Args:
+            :param emissions_total: E(t)
+             :type emissions_total: float
+            :param carbon_emitted: CCum(t-1)
+             :type carbon_emitted: float
+
+        Returns:
+            :return: CCum + E(t)
+             :rtype: float
+        """
         return carbon_emitted + emissions_total * 10
 
     def get_miu(self, i, df, deriv=False, opt=False, miu=None):
-        """
-        Return miu for optimized, treaty, tax, basic scenarios
-        ...
-        Args
-        ----
-        index : int, index of time step
-        data : pd.DataFrame
-        ...
-        Kwargs
-        ------
-        deriv : boolean
-        miu : array
-        ...
-        Returns
-        -------
-        float
+        """μ, get miu for optimized, treaty, tax scenarios
+
+        Args:
+            :param i:
+            :param df:
+            :param deriv:
+            :param opt:
+            :param miu:
+
+        Returns:
+            :return:
         """
         if opt:
             if miu is not None:

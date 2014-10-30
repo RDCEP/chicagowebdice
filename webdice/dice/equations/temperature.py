@@ -1,23 +1,17 @@
+# -*- coding: utf-8 -*-
 from __future__ import division
 
 
 class TemperatureModel(object):
-    """
-    TemperatureModel base class
-    ...
-    Properties
-    ----------
-    initial_temps : array
-        Values for T_AT, T_OCEAN at t=0
-    ...
-    Methods
-    -------
-    get_model_values()
-        Return values for T_AT, T_OCEAN
-    temp_atmosphere()
-        Calculate T_AT at t
-    temp_lower()
-        Calculate T_OCEAN at t
+    """TemperatureModel base class
+
+    Properties:
+        initial_temps: Values for T_AT, T_OCEAN at t=0
+
+    Methods:
+        get_model_values(): Return values for T_AT, T_OCEAN
+        temp_atmosphere(): Calculate T_AT at t
+        temp_lower(): Calculate T_OCEAN at t
     """
     def __init__(self, params):
         self.params = params
@@ -34,47 +28,54 @@ class TemperatureModel(object):
         self._temp_atmosphere_2005 = value[0]
         self._temp_lower_2005 = value[1]
 
-    def get_model_values(self, index, data):
-        if index == 0:
+    def get_model_values(self, i, df):
+        if i == 0:
             return self.initial_temps
-        i = index - 1
+        i -= 1
         return (
-            self.temp_atmosphere(data, index),
-            self.temp_lower(
-                data.temp_atmosphere[i], data.temp_lower[i],
-                self.params.thermal_transfer
-            ),
+            self.temp_atmosphere(i, df),
+            self.temp_lower(i, df),
         )
 
-    def temp_atmosphere(self, data, index):
-        """
-        T_AT, Temperature of atmosphere, degrees C
-        ...
-        Returns
-        -------
-        float
+    def temp_atmosphere(self, i, df):
+        """T_AT, increase in atmospheric temperature since 1750, degrees C
+
+         Args:
+            :param i: current time step
+             :type i: int
+            :param df: Matrix of variable values
+             :type df: DiceDataMatrix
+
+        Returns:
+            :returns: T_AT(t-1) + ξ_1 * (F(t) - F2xCO2 / T2xCO2 * T_AT(t-1) - ξ_3 * (T_AT(t-1) - T_Ocean(t-1)))
+            :rtype: float
         """
         return (
-            data.temp_atmosphere[index - 1] +
+            df.temp_atmosphere[i - 1] +
             self.params.thermal_transfer[0] * (
-                data.forcing[index] - (self.params.forcing_co2_doubling /
+                df.forcing[i] - (self.params.forcing_co2_doubling /
                                        self.params.temp_co2_doubling) *
-                data.temp_atmosphere[index - 1] -
+                df.temp_atmosphere[i - 1] -
                 self.params.thermal_transfer[2] *
-                (data.temp_atmosphere[index - 1] - data.temp_lower[index - 1])
+                (df.temp_atmosphere[i - 1] - df.temp_lower[i - 1])
             )
         )
 
-    def temp_lower(self, temp_atmosphere, temp_lower, thermal_transfer):
-        """
-        T_LO, Temperature of lower oceans, degrees C
-        ...
-        Returns
-        -------
-        float
+    def temp_lower(self, i, df):
+        """T_AT, increase in atmospheric temperature since 1750, degrees C
+
+         Args:
+            :param i: current time step
+             :type i: int
+            :param df: Matrix of variable values
+             :type df: DiceDataMatrix
+
+        Returns:
+            :returns: T_Ocean(t-1) + ξ_4 * (T_AT(t-1) - T_Ocean(t-1))
+            :rtype: float
         """
         return (
-            temp_lower + thermal_transfer[3] * (temp_atmosphere - temp_lower)
+            df.temp_lower[i] + self.params.thermal_transfer[3] * (df.temp_atmosphere[i] - df.temp_lower[i])
         )
 
 
@@ -83,12 +84,12 @@ class Dice2007(TemperatureModel):
 
 
 class LinearTemperature(TemperatureModel):
-    def get_model_values(self, index, data):
-        if index == 0:
+    def get_model_values(self, i, df):
+        if i == 0:
             return self.initial_temps[0], None
         temp_atmosphere = (
             self.initial_temps[0] +
-            data.carbon_emitted[index - 1] * (
+            df.carbon_emitted[i - 1] * (
                 self.params.temp_co2_doubling / ((
                     2 * self.params.mass_preindustrial + (
                         2 * self.params.mass_preindustrial -
@@ -107,21 +108,26 @@ class Dice2010(TemperatureModel):
     def __init__(self, params):
         super(Dice2010, self).__init__(params)
 
-    def temp_atmosphere(self, data, index):
-        """
-        T_AT, Temperature of atmosphere, degrees C
-        ...
-        Returns
-        -------
-        float
+    def temp_atmosphere(self, i, df):
+        """T_AT, increase in atmospheric temperature since 1750, degrees C
+
+         Args:
+            :param i: current time step
+             :type i: int
+            :param df: Matrix of variable values
+             :type df: DiceDataMatrix
+
+        Returns:
+            :returns: T_AT(t-1) + ξ_1 * (F(t) - F2xCO2 / T2xCO2 * T_AT(t-1) - ξ_3 * (T_AT(t-1) - T_Ocean(t-1)))
+            :rtype: float
         """
         return (
-            data.temp_atmosphere[index - 1] +
+            df.temp_atmosphere[i - 1] +
             self.params.thermal_transfer[0] * (
-                data.forcing[index] - (self.params._forcing_co2_doubling /
+                df.forcing[i] - (self.params._forcing_co2_doubling /
                                        self.params.temp_co2_doubling) *
-                data.temp_atmosphere[index - 1] -
+                df.temp_atmosphere[i - 1] -
                 self.params.thermal_transfer[2] *
-                (data.temp_atmosphere[index - 1] - data.temp_lower[index - 1])
+                (df.temp_atmosphere[i - 1] - df.temp_lower[i - 1])
             )
         )

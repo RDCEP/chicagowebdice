@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import division
 import numpy as np
 
@@ -28,12 +29,12 @@ class ProductivityModel(object):
 
     @property
     def backstop(self):
-        """
-        Cost of replacing clean energy
-        ...
-        Returns
-        -------
-        array
+        """Cost of replacing with clean energy
+        12/44 converts from $/C to $/CO2
+
+        Returns:
+            :returns: BC(0) * (ratio - 1 + exp(-BC_g(0) * (t-1)) / ratio)
+            :rtype: np.ndarray
         """
         return self.params.backstop_2005 * (
             (
@@ -44,6 +45,12 @@ class ProductivityModel(object):
 
     @property
     def population_growth_rate(self):
+        """L_g, Growth rate of population.
+
+        Returns:
+            :returns: exp(L_g * (t-1) - 1) / exp(L_g * (t-1))
+            :rtype: np.ndarray
+        """
         return (
             (np.exp(self.params.population_growth * self.params.t0) - 1) /
             (np.exp(self.params.population_growth * self.params.t0))
@@ -51,24 +58,28 @@ class ProductivityModel(object):
 
     @property
     def productivity_growth(self):
-        """
-        A_g, Growth rate of total factor productivity.
-        ...
-        Returns
-        -------
-        array
+        """A_g, Growth rate of total factor productivity.
+
+        Returns:
+            :returns: A_g(0) * exp(-Δ_a * (t-1))
+            :rtype: np.ndarray
         """
         return self.params.productivity_growth * np.exp(
             -self.params.productivity_decline * 10 * self.params.t0
         )
 
     def population(self, i, df):
-        """
-        L, Population.
-        ...
-        Returns
-        -------
-        array
+        """L, Population.
+
+        Args:
+            :param i: current time step
+            :type i: int
+            :param df: DiceDataMatrix
+            :type df: obj
+
+        Returns:
+            :returns: L(0) * (1 - L_g(t)) + (L_g(t) * L_max
+            :rtype: float
         """
         return (
             self.params.population_2005 *
@@ -77,6 +88,19 @@ class ProductivityModel(object):
         )
 
     def intensity_decline(self, i, df):
+        """σ_g, Decline rate of decarbonization.
+
+        Args:
+            :param i: current time step
+            :type i: int
+            :param df: DiceDataMatrix
+            :type df: obj
+
+        Returns:
+            :returns: σ_g(0) * exp(σ_d1 * t)
+            :rtype: float
+        """
+        #TODO: quadratic is set to 0. Delete second half of equation.
         return (
             self.params.intensity_growth * np.exp(
                 -self.params.intensity_decline_rate * 10 *
@@ -86,8 +110,20 @@ class ProductivityModel(object):
         )
 
     def carbon_intensity(self, i, df):
+        """σ, Carbon intensity.
+
+        Args:
+            :param i: current time step
+            :type i: int
+            :param df: DiceDataMatrix
+            :type df: obj
+
+        Returns:
+            :returns: σ(t-1) / (1 - σ_g(t))
+            :rtype: float
+        """
         intensity_decline = self.intensity_decline(i, df)
-        df.intensity_decline[i] = intensity_decline
+        # df.intensity_decline[i] = intensity_decline
         return df.carbon_intensity[i - 1] / (
             1 - intensity_decline
         ), intensity_decline
@@ -131,23 +167,39 @@ class ProductivityModel(object):
         )
 
     def capital(self, capital, depreciation, investment):
-        """
-        K(t), Capital, trillions $USD
-        ...
-        Returns
-        -------
-        Float
+        """K(t), Capital, trillions $USD
+
+        Args:
+            :param capital: capital in prior time step
+            :type i: float
+            :param depreciation: depreciation rate
+            :type i: float
+            :param investment: investment in prior time step
+            :type i: float
+
+        Returns:
+            :returns: K(t-1) * (1 - δ) + I
+            :rtype: float
         """
         return capital * (1 - depreciation) ** 10 + 10 * investment
 
     def gross_output(self, productivity, capital, output_elasticity,
                      population):
-        """
-        Gross output
-        ...
-        Returns
-        -------
-        float
+        """Gross output, trillions USD
+
+        Args:
+            :param productivity: productivity in current time step
+            :type i: float
+            :param capital: capital in current time step
+            :type i: float
+            :param output_elasticity: elasticity of output
+            :type i: float
+            :param population: population in current time step
+            :type i: float
+
+        Returns:
+            :returns: A(t) * K(t) ^ γ * L ^ (1 - γ)
+            :rtype: float
         """
         return (
             productivity * capital ** output_elasticity *
@@ -161,33 +213,47 @@ class Dice2007(ProductivityModel):
 
 class Dice2010(ProductivityModel):
     def intensity_decline(self, i, df):
-        """
-        sigma_g, Rate of decline of carbon intensity
-        ...
-        Returns
-        -------
-        array
+        """σ_g, Decline rate of decarbonization.
+
+        Args:
+            :param i: current time step
+            :type i: int
+            :param df: DiceDataMatrix
+            :type df: obj
+
+        Returns:
+            :returns: σ_g(t-1) * (1 - σ_d1)
+            :rtype: float
         """
         return df.intensity_decline[i - 1] * (
-            1 - (self.params.intensity_decline_rate *
-                 np.exp(-self.params.intensity_quadratic * 10 * i)
-            )
+            1 - self.params.intensity_decline_rate
         ) ** 10
 
     @property
     def productivity_growth(self):
-        """
-        A_g, Growth rate of total factor productivity.
-        ...
-        Returns
-        -------
-        array
+        """A_g, Growth rate of total factor productivity.
+
+        Returns:
+            :returns: A_g(0) * exp(-Δ_a * (t-1) * exp(-.002 * (t-1))
+            :rtype: np.ndarray
         """
         return self.params.productivity_growth * np.exp(
             -self.params.productivity_decline * 10 * self.params.t0 *
         np.exp(-.002 * 10 * self.params.t0))
 
     def carbon_intensity(self, i, df):
+        """σ, Carbon intensity.
+
+        Args:
+            :param i: current time step
+            :type i: int
+            :param df: DiceDataMatrix
+            :type df: obj
+
+        Returns:
+            :returns: σ(t-1) * (1 - σ_g(t))
+            :rtype: float
+        """
         intensity_decline = self.intensity_decline(i, df)
         return (
             df.carbon_intensity[i - 1] *
@@ -195,12 +261,17 @@ class Dice2010(ProductivityModel):
         ), intensity_decline
 
     def population(self, i, df):
-        """
-        L, Population.
-        ...
-        Returns
-        -------
-        array
+        """L, Population.
+
+        Args:
+            :param i: current time step
+            :type i: int
+            :param df: DiceDataMatrix
+            :type df: obj
+
+        Returns:
+            :returns: L(t-1) * (L_max / L(t-1)) ** L_g
+            :rtype: float
         """
         return (
             df.population[i - 1] * (
@@ -210,7 +281,9 @@ class Dice2010(ProductivityModel):
 
 
 class DiceBackstop2013(Dice2010):
-
+    """This cass is a hack to make the simpler backstop equations from
+    DICE2013 available to the web front-end.
+    """
     def get_model_values(self, i, df):
         if i > 0:
             carbon_intensity, intensity_decline = self.carbon_intensity(i, df)
@@ -226,9 +299,7 @@ class DiceBackstop2013(Dice2010):
                 population
             )
             df.backstop[i] = df.backstop[i - 1] * (1 - self.params.backstop_decline)
-            # df.backstop[i] = df.backstop[i - 1] * (1 - df.backstop_growth[i - 1])
         else:
-            # df.backstop[:] = self.backstop
             df.backstop[i] = self.params.backstop_2005 * 12 / 44
             carbon_intensity = self.params.intensity_2005
             productivity = self.params.productivity
