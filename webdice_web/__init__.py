@@ -1,6 +1,10 @@
+import glob
+import os
+from itertools import groupby
 from flask import Flask
 from flask.ext.assets import Environment, Bundle
 from flask import render_template
+from webdice_web.constants import BASE_DIR
 # from flask_restful import Api, reqparse
 
 session_opts = {
@@ -38,6 +42,21 @@ def not_found(error):
 @app.context_processor
 def context_globals():
     return dict()
+
+@app.context_processor
+def glossary_terms():
+    return dict(
+        glossary_terms=[list(g) for k, g in groupby(map(
+            lambda x: ''.join(x.split('/')[-1].split('.')[:-1]),
+            glob.glob(os.path.join(
+                BASE_DIR, 'templates', 'modules', 'glossary', 'terms',
+                '*.html'))), key=lambda x: x[0])],
+        advanced_glossary_terms=map(
+            lambda x: ''.join(x.split('/')[-1].split('.')[:-1]),
+            glob.glob(os.path.join(
+                BASE_DIR, 'templates', 'modules', 'glossary', 'terms',
+                'advanced', '*.html'))),
+    )
 
 
 from webdice_web.views import mod as work_module
