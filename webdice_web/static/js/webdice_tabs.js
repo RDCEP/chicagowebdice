@@ -10,6 +10,7 @@
       , hash_tab = hash[1]
       , parameter_tabs = d3.selectAll('#parameter_tabs li[data-pane]')
       , title_tabs = d3.selectAll('#title_legend li')
+        .filter(function() { return !d3.select(this).classed('glossary'); })
       , parameters = d3.select('#parameters_wrap')
       , runs = d3.select('#runs_wrap')
       , t
