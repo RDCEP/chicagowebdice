@@ -3,11 +3,12 @@ import json
 import zipfile
 import csv
 import StringIO
+import os
 from numpy import inf
 from lxml import etree
-from datetime import datetime
 from flask import render_template, request, Blueprint, jsonify, send_file
 from webdice.dice import Dice2010
+from webdice_web.constants import BASE_DIR
 
 
 mod = Blueprint('webdice', __name__, static_folder='static',
@@ -90,6 +91,26 @@ def glossary():
     return render_template(
         'modules/glossary/index.html',
     )
+
+
+@mod.route('/glossary/<term>')
+def glossary_term(term):
+    """Returns index page."""
+    return render_template(
+        'modules/glossary/static_page.html',
+        term=term
+    )
+
+
+@mod.route('/glossary/advanced/<term>')
+def glossary_advanced_term(term):
+    """Returns index page."""
+    s = ''
+    f = os.path.join(BASE_DIR, 'templates', 'modules', 'glossary', 'terms',
+                     'advanced', '{}.html'.format(term))
+    with open(f) as f:
+        s = f.read()
+    return s
 
 
 @mod.route('/advanced')

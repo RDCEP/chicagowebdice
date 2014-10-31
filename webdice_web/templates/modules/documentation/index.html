@@ -1,11 +1,39 @@
 {% extends 'base_page.html' %}
+{% import '_macros.html' as macros %}
+
+{% block main_menu %}
+{{ macros.render_menu('documentation') }}
+{% endblock %}
+
 {% block content %}
   <div id=text_wrap>
     <div id=text_bkgd></div>
     <div class="pane half">
-      <
+
+      <h3>Documentation</h3>
+      <p>webDICE has been thoroughly documented, and varying degrees of
+        information are available on this page. If you have
+        questions that aren’t answered in our documentation, or if you
+        have suggestions, please contact us at
+        <a href=mailto:info-rdcep@ci.uchicago.edu>info-rdcep@ci.uchicago.edu</a>.
+
+      <h3><a href=http://github.com/RDCEP/chicagowebdice class="block orange">Source code</a></h3>
+      <p>All of the source code for webDICE is available through github.com.
+        The repo contains both the web frontend, and the python that drives
+        the backend.</p>
+
     </div>
     <div class="pane half">
+
+      <h3><a href="{{ url_for('webdice.glossary') }}" class="block blue">Glossary</a></h3>
+      <p>Our online glossary provides background information about
+        the technical terms and jargon necessary throughout the site.</p>
+
+      <h3><a href class="block vermilion">Details of the model</a></h3>
+      <p>TKTK</p>
+
+      <h3><a href class="block sky-blue">Equations &amp; parameters</a></h3>
+      <p>TKTK</p>
 
     </div>
   </div>

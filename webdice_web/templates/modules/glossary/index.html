@@ -1,25 +1,61 @@
 {% extends 'base_page.html' %}
+{% import '_macros.html' as macros %}
+
+{% block main_menu %}
+{{ macros.render_menu('documentation') }}
+{% endblock %}
+
+{% block headcss %}
+<style>
+  #main_content { height: auto; max-height: none; }
+  #text_wrap {position: relative; top: auto; margin-top: 6em}
+</style>
+{% endblock %}
 {% block headjs %}
 <script type="text/javascript"
 {#  src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">#}
-  src="/static/js/vendor/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  src="{{ url_for('webdice.static', filename='js/vendor/MathJax-2.4/MathJax.js') }}?config=TeX-AMS-MML_HTMLorMML">
 </script>
 <script type="text/x-mathjax-config">
-  MathJax.Hub.Config({tex2jax: {inlineMath: [['\\(','\\)']]} });
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$', '$'], ['\\(', '\\)']]} });
 </script>
 {% endblock %}
+
+{% block title_tabs %}
+  <ul id=alpha_links class=tabs>
+    {% for alpha in glossary_terms %}
+    <li class=glossary>
+      <a href=#section_{{ alpha[0][0] }} data-scroll-object=section_{{ alpha[0][0] }}>
+      {{ alpha[0][0]|capitalize }}
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+{% endblock %}
+
 {% block content %}
-  <div id=text_wrap>
+  <div id=text_wrap class=clearfix>
     <div id=text_bkgd></div>
-    <div class="pane one-third">
-      <h3>Glossary</h3>
-      <div>
-        <span>A</span>
+    <div class="pane one-third"></div>
+    <div class="pane two-thirds" id=glossary>
+    {% block glossary_list %}
+      {% for alpha in glossary_terms %}
+      <div id=section_{{ alpha[0][0] }}>
+        {% for term in alpha %}
+        <div class=glossary-term id=glossary__{{ term }}>
+        {% include 'modules/glossary/terms/{}.html'.format(term) %}
+        {% if term in advanced_glossary_terms %}
+        <div class=advanced-term></div>
+        {% endif %}
+        </div>
+        {% endfor %}
       </div>
-    </div>
-    <div class="pane two-thirds">
-      {% include 'modules/glossary/terms/abatement.html' %}
-      {% include 'modules/glossary/advanced/abatement.html' %}
+      {% endfor %}
+    {% endblock %}
     </div>
   </div>
+{% endblock %}
+{% block bodyjs %}
+{{ super() }}
+<script src={{ url_for('webdice.static', filename='js/webdice_glossary.js') }}></script>
 {% endblock %}
