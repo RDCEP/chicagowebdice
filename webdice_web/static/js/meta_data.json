@@ -1,7 +1,7 @@
 {
   "custom" : {
-    "title": "Productivity v. Time",
-    "title_unit": "TFP v. year",
+    "title": "Damages v. Time",
+    "title_unit": "trillion USD v. year",
     "unit": null
   },
   "twin" : {
