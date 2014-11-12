@@ -299,15 +299,17 @@ class DiceBackstop2013(Dice2010):
                 population
             )
             df.backstop[i] = df.backstop[i - 1] * (1 - self.params.backstop_decline)
+
         else:
-            df.backstop[i] = self.params.backstop_2005 * 12 / 44
+            #TODO: Convert to $/tC ?
+            df.backstop[i] = self.params.backstop_2005 * (12 / 44)
             carbon_intensity = self.params.intensity_2005
             productivity = self.params.productivity
             capital = self.params.capital_2005
             gross_output = self.params.output_2005
             intensity_decline = self.params.intensity_growth
             population = self.params.population_2005
-
+        #TODO: Convert to $/tC ?
         backstop_growth = (
             df.backstop[i] * carbon_intensity /
             self.params.abatement_exponent
