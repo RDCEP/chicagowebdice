@@ -35,7 +35,6 @@ def run_loop(form):
 
     for p in dice.user_params:
         try:
-
             setattr(dice.params, p, float(form[p]))
         except KeyError:
             pass
