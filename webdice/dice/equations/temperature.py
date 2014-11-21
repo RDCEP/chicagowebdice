@@ -33,35 +33,39 @@ class TemperatureModel(object):
             return self.initial_temps
         i -= 1
         return (
-            self.temp_atmosphere(i, df),
-            self.temp_lower(i, df),
+            self.temp_atmosphere(df.temp_atmosphere[i],
+                                 df.temp_lower[i],
+                                 df.forcing[i + 1],),
+            self.temp_lower(df.temp_atmosphere[i],
+                            df.temp_lower[i],),
         )
 
-    def temp_atmosphere(self, i, df):
+    def temp_atmosphere(self, temp_atmosphere, temp_lower, forcing):
         """T_AT, increase in atmospheric temperature since 1750, degrees C
 
          Args:
-            :param i: current time step
-             :type i: int
-            :param df: Matrix of variable values
-             :type df: DiceDataMatrix
+            :param temp_atmosphere: Atmospheric temperature at t-1
+             :type temp_atmosphere: float
+            :param temp_lower: Lower ocean temperature at t-1
+             :type temp_lower: float
+            :param forcing: Forcings at t
+             :type forcing: float
 
         Returns:
             :returns: T_AT(t-1) + ξ_1 * (F(t) - F2xCO2 / T2xCO2 * T_AT(t-1) - ξ_3 * (T_AT(t-1) - T_Ocean(t-1)))
-            :rtype: float
+              :rtype: float
         """
         return (
-            df.temp_atmosphere[i - 1] +
+            temp_atmosphere +
             self.params.thermal_transfer[0] * (
-                df.forcing[i] - (self.params.forcing_co2_doubling /
-                                       self.params.temp_co2_doubling) *
-                df.temp_atmosphere[i - 1] -
-                self.params.thermal_transfer[2] *
-                (df.temp_atmosphere[i - 1] - df.temp_lower[i - 1])
+                forcing - (self.params.forcing_co2_doubling /
+                           self.params.temp_co2_doubling) *
+                temp_atmosphere - self.params.thermal_transfer[2] *
+                (temp_atmosphere - temp_lower)
             )
         )
 
-    def temp_lower(self, i, df):
+    def temp_lower(self, temp_atmosphere, temp_lower):
         """T_AT, increase in atmospheric temperature since 1750, degrees C
 
          Args:
@@ -75,7 +79,8 @@ class TemperatureModel(object):
             :rtype: float
         """
         return (
-            df.temp_lower[i] + self.params.thermal_transfer[3] * (df.temp_atmosphere[i] - df.temp_lower[i])
+            temp_lower + self.params.thermal_transfer[3] *
+            (temp_atmosphere - temp_lower)
         )
 
 
@@ -108,26 +113,26 @@ class Dice2010(TemperatureModel):
     def __init__(self, params):
         super(Dice2010, self).__init__(params)
 
-    def temp_atmosphere(self, i, df):
+    def temp_atmosphere(self, temp_atmosphere, temp_lower, forcing):
         """T_AT, increase in atmospheric temperature since 1750, degrees C
 
          Args:
-            :param i: current time step
-             :type i: int
-            :param df: Matrix of variable values
-             :type df: DiceDataMatrix
+            :param temp_atmosphere: Atmospheric temperature at t-1
+             :type temp_atmosphere: float
+            :param temp_lower: Lower ocean temperature at t-1
+             :type temp_lower: float
+            :param forcing: Forcings at t
+             :type forcing: float
 
         Returns:
             :returns: T_AT(t-1) + ξ_1 * (F(t) - F2xCO2 / T2xCO2 * T_AT(t-1) - ξ_3 * (T_AT(t-1) - T_Ocean(t-1)))
             :rtype: float
         """
         return (
-            df.temp_atmosphere[i - 1] +
-            self.params.thermal_transfer[0] * (
-                df.forcing[i] - (self.params._forcing_co2_doubling /
-                                       self.params.temp_co2_doubling) *
-                df.temp_atmosphere[i - 1] -
-                self.params.thermal_transfer[2] *
-                (df.temp_atmosphere[i - 1] - df.temp_lower[i - 1])
+            temp_atmosphere + self.params.thermal_transfer[0] * (
+                forcing - (self.params._forcing_co2_doubling /
+                           self.params.temp_co2_doubling) *
+                temp_atmosphere - self.params.thermal_transfer[2] *
+                (temp_atmosphere - temp_lower)
             )
         )

@@ -40,11 +40,14 @@ class TemperatureModel(object):
             return self.initial_temps
         i -= 1
         return (
-            self.temp_atmosphere(i, df),
-            self.temp_lower(i, df),
+            self.temp_atmosphere(df.temp_atmosphere[i],
+                                 df.temp_lower[i],
+                                 df.forcing[i + 1],),
+            self.temp_lower(df.temp_atmosphere[i],
+                            df.temp_lower[i],)
         )
 
-    def temp_atmosphere(self, i, df):
+    def temp_atmosphere(self, ta, tl, f):
         """
         T_AT, Temperature of atmosphere, degrees C
         ...
@@ -55,12 +58,9 @@ class TemperatureModel(object):
         ff = (self.params.forcing_co2_doubling / self.params.temp_co2_doubling)
         c1 = self.params.thermal_transfer[0]
         c3 = self.params.thermal_transfer[2]
-        ta = df.temp_atmosphere[i]
-        tl = df.temp_lower[i]
-        f = df.forcing[i + 1]
         return ne.evaluate('ta + c1 * (f - ff * ta - c3 * (ta - tl))')
 
-    def temp_lower(self, i, df):
+    def temp_lower(self, ta, tl):
         """
         T_LO, Temperature of lower oceans, degrees C
         ...
@@ -69,8 +69,6 @@ class TemperatureModel(object):
         float
         """
         c4 = self.params.thermal_transfer[3]
-        ta = df.temp_atmosphere[i]
-        tl = df.temp_lower[i]
         return ne.evaluate('tl + c4 * (ta - tl)')
 
 
@@ -97,26 +95,4 @@ class LinearTemperature(TemperatureModel):
 
 
 class Dice2010(TemperatureModel):
-    def __init__(self, params):
-        super(Dice2010, self).__init__(params)
-
-    def temp_atmosphere(self, temp_atmosphere, temp_lower, forcing):
-        """
-        T_AT, Temperature of atmosphere, degrees C
-        ...
-        Returns
-        -------
-        float
-        """
-        f = (self.params.forcing_co2_doubling / self.params.temp_co2_doubling)
-        c1 = self.params.thermal_transfer[0]
-        c3 = self.params.thermal_transfer[2]
-        return (
-            temp_atmosphere +
-            c1 * (
-                forcing - f *
-                temp_atmosphere -
-                c3 *
-                (temp_atmosphere - temp_lower)
-            )
-        )
+    pass
