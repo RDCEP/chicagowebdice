@@ -62,8 +62,8 @@
         min = reverse ? parseFloat(t.attr('max')) : parseFloat(t.attr('min')),
         max = reverse ? parseFloat(t.attr('min')) : parseFloat(t.attr('max')),
         dot = p.select('.tick'),
-        pval = parseFloat(t.property('value')),
-        val = reverse ? Math.abs(100 - pval) : pval,
+        val = parseFloat(t.property('value')),
+        val = reverse ? Math.abs(100 - val) : val,
         prec = parseInt(t.attr('data-prec')),
         pct = ((parseFloat(val) - min) / (max - min) - .5) * 100;
 
@@ -74,10 +74,7 @@
           eq = _eq[name];
 
         if (eq.hasOwnProperty('other_input')) {
-          var other_input = d3.select('input[name="' + eq.other_input + '"]');
-          o = other_input.attr('type') == 'radio'
-            ? d3.select('input[name="' + eq.other_input + '"]:checked').property('value')
-            : other_input.property('value');
+          o = +d3.select('input[name="' + eq.other_input + '"]').property('value');
         }
 
         if (eq.shared) {
@@ -110,7 +107,7 @@
           o;
         if (eq.hasOwnProperty('other_input')) {
           oname = eq.other_input;
-          o = d3.select('input[name="'+eq.other_input+'"]').property('value');
+          o = +d3.select('input[name="'+eq.other_input+'"]').property('value');
         }
         preview_graphs[name] = new WebDICEPreview()
           .init(t, f, h, w, value, max, s, o);
@@ -149,6 +146,17 @@
         .property('disabled', false);
 
     }
+
+    if (t.attr('name') == 'damages_model') {
+      if (t.property('value') != 'dice_2010') {
+        d3.select('.parameter-preview[data-input-parameters="damages_exponent"]')
+          .style('display', 'none');
+      } else {
+        d3.select('.parameter-preview[data-input-parameters="damages_exponent"]')
+          .style('display', 'block');
+      }
+    }
+
   });
 
   sliders.on('change', update_slider);
