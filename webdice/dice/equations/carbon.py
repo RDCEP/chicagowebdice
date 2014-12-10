@@ -205,7 +205,6 @@ class BeamCarbon(CarbonModel):
             0, .001, -.001,
         ]).reshape((3, 3, 1))
 
-    # @profile
     def get_model_values(self, i, df):
         """Get results for t
 

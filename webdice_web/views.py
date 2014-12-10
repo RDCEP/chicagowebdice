@@ -3,12 +3,12 @@ import json
 import zipfile
 import csv
 import StringIO
+import os
 from numpy import inf
 from lxml import etree
-from datetime import datetime
-from flask import render_template, request, Blueprint, jsonify
-from flask import send_file
-from webdice.dice import Dice2007, Dice2010
+from flask import render_template, request, Blueprint, jsonify, send_file
+from webdice.dice import Dice2010
+from webdice_web.constants import BASE_DIR
 
 
 mod = Blueprint('webdice', __name__, static_folder='static',
@@ -23,32 +23,9 @@ def validate_number(n):
     else: return n
 
 
-def do_session(request, year=None):
-    """
-    Checks for existence of session data. Writes variables as necessary.
-    ...
-    Keyword Arguments:
-    newdice: obj
-        A Dice2007 object.
-    """
-    dice = False
-    s = request.environ.get('beaker.session')
-    if 'dice' not in s:
-        if year == 2010:
-            dice = Dice2010()
-        else:
-            dice = Dice2007()
-        s['dice'] = dice
-    if year is not None and s['dice'].params.dice_version != year:
-        if year == 2007:
-            dice = Dice2007()
-        elif year == 2010:
-            dice = Dice2010()
-    s['dice'] = dice if dice else s['dice']
-    return s
+def run_loop(form):
 
-
-def run_loop(this_dice, form, year=2010):
+    dice = Dice2010()
 
     for field in ['e2050', 'e2100', 'e2150']:
         form[field] = float(form[field]) / 100
@@ -56,35 +33,37 @@ def run_loop(this_dice, form, year=2010):
     for field in ['p2050', 'p2100', 'p2150']:
         form[field] = float(form[field]) / 100
 
-    for p in this_dice.user_params:
+    for p in dice.user_params:
         try:
-            setattr(this_dice.params, p, float(form[p]))
+            setattr(dice.params, p, float(form[p]))
         except KeyError:
             pass
         except ValueError:
             pass
 
+    dice.params.productivity_model = 'dice_backstop_2013'
+
     try:
-        this_dice.params.damages_model = form['damages_model']
-        this_dice.params.carbon_model = form['carbon_model']
+        dice.params.carbon_model = form['carbon_model']
+        dice.params.damages_model = form['damages_model']
     except KeyError:
-        this_dice.params.carbon_model = 'dice_{}'.format(year)
-        this_dice.params.damages_model = 'dice_{}'.format(year)
+        dice.params.carbon_model = 'dice_2010'
+        dice.params.damages_model = 'dice_2010'
 
     opt = False
+    dice.params.treaty = False
+    dice.params.carbon_tax = False
     policy = form['policy_type']
-    this_dice.params.treaty = False
-    this_dice.params.carbon_tax = False
     if policy == 'treaty':
-        this_dice.params.treaty = True
+        dice.params.treaty = True
     elif policy == 'optimized':
         opt = True
     elif policy == 'carbon_tax':
-        this_dice.params.carbon_tax = True
-    this_dice.loop(opt=opt)
-    out = this_dice.format_output()
+        dice.params.carbon_tax = True
+    dice.loop(opt=opt)
+    out = dice.format_output()
     out['data'] = {
-        k: [l if l > -inf else -999999 for l in v] for k, v in out['data'].iteritems()
+        k: [l if l > -inf else -999 for l in v] for k, v in out['data'].iteritems()
     }
     return jsonify(**out)
 
@@ -92,36 +71,64 @@ def run_loop(this_dice, form, year=2010):
 @mod.route('/')
 def index():
     """Returns index page."""
-    s = do_session(request, 2007)
-    now = datetime.now().strftime('%Y%m%d%H%M%S')
     return render_template(
         'index.html',
-        now=now,
     )
 
 
-@mod.route('/advanced/<int:year>')
-def advanced(year):
+@mod.route('/documentation')
+def documentation():
+    """Returns index page."""
     return render_template(
-        'versions/advanced_{}.html'.format(year),
-        now = datetime.now().strftime('%Y%m%d%H%M%S'),
-        dice_version=year,
+        'modules/documentation/index.html',
+    )
+
+
+@mod.route('/glossary')
+def glossary():
+    """Returns index page."""
+    return render_template(
+        'modules/glossary/index.html',
+    )
+
+
+@mod.route('/glossary/<term>')
+def glossary_term(term):
+    """Returns index page."""
+    return render_template(
+        'modules/glossary/static_page.html',
+        term=term
+    )
+
+
+@mod.route('/glossary/advanced/<term>')
+def glossary_advanced_term(term):
+    """Returns index page."""
+    s = ''
+    f = os.path.join(BASE_DIR, 'templates', 'modules', 'glossary', 'terms',
+                     'advanced', '{}.html'.format(term))
+    with open(f) as f:
+        s = f.read()
+    return s
+
+
+@mod.route('/advanced')
+def advanced():
+    return render_template(
+        'versions/advanced.html',
+        dice_version=2010,
     )
 
 
 @mod.route('/standard')
 def standard():
-    now = datetime.now().strftime('%Y%m%d%H%M%S')
     return render_template(
         'versions/standard.html',
-        now=now,
     )
 
 
 @mod.route('/run/standard', methods=['POST', 'GET'])
 def graphs_standard():
-    s = do_session(request, 2010)
-    this_dice = s['dice']
     form = json.loads(request.data)
     new_data = {
         'temp_co2_doubling': [1, 2, 3.2, 4, 5],
@@ -145,11 +152,11 @@ def graphs_standard():
         except KeyError:
             pass
 
-    return run_loop(this_dice, form)
+    return run_loop(form)
 
 
-@mod.route('/run/<int:year>', methods=['POST', 'GET'])
-def graphs_d3(year=2007):
+@mod.route('/run/advanced', methods=['POST', 'GET'])
+def graphs_advanced():
     """
     Get data from <form>, run DICE loop.
     ...
@@ -158,8 +165,6 @@ def graphs_d3(year=2007):
     Returns:
         Formatted step values
     """
-    s = do_session(request, year)
-    this_dice = s['dice']
     form = json.loads(request.data)
     for field in ['depreciation', 'savings', 'prstp', 'backstop_decline',
                   'productivity_decline', 'intensity_decline_rate',
@@ -170,7 +175,7 @@ def graphs_d3(year=2007):
         except KeyError:
             pass
 
-    return run_loop(this_dice, form, year)
+    return run_loop(form)
 
 
 @mod.route('/get_svg', methods=['POST', ])

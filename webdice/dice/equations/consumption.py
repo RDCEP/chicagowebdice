@@ -93,7 +93,6 @@ class ConsumptionModel(object):
         Discount rate for consumption
         """
         if discount_type == 'ramsey':
-            # If consumption[t] = 0 (eg, if abatement = output), discount = 1
             if c1 <= 0:
                 return 1
             return np.exp(-(

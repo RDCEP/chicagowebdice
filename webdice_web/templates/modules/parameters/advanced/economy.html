@@ -1,24 +1,29 @@
 <section id=economy_parameters class="pane clearfix">
 
   <div class=parameter-pane-intro>
-    <p>TKTK</p>
+    <p>How would the economy would perform without climate change? The model
+      assumes that the <i>productivity</i> of the economy increases but the rate
+      of increase slows over time. You can choose the rate of this slow
+      down. <i>Depreciation</i> determines how fast assets wear out in
+      the economy. <i>Savings</i> is the portion of output that is
+      reinvested in the economy. The <i>maximum population</i> determines
+      how many people the earth will eventually hold. </p>
   </div>
 
 
   <div class="parameter-pane fourths">
 
     <div class=range-wrap>
-      <label><span class="parameter-name">Productivity decline</span> (%)
-        <input name=productivity_decline type=range min=0.05 max=1.5 value=0.1
-               step=0.05 data-prec=2 data-default=0.1>
+      <label><span class="parameter-name">Productivity</span><br>
+        <span class=current-range-val>0.9</span>
+        <input name=productivity_decline type=range min=0.05 max=1.5 value=0.9
+               step=0.05 data-prec=2 data-default=0.9>
       </label>
-      <div class=current-range-val>
-        <span style=left:{{ (0.1 - 0.05) / (1.5 - 0.05) * 100 - 50 }}%>.10</span>
-      </div>
+
       <span class=min-range-val>.05</span>
       <span class=max-range-val>.15</span>
       <div class=tick-wrap>
-        <span class=tick style=left:{{ (0.1 - 0.05) / (1.5 - 0.05) * 100 - 50 }}%>&bullet;</span>
+        <span class=tick style=left:{{ (0.9 - 0.05) / (1.5 - 0.05) * 100 - 50 }}%>&bullet;</span>
       </div>
     </div>
     <div class=parameter-help>
@@ -30,13 +35,12 @@
   <div class="parameter-pane fourths">
 
     <div class=range-wrap>
-      <label><span class="parameter-name">Depreciation</span> (%)
+      <label><span class="parameter-name">Depreciation</span> (%)<br>
+        <span class=current-range-val>10</span>
         <input name=depreciation type=range min=8 max=20 value=10 step=1
                data-prec=0 data-default=10 data-fullname=Depreciation>
       </label>
-      <div class=current-range-val>
-        <span style=left:{{ (10.0 - 8.0) / (20.0 - 8.0) * 100 - 50 }}%>10</span>
-      </div>
+
       <span class=min-range-val>8</span>
       <span class=max-range-val>20</span>
       <div class=tick-wrap>
@@ -52,13 +56,12 @@
   <div class="parameter-pane fourths">
 
     <div class=range-wrap>
-      <label><span class="parameter-name">Savings</span> (%)
+      <label><span class="parameter-name">Savings</span> (%)<br>
+        <span class=current-range-val>22</span>
         <input name=savings type=range min=15 max=25 value=22 step=1
                data-prec=0 data-default=22>
       </label>
-      <div class=current-range-val>
-        <span style=left:{{ (22.0 - 15.0) / (25.0 - 15.0) * 100 - 50 }}%>22</span>
-      </div>
+
       <span class=min-range-val>15</span>
       <span class=max-range-val>25</span>
       <div class=tick-wrap>
@@ -74,13 +77,12 @@
   <div class="parameter-pane fourths">
 
     <div class=range-wrap>
-      <label><span class="parameter-name">Max. population</span> (MM)
-        <input name=popasym type=range min=8000 max=12000 value=8600 step=200
-               data-prec=0 data-default=8600>
+      <label><span class="parameter-name">Max. population</span> (MM)<br>
+        <span class=current-range-val>8700</span>
+        <input name=popasym type=range min=8000 max=12000 value=8700 step=200
+               data-prec=0 data-default=8800>
       </label>
-      <div class=current-range-val>
-        <span style=left:{{ (8600.0 - 8000.0) / (12000.0 - 8000.0) * 100 - 50 }}%>8600</span>
-      </div>
+
       <span class=min-range-val>8000</span>
       <span class=max-range-val>12000</span>
       <div class=tick-wrap>

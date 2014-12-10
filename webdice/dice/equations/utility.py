@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import division
 import numpy as np
 
@@ -22,12 +23,11 @@ class UtilityModel(object):
 
     @property
     def utility_discount(self):
-        """
-        R, Average utility discount rate
-        ...
-        Returns
-        -------
-        array
+        """R, Average utility discount rate
+
+        Returns:
+            :returns: 1 / (1 + ρ) ^ (t-1)
+            :rtype: np.ndarray
         """
         return 1 / ((1 + self.params.prstp) ** (10 * self.params.t0))
 
@@ -41,12 +41,15 @@ class UtilityModel(object):
         )
 
     def utility(self, consumption_pc):
-        """
-        U, Period utility function
-        ...
-        Returns
-        -------
-        float
+        """U, Period utility function
+
+        Args:
+            :param consumption_pc: per capita consumption
+             :type consumption_pc: float
+
+        Returns:
+            :returns: 1 / (1 - η) * (c ^ (1 - η) - 1)
+            :rtype: float
         """
         if self.params.elasmu == 1:
             return np.log(consumption_pc)
@@ -54,12 +57,19 @@ class UtilityModel(object):
         return (1 / denom) * (consumption_pc ** denom - 1)
 
     def utility_discounted(self, utility, utility_discount, l):
-        """
-        Utility discounted
-        ...
-        Returns
-        -------
-        float
+        """Utility discounted
+
+        Args:
+            :param utility: U(t)
+             :type utility: float
+            :param utility_discount: R(t)
+             :type utility_discount: float
+            :param l: L(t), population
+             :type l: float
+
+        Returns:
+            :returns: R * L * U
+            :rtype: float
         """
         return utility_discount * l * utility
 

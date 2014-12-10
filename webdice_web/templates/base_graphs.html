@@ -32,7 +32,7 @@
   </div>
   <div id=economy_graphs class="pane graph-pane" data-pane=economy>
     <div class="small-graph graph" id=productivity_graph></div>
-    <div class="small-graph graph" id=backstop_growth_graph></div>
+    <div class="small-graph graph" id=backstop_graph></div>
     <div class="small-graph graph" id=carbon_intensity_graph></div>
     <div class="small-graph graph" id=damages_graph></div>
   </div>
@@ -96,7 +96,7 @@
           <optgroup label="-- Economic Results --"></optgroup>
             <option value="consumption_pc">Consumption per Capita</option>
             <option value="consumption">Total Consumption</option>
-            <option value="damages">Damages</option>
+            <option value="damages" selected>Damages</option>
             <option value="emissions_total">Total Emissions per Year</option>
             <option value="emissions_ind">Industrial Emissions</option>
             <option value="carbon_emitted">Total Carbon Emitted</option>
@@ -155,6 +155,7 @@
     </div>
   </div>
   <img class=loader_gif src="{{ url_for('webdice.static', filename='images/gui/loadinfo_1.gif') }}">
+  
 </div>
 {% block parameters %}{% endblock %}
 {% include 'modules/runs.html' %}

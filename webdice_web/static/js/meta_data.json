@@ -1,7 +1,7 @@
 {
   "custom" : {
-    "title": "Productivity v. Time",
-    "title_unit": "TFP v. year",
+    "title": "Damages v. Time",
+    "title_unit": "trillion USD v. year",
     "unit": null
   },
   "twin" : {
@@ -9,7 +9,7 @@
     "title_unit": "",
     "unit": null
   },
-  "year" : {
+  "year": {
     "title": "Year"
   },
   "temp_atmosphere": {
@@ -62,7 +62,7 @@
     "unit": "trillion USD"
   },
   "tax_rate": {
-    "title_unit": "$USD / ton of carbon",
+    "title_unit": "USD / ton of carbon",
     "title": "Tax rate",
     "unit": "USD / tC"
   },
@@ -72,7 +72,7 @@
     "unit": "trillion USD"
   },
   "scc": {
-    "title_unit": "$USD / ton of CO2",
+    "title_unit": "USD / ton of CO2",
     "title": "Social cost of carbon",
     "unit": "USD / tCO2"
   },
@@ -82,7 +82,7 @@
     "unit": "%"
   },
   "backstop_growth": {
-    "title_unit": "",
+    "title_unit": false,
     "title": "Clean energy costs",
     "unit": null
   },
@@ -112,7 +112,7 @@
     "unit": "GtC"
   },
   "capital": {
-    "title_unit": "Trillions USD",
+    "title_unit": "trillions USD",
     "title": "Capital stock",
     "unit": "trillion USD"
   },
@@ -172,7 +172,4 @@
     "title": "Population growth",
     "unit": null
   }
-
-
-
 }

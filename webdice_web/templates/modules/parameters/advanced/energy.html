@@ -1,19 +1,24 @@
 <section id=energy_parameters class="pane clearfix">
 
   <div class=parameter-pane-intro>
-    <p>TKTK</p>
+    <p>How fast will emissions go down due to efficiency improvements—and
+      because of the limits to fossil fuel reserves. <i>Energy intensity</i>
+      determines how efficient the economy is. As the economy becomes more
+      efficient, it can produce more using less energy and, therefore,
+      fewer emissions. The model assumes that the economy gets more efficient
+      over time. You can choose how much more. <i>Fossil fuels</i> is the
+      total recoverable fossil fuels, measured in gigatons of carbon. </p>
   </div>
 
   <div class="parameter-pane thirds">
 
     <div class=range-wrap>
-      <label><span class="parameter-name">Energy intensity</span> (%)
+      <label><span class="parameter-name">Energy intensity</span> (%)<br>
+        <span class=current-range-val>0.6</span>
         <input name=intensity_decline_rate type=range min=0 max=6 value=0.6
                step=0.1 data-prec=1 data-default=0.6>
       </label>
-      <div class=current-range-val>
-        <span style=left:{{ (0.6 - 0.0) / (6.0 - 0.0) * 100 - 50 }}%>0.6</span>
-      </div>
+
       <span class=min-range-val>0</span>
       <span class=max-range-val>6</span>
       <div class=tick-wrap>
@@ -30,13 +35,12 @@
   <div class="parameter-pane thirds">
 
     <div class=range-wrap>
-      <label><span class="parameter-name">Fossil fuels</span> (GtC)
+      <label><span class="parameter-name">Fossil fuels</span> (GtC)<br>
+        <span class=current-range-val>6000</span>
         <input name=fosslim type=range min=6000 max=9000 value=6000 step=500
                data-prec=0 data-default=6000>
       </label>
-      <div class=current-range-val>
-        <span style=left:{{ (6000.0 - 6000.0) / (9000.0 - 6000.0) * 100 - 50 }}%>6000</span>
-      </div>
+
       <span class=min-range-val>6000</span>
       <span class=max-range-val>9000</span>
       <div class=tick-wrap>

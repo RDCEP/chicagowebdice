@@ -16,14 +16,14 @@
     initialized = false,
 
     color_list = [
-      d3.rgb(86, 180, 233), // sky blue
-      d3.rgb(230, 159, 0),  // orange
-      d3.rgb(0, 158, 115),  // bluish green
-      d3.rgb(240, 228, 66), // yellow
-      d3.rgb(0, 114, 178),  // blue
-      d3.rgb(213, 94, 0),   // vermilion
+      d3.rgb(86, 180, 233),  // sky blue
+      d3.rgb(230, 159, 0),   // orange
+      d3.rgb(0, 158, 115),   // bluish green
+      d3.rgb(240, 228, 66),  // yellow
+      d3.rgb(0, 114, 178),   // blue
+      d3.rgb(213, 94, 0),    // vermilion
       d3.rgb(204, 121, 167), // reddish purple
-      d3.rgb(50, 50, 50), //black
+      d3.rgb(50, 50, 50)     //black
     ],
     used_colors = [],
     padding = [45, 15, 30, 60],  // padding[3] needs to match $left_pad in _layout.sass
@@ -44,7 +44,7 @@
     all_data = {},
     custom_data = [[], []],
     adjusted_params = [],
-    custom_vars = ['productivity', 'backstop'],
+    custom_vars = ['damages', 'backstop'],
     show_twin = false,
 
     height;
@@ -60,12 +60,12 @@
     return {w: w, h: h};
   };
 
-  var get_extents = function(data, index, v) {
+  var get_extents = function(data, index, val) {
     /**
      * Clips utility when consumption = twigs + beetles
      */
     var extents = d3.extent(data);
-    extents = v == 'utility'
+    extents = (val == 'utility') || (val == 'utility_discounted')
       ? [d3.max([extents[0], -1]), extents[1]]
       : extents;
     return extents;
@@ -99,7 +99,8 @@
         : 'Year',
       run_index: total_runs,
       run_name: 'Run #' + total_runs,
-      unit: metadata[dice_variable].unit
+      unit: metadata[dice_variable].unit,
+      visible: true
     };
 
     _data[dice_variable].forEach(function(d, i) {
@@ -155,40 +156,49 @@
           }
         })
         .title(metadata[dice_variable].title || '')
-        .subtitle(metadata[dice_variable].title_unit || '')
+        .subtitle(get_subtitle(dice_variable))
         .legend(true),
       small: graph_wrap.classed('small-graph')
     };
   };
 
-  var update_custom_graph = function() {
+  var update_custom_graphs = function() {
 
     var _graphs = [[0, 'custom'], [1, 'twin']];
     for (var i = 0; i < _graphs.length; ++i) {
-
-      var index = _graphs[i][0],
-        graph = _graphs[i][1];
-
-      graphs[graph].graph
-        .data(custom_data[index])
-        .domain(x_custom_domain,
-                get_extents(flatten_runs(custom_data[index]),
-                index, custom_data[index][0].var))
-        .colors(used_colors);
-
-      if (initialized) {
-        graphs[graph].graph
-          .update_data();
-      } else {
-        graphs[graph].graph
-          .twin(index == 1)
-          .custom(true)
-          .hoverable(true)
-          .padding(45, 60, 45, 60)
-          .draw();
-      }
+      update_custom_graph(
+        _graphs[i][1],
+        _graphs[i][0]
+      );
     }
+
     resize_graphs();
+
+  };
+
+  var update_custom_graph = function(g, i) {
+
+    graphs[g].graph
+      .data(custom_data[i])
+      .domain(x_custom_domain,
+              get_extents(flatten_runs(custom_data[i]),
+                          i,
+                          //FIXME This next line seems really kludgy
+                          custom_data[i][0] ? custom_data[i][0].var : ''))
+      .colors(used_colors);
+
+    if (initialized) {
+      graphs[g].graph
+        .update_data();
+    } else {
+      graphs[g].graph
+        .twin(i == 1)
+        .custom(true)
+        .hoverable(true)
+        .padding(45, 60, 45, 60)
+        .draw();
+    }
+
   };
 
   var update_graph = function(dice_variable) {
@@ -240,29 +250,50 @@
         graphs[graph].graph.format_x(graphs.custom.graph.format_y());
         graphs[graph].graph.x(d3.scale.linear());
         x_custom_domain = get_extents(flatten_runs(all_data[dice_variable]),
-                                      index, dice_variable);
+                                      index,
+                                      dice_variable);
         x_custom_domain_var = dice_variable;
+        console.log(x_custom_domain[0], x_custom_domain[1], x_custom_domain_var,
+          x_domain);
+
       }
 
       var title = metadata[custom_vars[index]].title + ' v. ';
       title += x_custom_domain_var ? metadata[x_custom_domain_var].title : 'Time';
-      var subtitle = metadata[custom_vars[index]].title_unit + ' v. ';
-      subtitle += x_custom_domain_var ? metadata[x_custom_domain_var].title_unit : 'years';
 
       graphs[graph].graph
         .title(title)
-        .subtitle(subtitle)
-        .change_x();
+        .subtitle(get_subtitle(index));
+//        .change_x();
+
+      /*TODO: This is being called twice because change_x() needs to be
+        called for each graph*/
+      update_custom_graph(graph, index);
+
+      graphs[graph].graph.change_x();
 
     }
-    update_custom_graph();
+
+    resize_graphs();
+
+  };
+
+  var get_subtitle = function (index) {
+
+    if (typeof index == 'string') {
+      return metadata[index].title_unit || metadata[index].title;
+    }
+    var subtitle = (metadata[custom_vars[index]].title_unit || metadata[custom_vars[index]].title);
+    subtitle += ' v. ';
+    subtitle += x_custom_domain_var ? metadata[x_custom_domain_var].title_unit : 'years';
+    return subtitle;
+
   };
 
   var update_y_axis = function(graph, val) {
 
     var index = graph == 'custom' ? 0 : 1,
-      title = '',
-      subtitle = '';
+      title = '';
 
     custom_vars[index] = val;
     custom_data[index][0].var = val;
@@ -270,14 +301,15 @@
     if ((graph == 'twin') && (val == 'none')) {
       custom_vars[index] = false;
       show_twin = false;
+      graphs[graph].graph
+        .title('')
+        .subtitle('');
     } else {
       if ((graph == 'twin') && (val != 'none')) {
         show_twin = true;
       }
       title = metadata[custom_vars[index]].title + ' v. ';
       title += x_custom_domain_var ? metadata[x_custom_domain_var].title : 'Time';
-      subtitle = metadata[custom_vars[index]].title_unit + ' v. ';
-      subtitle += x_custom_domain_var ? metadata[x_custom_domain_var].title_unit : 'years';
 
       custom_data.forEach(function (v, k) {
         v.forEach(function (r, i) {
@@ -294,12 +326,13 @@
       });
 
       graphs[graph].graph
+        .twin(show_twin)
         .title(title)
-        .subtitle(subtitle)
+        .subtitle(get_subtitle(index))
         .change_y();
     }
 
-    update_custom_graph();
+    update_custom_graphs();
 
   };
 
@@ -347,7 +380,7 @@
     custom_data[0].push(build_data_object(_data, custom_vars[0], x_custom_domain_var));
     custom_data[1].push(build_data_object(_data, custom_vars[1], x_custom_domain_var));
 
-    update_custom_graph();
+    update_custom_graphs();
 
     add_run_to_list(total_runs);
 
@@ -363,6 +396,11 @@
 
     ++total_runs;
     ++visible_runs;
+
+    /* Switch back to graphs after running model */
+    d3.select('#parameters_wrap').classed('visuallyhidden', true);
+    d3.select('#parameters_tab').classed('selected', false);
+    /* End switch*/
 
   };
 
@@ -431,6 +469,14 @@
 
   };
 
+  var unphysical = function(r) {
+    var uphys = false;
+    r.data['consumption_pc'].forEach(function(d) {
+      if (d <= .25) { uphys = true; }
+    });
+    return uphys;
+  };
+
   var load_run = function(r) {
     /*
      Upon successful run of model, add run and hide parameters pane
@@ -442,9 +488,23 @@
 
 //    d3.select('#parameters_tab').classed('selected', false);
 //    parameters_wrap.classed('visuallyhidden', true);
+
     run_model.attr('disabled', null);
     loader_gif.style('display', 'none');
 
+    if (unphysical(r)) {
+      show_warning();
+    }
+
+  };
+
+  var show_warning = function() {
+    var modal_click = function() {
+      d3.selectAll('.modal').classed('visuallyhidden', true);
+    };
+    d3.selectAll('.modal')
+      .classed('visuallyhidden', false)
+      .on('click', modal_click);
   };
 
   var get_updated_params = function() {
@@ -582,7 +642,7 @@
           }).forEach(function(d) {
             d.run_name = new_name;
           });
-          update_custom_graph();
+          update_custom_graphs();
 
           h3.text(new_name);
           d3.selectAll('[data-type]').attr('data-type', new_name);
@@ -597,6 +657,12 @@
     var t = d3.select(this),
       index = +t.attr('data-run-id');
     d3.selectAll('#graphs_wrap [data-run-id="' + index + '"]')
+      .filter(function() {
+        if (d3.select('#select-y2-axis').property('value') == 'none') {
+          return !d3.select(this).classed('twin');
+        }
+        return true;
+      })
       .classed('visuallyhidden', false);
     t.text('hide')
       .on('click', hide_run);
@@ -659,7 +725,7 @@
         return dd.run_index != index;
       });
     });
-    update_custom_graph();
+    update_custom_graphs();
 
     delete Options.runs[index];
 
@@ -702,7 +768,8 @@
         d3.selectAll('.graph-line.twin, .data-point.twin, h3.twin, h4.twin, .y.axis.twin')
           .classed('visuallyhidden', true);
       } else {
-        d3.selectAll('.graph-line.twin, .data-point.twin, h3.twin, h4.twin, .y.axis.twin')
+//        d3.selectAll('.graph-line.twin, .data-point.twin, h3.twin, h4.twin, .y.axis.twin')
+        d3.selectAll('h3.twin, h4.twin, .y.axis.twin')
           .classed('visuallyhidden', false);
       }
 

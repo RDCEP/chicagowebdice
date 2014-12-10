@@ -1,19 +1,21 @@
 <section id=technology_parameters class="pane clearfix">
 
   <div class=parameter-pane-intro>
-    <p>TKTK</p>
+    <p>How much will clean energy technology cost? You can choose both how
+      fast clean energy costs will go down and how far they will go down.
+      These costs determine the effects of an emissions reduction policy and
+      do not come into play in the business as usual scenario.</p>
   </div>
 
   <div class="parameter-pane thirds">
 
     <div class=range-wrap>
-      <label><span class="parameter-name">Abatement costs</span>
+      <label><span class="parameter-name">Abatement costs</span><br>
+        <span class=current-range-val>2.8</span>
         <input name=abatement_exponent type=range min=2 max=4 value=2.8 step=0.2
                data-prec=1 data-default=2.8>
       </label>
-      <div class=current-range-val>
-        <span style=left:{{ (2.8 - 2.0) / (4.0 - 2.0) * 100 - 50 }}%>2.8</span>
-      </div>
+
       <span class=min-range-val>2</span>
       <span class=max-range-val>4</span>
       <div class=tick-wrap>
@@ -30,13 +32,12 @@
   <div class="parameter-pane thirds">
 
     <div class=range-wrap>
-      <label><span class="parameter-name">Cost decline</span> (%)
+      <label><span class="parameter-name">Cost decline</span> (%)<br>
+        <span class=current-range-val>5</span>
         <input name=backstop_decline type=range min=0 max=20 value=5 step=5
                data-prec=0 data-default=5>
       </label>
-      <div class=current-range-val>
-        <span style=left:{{ (5.0 - 0.0) / (20.0 - 0.0) * 100 - 50 }}%>5</span>
-      </div>
+
       <span class=min-range-val>0</span>
       <span class=max-range-val>20</span>
       <div class=tick-wrap>
@@ -46,30 +47,6 @@
     <div class=parameter-help>
       <p>The rate of decline in costs of reduction emissions—hpw fast will
         these costs decline over time?</p>
-    </div>
-
-  </div>
-
-  <div class="parameter-pane thirds">
-
-    <div class=range-wrap>
-      <label><span class="parameter-name">Cost ratio</span>
-        <input name=backstop_ratio type=range min=1 max=4 value=2 step=.5
-               data-prec=1 data-default=2>
-      </label>
-      <div class=current-range-val>
-        <span style=left:{{ (2.0 - 1.0) / (4.0 - 1.0) * 100 - 50 }}%>2.0</span>
-      </div>
-      <span class=min-range-val>1</span>
-      <span class=max-range-val>4</span>
-      <div class=tick-wrap>
-        <span class=tick style=left:{{ (2.0 - 1.0) / (4.0 - 1.0) * 100 - 50 }}%>&bullet;</span>
-      </div>
-    </div>
-    <div class=parameter-help>
-      <p>How low will the costs of renewables go? This represents the cost
-        of replacing all emissions in 2012 dollars per ton of CO<sub>2</sub>,
-        relative to future costs.</p>
     </div>
 
   </div>

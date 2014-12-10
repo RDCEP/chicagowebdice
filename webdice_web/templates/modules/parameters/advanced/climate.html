@@ -1,0 +1,65 @@
+<section id=climate_parameters class="pane clearfix">
+
+  <div class=parameter-pane-intro>
+    <p>How bad climate change will be? <i>Climate sensitivity</i> is a
+      measure of how much temperatures will increase if CO<sub>2</sub>
+      in the atmosphere doubles. A higher sensitivity means a greater
+      temperature increase for a given level of emissions. <i>Climate model</i>
+      is the model of what happens to emissions once they are released.
+      The DICE model is the model that is built into the standard version
+      of DICE. BEAM is a slightly more realistic model that includes ocean
+      chemistry. Linear is a simple but reasonably accurate model that
+      is based on cumulate carbon emissions.</p>
+  </div>
+
+
+  <div class="parameter-pane thirds">
+
+    <div class=range-wrap>
+      <label><span class="parameter-name">Climate sensitivity</span><br>
+        <span class=current-range-val>3.2</span>
+        <input name=temp_co2_doubling type=range min=1 max=5 value=3.2 step=0.2
+               data-prec=1 data-default=3.2>
+      </label>
+
+      <span class=min-range-val>1</span>
+      <span class=max-range-val>5</span>
+      <div class=tick-wrap>
+        <span class=tick style=left:{{ (3.2 - 1.0) / (5.0 - 1.0) * 100 - 50 }}% >&bullet;</span>
+      </div>
+    </div>
+    <div class=parameter-help>
+      <p>How much will temperatures go up? Or: how much will temperature
+        increase in degrees C from a doubling of atmospheric CO<sub>2</sub>?</p>
+    </div>
+
+  </div>
+
+  <div class="parameter-pane thirds">
+
+    <div class=select-wrap>
+      <h3><span class="parameter-name">Climate model</span></h3>
+      <label><span class=parameter-name>DICE carbon</span>
+        <input name=carbon_model type=radio value=dice_2007
+               data-default=dice_2007 checked></label>
+      <label><span class=parameter-name>BEAM simplified</span>
+        <input name=carbon_model type=radio value=beam_carbon
+               data-default=dice_2007></label>
+      <label><span class=parameter-name>Linear</span> (°C / 1000 GtC)
+        <input name=carbon_model type=radio value=linear_carbon
+               data-default=dice_2007>
+      </label>
+    </div>
+    <div class=parameter-help>
+      <p></p>
+    </div>
+
+  </div>
+
+  <div class=parameter-previews style=clear:left>
+    <div class="parameter-pane thirds">
+      <figure class=parameter-preview data-input-parameters=temp_co2_doubling></figure>
+    </div>
+  </div>
+
+</section>

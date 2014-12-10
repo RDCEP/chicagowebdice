@@ -1,0 +1,80 @@
+<section id=model_parameters class="pane clearfix">
+
+  <div class=parameter-pane-intro>
+    <p>How will climate change harm the economy? The default model in
+      DICE assumes that harms increase as temperatures increase by
+      reducing usable output. <i>Harms</i> determines how fast they
+      increase: harms are effectively the temperature increase raised to
+      the exponent you choose. <i>Model</i> allows you to different
+      functional forms or to allow climate change to effect the economy
+      in a different way (such as reducing the growth rate of productivity
+      rather than by reducing usable output).</p>
+  </div>
+
+  <div class="parameter-pane thirds">
+
+    <div class=range-wrap>
+      <label><span class="parameter-name">Harms</span><br>
+        <span class=current-range-val>2.0</span>
+        <input name=damages_exponent type=range min=1 max=4 value=2 step=0.5
+               data-prec=1 data-default=2>
+      </label>
+
+      <span class=min-range-val>1</span>
+      <span class=max-range-val>4</span>
+      <div class=tick-wrap>
+        <span class=tick style=left:{{ (2.0 - 1.0) / (4.0 - 1.0) * 100 - 50 }}% >&bullet;</span>
+      </div>
+    </div>
+    <div class=parameter-help>
+      <p>How large will the harms to the climate be, due to an increase
+        in temperatures?</p>
+    </div>
+
+  </div>
+
+  <div class="parameter-pane thirds">
+
+    <div class=select-wrap>
+      <h3><span class="parameter-name">Damages function</span></h3>
+      <label><span class=parameter-name>DICE damages</span>
+        <input name=damages_model type=radio value=dice_2010
+               data-default=dice_2010 checked></label>
+      <label><span class=parameter-name>Incommensurable environmental goods</span>
+        <input name=damages_model type=radio value=incommensurable_damages
+               data-default=dice_2010></label>
+      <label><span class=parameter-name>Tipping point</span>
+        <input name=damages_model type=radio value=tipping_point
+               data-default=dice_2010></label>
+      <label><span class=parameter-name>Fraction of productivity</span>
+        <input name=damages_model type=radio value=productivity_fraction
+               data-default=dice_2010 id=productivity_fraction></label>
+    </div>
+    <div class=parameter-help>
+      <p></p>
+    </div>
+
+    <div id=prod_frac class="disabled init-disabled range-wrap">
+      <label><span class="parameter-name">Damages to productivity</span> (%)<br>
+        <span class=current-range-val>5</span>
+        <input name=prod_frac type=range min=0 max=50 value=5
+               step=1 data-prec=0 data-default=5 disabled>
+      </label>
+
+      <span class=min-range-val>0</span>
+      <span class=max-range-val>50</span>
+      <div class=tick-wrap>
+        <span class=tick style=left:{{ (5 - 0.0) / (50 - 0.0) * 100 - 50 }}%>&bullet;</span>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class=parameter-previews style=clear:left>
+    <div class="parameter-pane thirds">
+      <figure class=parameter-preview data-input-parameters=damages_exponent></figure>
+    </div>
+  </div>
+
+</section>

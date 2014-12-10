@@ -55,15 +55,15 @@
         _eq = d3.select(this.form).classed('advanced')
           ? advanced_equations
           : standard_equations,
-        current = p.select('.current-range-val span'),
+        current = p.select('.current-range-val'),
         preview = p.select('.parameter-preview-line'),
         name = t.attr('name'),
         reverse = t.classed('reverse'),
         min = reverse ? parseFloat(t.attr('max')) : parseFloat(t.attr('min')),
         max = reverse ? parseFloat(t.attr('min')) : parseFloat(t.attr('max')),
         dot = p.select('.tick'),
-        val = parseFloat(t.property('value')),
-        val = reverse ? Math.abs(100 - val) : val,
+        pval = parseFloat(t.property('value')),
+        val = reverse ? Math.abs(100 - pval) : pval,
         prec = parseInt(t.attr('data-prec')),
         pct = ((parseFloat(val) - min) / (max - min) - .5) * 100;
 
@@ -74,7 +74,10 @@
           eq = _eq[name];
 
         if (eq.hasOwnProperty('other_input')) {
-          o = +d3.select('input[name="' + eq.other_input + '"]').property('value');
+          var other_input = d3.select('input[name="' + eq.other_input + '"]');
+          o = other_input.attr('type') == 'radio'
+            ? d3.select('input[name="' + eq.other_input + '"]:checked').property('value')
+            : other_input.property('value');
         }
 
         if (eq.shared) {
@@ -107,7 +110,7 @@
           o;
         if (eq.hasOwnProperty('other_input')) {
           oname = eq.other_input;
-          o = +d3.select('input[name="'+eq.other_input+'"]').property('value');
+          o = d3.select('input[name="'+eq.other_input+'"]').property('value');
         }
         preview_graphs[name] = new WebDICEPreview()
           .init(t, f, h, w, value, max, s, o);

@@ -8,9 +8,9 @@
         <li data-pane=climate_parameters>Climate</li>
         <li data-pane=economy_parameters>Economy</li>
         <li data-pane=technology_parameters>Technology</li>
-        <li data-pane=energy_parameters>Energy</li>
-        <li data-pane=discount_parameters>Discount</li>
-        <li data-pane=model_parameters>Model</li>
+        <li data-pane=energy_parameters>Fossil fuels</li>
+        <li data-pane=discount_parameters>Welfare</li>
+        <li data-pane=model_parameters>Damages</li>
         <li id=run_clear>
           <input id=clear_model type=button value="Clear Model">
           <input id=run_model type=submit value="Run Model">
@@ -18,7 +18,7 @@
         </li>
       </ul>
     </div>
-    <form id=parameter_form class="clearfix advanced" action=/run/{% if dice_version %}{{ dice_version|safe }}{% else %}standard{% endif %}>
+    <form id=parameter_form class="clearfix advanced" action={{ url_for('webdice.graphs_advanced') }}>
       {% block parameter_includes %}
       {% endblock %}
     </form>

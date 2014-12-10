@@ -2,24 +2,8 @@
   <li><h1><a href="{{ url_for('webdice.index') }}">webDICE</a></h1></li>
   <li{% if version == 'standard' %} class=active{% endif %}>
     <a href="{{ url_for('webdice.standard') }}">Standard</a></li>
-  <li id=advanced_pages{% if version in [2007, 2010] %} class=active{% endif %}>
-    <a class=dead-hover>Advanced</a>
-    <ul>
-      <li{% if version == 2007 %} class=active{% endif %}>
-        <a href="{{ url_for('webdice.advanced', year=2007) }}">2007</a></li>
-      <li{% if version == 2010 %} class=active{% endif %}>
-        <a href="{{ url_for('webdice.advanced', year=2010) }}">2010</a></li>
-    </ul>
-  </li>
-  <li><a class=dead-hover>Documentation</a><ul>
-    {% if version == 'standard' %}
-    <li><a target=_blank href="{{ url_for('webdice.static', filename='docs/webdice_standard_faq.pdf') }}">Basic</a></li>
-    <li><a target=_blank href="{{ url_for('webdice.static', filename='docs/webdice_equation_help.pdf') }}">Equations</a></li>
-    {% elif version in [2007, 2010] %}
-    <li><a target=_blank href="{{ url_for('webdice.static', filename='docs/webdice_advanced_faq.pdf') }}">Basic</a></li>
-    <li><a target=_blank href="{{ url_for('webdice.static', filename='docs/webdice_advanced_manual.pdf') }}">Intermediate</a></li>
-    <li><a target=_blank href="{{ url_for('webdice.static', filename='docs/webdice_equation_help.pdf') }}">Equations</a></li>
-    {% endif %}
-    <li><a target=_blank href="https://www.github.com/RDCEP/chicagowebdice/">View source</a></li>
-  </ul></li>
+  <li id=advanced_pages{% if version == 'advanced' %} class=active{% endif %}>
+    <a href="{{ url_for('webdice.advanced') }}">Advanced</a></li>
+  <li{% if version == 'documentation' %} class=active{% endif %}>
+    <a href={{ url_for('webdice.documentation') }}>Documentation</a></li>
 {% endmacro %}

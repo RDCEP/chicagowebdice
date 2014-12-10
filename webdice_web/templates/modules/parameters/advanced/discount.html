@@ -1,19 +1,22 @@
 <section id=discount_parameters class="pane clearfix">
 
   <div class=parameter-pane-intro>
-    <p>TKTK</p>
+    <p>Choose parameters that determine the individual utility function and
+      the discount rate applied to future utility. <i>Eta</i> determines how
+      fast marginal utility declines with income, with higher values meaning
+      that utility increases less as people get richer. <i>Rho</i> is the
+      discount rate applied to utility.</p>
   </div>
 
   <div class="parameter-pane thirds">
 
     <div class=range-wrap>
-      <label><span class="parameter-name">Eta</span>
+      <label><span class="parameter-name">Eta</span><br>
+        <span class=current-range-val>1.5</span>
         <input name=elasmu type=range min=1 max=3 value=1.5 step=0.1
                data-prec=1 data-default=1.5>
       </label>
-      <div class=current-range-val>
-        <span style=left:{{ (1.5 - 1.0) / (3.0 - 1.0) * 100 - 50 }}%>1.5</span>
-      </div>
+
       <span class=min-range-val>1</span>
       <span class=max-range-val>3</span>
       <div class=tick-wrap>
@@ -30,13 +33,12 @@
   <div class="parameter-pane thirds">
 
     <div class=range-wrap>
-      <label><span class="parameter-name">Rho</span> (%)
+      <label><span class="parameter-name">Rho</span> (%)<br>
+        <span class=current-range-val>1.5</span>
         <input name=prstp type=range min=0 max=10 value=1.5 step=0.5
                data-prec=1 data-default=1.5>
       </label>
-      <div class=current-range-val>
-        <span style=left:{{ (1.5 - 0.0) / (10.0 - 0.0) * 100 - 50 }}%>1.5</span>
-      </div>
+
       <span class=min-range-val>1</span>
       <span class=max-range-val>3</span>
       <div class=tick-wrap>
