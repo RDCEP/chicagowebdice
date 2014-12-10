@@ -1,0 +1,7 @@
+{% extends 'modules/glossary/index.html' %}
+{% block glossary_list %}
+  {% include 'modules/glossary/terms/{}.html'.format(term) %}
+  {% if term in advanced_glossary_terms %}
+  {% include 'modules/glossary/terms/advanced/{}.html'.format(term) %}
+  {% endif %}
+{% endblock %}
