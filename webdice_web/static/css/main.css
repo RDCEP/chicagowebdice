@@ -32,7 +32,7 @@ table {
   border-spacing: 0; }
 
 html, button, input, select, textarea {
-  color: #222222; }
+  color: #222; }
 
 body {
   font-size: 1em;
@@ -50,7 +50,7 @@ hr {
   display: block;
   height: 1px;
   border: 0;
-  border-top: 1px solid #cccccc;
+  border-top: 1px solid #ccc;
   margin: 1em 0;
   padding: 0; }
 
@@ -1244,5 +1244,9 @@ g.visuallyhidden {
 
   #text_wrap .pane.half {
     width: 770px; } }
+@media only screen and (min-height: 1160px) {
+  #footer_wrap {
+    position: absolute;
+    bottom: 0; } }
 
 /*# sourceMappingURL=main.css.map */
