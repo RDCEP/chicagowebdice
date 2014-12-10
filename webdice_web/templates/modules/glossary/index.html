@@ -13,8 +13,8 @@
 {% endblock %}
 {% block headjs %}
 <script type="text/javascript"
-{#  src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">#}
-  src="{{ url_for('webdice.static', filename='js/vendor/MathJax-2.4/MathJax.js') }}?config=TeX-AMS-MML_HTMLorMML">
+  src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+{#  src="{{ url_for('webdice.static', filename='js/vendor/MathJax-2.4/MathJax.js') }}?config=TeX-AMS-MML_HTMLorMML">#}
 </script>
 <script type="text/x-mathjax-config">
   MathJax.Hub.Config({tex2jax: {inlineMath: [['$', '$'], ['\\(', '\\)']]} });
