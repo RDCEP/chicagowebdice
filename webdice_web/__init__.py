@@ -64,9 +64,13 @@ app.register_blueprint(work_module)
 
 
 assets = Environment(app)
-js = Bundle('js/stacked_chart.js', 'js/webdice_param_eq.js',
-            'js/webdice_download_svg.js', 'js/webdice_download_csv.js',
-            'js/main.js', 'js/webdice_range_slider.js',
+js = Bundle('js/stacked_chart.js',
+            'js/webdice_zoom.js',
+            'js/webdice_param_eq.js',
+            'js/webdice_download_svg.js',
+            'js/webdice_download_csv.js',
+            'js/main.js',
+            'js/webdice_range_slider.js',
             'js/webdice_tabs.js',
             filters='jsmin', output='gen/webdice.js')
 assets.register('js_webdice', js)

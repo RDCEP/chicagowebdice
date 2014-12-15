@@ -9,6 +9,11 @@
     "title_unit": "",
     "unit": null
   },
+  "zoom" : {
+    "title": "",
+    "title_unit": "",
+    "unit": null
+  },
   "year": {
     "title": "Year"
   },

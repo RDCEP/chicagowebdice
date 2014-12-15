@@ -135,7 +135,19 @@
       h = dims.h;
       w = dims.w;
     }
-    graphs[dice_variable] = graphs[dice_variable] || {
+    graphs[dice_variable] = dice_variable == 'zoom'
+    ? graphs[dice_variable] || {
+      graph: new WebDICEGraphZoom()
+        .width(w)
+        .height(50)
+        .padding(10, 60, 10, 60)
+        .select(dice_variable + '_graph')
+        .x(d3.time.scale())
+        .y(d3.scale.linear())
+        .domain(x_domain, [0, 1]),
+      small: false
+    }
+    : graphs[dice_variable] || {
       graph: new WebDICEGraph()
         .twin(dice_variable == 'twin')
         .width(w)
@@ -164,7 +176,7 @@
 
   var update_custom_graphs = function() {
 
-    var _graphs = [[0, 'custom'], [1, 'twin']];
+    var _graphs = [[0, 'custom'], [1, 'twin'], [2, 'zoom']];
     for (var i = 0; i < _graphs.length; ++i) {
       update_custom_graph(
         _graphs[i][1],
@@ -178,25 +190,44 @@
 
   var update_custom_graph = function(g, i) {
 
-    graphs[g].graph
-      .data(custom_data[i])
-      .domain(x_custom_domain,
-              get_extents(flatten_runs(custom_data[i]),
-                          i,
-                          //FIXME This next line seems really kludgy
-                          custom_data[i][0] ? custom_data[i][0].var : ''))
-      .colors(used_colors);
+    if (g == 'zoom') {
+      graphs[g].graph
+        .data([custom_data[0], custom_data[1]]);
+      graphs[g].graph.domain(x_custom_domain,
+        get_extents(flatten_runs(custom_data[0]),
+          0,
+          custom_data[0][0] ? custom_data[0][0].var : ''),
+        get_extents(flatten_runs(custom_data[1]),
+          1,
+          custom_data[1][0] ? custom_data[1][0].var : ''))
+    } else {
+      graphs[g].graph
+        .data(custom_data[i]);
+      graphs[g].graph.domain(x_custom_domain,
+        get_extents(flatten_runs(custom_data[i]),
+          i,
+          //FIXME This next line seems really kludgy (and above)
+          custom_data[i][0] ? custom_data[i][0].var : ''))
+        .colors(used_colors);
+    }
 
     if (initialized) {
       graphs[g].graph
         .update_data();
     } else {
-      graphs[g].graph
-        .twin(i == 1)
-        .custom(true)
-        .hoverable(true)
-        .padding(45, 60, 45, 60)
-        .draw();
+      if (g != 'zoom') {
+        graphs[g].graph
+          .twin(i == 1)
+          .custom(true)
+          .hoverable(true)
+          .padding(45, 60, 95, 60)
+          .draw();
+      } else {
+        graphs[g].graph
+          .padding(10, 60, 10, 60)
+          .colors('#ccc')
+          .draw();
+      }
     }
 
   };
@@ -375,6 +406,7 @@
     if (!initialized) {
       initialize_graph('custom', d3.select('#custom_graph'));
       initialize_graph('twin', d3.select('#twin_graph'));
+      initialize_graph('zoom', d3.select('#zoom_graph'));
     }
 
     custom_data[0].push(build_data_object(_data, custom_vars[0], x_custom_domain_var));
@@ -752,14 +784,14 @@
         if (graph_wrap.classed('small-graph')) {
           graph_wrap.style('height', (dims.h / 2 - 30) + 'px');
           graph_svg.style('height', (dims.h / 2 - 30) + 'px');
-        } else {
-//          graph_wrap.style('height', tall + 'px');
-          graph_svg.style('height', tall + 'px');
-        }
-        if (graphs[graph].small) {
           graphs[graph].graph.width(dims.w / 2 - 15).height(dims.h / 2 - 30).redraw();
         } else {
-          graphs[graph].graph.width(dims.w - 1).height(tall).redraw();
+          graph_svg.style('height', graph == 'zoom' ? '50px' : tall + 'px');
+          if (graph == 'zoom') {
+            graphs[graph].graph.width(dims.w - 1).height(50).redraw();
+          } else {
+            graphs[graph].graph.width(dims.w - 1).height(tall).redraw();
+          }
         }
       }
     }
@@ -772,6 +804,18 @@
         d3.selectAll('h3.twin, h4.twin, .y.axis.twin')
           .classed('visuallyhidden', false);
       }
+
+  };
+
+  var add_zoom = function() {
+
+    var svg = d3.select('custom_graph_zoom').append('svg')
+      .attr({ 'xmlns': 'http://www.w3.org/2000/svg',
+        'xmlns:xmlns:xlink': 'http://www.w3.org/1999/xlink',
+        'version': '1.1',
+        'width': width + padding.left + padding.right,
+        'height': height + padding.top + padding.bottom,
+        'id': pre_id('graph_svg') })
 
   };
 
@@ -875,6 +919,7 @@
 
     metadata = _metadata;
     start_run();
+
 
   });
 
