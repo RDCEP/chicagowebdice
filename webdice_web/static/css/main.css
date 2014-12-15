@@ -787,6 +787,22 @@ g.visuallyhidden {
   #tool_tip.active {
     visibility: visible; }
 
+#zoom_graph {
+  position: absolute;
+  bottom: 5.5em;
+  height: 0;
+  width: 100%; }
+
+.brush {
+  z-index: 999; }
+  .brush .background {
+    pointer-events: all !important; }
+  .brush .extent {
+    stroke: #fff;
+    fill: #56b4e9;
+    fill-opacity: 0.5;
+    shape-rendering: crispEdges; }
+
 #text_wrap {
   bottom: auto; }
   #text_wrap .pane {

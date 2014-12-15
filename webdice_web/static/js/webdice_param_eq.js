@@ -92,7 +92,6 @@
       output: function (v) {
         var o = [{y: 0.344, x: 1}];
         for (var i = 1; i < 10; ++i) {
-          console.log(v);
           var y = o[i - 1].y * (1 - v / 100);
           o.push({
             y: y,

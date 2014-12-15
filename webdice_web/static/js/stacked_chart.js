@@ -107,13 +107,13 @@ var WebDICEGraph = function() {
       /*
        Return x-value for hover legend, label, axis
        */
-      return _d;
+      return null;
     },
     format_y = function(_d) {
       /*
        Return y-value for hover legend, label, axis
        */
-      return _d;
+      return null;
     },
     redraw = function() {
       tool_tip.classed('hidden', true);
@@ -374,9 +374,11 @@ var WebDICEGraph = function() {
       /*
        Remove mouse events from <rect>s with hoverable handles (toggle .active)
        */
-      handles.selectAll('rect, .data-point')
-        .on('mouseover', function() { return null; })
-        .on('mouseout', function() { return null; });
+      //TODO: This doens't work, handles is undefined
+      //handles.selectAll('rect, .data-point')
+      //  .on('mouseover', function() { return null; })
+      //  .on('mouseout', function() { return null; });
+
     },
     draw_axes = function() {
       /*
