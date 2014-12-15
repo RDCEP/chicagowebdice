@@ -143,6 +143,10 @@ var WebDICEGraph = function() {
       axes_layer.select('.x.axis')
         .attr('transform', 'translate(0,' + (height + 5) + ')')
         .call(x_axis);
+      d3.select('#' + pre_id('graph_clip_expanded') + ' rect')
+        .attr({width: width + 7, height: height + 7});
+      d3.select('#' + pre_id('graph_clip') + ' rect')
+        .attr({width: width, height: height})
     },
     nested = function(arr) {
       /*
@@ -299,6 +303,7 @@ var WebDICEGraph = function() {
           .attr('cx', function(d) { return _x(d.x); })
           .attr('cy', function(d) { return _y(d.y + d.y0); })
           .attr('r', 3.5)
+          .attr('clip-path', 'url(#' + pre_id('graph_clip_expanded') + ')')
           .style('stroke', function(d, i) { return color(j); })
           .style('stroke-width', 1.5)
           .style('fill', 'white')
@@ -472,8 +477,11 @@ var WebDICEGraph = function() {
       .attr('transform', 'translate(' + padding.left + ',' + padding.top + ')');
     grid_layer = svg.append('g').attr('id', pre_id('grid_layer'));
     graph_layer = svg.append('g').attr('id', pre_id('graph_layer'));
-    svg_defs.append('clipPath').attr("id", "graph_clip").append("rect")
+    svg_defs.append('clipPath').attr('id', pre_id('graph_clip')).append('rect')
       .attr({'width': width, 'height': height });
+    svg_defs.append('clipPath').attr('id', pre_id('graph_clip_expanded')).append('rect')
+      .attr({'width': width + 7, 'height': height + 7 })
+      .attr('transform', 'translate(-3.5, -3.5)');
     axes_layer = svg.append('g').attr('id', pre_id('axes_layer'));
     handle_layer = svg.append('g').attr('id', pre_id('handle_layer'));
     button_layer = svg.append('g').attr('id', pre_id('button_layer'));
@@ -722,7 +730,7 @@ var WebDICEGraph = function() {
       .data(graph_data.data).enter().append('path')
       .attr('d', function(d) { return _line(d.data); })
       .attr('class', 'graph-line')
-      .attr('clip-path', 'url(#graph_clip)')
+      .attr('clip-path', 'url(#' + pre_id('graph_clip') + ')')
       .attr('data-type', function(d) { return d.run_name ? d.run_name : null; })
       .attr('data-run-id', function(d) { return typeof(d.run_index) == 'number' ? d.run_index : null; })
       .classed('twin', _twin)
@@ -743,7 +751,7 @@ var WebDICEGraph = function() {
       .data(graph_data.data);
     graph_data.graphs.enter().append('path');
     graph_data.graphs.attr('class', 'graph-line')
-      .attr('clip-path', 'url(#graph_clip)')
+      .attr('clip-path', 'url(#' + pre_id('graph_clip') + ')')
       .attr('data-type', function(d) { return d.run_name ? d.run_name : null; })
       .attr('data-run-id', function(d) { return typeof(d.run_index) == 'number' ? d.run_index : null; })
       .classed('twin', _twin)
@@ -770,6 +778,18 @@ var WebDICEGraph = function() {
       this.hoverable(true);
     }
     return this;
+  };
+  this.zoom = function(x0, x1) {
+    var indexes = [],
+      fmin = graph_data.nested.filter(function(d, i) { return new Date(d.key) < x0; }),
+      fmax = graph_data.nested.filter(function(d, i) { return new Date(d.key) > x1; });
+    fmin = fmin.pop() || graph_data.nested[0];
+    fmax = fmax[0] || graph_data.nested[graph_data.nested.length - 1]
+    _y.domain([
+      d3.min(fmin.values, function(d) { return d.y; }),
+      d3.max(fmax.values, function(d) { return d.y; })
+    ])
+    this.redraw();
   };
   this.change_y = function() {
     axes_layer.select('.y.axis').call(y_axis);

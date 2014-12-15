@@ -212,6 +212,9 @@
     }
 
     if (initialized) {
+      if (g == 'zoom') {
+        graphs[g].graph.twin(show_twin);
+      }
       graphs[g].graph
         .update_data();
     } else {
@@ -225,6 +228,7 @@
       } else {
         graphs[g].graph
           .padding(10, 60, 10, 60)
+          .zoomed_graphs([graphs['custom'], graphs['twin']])
           .colors('#ccc')
           .draw();
       }
@@ -361,6 +365,7 @@
         .title(title)
         .subtitle(get_subtitle(index))
         .change_y();
+
     }
 
     update_custom_graphs();
