@@ -368,6 +368,8 @@
 
     }
 
+    graphs['zoom'].graph.empty_brush();
+
     update_custom_graphs();
 
   };

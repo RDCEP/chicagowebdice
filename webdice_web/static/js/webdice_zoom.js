@@ -428,7 +428,10 @@ var WebDICEGraphZoom = function() {
   this.zoomed_graphs = function(arr) {
     graph_data.zoomed_graphs = arr;
     return this;
-  }
+  };
+  this.empty_brush = function() {
+    d3.selectAll('.brush').call(_brush.clear());
+  };
   this.change_y = function() {
     axes_layer.select('.y.axis').call(y_axis);
     graph_data.graphs
