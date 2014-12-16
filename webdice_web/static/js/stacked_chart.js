@@ -115,6 +115,7 @@ var WebDICEGraph = function() {
        */
       return null;
     },
+
     redraw = function() {
       tool_tip.classed('hidden', true);
       svg_root.attr({
@@ -231,6 +232,11 @@ var WebDICEGraph = function() {
         .style('top', (rect.top + 5 + document.body.scrollTop) + 'px')
         .classed('active', true);
     },
+    move_custom_hover_points = function() {
+      handle_layer.selectAll('.data-point')
+        .attr('cx', function(d) { return _x(d.x); })
+        .attr('cy', function(d) { return _y(d.y + d.y0); });
+    },
     add_hover_points = function() {
       segment_width = graph_data.data.length > 0
         ? _x(graph_data.data[0].data[1].x) - _x(graph_data.data[0].data[0].x)
@@ -311,6 +317,7 @@ var WebDICEGraph = function() {
         data_points.exit().remove();
       });
     },
+
     add_hover = function() {
       /*
        Attach mouse events to <rect>s with hoverable handles (toggle .active)
@@ -780,13 +787,20 @@ var WebDICEGraph = function() {
     return this;
   };
   this.zoom = function(i0, i1) {
-    console.log(i0, i1);
     var f = graph_data.nested[i0].values.concat(graph_data.nested[i1].values);
     _y.domain([
       d3.min(f, function(d) { return d.y; }),
       d3.max(f, function(d) { return d.y; })
     ]);
-    this.update_data();
+    graph_data.graphs
+      .data(graph_data.data)
+      .attr('d', function(d) { return _line(d.data); });
+    axes_layer.select('.y.axis').call(y_axis);
+    axes_layer.select('.x.axis')
+      .attr('transform', 'translate(0,' + (height + 5) + ')')
+      .call(x_axis);
+    move_custom_hover_points();
+
   };
   this.change_y = function() {
     axes_layer.select('.y.axis').call(y_axis);
