@@ -123,10 +123,9 @@
 
   };
 
-  var initialize_graph = function(dice_variable, graph_wrap) {
+  var initialize_graph = function(dice_variable, graph_wrap, dims) {
 
-    var dims = get_dims(),
-      h, w;
+    var h, w;
     if (graph_wrap.classed('small-graph')) {
       h = dims.h / 2 - 15;
       w = dims.w / 2 - 15;
@@ -387,6 +386,7 @@
      Add run to interface.
      */
 
+    var dims = get_dims();
     used_colors.push(color_list[total_runs % color_list.length]);
 
     for (var dice_variable in _data) {
@@ -402,7 +402,7 @@
         if (!graph_wrap.empty()) {
 
           if (!initialized) {
-            initialize_graph(dice_variable, graph_wrap);
+            initialize_graph(dice_variable, graph_wrap, dims);
           }
           update_graph(dice_variable);
 
@@ -411,9 +411,9 @@
     }
 
     if (!initialized) {
-      initialize_graph('custom', d3.select('#custom_graph'));
-      initialize_graph('twin', d3.select('#twin_graph'));
-      initialize_graph('zoom', d3.select('#zoom_graph'));
+      initialize_graph('custom', d3.select('#custom_graph'), dims);
+      initialize_graph('twin', d3.select('#twin_graph'), dims);
+      initialize_graph('zoom', d3.select('#zoom_graph'), dims);
     }
 
     custom_data[0].push(build_data_object(_data, custom_vars[0], x_custom_domain_var));
@@ -431,7 +431,7 @@
 
     initialized = true;
 
-    resize_graphs();
+    //resize_graphs(dims);
 
     ++total_runs;
     ++visible_runs;
@@ -778,10 +778,13 @@
 
   };
 
-  var resize_graphs = function() {
+  var resize_graphs = function(dims) {
 
-    var dims = get_dims(),
-      tall = (dims.h - 15) - 70; //TODO: Get height of #graph-controls
+    if (dims === undefined) {
+      dims = get_dims();
+    }
+
+    var tall = (dims.h - 15) - 70; //TODO: Get height of #graph-controls
 
     for (var graph in graphs) {
       if (graphs.hasOwnProperty(graph)) {
