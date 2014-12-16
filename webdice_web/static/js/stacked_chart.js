@@ -779,17 +779,14 @@ var WebDICEGraph = function() {
     }
     return this;
   };
-  this.zoom = function(x0, x1) {
-    var indexes = [],
-      fmin = graph_data.nested.filter(function(d, i) { return new Date(d.key) < x0; }),
-      fmax = graph_data.nested.filter(function(d, i) { return new Date(d.key) > x1; });
-    fmin = fmin.pop() || graph_data.nested[0];
-    fmax = fmax[0] || graph_data.nested[graph_data.nested.length - 1]
+  this.zoom = function(i0, i1) {
+    console.log(i0, i1);
+    var f = graph_data.nested[i0].values.concat(graph_data.nested[i1].values);
     _y.domain([
-      d3.min(fmin.values, function(d) { return d.y; }),
-      d3.max(fmax.values, function(d) { return d.y; })
-    ])
-    this.redraw();
+      d3.min(f, function(d) { return d.y; }),
+      d3.max(f, function(d) { return d.y; })
+    ]);
+    this.update_data();
   };
   this.change_y = function() {
     axes_layer.select('.y.axis').call(y_axis);
