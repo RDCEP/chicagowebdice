@@ -744,7 +744,7 @@ var WebDICEGraph = function() {
       .classed('visuallyhidden', function(d) { return hidden_runs.indexOf(+d.run_index) > -1; })
       .style('fill', function(d, i) { return null; })
       .style('stroke', function(d, i) { return color(i); })
-      .style('stroke-dasharray', function(d, i) { return (_twin) ? '2, 2' : null; });
+      .style('stroke-dasharray', function(d, i) { return (_twin) ? '40, 8' : null; });
     draw_axes();
     return this;
   };
@@ -764,7 +764,7 @@ var WebDICEGraph = function() {
       .classed('twin', _twin)
       .classed('visuallyhidden', function(d) { return hidden_runs.indexOf(+d.run_index) > -1; })
       .style('stroke', function(d, i) { return color(i); })
-      .style('stroke-dasharray', function(d, i) { return (_twin) ? '2, 2' : null; });
+      .style('stroke-dasharray', function(d, i) { return (_twin) ? '40, 8' : null; });
     if (_custom_graph) {
       add_custom_hover_points();
       add_custom_hover();
