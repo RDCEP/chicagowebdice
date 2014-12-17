@@ -57,6 +57,7 @@ var WebDICEGraph = function() {
     hidden_runs = [],
     _color,
     _twin = false,
+    _timex = true,
 
     /*********************
      SVG and layer objects
@@ -533,10 +534,11 @@ var WebDICEGraph = function() {
     _twin = bool;
     return this;
   };
-  this.x = function(val) {
+  this.x = function(val, bool) {
     if (!val) { return _x; }
     _x = val.range(_x.range()).domain(_x.domain());
     x_axis.scale(_x);
+    _timex = bool === undefined ? true : bool;
     return this;
   };
   this.y = function(val) {
@@ -785,23 +787,46 @@ var WebDICEGraph = function() {
     }
     return this;
   };
-  this.zoom = function(i0, i1, d0, d1) {
-    var ax = new Date(graph_data.nested[i0].key)
-      , bx = new Date(graph_data.nested[i0 + 1].key)
-      , cx = new Date(graph_data.nested[i1 - 1].key)
-      , dx = new Date(graph_data.nested[i1].key)
-      , as = graph_data.nested[i0].values
-      , bs = graph_data.nested[i0 + 1].values
-      , cs = graph_data.nested[i1 - 1].values
-      , ds = graph_data.nested[i1].values
+  this.zoom = function(domain) {
+    var new_nest = graph_data.nested.slice().sort(function(a, b) {
+            return _timex ? new Date(a.key) - new Date(b.key) : +a.key - +b.key; })
+      , ax = false
+      , bx = false
+      , cx = false
+      , dx = false
+      , previous = [
+          _timex
+            ? new Date(new_nest[0].key)
+            : +new_nest[0].key,
+          new_nest[0].values
+        ]
+      , as, bs, cs, ds
+      , ys = []
       , qy = function(ax, ay, bx, by, qx) {
         return ay + (qx - ax) * ((by - ay) / (bx - ax));
       }
-      , ys = []
-      ;
+    ;
+    new_nest.forEach(function(d, i) {
+      if (i > 0) {
+        var k = _timex ? new Date(d.key) : +d.key;
+        if ((k >= domain[0]) && (!ax)) {
+          ax = previous[0];
+          as = previous[1];
+          bx = k;
+          bs = d.values;
+        }
+        if ((k >= domain[1]) && (!cx)) {
+          cx = previous[0];
+          cs = previous[1];
+          dx = k;
+          ds = d.values;
+        }
+        previous = [k, d.values];
+      }
+    });
     for (var i = 0; i < as.length; ++i) {
-      ys.push(qy(ax, as[i].y, bx, bs[i].y, d0));
-      ys.push(qy(cx, cs[i].y, dx, ds[i].y, d1));
+      ys.push(qy(ax, as[i].y, bx, bs[i].y, domain[0]));
+      ys.push(qy(cx, cs[i].y, dx, ds[i].y, domain[1]));
     }
     _y.domain([
       d3.min(ys),
@@ -815,7 +840,6 @@ var WebDICEGraph = function() {
       .attr('transform', 'translate(0,' + (height + 5) + ')')
       .call(x_axis);
     move_custom_hover_points();
-
   };
   this.change_y = function() {
     axes_layer.select('.y.axis').call(y_axis);
@@ -852,6 +876,5 @@ var WebDICEGraph = function() {
           });
       });
     add_hover();
-    console.log(_x.domain())
   };
 };

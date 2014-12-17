@@ -276,19 +276,19 @@
       });
 
       if (dice_variable == 'year') {
-        graphs[graph].graph.format_x(function(x) { return x.getFullYear(); });
-        graphs[graph].graph.x(d3.time.scale());
+        graphs[graph].graph
+          .x(d3.time.scale(), true)
+          .format_x(function(x) { return x.getFullYear(); });
         x_custom_domain = x_domain;
         x_custom_domain_var = false;
       } else {
-        graphs[graph].graph.format_x(graphs.custom.graph.format_y());
-        graphs[graph].graph.x(d3.scale.linear());
+        graphs[graph].graph
+          .x(d3.scale.linear(), false)
+          .format_x(graphs.custom.graph.format_y());
         x_custom_domain = get_extents(flatten_runs(all_data[dice_variable]),
                                       index,
                                       dice_variable);
         x_custom_domain_var = dice_variable;
-        console.log(x_custom_domain[0], x_custom_domain[1], x_custom_domain_var,
-          x_domain);
 
       }
 
@@ -298,7 +298,6 @@
       graphs[graph].graph
         .title(title)
         .subtitle(get_subtitle(index));
-//        .change_x();
 
       /*TODO: This is being called twice because change_x() needs to be
         called for each graph*/
@@ -308,7 +307,17 @@
 
     }
 
-    resize_graphs();
+    //Update zoom graph
+    if (dice_variable == 'year') {
+      graphs['zoom'].graph.x(d3.time.scale(), true);
+    } else {
+      graphs['zoom'].graph.x(d3.scale.linear(), false);
+    }
+    graphs['zoom'].graph.empty_brush();
+    update_custom_graph('zoom', 2);
+    graphs['zoom'].graph.change_x();
+
+    //resize_graphs();
 
   };
 

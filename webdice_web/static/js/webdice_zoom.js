@@ -42,6 +42,7 @@ var WebDICEGraphZoom = function() {
     hidden_runs = [],
     _color,
     _twin = false,
+    _timex = true,
 
     /*********************
      SVG and layer objects
@@ -121,21 +122,11 @@ var WebDICEGraphZoom = function() {
       return svg_id + '_' + str;
     },
     _brushed = function() {
-      var bex = _brush.extent(),
-        zoom_domain = _brush.empty() ? _x.domain() : bex,
-        date_0 = new Date(zoom_domain[0]),
-        date_1 = new Date(zoom_domain[1]),
-        year_0 = date_0.getFullYear(),
-        year_1 = date_1.getFullYear(),
-        d0 = _x.domain()[0].getFullYear(),
-        d1 = _x.domain()[1].getFullYear(),
-        index_0 = year_0 < d0 + 10 ? 0 : Math.floor((year_0 - d0) / 10),
-        index_1 = year_1 > d1 - 10 ? (d1 - d0) / 10 : Math.ceil((year_1 - d0) / 10)
-      ;
+      var zoom_domain = _brush.empty() ? _x.domain() : _brush.extent();
       graph_data.zoomed_graphs.forEach(function(g) {
         g.graph.domain(zoom_domain);
         if (!g.graph.twin() || _twin) {
-          g.graph.zoom(index_0, index_1, date_0, date_1);
+          g.graph.zoom(zoom_domain);
         }
       });
     };
@@ -216,11 +207,12 @@ var WebDICEGraphZoom = function() {
     _twin = bool;
     return this;
   };
-  this.x = function(val) {
+  this.x = function(val, bool) {
     if (!val) { return _x; }
     _x = val.range(_x.range()).domain(_x.domain());
     x_axis.scale(_x);
     _brush.x(_x);
+    _timex = bool === undefined ? true : bool;
     return this;
   };
   this.y = function(val) {
@@ -434,16 +426,22 @@ var WebDICEGraphZoom = function() {
   };
   this.empty_brush = function() {
     d3.selectAll('.brush').call(_brush.clear());
+    return this;
   };
   this.change_y = function() {
     graph_data.graphs
       .data(graph_data.data)
       .attr('d', function(d) { return _line(d.data); })
       .classed('twin', _twin);
-    graph_data.twin_graphs
-      .data(graph_data.twin_data)
-      .attr('d', function(d) { return _line2(d.data); })
-      .classed('twin', _twin);
+    if (_twin) {
+      graph_data.twin_graphs
+        .data(graph_data.twin_data)
+        .attr('d', function (d) {
+          return _line2(d.data);
+        })
+        .classed('twin', _twin);
+    }
+    return this;
   };
   this.change_x = function() {
     axes_layer.select('.x.axis').call(x_axis);
@@ -451,10 +449,17 @@ var WebDICEGraphZoom = function() {
       .data(graph_data.data)
       .attr('d', function(d) { return _line(d.data); })
       .style('stroke-width', function(d) { return hidden_runs.indexOf(d.run_index) > -1 ? null : null; });
-    graph_data.twin_graphs
-      .data(graph_data.twin_data)
-      .attr('d', function(d) { return _line2(d.data); })
-      .style('stroke-width', function(d) { return hidden_runs.indexOf(d.run_index) > -1 ? null : null; });
+    if (_twin) {
+      graph_data.twin_graphs
+        .data(graph_data.twin_data)
+        .attr('d', function (d) {
+          return _line2(d.data);
+        })
+        .style('stroke-width', function (d) {
+          return hidden_runs.indexOf(d.run_index) > -1 ? null : null;
+        });
+    }
+    return this;
   };
   this.show_twin = function(bool) {
     _twin = bool;
