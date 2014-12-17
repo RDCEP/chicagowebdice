@@ -14,9 +14,6 @@ var WebDICEGraphZoom = function() {
     _y2 = d3.scale.linear().domain([0, 1]).range([height - 1, 1]),
     x_axis = d3.svg.axis().scale(_x)
       .orient('bottom')
-      .tickSize(0).innerTickSize(0),
-    y_axis = d3.svg.axis().scale(_y)
-      .orient('left')
       .tickSize(0).innerTickSize(0)
       .tickFormat(function(d) { return null; }),
     _line = d3.svg.line()
@@ -105,9 +102,8 @@ var WebDICEGraphZoom = function() {
             return _line2(d.data);
           });
       }
-      axes_layer.select('.y.axis').call(y_axis);
       axes_layer.select('.x.axis')
-        .attr('transform', 'translate(0,' + (height + 5) + ')')
+        .attr('transform', 'translate(0,' + height + ')')
         .call(x_axis);
     },
     draw_axes = function() {
@@ -118,11 +114,6 @@ var WebDICEGraphZoom = function() {
         .attr('class', 'x axis')
         .attr('transform', 'translate(0,' + (height + 5) + ')')
         .call(x_axis);
-      axes_layer.append('g')
-        .attr('class', 'y axis')
-        .attr('transform', 'translate(-5,0)')
-        .call(y_axis);
-
     },
     pre_id = function(str) {
       return svg_id + '_' + str;
@@ -212,9 +203,7 @@ var WebDICEGraphZoom = function() {
     svg_defs.append('clipPath').attr('id', pre_id('graph_clip')).append('rect')
       .attr({'width': width, 'height': height });
     axes_layer = svg.append('g').attr('id', pre_id('axes_layer'));
-    brush_layer = svg.append('g').attr('id', pre_id('brush_layer'))
-      //.attr('transform', 'translate(0,'+ (height + 30) + ')')
-    ;
+    brush_layer = svg.append('g').attr('id', pre_id('brush_layer'));
     svg.selectAll('g').attr('class', 'graph-layer');
     return this;
   };
@@ -233,7 +222,6 @@ var WebDICEGraphZoom = function() {
   this.y = function(val) {
     if (!val) { return _y; }
     _y = val.range(_y.range()).domain(_y.domain());
-    y_axis.scale(_y);
     return this;
   };
   this.y2 = function(val) {
@@ -392,7 +380,7 @@ var WebDICEGraphZoom = function() {
       .call(_brush)
       .selectAll('rect')
       .attr('y', 0)
-      .attr('height', 35);
+      .attr('height', 30);
     return this;
   };
   this.custom = function(bool) {
@@ -423,7 +411,6 @@ var WebDICEGraphZoom = function() {
       .classed('visuallyhidden', function(d) { return hidden_runs.indexOf(+d.run_index) > -1; })
       .style('stroke', function(d, i) { return color(i); })
       .style('stroke-dasharray', function(d, i) { return (_twin) ? '2, 2' : null; });
-    axes_layer.select('.y.axis').call(y_axis);
   };
   this.redraw = function() {
     redraw();
@@ -437,7 +424,6 @@ var WebDICEGraphZoom = function() {
     d3.selectAll('.brush').call(_brush.clear());
   };
   this.change_y = function() {
-    axes_layer.select('.y.axis').call(y_axis);
     graph_data.graphs
       .data(graph_data.data)
       .attr('d', function(d) { return _line(d.data); })
