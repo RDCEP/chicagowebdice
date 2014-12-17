@@ -138,7 +138,7 @@
     ? graphs[dice_variable] || {
       graph: new WebDICEGraphZoom()
         .width(w)
-        .height(50)
+        .height(h)
         .padding(10, 60, 10, 60)
         .select(dice_variable + '_graph')
         .x(d3.time.scale())
@@ -430,6 +430,7 @@
     };
 
     initialized = true;
+    graphs['zoom'].graph.empty_brush();
 
     //resize_graphs(dims);
 
@@ -796,12 +797,14 @@
           graph_svg.style('height', (dims.h / 2 - 30) + 'px');
           graphs[graph].graph.width(dims.w / 2 - 15).height(dims.h / 2 - 30).redraw();
         } else {
-          graph_svg.style('height', graph == 'zoom' ? '50px' : tall + 'px');
-          if (graph == 'zoom') {
-            graphs[graph].graph.width(dims.w - 1).height(50).redraw();
-          } else {
-            graphs[graph].graph.width(dims.w - 1).height(tall).redraw();
-          }
+          //graph_svg.style('height', graph == 'zoom' ? '50px' : tall + 'px');
+          graph_svg.style('height', tall + 'px');
+          graphs[graph].graph.width(dims.w - 1).height(tall).redraw();
+          //if (graph == 'zoom') {
+          //  graphs[graph].graph.width(dims.w - 1).height(50).redraw();
+          //} else {
+          //  graphs[graph].graph.width(dims.w - 1).height(tall).redraw();
+          //}
         }
       }
     }

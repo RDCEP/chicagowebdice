@@ -2,6 +2,7 @@ var WebDICEGraphZoom = function() {
   'use strict';
   var width = 700,
     height = 345,
+    zoom_height = 30,
     padding = {top: 10, right: 60, bottom: 10, left: 60},
 
     /***********************
@@ -10,8 +11,8 @@ var WebDICEGraphZoom = function() {
 
     _max_domains,
     _x = d3.scale.linear().domain([0, 1]).range([1, width - 1]),
-    _y = d3.scale.linear().domain([0, 1]).range([height - 1, 1]),
-    _y2 = d3.scale.linear().domain([0, 1]).range([height - 1, 1]),
+    _y = d3.scale.linear().domain([0, 1]).range([zoom_height - 1, 1]),
+    _y2 = d3.scale.linear().domain([0, 1]).range([zoom_height - 1, 1]),
     x_axis = d3.svg.axis().scale(_x)
       .orient('bottom')
       .tickSize(0).innerTickSize(0)
@@ -82,16 +83,17 @@ var WebDICEGraphZoom = function() {
     redraw = function() {
       svg_root.attr({
         width: (width + padding.left + padding.right) + 'px',
-        height: (height + padding.top + padding.bottom) + 'px'});
+        height: zoom_height + 'px'});
       svg_wrap.style({
         width: (width + padding.left) + 'px',
         height: (height + padding.top + padding.bottom) + 'px'});
       svg_defs.select('rect').attr({
         width: width,
-        height: height});
+        height: zoom_height});
+      svg.attr('transform', 'translate(' + padding.left + ',' + (height - 30) + ')');
       _x.range([1, width - 1]);
-      _y.range([height - 1, 1]);
-      _y2.range([height - 1, 1]);
+      _y.range([zoom_height - 1, 1]);
+      _y2.range([zoom_height - 1, 1]);
       graph_data.graphs
         .data(graph_data.data)
         .attr('d', function(d) { return _line(d.data); });
@@ -103,7 +105,7 @@ var WebDICEGraphZoom = function() {
           });
       }
       axes_layer.select('.x.axis')
-        .attr('transform', 'translate(0,' + height + ')')
+        .attr('transform', 'translate(0,' + zoom_height + ')')
         .call(x_axis);
     },
     draw_axes = function() {
@@ -112,7 +114,7 @@ var WebDICEGraphZoom = function() {
        */
       axes_layer.append('g')
         .attr('class', 'x axis')
-        .attr('transform', 'translate(0,' + (height + 5) + ')')
+        .attr('transform', 'translate(0,' + (zoom_height + 5) + ')')
         .call(x_axis);
     },
     pre_id = function(str) {
@@ -200,10 +202,10 @@ var WebDICEGraphZoom = function() {
       .classed('twin', _twin);
     svg_defs = svg_root.append('defs');
     svg = svg_root.append('g')
-      .attr('transform', 'translate(' + padding.left + ',' + padding.top + ')');
+      .attr('transform', 'translate(' + padding.left + ',' + (height - 110) + ')');
     graph_layer = svg.append('g').attr('id', pre_id('graph_layer'));
     svg_defs.append('clipPath').attr('id', pre_id('graph_clip')).append('rect')
-      .attr({'width': width, 'height': height });
+      .attr({'width': width, 'height': zoom_height });
     axes_layer = svg.append('g').attr('id', pre_id('axes_layer'));
     brush_layer = svg.append('g').attr('id', pre_id('brush_layer'));
     svg.selectAll('g').attr('class', 'graph-layer');
@@ -382,7 +384,7 @@ var WebDICEGraphZoom = function() {
       .call(_brush)
       .selectAll('rect')
       .attr('y', 0)
-      .attr('height', 30);
+      .attr('height', zoom_height);
     return this;
   };
   this.custom = function(bool) {
