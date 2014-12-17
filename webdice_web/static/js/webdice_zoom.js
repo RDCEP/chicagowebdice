@@ -396,21 +396,29 @@ var WebDICEGraphZoom = function() {
       .attr('clip-path', 'url(#' + pre_id('graph_clip') + ')')
       .attr('data-type', function(d) { return d.run_name ? d.run_name : null; })
       .attr('data-run-id', function(d) { return typeof(d.run_index) == 'number' ? d.run_index : null; })
-      .classed('twin', _twin)
       .classed('visuallyhidden', function(d) { return hidden_runs.indexOf(+d.run_index) > -1; })
       .style('stroke', function(d, i) { return color(i); })
-      .style('stroke-dasharray', function(d, i) { return (_twin) ? '2, 2' : null; });
-    graph_data.twin_graphs = graph_layer.selectAll('.graph-line')
-      .data(graph_data.twin_data);
-    graph_data.twin_graphs.enter().append('path');
-    graph_data.twin_graphs.attr('class', 'graph-line')
-      .attr('clip-path', 'url(#' + pre_id('graph_clip') + ')')
-      .attr('data-type', function(d) { return d.run_name ? d.run_name : null; })
-      .attr('data-run-id', function(d) { return typeof(d.run_index) == 'number' ? d.run_index : null; })
-      .classed('twin', _twin)
-      .classed('visuallyhidden', function(d) { return hidden_runs.indexOf(+d.run_index) > -1; })
-      .style('stroke', function(d, i) { return color(i); })
-      .style('stroke-dasharray', function(d, i) { return (_twin) ? '2, 2' : null; });
+      .style('stroke-dasharray', null);
+    if (_twin) {
+      graph_data.twin_graphs = graph_layer.selectAll('.graph-line.twin')
+        .data(graph_data.twin_data);
+      graph_data.twin_graphs.enter().append('path');
+      graph_data.twin_graphs.attr('class', 'graph-line twin')
+        .attr('clip-path', 'url(#' + pre_id('graph_clip') + ')')
+        .attr('data-type', function (d) {
+          return d.run_name ? d.run_name : null;
+        })
+        .attr('data-run-id', function (d) {
+          return typeof(d.run_index) == 'number' ? d.run_index : null;
+        })
+        .classed('visuallyhidden', function (d) {
+          return hidden_runs.indexOf(+d.run_index) > -1;
+        })
+        .style('stroke', function (d, i) {
+          return color(i);
+        })
+        .style('stroke-dasharray', '4, 2' );
+    }
   };
   this.redraw = function() {
     redraw();
