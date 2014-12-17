@@ -788,8 +788,6 @@ g.visuallyhidden {
     visibility: visible; }
 
 #zoom_graph {
-  position: absolute;
-  bottom: 5.5em;
   height: 0;
   width: 100%; }
 

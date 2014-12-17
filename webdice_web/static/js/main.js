@@ -123,10 +123,9 @@
 
   };
 
-  var initialize_graph = function(dice_variable, graph_wrap) {
+  var initialize_graph = function(dice_variable, graph_wrap, dims) {
 
-    var dims = get_dims(),
-      h, w;
+    var h, w;
     if (graph_wrap.classed('small-graph')) {
       h = dims.h / 2 - 15;
       w = dims.w / 2 - 15;
@@ -139,7 +138,7 @@
     ? graphs[dice_variable] || {
       graph: new WebDICEGraphZoom()
         .width(w)
-        .height(50)
+        .height(h)
         .padding(10, 60, 10, 60)
         .select(dice_variable + '_graph')
         .x(d3.time.scale())
@@ -212,6 +211,9 @@
     }
 
     if (initialized) {
+      if (g == 'zoom') {
+        graphs[g].graph.twin(show_twin);
+      }
       graphs[g].graph
         .update_data();
     } else {
@@ -225,6 +227,7 @@
       } else {
         graphs[g].graph
           .padding(10, 60, 10, 60)
+          .zoomed_graphs([graphs['custom'], graphs['twin']])
           .colors('#ccc')
           .draw();
       }
@@ -361,7 +364,10 @@
         .title(title)
         .subtitle(get_subtitle(index))
         .change_y();
+
     }
+
+    graphs['zoom'].graph.empty_brush();
 
     update_custom_graphs();
 
@@ -380,6 +386,7 @@
      Add run to interface.
      */
 
+    var dims = get_dims();
     used_colors.push(color_list[total_runs % color_list.length]);
 
     for (var dice_variable in _data) {
@@ -395,7 +402,7 @@
         if (!graph_wrap.empty()) {
 
           if (!initialized) {
-            initialize_graph(dice_variable, graph_wrap);
+            initialize_graph(dice_variable, graph_wrap, dims);
           }
           update_graph(dice_variable);
 
@@ -404,9 +411,9 @@
     }
 
     if (!initialized) {
-      initialize_graph('custom', d3.select('#custom_graph'));
-      initialize_graph('twin', d3.select('#twin_graph'));
-      initialize_graph('zoom', d3.select('#zoom_graph'));
+      initialize_graph('custom', d3.select('#custom_graph'), dims);
+      initialize_graph('twin', d3.select('#twin_graph'), dims);
+      initialize_graph('zoom', d3.select('#zoom_graph'), dims);
     }
 
     custom_data[0].push(build_data_object(_data, custom_vars[0], x_custom_domain_var));
@@ -423,8 +430,9 @@
     };
 
     initialized = true;
+    graphs['zoom'].graph.empty_brush();
 
-    resize_graphs();
+    //resize_graphs(dims);
 
     ++total_runs;
     ++visible_runs;
@@ -771,10 +779,13 @@
 
   };
 
-  var resize_graphs = function() {
+  var resize_graphs = function(dims) {
 
-    var dims = get_dims(),
-      tall = (dims.h - 15) - 70; //TODO: Get height of #graph-controls
+    if (dims === undefined) {
+      dims = get_dims();
+    }
+
+    var tall = (dims.h - 15) - 70; //TODO: Get height of #graph-controls
 
     for (var graph in graphs) {
       if (graphs.hasOwnProperty(graph)) {
@@ -786,12 +797,14 @@
           graph_svg.style('height', (dims.h / 2 - 30) + 'px');
           graphs[graph].graph.width(dims.w / 2 - 15).height(dims.h / 2 - 30).redraw();
         } else {
-          graph_svg.style('height', graph == 'zoom' ? '50px' : tall + 'px');
-          if (graph == 'zoom') {
-            graphs[graph].graph.width(dims.w - 1).height(50).redraw();
-          } else {
-            graphs[graph].graph.width(dims.w - 1).height(tall).redraw();
-          }
+          //graph_svg.style('height', graph == 'zoom' ? '50px' : tall + 'px');
+          graph_svg.style('height', tall + 'px');
+          graphs[graph].graph.width(dims.w - 1).height(tall).redraw();
+          //if (graph == 'zoom') {
+          //  graphs[graph].graph.width(dims.w - 1).height(50).redraw();
+          //} else {
+          //  graphs[graph].graph.width(dims.w - 1).height(tall).redraw();
+          //}
         }
       }
     }
