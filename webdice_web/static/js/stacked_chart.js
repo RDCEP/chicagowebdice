@@ -317,7 +317,6 @@ var WebDICEGraph = function() {
         data_points.exit().remove();
       });
     },
-
     add_hover = function() {
       /*
        Attach mouse events to <rect>s with hoverable handles (toggle .active)
@@ -786,11 +785,27 @@ var WebDICEGraph = function() {
     }
     return this;
   };
-  this.zoom = function(i0, i1) {
-    var f = graph_data.nested[i0].values.concat(graph_data.nested[i1].values);
+  this.zoom = function(i0, i1, d0, d1) {
+    var ax = new Date(graph_data.nested[i0].key)
+      , bx = new Date(graph_data.nested[i0 + 1].key)
+      , cx = new Date(graph_data.nested[i1 - 1].key)
+      , dx = new Date(graph_data.nested[i1].key)
+      , as = graph_data.nested[i0].values
+      , bs = graph_data.nested[i0 + 1].values
+      , cs = graph_data.nested[i1 - 1].values
+      , ds = graph_data.nested[i1].values
+      , qy = function(ax, ay, bx, by, qx) {
+        return ay + (qx - ax) * ((by - ay) / (bx - ax));
+      }
+      , ys = []
+      ;
+    for (var i = 0; i < as.length; ++i) {
+      ys.push(qy(ax, as[i].y, bx, bs[i].y, d0));
+      ys.push(qy(cx, cs[i].y, dx, ds[i].y, d1));
+    }
     _y.domain([
-      d3.min(f, function(d) { return d.y; }),
-      d3.max(f, function(d) { return d.y; })
+      d3.min(ys),
+      d3.max(ys)
     ]);
     graph_data.graphs
       .data(graph_data.data)

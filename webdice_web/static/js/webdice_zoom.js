@@ -120,18 +120,20 @@ var WebDICEGraphZoom = function() {
     },
     _brushed = function() {
       var bex = _brush.extent(),
-        xd = _brush.empty() ? _x.domain() : bex,
-        x0 = new Date(xd[0]).getFullYear(),
-        x1 = new Date(xd[1]).getFullYear(),
+        zoom_domain = _brush.empty() ? _x.domain() : bex,
+        date_0 = new Date(zoom_domain[0]),
+        date_1 = new Date(zoom_domain[1]),
+        year_0 = date_0.getFullYear(),
+        year_1 = date_1.getFullYear(),
         d0 = _x.domain()[0].getFullYear(),
-        d1 = _x.domain()[1].getFullYear()
+        d1 = _x.domain()[1].getFullYear(),
+        index_0 = year_0 < d0 + 10 ? 0 : Math.floor((year_0 - d0) / 10),
+        index_1 = year_1 > d1 - 10 ? (d1 - d0) / 10 : Math.ceil((year_1 - d0) / 10)
       ;
-      x0 = x0 < d0 + 10 ? 0 : Math.floor((x0 - d0) / 10);
-      x1 = x1 > d1 - 10 ? (d1 - d0) / 10 : Math.ceil((x1 - d0) / 10);
       graph_data.zoomed_graphs.forEach(function(g) {
-        g.graph.domain(xd);
+        g.graph.domain(zoom_domain);
         if (!g.graph.twin() || _twin) {
-          g.graph.zoom(x0, x1);
+          g.graph.zoom(index_0, index_1, date_0, date_1);
         }
       });
     };
