@@ -811,15 +811,15 @@ var WebDICEGraph = function() {
         var k = _timex ? new Date(d.key) : +d.key;
         if ((k >= domain[0]) && (!ax)) {
           ax = previous[0];
-          as = previous[1];
+          as = previous[1].filter(function(d) { return hidden_runs.indexOf(+d.run_id) == -1; });
           bx = k;
-          bs = d.values;
+          bs = d.values.filter(function(d) { return hidden_runs.indexOf(+d.run_id) == -1; });
         }
         if ((k >= domain[1]) && (!cx)) {
           cx = previous[0];
-          cs = previous[1];
+          cs = previous[1].filter(function(d) { return hidden_runs.indexOf(+d.run_id) == -1; });
           dx = k;
-          ds = d.values;
+          ds = d.values.filter(function(d) { return hidden_runs.indexOf(+d.run_id) == -1; });
         }
         previous = [k, d.values];
       }

@@ -2,7 +2,7 @@ var WebDICEGraphZoom = function() {
   'use strict';
   var width = 700,
     height = 345,
-    zoom_height = 30,
+    zoom_height = 40,
     padding = {top: 10, right: 60, bottom: 10, left: 60},
 
     /***********************
@@ -15,6 +15,10 @@ var WebDICEGraphZoom = function() {
     _y2 = d3.scale.linear().domain([0, 1]).range([zoom_height - 1, 1]),
     x_axis = d3.svg.axis().scale(_x)
       .orient('bottom')
+      .tickSize(0).innerTickSize(0)
+      .tickFormat(function(d) { return null; }),
+    x_axis2 = d3.svg.axis().scale(_x)
+      .orient('top')
       .tickSize(0).innerTickSize(0)
       .tickFormat(function(d) { return null; }),
     _line = d3.svg.line()
@@ -107,16 +111,21 @@ var WebDICEGraphZoom = function() {
       }
       axes_layer.select('.x.axis')
         .attr('transform', 'translate(0,' + zoom_height + ')')
-        .call(x_axis);
+        .call(x_axis)
+        .call(x_axis2);
     },
     draw_axes = function() {
       /*
        Draw x and y axes, ticks, etc.
        */
-      axes_layer.append('g')
-        .attr('class', 'x axis')
+      axes_layer. append('g')
+        .attr('class', 'x axis zoom')
         .attr('transform', 'translate(0,' + (zoom_height + 5) + ')')
         .call(x_axis);
+      axes_layer. append('g')
+        .attr('class', 'x axis zoom')
+        .attr('transform', 'translate(0,' + 0 + ')')
+        .call(x_axis2);
     },
     pre_id = function(str) {
       return svg_id + '_' + str;
@@ -211,6 +220,7 @@ var WebDICEGraphZoom = function() {
     if (!val) { return _x; }
     _x = val.range(_x.range()).domain(_x.domain());
     x_axis.scale(_x);
+    x_axis2.scale(_x);
     _brush.x(_x);
     _timex = bool === undefined ? true : bool;
     return this;
@@ -427,6 +437,9 @@ var WebDICEGraphZoom = function() {
   this.empty_brush = function() {
     d3.selectAll('.brush').call(_brush.clear());
     return this;
+  };
+  this.force_brush = function() {
+    _brushed();
   };
   this.change_y = function() {
     graph_data.graphs
