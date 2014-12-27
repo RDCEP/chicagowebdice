@@ -24,7 +24,7 @@
       output: function (v) {
         var output = [];
         for (var i = 0; i < 10; ++i) {
-          var y = 1 - 1 / (1 + 0.0028388 * Math.pow(i, v))
+          var y = 1 - 1 / (1 + 0.0028388 * Math.pow(i, v));
           output.push({
             y: y,
             x: i + 1
@@ -150,7 +150,7 @@
         v = [1, 1.4, 2.0, 2.8, 4.0][v - 1];
         var output = [];
         for (var i = 0; i < 10; ++i) {
-          var y = 1 - 1 / (1 + 0.0028388 * Math.pow(i, v))
+          var y = 1 - 1 / (1 + 0.0028388 * Math.pow(i, v));
           output.push({
             y: y,
             x: i + 1
