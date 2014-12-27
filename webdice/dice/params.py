@@ -158,7 +158,7 @@ class DiceParams(DiceUserParams):
         self.temp_atmosphere_2000 = .7307
         self.c1 = .220
         self.c2 = 0
-        self.c3 = .300
+        self.c3 = .310
         self.c4 = .050
         self.thermal_transfer = np.array([
             self.c1, self.c2, self.c3, self.c4
