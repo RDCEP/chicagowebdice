@@ -300,5 +300,7 @@ class Dice2010(CarbonModel):
             self.params.forcing_ghg_2000 + .1 * (
                 self.params.forcing_ghg_2100 - self.params.forcing_ghg_2000
             ) * np.arange(11),
-            self.params.forcing_ghg_2000 * (np.ones(49) * .36),
+            #TODO: Where did this .36 come from?
+            # self.params.forcing_ghg_2000 * (np.ones(49) * .36),
+            self.params.forcing_ghg_2000 * np.ones(49),
         ))
