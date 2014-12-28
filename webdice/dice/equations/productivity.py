@@ -342,3 +342,26 @@ class Dice2013(Dice2010):
             df.carbon_intensity[i - 1] *
             np.exp(df.intensity_decline[i - 1] * self.params.ts)
         ), intensity_decline
+
+    def gross_output(self, productivity, capital, output_elasticity,
+                     population):
+        """Gross output, trillions USD
+
+        Args:
+            :param productivity: productivity in current time step
+            :type i: float
+            :param capital: capital in current time step
+            :type i: float
+            :param output_elasticity: elasticity of output
+            :type i: float
+            :param population: population in current time step
+            :type i: float
+
+        Returns:
+            :returns: A(t) * K(t) ^ γ * L ^ (1 - γ)
+            :rtype: float
+        """
+        return (
+            productivity * capital ** output_elasticity *
+            (population * 1e-3) ** (1 - output_elasticity)
+        )

@@ -231,3 +231,13 @@ class Dice2013(Dice2010):
         ts = self.params.ts
         return ne.evaluate('carbon_intensity_prev * exp(intensity_decline_prev * ts)')
 
+    def gross_output(self, productivity, capital, output_elasticity,
+                     population):
+        """
+        Gross output
+        ...
+        Returns
+        -------
+        float
+        """
+        return ne.evaluate('productivity * capital ** output_elasticity * (population / 1000) ** (1 - output_elasticity)')
