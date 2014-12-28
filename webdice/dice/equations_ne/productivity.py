@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import division
 import numpy as np
 import numexpr as ne
@@ -212,6 +213,18 @@ class DiceBackstop2013(Dice2010):
 
 
 class Dice2013(Dice2010):
+
+    @property
+    def productivity_growth(self):
+        """A_g, Growth rate of total factor productivity.
+
+        Returns:
+            :returns: A_g(0) * exp(-Δ_a * (t-1))
+            :rtype: np.ndarray
+        """
+        return self.params.productivity_growth_init * np.exp(
+            -self.params.productivity_decline * self.params.ts * self.params.t0
+        )
 
     @property
     def backstop(self):
