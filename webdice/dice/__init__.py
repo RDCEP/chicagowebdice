@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
 import numpy as np
-from params import DiceParams, Dice2010Params, DiceUserParams, DiceDataMatrix
+from params import DiceParams, Dice2010Params, DiceUserParams, DiceDataMatrix, \
+    Dice2013Params
 from equations.loop import Loop
 from equations_ne.loop import LoopOpt
 
@@ -362,6 +363,23 @@ class Dice2010(Dice):
         self.params = Dice2010Params()
         self.vars = self.params.vars
         self.dice_version = 2010
+        self.opt_tol = 1e-5
+
+
+class Dice2013(Dice):
+    """Convenience object for DICE2010 scenarios.
+
+    Example:
+        d = Dice2010()
+        d.loop(opt=False)
+        print(d.vars)
+
+    """
+    def __init__(self):
+        super(Dice2013, self).__init__()
+        self.params = Dice2013Params()
+        self.vars = self.params.vars
+        self.dice_version = 2013
         self.opt_tol = 1e-5
 
 

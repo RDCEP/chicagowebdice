@@ -1,5 +1,13 @@
 {% extends 'base_page.html' %}
 
+{% block headjs %}
+  {{ super() }}
+  <script>
+    Options.start_year = {{ start_year }};
+    Options.time_step = {{ time_step }};
+  </script>
+{% endblock %}
+
 {% block title_tabs %}
   <ul class=tabs>
     <li id=link-to-essential data-pane=essential class="graph-tab selected">Essential</li>

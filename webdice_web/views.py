@@ -7,7 +7,7 @@ import os
 from numpy import inf
 from lxml import etree
 from flask import render_template, request, Blueprint, jsonify, send_file
-from webdice.dice import Dice2010
+from webdice.dice import Dice2010, Dice2013
 from webdice_web.constants import BASE_DIR
 
 
@@ -23,9 +23,9 @@ def validate_number(n):
     else: return n
 
 
-def run_loop(form):
+def run_loop(form, year=2013):
 
-    dice = Dice2010()
+    dice = Dice2010() if year == 2010 else Dice2013()
 
     for field in ['e2050', 'e2100', 'e2150']:
         form[field] = float(form[field]) / 100
@@ -41,14 +41,14 @@ def run_loop(form):
         except ValueError:
             pass
 
-    dice.params.productivity_model = 'dice_backstop_2013'
+    dice.params.productivity_model = 'dice_backstop_2013' if year == 2010 else 'dice_2013'
 
     try:
         dice.params.carbon_model = form['carbon_model']
         dice.params.damages_model = form['damages_model']
     except KeyError:
-        dice.params.carbon_model = 'dice_2010'
-        dice.params.damages_model = 'dice_2010'
+        dice.params.carbon_model = 'dice_{}'.format(year)
+        dice.params.damages_model = 'dice_{}'.format(year)
 
     opt = False
     dice.params.treaty = False
@@ -116,7 +116,9 @@ def glossary_advanced_term(term):
 def advanced():
     return render_template(
         'versions/advanced.html',
-        dice_version=2010,
+        dice_version=2013,
+        time_step=5,
+        start_year=2010,
     )
 
 
@@ -152,7 +154,7 @@ def graphs_standard():
         except KeyError:
             pass
 
-    return run_loop(form)
+    return run_loop(form, year=2010)
 
 
 @mod.route('/run/advanced', methods=['POST', 'GET'])
@@ -175,7 +177,7 @@ def graphs_advanced():
         except KeyError:
             pass
 
-    return run_loop(form)
+    return run_loop(form, year=2013)
 
 
 @mod.route('/get_svg', methods=['POST', ])

@@ -29,8 +29,10 @@
     padding = [45, 15, 30, 60],  // padding[3] needs to match $left_pad in _layout.sass
 
     graph_periods = 20,
-    period_length = 10,
-    start_year = 2005,
+    //period_length = 10,
+    period_length = Options.time_step,
+    //start_year = 2005,
+    start_year = Options.start_year,
     end_year = start_year + ((graph_periods - 1) * period_length),
     x_domain = [new Date(start_year, 0, 1), new Date(end_year, 0, 1)],
     x_custom_domain = [new Date(start_year, 0, 1), new Date(end_year, 0, 1)],
