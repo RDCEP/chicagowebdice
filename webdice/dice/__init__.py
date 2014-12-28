@@ -24,7 +24,7 @@ class Dice(object):
         self.eq = Loop(self.params)
         self.eps = 1e-8
         self.dice_version = 2007
-        self.opt_vars = 60
+        self.opt_vars = self.params.tmax
         self.opt_x = np.arange(self.opt_vars)
         self.opt_grad_f = None
         self.opt_obj = None
@@ -201,7 +201,7 @@ class Dice(object):
             float: value of objective (utility)
 
         """
-        df = DiceDataMatrix(np.tile(self.vars, (61, 1, 1)).transpose(1, 2, 0))
+        df = DiceDataMatrix(np.tile(self.vars, (self.params.tmax + 1, 1, 1)).transpose(1, 2, 0))
         for i in xrange(self.params.tmax):
             df.miu[i, :] = miu[i]
             df.miu[i, i] += self.eps
@@ -222,7 +222,7 @@ class Dice(object):
             nd.array: gradient of objective
 
         """
-        df = DiceDataMatrix(np.tile(self.vars, (61, 1, 1)).transpose(1, 2, 0))
+        df = DiceDataMatrix(np.tile(self.vars, (self.params.tmax + 1, 1, 1)).transpose(1, 2, 0))
         for i in xrange(self.params.tmax):
             df.miu[i, :] = miu[i]
             df.miu[i, i] += self.eps
@@ -254,6 +254,7 @@ class Dice(object):
                 self.vars.consumption_pc[i:th] -
                 self.scc.consumption_pc[i:th]
             ).clip(0) * self.scc.consumption_discount[:future]
+            # self.vars.scc[i] = np.sum(diff) * 1000 * 10 * (12 / 44)
             self.vars.scc[i] = np.sum(diff) * 1000 * self.params.ts * (12 / 44)
 
     def get_ipopt_miu(self):
@@ -275,17 +276,19 @@ class Dice(object):
             print('OPTIMIZATION ERROR: It appears that you do not have '
                   'pyipopt installed. Please install it before running '
                   'optimization.')
+        ramp = int(self.params.tmax / 2)
         x0 = np.concatenate(
-            (np.linspace(0, 1, 40) ** (1 - np.linspace(0, 1, 40)), np.ones(20))
+            (np.linspace(0, 1, ramp) ** (1 - np.linspace(0, 1, ramp)),
+             np.ones(int(self.params.tmax - ramp)))
         )
         M = 0
         nnzj = 0
         nnzh = 0
         xl = np.zeros(self.params.tmax)
         xu = np.ones(self.params.tmax)
-        xl[0] = .005
-        xu[0] = .005
-        xl[-20:] = 1
+        xl[0] = self.params.miu_init
+        xu[0] = self.params.miu_init
+        xl[int(self.params.tmax/-2):] = 1
         gl = np.zeros(M)
         gu = np.ones(M) * 4.0
         def eval_f(_x0):
@@ -367,10 +370,10 @@ class Dice2010(Dice):
 
 
 class Dice2013(Dice):
-    """Convenience object for DICE2010 scenarios.
+    """Convenience object for DICE2013 scenarios.
 
     Example:
-        d = Dice2010()
+        d = Dice2013()
         d.loop(opt=False)
         print(d.vars)
 
@@ -379,8 +382,11 @@ class Dice2013(Dice):
         super(Dice2013, self).__init__()
         self.params = Dice2013Params()
         self.vars = self.params.vars
+        self.scc = self.params.scc
         self.dice_version = 2013
         self.opt_tol = 1e-5
+        self.opt_vars = self.params.tmax
+        self.opt_x = np.arange(self.opt_vars)
 
 
 class Dice2007(Dice):

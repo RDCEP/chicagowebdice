@@ -250,7 +250,7 @@ class DiceParams(DiceUserParams):
 class Dice2010Params(DiceParams):
     def __init__(self, model=2010):
         super(Dice2010Params, self).__init__(model=model)
-        self.dice_year = str(2010)
+        self.dice_year = str(model)
         self.temp_co2_doubling = 3.2
         self.damages_exponent = 2.  # TODO: see equations
         self.productivity_decline = .009  # TODO: Add second parameter?
@@ -304,12 +304,17 @@ class Dice2010Params(DiceParams):
         self.vars.mass_lower[0] = self.mass_lower_init
 
 
-class Dice2013Params(Dice2010Params):
+class Dice2013Params(DiceParams):
     def __init__(self, model=2013):
-        super(Dice2010Params, self).__init__(model=model)
-        self.dice_year = str(2013)
+        super(Dice2013Params, self).__init__(model=model)
+        self.dice_year = str(model)
+
+        self.tmax *= 1
+        self.t0 = np.arange(self.tmax)
+        self.t1 = self.t0 + 1
         self.ts = 5.
         self.start_year = 2010
+        self.scc_horizon = self.tmax - 1
 
         self.intensity_init = .489 * 12 / 44
         self.intensity_growth = -.01
@@ -320,7 +325,6 @@ class Dice2013Params(Dice2010Params):
         self.miu_init = .039
 
         self.elasmu = 1.45
-        self.prstp = .015
 
         self.population_init = 6838.
         self.population_growth = .134
@@ -330,8 +334,11 @@ class Dice2013Params(Dice2010Params):
         self.capital_init = 135.
 
         self.productivity = 3.8
+        self.productivity = 3.8
         self.productivity_growth_init = .079
         self.productivity_decline = .006
+
+        self.backstop_init = 1.26
 
         _b13 = 0
         _b31 = 0
@@ -379,3 +386,68 @@ class Dice2013Params(Dice2010Params):
         self.catastrophic_threshold = 4.
         self.catastrophic_exponent = 3.
         self.catastrophic_gate = 0
+
+        backstop_growth = np.zeros(self.tmax)
+        carbon_intensity = np.empty(self.tmax)
+        carbon_intensity[:] = self.intensity_init
+        intensity_decline = np.zeros(self.tmax)
+        intensity_decline[:] = self.intensity_decline_rate
+        productivity = np.empty(self.tmax)
+        productivity[:] = self.productivity
+        capital = np.empty(self.tmax)
+        capital[:] = self.capital_init
+        output = np.empty(self.tmax)
+        output[:] = self.output_init
+        mass_atmosphere = np.empty(self.tmax)
+        mass_atmosphere[:] = self.mass_atmosphere_init
+        mass_upper = np.empty(self.tmax)
+        mass_upper[:] = self.mass_upper_init
+        mass_lower = np.empty(self.tmax)
+        mass_lower[:] = self.mass_lower_init
+        temp_atmosphere = np.empty(self.tmax)
+        temp_atmosphere[:] = self.temp_atmosphere_init
+        temp_lower = np.empty(self.tmax)
+        temp_lower[:] = self.temp_lower_init
+        investment = np.empty(self.tmax)
+        investment[:] = self.savings * self.output_init
+        population = np.empty(self.tmax)
+        population[:] = self.population_init
+        miu = np.empty(self.tmax)
+        miu[:] = self.miu_init
+
+        self.vars = DiceDataMatrix(np.array([
+            np.zeros(self.tmax),                # abatement
+            np.zeros(self.tmax),                # backstop
+            backstop_growth,                    # backstop_growth
+            capital,                            # capital
+            np.zeros(self.tmax),                # carbon_emitted
+            carbon_intensity,                   # carbon_intensity
+            np.zeros(self.tmax),                # consumption
+            np.ones(self.tmax),                 # consumption_discount
+            np.zeros(self.tmax),                # consumption_pc
+            np.zeros(self.tmax),                # damages
+            np.zeros(self.tmax),                # emissions_ind
+            np.zeros(self.tmax),                # emissions_total
+            np.zeros(self.tmax),                # forcing
+            np.zeros(self.tmax),                # gross_output
+            intensity_decline,                  # intensity_decline
+            investment,                         # investment
+            mass_atmosphere,                    # mass_atmosphere
+            mass_upper,                         # mass_upper
+            mass_lower,                         # mass_lower
+            miu,                                # miu
+            output,                             # output
+            np.zeros(self.tmax),                # output_abate
+            np.zeros(self.tmax),                # participation
+            population,                         # population
+            np.zeros(self.tmax),                # population_growth
+            productivity,                       # productivity
+            np.ones(self.tmax),                 # scc
+            np.zeros(self.tmax),                # tax_rate
+            temp_atmosphere,                    # temp_atmosphere
+            temp_lower,                         # temp_lower
+            np.zeros(self.tmax),                # utility
+            np.zeros(self.tmax),                # utility_discounted
+        ]))
+
+        self.scc = DiceDataMatrix(np.zeros((32, self.tmax)))

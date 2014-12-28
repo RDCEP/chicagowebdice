@@ -91,7 +91,7 @@ class CarbonModel(object):
             self.params.forcing_ghg_init + .1 * (
                 self.params.forcing_ghg_future - self.params.forcing_ghg_init
             ) * np.arange(11),
-            self.params.forcing_ghg_future * np.ones(49),
+            self.params.forcing_ghg_future * np.ones(self.params.tmax - 11),
         ))
 
     def mass_atmosphere(self, emissions_total, mass_atmosphere, mass_upper):
@@ -188,7 +188,7 @@ class BeamCarbon(CarbonModel):
     """
     def __init__(self, params):
         CarbonModel.__init__(self, params)
-        self.N = 20
+        self.N = self.params.ts * 2
         self.initial_carbon = [808.9, 725, 35641]
         self.carbon_matrix_skel = np.array([
             -.2, .2, 0,
@@ -229,7 +229,7 @@ class BeamCarbon(CarbonModel):
 
         _a = k_h * (AM / (OM * (delta + 1)))
         """
-        _dims = 61 if df.ndim > 2 else 1
+        _dims = self.params.tmax + 1 if df.ndim > 2 else 1
         if i == 0:
             return (
                 self.initial_carbon[0] * np.ones(_dims),
@@ -280,7 +280,7 @@ class Dice2010(CarbonModel):
             self.params.forcing_ghg_init + .1 * (
                 self.params.forcing_ghg_future - self.params.forcing_ghg_init
             ) * np.arange(11),
-            self.params.forcing_ghg_init * np.ones(49),
+            self.params.forcing_ghg_init * np.ones(self.params.tmax - 11),
         ))
 
 
