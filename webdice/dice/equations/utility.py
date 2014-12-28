@@ -48,7 +48,7 @@ class UtilityModel(object):
              :type consumption_pc: float
 
         Returns:
-            :returns: 1 / (1 - η) * (c ^ (1 - η) - 1)
+            :returns: c ^ (1 - η) / (1 - η) + 1
             :rtype: float
         """
         if self.params.elasmu == 1:
