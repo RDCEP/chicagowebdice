@@ -195,7 +195,7 @@ class IncommensurableDamages(DamagesModel):
         return [abatement, damages, output, output_abate]
 
     def output(self, gross_output, damages, abatement, temp_atmosphere=None):
-        C25d = 1.4797e-05
+        C25d = 1.4771e-05
         output_no_damages = gross_output - abatement
         consumption_no_damages = (
             output_no_damages - output_no_damages * self.params.savings
@@ -232,10 +232,10 @@ class ProductivityFraction(DamagesModel):
     """
     def damages(self, gross_output, temp_atmosphere, a_abatement=None):
         fD = self.get_production_factor(temp_atmosphere)
-        damages_to_prod = (1 - (1 - 1 / (
+        damages_to_prod =  1 / (
             1 + self.damages_terms[0] * temp_atmosphere +
             self.damages_terms[1] * temp_atmosphere ** self.damages_terms[2]
-        ))) / fD
+        ) / fD
         return gross_output * (1 - damages_to_prod)
 
     def get_production_factor(self, temp_atmosphere):

@@ -221,7 +221,7 @@ class ProductivityFraction(DamagesModel):
         a1 = self.damages_terms[0]
         a2 = self.damages_terms[1]
         a3 = self.damages_terms[2]
-        return ne.evaluate('gross_output * (1 - ((1 - (1 - 1 / (1 + a1 * temp_atmosphere + a2 * temp_atmosphere ** a3))) / fD))')
+        return ne.evaluate('gross_output * (1 - 1 / (1 + a1 * temp_atmosphere + a2 * temp_atmosphere ** a3) / fD)')
 
     def get_production_factor(self, temp_atmosphere):
         """
