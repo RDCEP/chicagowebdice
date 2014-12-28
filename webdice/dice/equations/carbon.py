@@ -304,3 +304,7 @@ class Dice2010(CarbonModel):
             # self.params.forcing_ghg_init * (np.ones(49) * .36),
             self.params.forcing_ghg_init * np.ones(49),
         ))
+
+
+class Dice2013(Dice2010):
+    pass

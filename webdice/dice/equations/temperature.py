@@ -136,3 +136,7 @@ class Dice2010(TemperatureModel):
                 (temp_atmosphere - temp_lower)
             )
         )
+
+
+class Dice2013(Dice2010):
+    pass

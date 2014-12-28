@@ -94,3 +94,7 @@ class Dice2007(ConsumptionModel):
 
 class Dice2010(ConsumptionModel):
     pass
+
+
+class Dice2013(Dice2010):
+    pass

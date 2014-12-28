@@ -260,3 +260,23 @@ class ProductivityFraction(DamagesModel):
 
 class Dice2010(DamagesModel):
     pass
+
+
+class Dice2013(DamagesModel):
+
+    def damages(self, gross_output, temp_atmosphere, abatement=None):
+        """
+        Omega, Damage, trillions $USD
+        ...
+        Returns
+        -------
+        float
+        """
+        D = self.damages_terms[0] * temp_atmosphere + (
+            self.params.damages_multiplier * self.damages_terms[1] *
+            temp_atmosphere) ** self.damages_terms[2] + (
+            self.params.catastrophic_rate * self.params.catastrophic_gate *
+            (temp_atmosphere / self.params.catastrophic_threshold) **
+            self.params.catastrophic_exponent
+        )
+        return gross_output * (D / (1 + D ** 10))
