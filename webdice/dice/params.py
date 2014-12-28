@@ -316,3 +316,61 @@ class Dice2013Params(Dice2010Params):
         self.intensity_decline_rate = .001
 
         self.emissions_deforest_init = 1.54
+        #self.emissions_deforest_init = 3.3 #GAMS
+        self.miu_init = .039
+
+        self.elasmu = 1.45
+        self.prstp = .015
+
+        self.population_init = 6838.
+        self.population_growth = .134
+        self.popasym = 10500
+
+        self.output_init = 63.69
+        self.capital_init = 135.
+
+        self.productivity = 3.8
+        self.productivity_growth_init = .079
+        self.productivity_decline = .006
+
+        _b13 = 0
+        _b31 = 0
+        _b12 = .088
+        _b23 = .0025
+        _b11 = 1 - _b12
+        _b21 = _b12 * 588. / 1350.
+        _b22 = 1 - _b21 - _b23
+        _b32 = _b23 * 1350. / 10000.
+        _b33 = 1 - _b32
+        self.carbon_matrix = np.array([
+            _b11, _b12, _b13,
+            _b21, _b22, _b23,
+            _b31, _b32, _b33,
+        ]).reshape(3, 3)
+        self.mass_atmosphere_init = 830.4
+        self.mass_upper_init = 1527.
+        self.mass_lower_init = 10010.
+        self.mass_preindustrial = 592.14
+
+        self.temp_co2_doubling = 2.9
+        self.forcing_ghg_init = .25
+        self.forcing_ghg_future = .7
+        self.temp_atmosphere_init = .8
+
+        self.c10 = .098
+        self.c1beta = .01243
+        self.c1 = .098
+        self.c2 = 0
+        self.c3 = .088
+        self.c4 = .025
+        self.thermal_transfer = np.array([
+            self.c1, self.c2, self.c3, self.c4
+        ])
+
+        self.a1 = 0
+        self.damages_coefficient = 0.002131
+        self.damages_multiplier = 1.25
+        self.catastrophic_rate = .00644
+        self.catastrophic_threshold = 4.
+        self.catastrophic_exponent = 3.
+        self.catastrophic_gate = 0
