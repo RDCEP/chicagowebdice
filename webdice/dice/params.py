@@ -176,6 +176,7 @@ class DiceParams(DiceUserParams):
         self.tmax = 60
         self.t0 = np.arange(self.tmax)
         self.t1 = self.t0 + 1
+        self.ts = 10.
         self.scc_horizon = self.tmax - 1
 
         # Variables for initiating DiceDataMatrix
@@ -294,7 +295,6 @@ class Dice2010Params(DiceParams):
         self.vars.intensity_decline[0] = .158
         self.vars.population[0] = self.population_init
         self.vars.temp_atmosphere[0] = self.temp_atmosphere_init
-        self.vars.temp_atmosphere[1] = self.temp_atmosphere_2010
         self.vars.carbon_intensity[0] = self.intensity_init
         self.vars.productivity[0] = self.productivity
         self.vars.output[0] = self.output_init
