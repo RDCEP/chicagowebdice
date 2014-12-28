@@ -33,7 +33,7 @@ class EmissionsModel(object):
             :rtype: np.ndarray
         """
         return (
-            self.params.emissions_deforest_2005 *
+            self.params.emissions_deforest_init *
             (1 - .1) ** self.params.t0
         )
 
@@ -250,6 +250,10 @@ class Dice2010(EmissionsModel):
         array
         """
         return (
-            self.params.emissions_deforest_2005 *
+            self.params.emissions_deforest_init *
             .8 ** self.params.t0
         )
+
+
+class Dice2013(Dice2010):
+    pass

@@ -135,7 +135,7 @@ class DiceParams(DiceUserParams):
         self.intensity_init = .13418
         self.intensity_growth = -.0730
         self.intensity_quadratic = .000
-        self.emissions_deforest_2005 = 1.1
+        self.emissions_deforest_init = 1.1
 
         ## Carbon Cycle
         _b11, _b12, _b13 = .810712, .189288, 0
@@ -314,3 +314,5 @@ class Dice2013Params(Dice2010Params):
         self.intensity_init = .489
         self.intensity_growth = .01
         self.intensity_decline_rate = .001
+
+        self.emissions_deforest_init = 1.54
