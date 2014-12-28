@@ -70,3 +70,18 @@ class Dice2007(UtilityModel):
 
 class Dice2010(UtilityModel):
     pass
+
+
+class Dice2013(Dice2010):
+    def utility(self, consumption_pc):
+        """
+        U, Period utility function
+        ...
+        Returns
+        -------
+        float
+        """
+        if self.params.elasmu == 1:
+            return ne.evaluate('log(consumption_pc)')
+        d = 1.0 - self.params.elasmu
+        return ne.evaluate('(consumption_pc ** d - 1) / d - 1')

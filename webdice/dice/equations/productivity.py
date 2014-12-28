@@ -284,43 +284,30 @@ class DiceBackstop2013(Dice2010):
     """This cass is a hack to make the simpler backstop equations from
     DICE2013 available to the web front-end.
     """
-    def get_model_values(self, i, df):
-        if i > 0:
-            carbon_intensity, intensity_decline = self.carbon_intensity(i, df)
-            productivity = df.productivity[i - 1] / (
-                1 - self.productivity_growth[i - 1])
-            capital = self.capital(
-                df.capital[i - 1], self.params.depreciation,
-                df.investment[i - 1]
-            )
-            population = self.population(i, df)
-            gross_output = self.gross_output(
-                productivity, capital, self.params.output_elasticity,
-                population
-            )
-            df.backstop[i] = df.backstop[i - 1] * (1 - self.params.backstop_decline)
+    @property
+    def backstop(self):
+        """Cost of replacing with clean energy
+        12/44 converts from $/C to $/CO2
 
-        else:
-            #TODO: Convert to $/tC ?
-            df.backstop[i] = self.params.backstop_init * (12 / 44)
-            carbon_intensity = self.params.intensity_init
-            productivity = self.params.productivity
-            capital = self.params.capital_init
-            gross_output = self.params.output_init
-            intensity_decline = self.params.intensity_growth
-            population = self.params.population_init
-        #TODO: Convert to $/tC ?
-        backstop_growth = (
-            df.backstop[i] * carbon_intensity /
-            self.params.abatement_exponent
-        ) * (44 / 12)
+        Returns:
+            :returns: TKTK
+            :rtype: np.ndarray
+        """
+        return self.params.backstop_init * (
+            (1 - self.params.backstop_decline) ** self.params.t0
+        ) * (12 / 44)
 
-        return (
-            carbon_intensity,
-            productivity,
-            capital,
-            backstop_growth,
-            gross_output,
-            intensity_decline,
-            population,
+
+class Dice2013(Dice2010):
+    @property
+    def backstop(self):
+        """Cost of replacing with clean energy
+        12/44 converts from $/C to $/CO2
+
+        Returns:
+            :returns: TKTK
+            :rtype: np.ndarray
+        """
+        return self.params.backstop_init * (
+            (1 - self.params.backstop_decline) ** self.params.t0
         )

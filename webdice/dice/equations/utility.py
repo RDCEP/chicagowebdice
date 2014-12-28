@@ -80,3 +80,21 @@ class Dice2007(UtilityModel):
 
 class Dice2010(UtilityModel):
     pass
+
+
+class Dice2013(Dice2010):
+    def utility(self, consumption_pc):
+        """U, Period utility function
+
+        Args:
+            :param consumption_pc: per capita consumption
+             :type consumption_pc: float
+
+        Returns:
+            :returns: [c ^ (1 - η) - 1] / (1 - η) - 1
+            :rtype: float
+        """
+        if self.params.elasmu == 1:
+            return np.log(consumption_pc)
+        denom = 1.0 - self.params.elasmu
+        return (consumption_pc ** denom - 1) / denom - 1
