@@ -15,8 +15,8 @@ class TemperatureModel(object):
     """
     def __init__(self, params):
         self.params = params
-        self._temp_atmosphere_2005 = params.temp_atmosphere_2000
-        self._temp_lower_2005 = params.temp_lower_2000
+        self._temp_atmosphere_2005 = params.temp_atmosphere_init
+        self._temp_lower_2005 = params.temp_lower_init
         self._forcing_co2_doubling = params.forcing_co2_doubling
 
     @property
@@ -98,8 +98,8 @@ class LinearTemperature(TemperatureModel):
                 self.params.temp_co2_doubling / ((
                     2 * self.params.mass_preindustrial + (
                         2 * self.params.mass_preindustrial -
-                        (self.params.mass_atmosphere_2005 * self.params.carbon_matrix[0][0]) -
-                        (self.params.mass_upper_2005 * self.params.carbon_matrix[1][0])
+                        (self.params.mass_atmosphere_init * self.params.carbon_matrix[0][0]) -
+                        (self.params.mass_upper_init * self.params.carbon_matrix[1][0])
                     )) * 1e-3)
             ) * 1e-3
         )

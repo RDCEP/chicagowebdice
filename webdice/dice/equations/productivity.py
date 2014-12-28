@@ -36,7 +36,7 @@ class ProductivityModel(object):
             :returns: BC(0) * (ratio - 1 + exp(-BC_g(0) * (t-1)) / ratio)
             :rtype: np.ndarray
         """
-        return self.params.backstop_2005 * (
+        return self.params.backstop_init * (
             (
                 self.params.backstop_ratio - 1 + np.exp(
                     -self.params.backstop_decline * self.params.t0
@@ -82,7 +82,7 @@ class ProductivityModel(object):
             :rtype: float
         """
         return (
-            self.params.population_2005 *
+            self.params.population_init *
             (1 - self.population_growth_rate[i]) +
             self.population_growth_rate[i] * self.params.popasym
         )
@@ -144,12 +144,12 @@ class ProductivityModel(object):
             )
         else:
             df.backstop[:] = self.backstop
-            carbon_intensity = self.params.intensity_2005
+            carbon_intensity = self.params.intensity_init
             productivity = self.params.productivity
-            capital = self.params.capital_2005
-            gross_output = self.params.output_2005
+            capital = self.params.capital_init
+            gross_output = self.params.output_init
             intensity_decline = self.params.intensity_growth
-            population = self.params.population_2005
+            population = self.params.population_init
 
         backstop_growth = (
             df.backstop[i] * carbon_intensity /
@@ -302,13 +302,13 @@ class DiceBackstop2013(Dice2010):
 
         else:
             #TODO: Convert to $/tC ?
-            df.backstop[i] = self.params.backstop_2005 * (12 / 44)
-            carbon_intensity = self.params.intensity_2005
+            df.backstop[i] = self.params.backstop_init * (12 / 44)
+            carbon_intensity = self.params.intensity_init
             productivity = self.params.productivity
-            capital = self.params.capital_2005
-            gross_output = self.params.output_2005
+            capital = self.params.capital_init
+            gross_output = self.params.output_init
             intensity_decline = self.params.intensity_growth
-            population = self.params.population_2005
+            population = self.params.population_init
         #TODO: Convert to $/tC ?
         backstop_growth = (
             df.backstop[i] * carbon_intensity /

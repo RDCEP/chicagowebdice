@@ -168,7 +168,7 @@ class EmissionsModel(object):
                 else:
                     return 0
             else:
-                return self.params.miu_2005
+                return self.params.miu_init
         else:
             return min(miu[i], 1.0)
         return min(df.miu[i], 1.0)

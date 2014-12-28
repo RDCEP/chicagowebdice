@@ -26,7 +26,7 @@ class ConsumptionModel(object):
     def initial_values(self):
         return (
             1,
-            self.params.output_2005 * self.params.savings,
+            self.params.output_init * self.params.savings,
         )
 
     def get_model_values(self, i, df):

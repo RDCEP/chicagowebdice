@@ -36,7 +36,7 @@ class ProductivityModel(object):
         -------
         array
         """
-        return self.params.backstop_2005 * (
+        return self.params.backstop_init * (
             (
                 self.params.backstop_ratio - 1 + np.exp(
                     -self.params.backstop_decline * self.params.t0
@@ -71,7 +71,7 @@ class ProductivityModel(object):
         -------
         array
         """
-        p = self.params.population_2005
+        p = self.params.population_init
         pa = self.params.popasym
         return ne.evaluate('p * (1 - population_growth_rate) + population_growth_rate * pa')
 
@@ -109,11 +109,11 @@ class ProductivityModel(object):
         else:
             intensity_decline = self.params.intensity_growth
             # df.backstop[:] = self.backstop
-            carbon_intensity = self.params.intensity_2005
+            carbon_intensity = self.params.intensity_init
             productivity = self.params.productivity
-            capital = self.params.capital_2005
-            gross_output = self.params.output_2005
-            population = self.params.population_2005
+            capital = self.params.capital_init
+            gross_output = self.params.output_init
+            population = self.params.population_init
 
         bs = self.backstop[i]
         ae = self.params.abatement_exponent
@@ -235,13 +235,13 @@ class DiceBackstop2013(Dice2010):
             df.backstop[i] = ne.evaluate('b * (1 - bg)')
         else:
             intensity_decline = self.params.intensity_growth
-            df.backstop[0][:] = self.params.backstop_2005
+            df.backstop[0][:] = self.params.backstop_init
             # df.backstop[:] = self.backstop
-            carbon_intensity = self.params.intensity_2005
+            carbon_intensity = self.params.intensity_init
             productivity = self.params.productivity
-            capital = self.params.capital_2005
-            gross_output = self.params.output_2005
-            population = self.params.population_2005
+            capital = self.params.capital_init
+            gross_output = self.params.output_init
+            population = self.params.population_init
 
         bs = self.backstop[i]
         ae = self.params.abatement_exponent

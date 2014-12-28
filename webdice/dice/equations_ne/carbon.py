@@ -39,27 +39,27 @@ class CarbonModel(object):
     def __init__(self, params):
         self.params = params
         self._carbon_matrix = params.carbon_matrix
-        self._mass_atmosphere_2005 = params.mass_atmosphere_2005
-        self._mass_upper_2005 = params.mass_upper_2005
-        self._mass_lower_2005 = params.mass_lower_2005
+        self._mass_atmosphere_init = params.mass_atmosphere_init
+        self._mass_upper_init = params.mass_upper_init
+        self._mass_lower_init = params.mass_lower_init
         self._mass_preindustrial = params.mass_preindustrial
-        self._temp_atmosphere_2005 = params.temp_atmosphere_2000
-        self._temp_lower_2005 = params.temp_lower_2000
+        self._temp_atmosphere_2005 = params.temp_atmosphere_init
+        self._temp_lower_2005 = params.temp_lower_init
         self._forcing_co2_doubling = params.forcing_co2_doubling
 
     @property
     def initial_carbon(self):
         return (
-            self._mass_atmosphere_2005,
-            self._mass_upper_2005,
-            self._mass_lower_2005,
+            self._mass_atmosphere_init,
+            self._mass_upper_init,
+            self._mass_lower_init,
         )
 
     @initial_carbon.setter
     def initial_carbon(self, value):
-        self._mass_atmosphere_2005 = value[0]
-        self._mass_upper_2005 = value[1]
-        self._mass_lower_2005 = value[2]
+        self._mass_atmosphere_init = value[0]
+        self._mass_upper_init = value[1]
+        self._mass_lower_init = value[2]
 
     @property
     def carbon_matrix(self):
@@ -88,10 +88,10 @@ class CarbonModel(object):
         array
         """
         return np.concatenate((
-            self.params.forcing_ghg_2000 + .1 * (
-                self.params.forcing_ghg_2100 - self.params.forcing_ghg_2000
+            self.params.forcing_ghg_init + .1 * (
+                self.params.forcing_ghg_future - self.params.forcing_ghg_init
             ) * np.arange(11),
-            self.params.forcing_ghg_2100 * np.ones(49),
+            self.params.forcing_ghg_future * np.ones(49),
         ))
 
     def mass_atmosphere(self, emissions_total, mass_atmosphere, mass_upper):
@@ -276,8 +276,8 @@ class Dice2010(CarbonModel):
         array
         """
         return np.concatenate((
-            self.params.forcing_ghg_2000 + .1 * (
-                self.params.forcing_ghg_2100 - self.params.forcing_ghg_2000
+            self.params.forcing_ghg_init + .1 * (
+                self.params.forcing_ghg_future - self.params.forcing_ghg_init
             ) * np.arange(11),
-            self.params.forcing_ghg_2000 * np.ones(49),
+            self.params.forcing_ghg_init * np.ones(49),
         ))

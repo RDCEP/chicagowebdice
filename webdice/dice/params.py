@@ -122,17 +122,17 @@ class DiceParams(DiceUserParams):
         self.cmax = 500.
 
         ## Population and technology
-        self.population_2005 = 6514.
+        self.population_init = 6514.
         self.population_growth = .35
         self.productivity = .02722
         self.productivity_growth = .092
         self.output_elasticity = .300
-        self.output_2005 = 61.1
-        self.output_2005 = 55.667
-        self.capital_2005 = 137.
+        self.output_init = 61.1
+        self.output_init = 55.667
+        self.capital_init = 137.
 
         ## Emissions
-        self.intensity_2005 = .13418
+        self.intensity_init = .13418
         self.intensity_growth = -.0730
         self.intensity_quadratic = .000
         self.emissions_deforest_2005 = 1.1
@@ -146,16 +146,16 @@ class DiceParams(DiceUserParams):
             _b21, _b22, _b23,
             _b31, _b32, _b33,
         ]).reshape(3, 3)
-        self.mass_atmosphere_2005 = 808.9
-        self.mass_upper_2005 = 1255.
-        self.mass_lower_2005 = 18365.
+        self.mass_atmosphere_init = 808.9
+        self.mass_upper_init = 1255.
+        self.mass_lower_init = 18365.
         self.mass_preindustrial = 592.14
 
         ## Climate model
-        self.forcing_ghg_2000 = -.06
-        self.forcing_ghg_2100 = .30
-        self.temp_lower_2000 = .0068
-        self.temp_atmosphere_2000 = .7307
+        self.forcing_ghg_init = -.06
+        self.forcing_ghg_future = .30
+        self.temp_lower_init = .0068
+        self.temp_atmosphere_init = .7307
         self.c1 = .220
         self.c2 = 0
         self.c3 = .310
@@ -170,14 +170,8 @@ class DiceParams(DiceUserParams):
         self.damages_coefficient = 0.0028388
 
         ## Abatement cost
-        self.backstop_2005 = 1.17
-        self.miu_2005 = .005
-
-        ## Participation
-        self.participation_2005 = 1.
-        self.participation_2015 = 1.
-        self.participation_2205 = 1.
-        self.participation_decline = 0.
+        self.backstop_init = 1.17
+        self.miu_init = .005
 
         self.tmax = 60
         self.t0 = np.arange(self.tmax)
@@ -187,31 +181,31 @@ class DiceParams(DiceUserParams):
         # Variables for initiating DiceDataMatrix
         backstop_growth = np.zeros(self.tmax)
         carbon_intensity = np.empty(self.tmax)
-        carbon_intensity[:] = self.intensity_2005
+        carbon_intensity[:] = self.intensity_init
         intensity_decline = np.zeros(self.tmax)
         intensity_decline[:] = self.intensity_decline_rate
         productivity = np.empty(self.tmax)
         productivity[:] = self.productivity
         capital = np.empty(self.tmax)
-        capital[:] = self.capital_2005
+        capital[:] = self.capital_init
         output = np.empty(self.tmax)
-        output[:] = self.output_2005
+        output[:] = self.output_init
         mass_atmosphere = np.empty(self.tmax)
-        mass_atmosphere[:] = self.mass_atmosphere_2005
+        mass_atmosphere[:] = self.mass_atmosphere_init
         mass_upper = np.empty(self.tmax)
-        mass_upper[:] = self.mass_upper_2005
+        mass_upper[:] = self.mass_upper_init
         mass_lower = np.empty(self.tmax)
-        mass_lower[:] = self.mass_lower_2005
+        mass_lower[:] = self.mass_lower_init
         temp_atmosphere = np.empty(self.tmax)
-        temp_atmosphere[:] = self.temp_atmosphere_2000
+        temp_atmosphere[:] = self.temp_atmosphere_init
         temp_lower = np.empty(self.tmax)
-        temp_lower[:] = self.temp_lower_2000
+        temp_lower[:] = self.temp_lower_init
         investment = np.empty(self.tmax)
-        investment[:] = self.savings * self.output_2005
+        investment[:] = self.savings * self.output_init
         population = np.empty(self.tmax)
-        population[:] = self.population_2005
+        population[:] = self.population_init
         miu = np.empty(self.tmax)
-        miu[:] = self.miu_2005
+        miu[:] = self.miu_init
 
         self.vars = DiceDataMatrix(np.array([
             np.zeros(self.tmax),                # abatement
@@ -263,14 +257,14 @@ class Dice2010Params(DiceParams):
         self.elasmu = 1.5
 
         ## Population and technology
-        self.population_2005 = 6411.
+        self.population_init = 6411.
         self.population_growth = .5  # This is called Population adjustment in Dice2010
         self.productivity = .0303220
         self.productivity_growth = .16
-        self.output_2005 = 55.34
+        self.output_init = 55.34
 
         ## Emissions
-        self.intensity_2005 = .14452
+        self.intensity_init = .14452
         self.intensity_growth = .158
 
         ## Carbon Cycle
@@ -282,29 +276,28 @@ class Dice2010Params(DiceParams):
             _b21, _b22, _b23,
             _b31, _b32, _b33,
         ]).reshape(3, 3)
-        self.mass_atmosphere_2005 = 787.
-        self.mass_upper_2005 = 1600.
-        self.mass_lower_2005 = 10100.
+        self.mass_atmosphere_init = 787.
+        self.mass_upper_init = 1600.
+        self.mass_lower_init = 10100.
 
         ## Climate model
-        self.forcing_ghg_2000 = .83
-        self.temp_atmosphere_2000 = .83
-        self.temp_atmosphere_2010 = .98
+        self.forcing_ghg_init = .83
+        self.temp_atmosphere_init = .83
         self.thermal_transfer[0] = .208
         self.thermal_transfer[2] = .310
 
         # self.damages_coefficient = .00204625800317896
 
         ## Abatement cost
-        self.backstop_2005 = 1.26
+        self.backstop_init = 1.26
 
         self.vars.intensity_decline[0] = .158
-        self.vars.population[0] = self.population_2005
-        self.vars.temp_atmosphere[0] = self.temp_atmosphere_2000
+        self.vars.population[0] = self.population_init
+        self.vars.temp_atmosphere[0] = self.temp_atmosphere_init
         self.vars.temp_atmosphere[1] = self.temp_atmosphere_2010
-        self.vars.carbon_intensity[0] = self.intensity_2005
+        self.vars.carbon_intensity[0] = self.intensity_init
         self.vars.productivity[0] = self.productivity
-        self.vars.output[0] = self.output_2005
-        self.vars.mass_atmosphere[0] = self.mass_atmosphere_2005
-        self.vars.mass_upper[0] = self.mass_upper_2005
-        self.vars.mass_lower[0] = self.mass_lower_2005
+        self.vars.output[0] = self.output_init
+        self.vars.mass_atmosphere[0] = self.mass_atmosphere_init
+        self.vars.mass_upper[0] = self.mass_upper_init
+        self.vars.mass_lower[0] = self.mass_lower_init

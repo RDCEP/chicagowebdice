@@ -156,7 +156,7 @@ class Dice(object):
             self.eq = LoopOpt(self.params)
             self.eq.set_models(self.params)
             _miu = self.get_ipopt_miu()
-            _miu[0] = self.params.miu_2005
+            _miu[0] = self.params.miu_init
         self.eq = Loop(self.params)
         self.eq.set_models(self.params)
         for i in range(self.params.tmax):
