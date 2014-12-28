@@ -311,8 +311,8 @@ class Dice2013Params(Dice2010Params):
         self.ts = 5.
         self.start_year = 2010
 
-        self.intensity_init = .489
-        self.intensity_growth = .01
+        self.intensity_init = .489 * 12 / 44
+        self.intensity_growth = -.01
         self.intensity_decline_rate = .001
 
         self.emissions_deforest_init = 1.54
@@ -352,17 +352,22 @@ class Dice2013Params(Dice2010Params):
         self.mass_lower_init = 10010.
         self.mass_preindustrial = 592.14
 
-        self.temp_co2_doubling = 2.9
-        self.forcing_ghg_init = .25
-        self.forcing_ghg_future = .7
+        # self.temp_co2_doubling = 2.9  # GAMS
+        # self.forcing_ghg_init = .25  # GAMS
+        # self.forcing_ghg_future = .7  # GAMS
+        self.forcing_ghg_init = -.06  # XLS
+        self.forcing_ghg_future = .62  # XLS
+        self.temp_co2_doubling = 3.2  # XLS
         self.temp_atmosphere_init = .8
 
-        self.c10 = .098
-        self.c1beta = .01243
-        self.c1 = .098
-        self.c2 = 0
-        self.c3 = .088
-        self.c4 = .025
+        self.c10 = .098  # GAMS
+        self.c1beta = .01243  # GAMS
+        # self.c1 = .098  # GAMS
+        # self.c3 = .088  # GAMS
+        # self.c4 = .025  # GAMS
+        self.c1 = .104  # XLS
+        self.c3 = .155  # XLS
+        self.c4 = .025  # XLS
         self.thermal_transfer = np.array([
             self.c1, self.c2, self.c3, self.c4
         ])
