@@ -29,7 +29,7 @@ class UtilityModel(object):
             :returns: 1 / (1 + ρ) ^ (t-1)
             :rtype: np.ndarray
         """
-        return 1 / ((1 + self.params.prstp) ** (10 * self.params.t0))
+        return 1 / ((1 + self.params.prstp) ** (self.params.ts * self.params.t0))
 
     def get_model_values(self, index, data):
         utility = self.utility(data.consumption_pc[index])

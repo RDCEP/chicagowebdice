@@ -71,10 +71,11 @@ class ConsumptionModel(object):
         if discount_type == 'ramsey':
             eta = self.params.elasmu
             rho = self.params.prstp
-            return ne.evaluate('exp(-(eta * log(c1 / c0) / (i * 10 + .000001) + rho) * i * 10)')
+            ts = self.params.ts
+            return ne.evaluate('exp(-(eta * log(c1 / c0) / (i * ts + .000001) + rho) * i * ts)')
         if discount_type == 'constant':
             RATE = .03
-            return 1 / (1 + RATE) ** (i * 10)
+            return 1 / (1 + RATE) ** (i * self.params.ts)
 
     def investment(self, savings, output):
         """

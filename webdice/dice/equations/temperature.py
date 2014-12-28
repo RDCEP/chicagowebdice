@@ -130,7 +130,7 @@ class Dice2010(TemperatureModel):
         """
         return (
             temp_atmosphere + self.params.thermal_transfer[0] * (
-                forcing - (self.params._forcing_co2_doubling /
+                forcing - (self.params.forcing_co2_doubling /
                            self.params.temp_co2_doubling) *
                 temp_atmosphere - self.params.thermal_transfer[2] *
                 (temp_atmosphere - temp_lower)

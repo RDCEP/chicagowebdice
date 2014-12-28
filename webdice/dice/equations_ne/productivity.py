@@ -60,7 +60,7 @@ class ProductivityModel(object):
         array
         """
         return self.params.productivity_growth * np.exp(
-            -self.params.productivity_decline * 10 * self.params.t0
+            -self.params.productivity_decline * self.params.ts * self.params.t0
         )
 
     def population(self, population_growth_rate, population_prev):
@@ -79,7 +79,8 @@ class ProductivityModel(object):
         ig = self.params.intensity_growth
         id = self.params.intensity_decline_rate
         iq = self.params.intensity_quadratic
-        return ne.evaluate('ig * exp(-id * 10 * i - iq * 10 * (i ** 2))')
+        ts = self.params.ts
+        return ne.evaluate('ig * exp(-id * ts * i - iq * ts * (i ** 2))')
 
     def carbon_intensity(self, carbon_intensity_prev, intensity_decline,
                          intensity_decline_prev):
@@ -137,7 +138,8 @@ class ProductivityModel(object):
         -------
         Float
         """
-        return ne.evaluate('capital * (1 - depreciation) ** 10 + 10 * investment')
+        ts = self.params.ts
+        return ne.evaluate('capital * (1 - depreciation) ** ts + ts * investment')
 
     def gross_output(self, productivity, capital, output_elasticity,
                      population):
@@ -166,9 +168,9 @@ class Dice2010(ProductivityModel):
         """
         return intensity_decline_prev * (
             1 - (self.params.intensity_decline_rate *
-                 np.exp(-self.params.intensity_quadratic * 10 * i)
+                 np.exp(-self.params.intensity_quadratic * self.params.ts * i)
             )
-        ) ** 10
+        ) ** self.params.ts
 
     @property
     def productivity_growth(self):
@@ -180,8 +182,8 @@ class Dice2010(ProductivityModel):
         array
         """
         return self.params.productivity_growth * np.exp(
-            -self.params.productivity_decline * 10 * self.params.t0 *
-        np.exp(-.002 * 10 * self.params.t0))
+            -self.params.productivity_decline * self.params.ts * self.params.t0 *
+        np.exp(-.002 * self.params.ts * self.params.t0))
 
     def carbon_intensity(self, carbon_intensity_prev, intensity_decline,
                          intensity_decline_prev):

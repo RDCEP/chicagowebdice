@@ -104,7 +104,8 @@ class CarbonModel(object):
         """
         b11 = self.carbon_matrix[0][0]
         b12 = self.carbon_matrix[1][0]
-        return ne.evaluate('b11 * mass_atmosphere + b12 * mass_upper + 10 * emissions_total')
+        ts = self.params.ts
+        return ne.evaluate('b11 * mass_atmosphere + b12 * mass_upper + ts * emissions_total')
 
     def mass_upper(self, mass_atmosphere, mass_upper, mass_lower):
         """

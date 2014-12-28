@@ -108,7 +108,7 @@ class Dice(object):
         if i > 0:
             df.productivity[i] *= self.eq.damages_model.get_production_factor(
                 df.temp_atmosphere[i - 1]
-            ) ** 10
+            ) ** self.params.ts
         (
             df.miu[i], df.emissions_ind[i],
             df.emissions_total[i], df.carbon_emitted[i],
@@ -253,7 +253,7 @@ class Dice(object):
                 self.vars.consumption_pc[i:th] -
                 self.scc.consumption_pc[i:th]
             ).clip(0) * self.scc.consumption_discount[:future]
-            self.vars.scc[i] = np.sum(diff) * 1000 * 10 * (12 / 44)
+            self.vars.scc[i] = np.sum(diff) * 1000 * self.params.ts * (12 / 44)
 
     def get_ipopt_miu(self):
         """Optimized miu

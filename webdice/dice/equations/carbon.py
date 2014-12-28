@@ -109,7 +109,7 @@ class CarbonModel(object):
         return (
             self.carbon_matrix[0][0] * mass_atmosphere +
             self.carbon_matrix[1][0] * mass_upper +
-            10 * emissions_total
+            self.params.ts * emissions_total
         )
 
     def mass_upper(self, mass_atmosphere, mass_upper, mass_lower):

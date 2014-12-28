@@ -65,7 +65,7 @@ class ProductivityModel(object):
             :rtype: np.ndarray
         """
         return self.params.productivity_growth * np.exp(
-            -self.params.productivity_decline * 10 * self.params.t0
+            -self.params.productivity_decline * self.params.ts * self.params.t0
         )
 
     def population(self, i, df):
@@ -103,8 +103,8 @@ class ProductivityModel(object):
         #TODO: quadratic is set to 0. Delete second half of equation.
         return (
             self.params.intensity_growth * np.exp(
-                -self.params.intensity_decline_rate * 10 *
-                i - self.params.intensity_quadratic * 10 *
+                -self.params.intensity_decline_rate * self.params.ts *
+                i - self.params.intensity_quadratic * self.params.ts *
                 (i ** 2)
             )
         )
@@ -181,7 +181,7 @@ class ProductivityModel(object):
             :returns: K(t-1) * (1 - δ) + I
             :rtype: float
         """
-        return capital * (1 - depreciation) ** 10 + 10 * investment
+        return capital * (1 - depreciation) ** self.params.ts + self.params.ts * investment
 
     def gross_output(self, productivity, capital, output_elasticity,
                      population):
@@ -227,7 +227,7 @@ class Dice2010(ProductivityModel):
         """
         return df.intensity_decline[i - 1] * (
             1 - self.params.intensity_decline_rate
-        ) ** 10
+        ) ** self.params.ts
 
     @property
     def productivity_growth(self):
@@ -238,8 +238,8 @@ class Dice2010(ProductivityModel):
             :rtype: np.ndarray
         """
         return self.params.productivity_growth * np.exp(
-            -self.params.productivity_decline * 10 * self.params.t0 *
-        np.exp(-.002 * 10 * self.params.t0))
+            -self.params.productivity_decline * self.params.ts * self.params.t0 *
+        np.exp(-.002 * self.params.ts * self.params.t0))
 
     def carbon_intensity(self, i, df):
         """σ, Carbon intensity.

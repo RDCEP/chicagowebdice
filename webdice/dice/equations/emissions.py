@@ -100,7 +100,7 @@ class EmissionsModel(object):
         emissions_total = self.emissions_total(
             emissions_ind, self.emissions_deforest[i]
         ) + emissions_shock
-        carbon_emitted = emissions_total * 10 \
+        carbon_emitted = emissions_total * self.params.ts \
             if i == 0 \
             else self.carbon_emitted(emissions_total, df.carbon_emitted[i - 1])
         if np.max(carbon_emitted) > self.params.fosslim:
@@ -161,7 +161,7 @@ class EmissionsModel(object):
             :return: CCum + E(t)
              :rtype: float
         """
-        return carbon_emitted + emissions_total * 10
+        return carbon_emitted + emissions_total * self.params.ts
 
     def get_miu(self, i, df, deriv=False, opt=False, miu=None):
         """μ, get miu for optimized, treaty, tax scenarios

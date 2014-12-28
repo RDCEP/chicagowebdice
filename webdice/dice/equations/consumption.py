@@ -96,12 +96,12 @@ class ConsumptionModel(object):
             if c1 <= 0:
                 return 1
             return np.exp(-(
-                self.params.elasmu * np.log(c1 / c0) / (i * 10 + .000001) +
+                self.params.elasmu * np.log(c1 / c0) / (i * self.params.ts + .000001) +
                 self.params.prstp
-            ) * i * 10)
+            ) * i * self.params.ts)
         if discount_type == 'constant':
             RATE = .03
-            return 1 / (1 + RATE) ** (i * 10)
+            return 1 / (1 + RATE) ** (i * self.params.ts)
 
     def investment(self, savings, output):
         """
