@@ -54,7 +54,7 @@ class UtilityModel(object):
         if self.params.elasmu == 1:
             return np.log(consumption_pc)
         denom = 1.0 - self.params.elasmu
-        return (1 / denom) * (consumption_pc ** denom - 1)
+        return (consumption_pc ** denom / denom) + 1
 
     def utility_discounted(self, utility, utility_discount, l):
         """Utility discounted
