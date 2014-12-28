@@ -114,8 +114,8 @@ class DiceUserParams(object):
 
 class DiceParams(DiceUserParams):
     def __init__(self, model=2007):
-        DiceUserParams.__init__(self, model)
-        self.dice_version = '2007'
+        DiceUserParams.__init__(self, model=model)
+        self.dice_version = str(model)
         self.treaty = False
         self.carbon_tax = False
         self.pmax = 1.
@@ -177,6 +177,7 @@ class DiceParams(DiceUserParams):
         self.t0 = np.arange(self.tmax)
         self.t1 = self.t0 + 1
         self.ts = 10.
+        self.start_year = 2005
         self.scc_horizon = self.tmax - 1
 
         # Variables for initiating DiceDataMatrix
@@ -247,9 +248,9 @@ class DiceParams(DiceUserParams):
 
 
 class Dice2010Params(DiceParams):
-    def __init__(self):
-        super(Dice2010Params, self).__init__(2010)
-        self.dice_year = '2010'
+    def __init__(self, model=2010):
+        super(Dice2010Params, self).__init__(model=model)
+        self.dice_year = str(2010)
         self.temp_co2_doubling = 3.2
         self.damages_exponent = 2.  # TODO: see equations
         self.productivity_decline = .009  # TODO: Add second parameter?
@@ -301,3 +302,11 @@ class Dice2010Params(DiceParams):
         self.vars.mass_atmosphere[0] = self.mass_atmosphere_init
         self.vars.mass_upper[0] = self.mass_upper_init
         self.vars.mass_lower[0] = self.mass_lower_init
+
+
+class Dice2013Params(Dice2010Params):
+    def __init__(self, model=2013):
+        super(Dice2010Params, self).__init__(model=model)
+        self.dice_year = str(2013)
+        self.ts = 5.
+        self.start_year = 2010
