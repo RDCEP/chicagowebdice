@@ -59,7 +59,7 @@ class ProductivityModel(object):
         -------
         array
         """
-        return self.params.productivity_growth * np.exp(
+        return self.params.productivity_growth_init * np.exp(
             -self.params.productivity_decline * self.params.ts * self.params.t0
         )
 
@@ -158,19 +158,16 @@ class Dice2007(ProductivityModel):
 
 
 class Dice2010(ProductivityModel):
+
     def intensity_decline(self, i, intensity_decline_prev):
-        """
-        sigma_g, Rate of decline of carbon intensity
-        ...
-        Returns
-        -------
-        array
-        """
-        return intensity_decline_prev * (
-            1 - (self.params.intensity_decline_rate *
-                 np.exp(-self.params.intensity_quadratic * self.params.ts * i)
-            )
-        ) ** self.params.ts
+        id = self.params.intensity_decline_rate
+        iq = self.params.intensity_quadratic
+        ts = self.params.ts
+        return ne.evaluate('intensity_decline_prev * (1 - (id * exp(-iq * ts * i))) ** ts')
+
+    def carbon_intensity(self, carbon_intensity_prev, intensity_decline,
+                         intensity_decline_prev):
+        return ne.evaluate('carbon_intensity_prev * (1 - intensity_decline_prev)')
 
     @property
     def productivity_growth(self):
@@ -181,16 +178,9 @@ class Dice2010(ProductivityModel):
         -------
         array
         """
-        return self.params.productivity_growth * np.exp(
+        return self.params.productivity_growth_init * np.exp(
             -self.params.productivity_decline * self.params.ts * self.params.t0 *
         np.exp(-.002 * self.params.ts * self.params.t0))
-
-    def carbon_intensity(self, carbon_intensity_prev, intensity_decline,
-                         intensity_decline_prev):
-        return (
-            carbon_intensity_prev *
-            (1 - intensity_decline_prev)
-        )
 
     def population(self, population_growth_rate, population_prev):
         """
@@ -200,13 +190,9 @@ class Dice2010(ProductivityModel):
         -------
         array
         """
-        pg = self.params.population_growth
+        p = self.params.population_init
         pa = self.params.popasym
-        return (
-            population_prev * (
-                pa / population_prev
-            ) ** pg
-        )
+        return ne.evaluate('population_prev * (pa / population_prev) ** population_growth_rate')
 
 
 class DiceBackstop2013(Dice2010):
@@ -239,3 +225,9 @@ class Dice2013(Dice2010):
         return self.params.backstop_init * (
             (1 - self.params.backstop_decline) ** self.params.t0
         )
+
+    def carbon_intensity(self, carbon_intensity_prev, intensity_decline,
+                         intensity_decline_prev):
+        ts = self.params.ts
+        return ne.evaluate('carbon_intensity_prev * exp(intensity_decline_prev * ts)')
+

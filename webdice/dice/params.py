@@ -125,7 +125,7 @@ class DiceParams(DiceUserParams):
         self.population_init = 6514.
         self.population_growth = .35
         self.productivity = .02722
-        self.productivity_growth = .092
+        self.productivity_growth_init = .092
         self.output_elasticity = .300
         self.output_init = 61.1
         self.output_init = 55.667
@@ -262,7 +262,7 @@ class Dice2010Params(DiceParams):
         self.population_init = 6411.
         self.population_growth = .5  # This is called Population adjustment in Dice2010
         self.productivity = .0303220
-        self.productivity_growth = .16
+        self.productivity_growth_init = .16
         self.output_init = 55.34
 
         ## Emissions
@@ -310,3 +310,7 @@ class Dice2013Params(Dice2010Params):
         self.dice_year = str(2013)
         self.ts = 5.
         self.start_year = 2010
+
+        self.intensity_init = .489
+        self.intensity_growth = .01
+        self.intensity_decline_rate = .001

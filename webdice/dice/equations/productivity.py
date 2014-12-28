@@ -64,7 +64,7 @@ class ProductivityModel(object):
             :returns: A_g(0) * exp(-Δ_a * (t-1))
             :rtype: np.ndarray
         """
-        return self.params.productivity_growth * np.exp(
+        return self.params.productivity_growth_init * np.exp(
             -self.params.productivity_decline * self.params.ts * self.params.t0
         )
 
@@ -237,7 +237,7 @@ class Dice2010(ProductivityModel):
             :returns: A_g(0) * exp(-Δ_a * (t-1) * exp(-.002 * (t-1))
             :rtype: np.ndarray
         """
-        return self.params.productivity_growth * np.exp(
+        return self.params.productivity_growth_init * np.exp(
             -self.params.productivity_decline * self.params.ts * self.params.t0 *
         np.exp(-.002 * self.params.ts * self.params.t0))
 
@@ -300,6 +300,18 @@ class DiceBackstop2013(Dice2010):
 
 class Dice2013(Dice2010):
     @property
+    def productivity_growth(self):
+        """A_g, Growth rate of total factor productivity.
+
+        Returns:
+            :returns: A_g(0) * exp(-Δ_a * (t-1))
+            :rtype: np.ndarray
+        """
+        return self.params.productivity_growth_init * np.exp(
+            -self.params.productivity_decline * self.params.ts * self.params.t0
+        )
+
+    @property
     def backstop(self):
         """Cost of replacing with clean energy
         12/44 converts from $/C to $/CO2
@@ -311,3 +323,22 @@ class Dice2013(Dice2010):
         return self.params.backstop_init * (
             (1 - self.params.backstop_decline) ** self.params.t0
         )
+
+    def carbon_intensity(self, i, df):
+        """σ, Carbon intensity.
+
+        Args:
+            :param i: current time step
+            :type i: int
+            :param df: DiceDataMatrix
+            :type df: obj
+
+        Returns:
+            :returns: σ(t-1) * (1 - σ_g(t))
+            :rtype: float
+        """
+        intensity_decline = self.intensity_decline(i, df)
+        return (
+            df.carbon_intensity[i - 1] *
+            np.exp(df.intensity_decline[i - 1] * self.params.ts)
+        ), intensity_decline
