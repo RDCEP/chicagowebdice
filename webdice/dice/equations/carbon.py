@@ -150,6 +150,7 @@ class CarbonModel(object):
             float: Forcing
 
         """
+        print i, self.params.tmax, self.forcing_ghg.shape
         return (
             self.params.forcing_co2_doubling *
             (np.log(
@@ -302,7 +303,7 @@ class Dice2010(CarbonModel):
             ) * np.arange(11),
             #TODO: Where did this .36 come from?
             # self.params.forcing_ghg_init * (np.ones(49) * .36),
-            self.params.forcing_ghg_init * np.ones(49),
+            self.params.forcing_ghg_init * np.ones(self.params.tmax - 11),
         ))
 
 
