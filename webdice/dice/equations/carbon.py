@@ -150,7 +150,6 @@ class CarbonModel(object):
             float: Forcing
 
         """
-        print i, self.params.tmax, self.forcing_ghg.shape
         return (
             self.params.forcing_co2_doubling *
             (np.log(
@@ -286,26 +285,4 @@ class Dice2010(CarbonModel):
             Override for DICE2007 equation
 
     """
-
-    @property
-    def forcing_ghg(self):
-        """Forcing equation
-
-        F_EX, Exogenous forcing for other greenhouse gases
-
-        Returns:
-            nd.array: Array of forcing values, n=params.tmax
-
-        """
-        return np.concatenate((
-            self.params.forcing_ghg_init + .1 * (
-                self.params.forcing_ghg_future - self.params.forcing_ghg_init
-            ) * np.arange(11),
-            #TODO: Where did this .36 come from?
-            # self.params.forcing_ghg_init * (np.ones(49) * .36),
-            self.params.forcing_ghg_init * np.ones(self.params.tmax - 11),
-        ))
-
-
-class Dice2013(Dice2010):
     pass
