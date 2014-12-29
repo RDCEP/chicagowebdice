@@ -286,3 +286,14 @@ class Dice2010(CarbonModel):
 
     """
     pass
+
+
+class Dice2013(CarbonModel):
+    """CarbonModel for DICE2010
+
+    Methods:
+        forcing_ghg()
+            Override for DICE2007 equation
+
+    """
+    pass
