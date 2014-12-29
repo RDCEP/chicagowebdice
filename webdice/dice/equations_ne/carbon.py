@@ -267,21 +267,7 @@ class LinearCarbon(CarbonModel):
 
 
 class Dice2010(CarbonModel):
-    @property
-    def forcing_ghg(self):
-        """
-        F_EX, Exogenous forcing for other greenhouse gases
-        ...
-        Returns
-        -------
-        array
-        """
-        return np.concatenate((
-            self.params.forcing_ghg_init + .1 * (
-                self.params.forcing_ghg_future - self.params.forcing_ghg_init
-            ) * np.arange(11),
-            self.params.forcing_ghg_init * np.ones(self.params.tmax - 11),
-        ))
+    pass
 
 
 class Dice2013(Dice2010):
