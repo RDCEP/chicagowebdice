@@ -332,6 +332,7 @@ class Dice2013Params(DiceParams):
 
         self.output_init = 63.69
         self.capital_init = 135.
+        self.savings = .25
 
         self.productivity = 3.8
         self.productivity_growth_init = .079
