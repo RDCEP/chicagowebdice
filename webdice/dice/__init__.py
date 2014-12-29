@@ -181,12 +181,13 @@ class Dice(object):
 
         """
         gf = (
-            df.utility_discounted[:, :60].sum(axis=0) -
-            df.utility_discounted[:, 60].sum()
+            df.utility_discounted[:, :int(self.params.tmax)].sum(axis=0) -
+            df.utility_discounted[:, int(self.params.tmax)].sum()
         ) * self.opt_scale / self.eps
         self.opt_grad_f = gf
         self.opt_obj = (
-            df.utility_discounted[:, 60].sum() * self.opt_scale)
+            df.utility_discounted[:, int(self.params.tmax)].sum() *
+            self.opt_scale)
 
     def obj_loop(self, miu):
         """Objective function for optimization
@@ -241,7 +242,7 @@ class Dice(object):
         Returns:
             None
         """
-        for i in xrange(20):
+        for i in xrange(int(self.params.tmax / 3)):
             th = self.params.scc_horizon
             future = th - i
             self.scc[:] = self.vars[:]
@@ -276,7 +277,7 @@ class Dice(object):
             print('OPTIMIZATION ERROR: It appears that you do not have '
                   'pyipopt installed. Please install it before running '
                   'optimization.')
-        ramp = int(self.params.tmax / 2)
+        ramp = int(self.params.tmax / 6)
         x0 = np.concatenate(
             (np.linspace(0, 1, ramp) ** (1 - np.linspace(0, 1, ramp)),
              np.ones(int(self.params.tmax - ramp)))
@@ -384,9 +385,8 @@ class Dice2013(Dice):
         self.vars = self.params.vars
         self.scc = self.params.scc
         self.dice_version = 2013
-        self.opt_tol = 1e-5
         self.opt_vars = self.params.tmax
-        self.opt_x = np.arange(self.opt_vars)
+        self.opt_x = np.ones(self.opt_vars)
 
 
 class Dice2007(Dice):
