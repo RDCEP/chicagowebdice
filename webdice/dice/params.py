@@ -334,7 +334,6 @@ class Dice2013Params(DiceParams):
         self.capital_init = 135.
 
         self.productivity = 3.8
-        self.productivity = 3.8
         self.productivity_growth_init = .079
         self.productivity_decline = .006
 
@@ -365,7 +364,7 @@ class Dice2013Params(DiceParams):
         self.forcing_ghg_init = -.06  # XLS
         self.forcing_ghg_future = .62  # XLS
         self.temp_co2_doubling = 3.2  # XLS
-        self.temp_atmosphere_init = .8
+        self.temp_atmosphere_init = .83
 
         self.c10 = .098  # GAMS
         self.c1beta = .01243  # GAMS
