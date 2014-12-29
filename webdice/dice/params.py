@@ -309,7 +309,7 @@ class Dice2013Params(DiceParams):
         super(Dice2013Params, self).__init__(model=model)
         self.dice_year = str(model)
 
-        self.tmax *= 1
+        self.tmax *= 2
         self.t0 = np.arange(self.tmax)
         self.t1 = self.t0 + 1
         self.ts = 5.
