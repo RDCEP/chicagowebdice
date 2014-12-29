@@ -49,7 +49,7 @@ class EmissionsModel(object):
             np.ones(5),
             (np.ones(5) * (1 - self.params.e2050)),
             (np.ones(5) * (1 - self.params.e2100)),
-            (np.ones(45) * (1 - self.params.e2150)),
+            (np.ones(self.params.tmax-15) * (1 - self.params.e2150)),
         ))
 
     @property
@@ -66,7 +66,7 @@ class EmissionsModel(object):
             c[0] + ((c[1] - c[0]) / 5 * np.arange(5)),
             c[1] + ((c[2] - c[1]) / 5 * np.arange(5)),
             c[2] + ((c[3] - c[2]) / 5 * np.arange(5)),
-            c[3] + ((c[3] - c[2]) / 5 * np.arange(45)),
+            c[3] + ((c[3] - c[2]) / 5 * np.arange(self.params.tmax-15)),
         ))
 
     def get_model_values(self, i, df, deriv=False, opt=False,
