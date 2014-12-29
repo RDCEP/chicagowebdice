@@ -138,9 +138,9 @@ def graphs_standard():
     new_data = {
         'temp_co2_doubling': [1, 2, 3.2, 4, 5],
         'damages_exponent': [1, 1.4, 2.0, 2.8, 4.0],
-        'productivity_decline': [.015, .011, .009, .003, 0.0],
+        'productivity_decline': [.015, .010, .006, .003, 0.0],
         'backstop_decline': [0.20, 0.10, 0.05, 0.025, 0.0],
-        'intensity_decline_rate': [.060, .02, .006, .0006, 0.0],
+        'intensity_decline_rate': [.06, .009, .001, .0006, 0.0],
     }
     for field in new_data.keys():
         try:
