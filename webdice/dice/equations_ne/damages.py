@@ -249,20 +249,11 @@ class Dice2010(DamagesModel):
 
 class Dice2013(DamagesModel):
     def damages(self, gross_output, temp_atmosphere, a_abatement=None):
-        # fD = self.get_production_factor(temp_atmosphere)
-        # a1 = self.damages_terms[0]
-        # a2 = self.damages_terms[1]
-        # a3 = self.damages_terms[2]
-        # dm = self.params.damages_multiplier
-        # cr = self.params.catastrophic_rate
-        # cg = self.params.catastrophic_gate
-        # ct = self.params.catastrophic_threshold
-        # ce = self.params.catastrophic_exponent
         D = self.damages_terms[0] * temp_atmosphere + (
             self.params.damages_multiplier * self.damages_terms[1] *
-            temp_atmosphere) ** self.damages_terms[2] + (
+            temp_atmosphere ** self.damages_terms[2]) + (
             self.params.catastrophic_rate * self.params.catastrophic_gate *
             (temp_atmosphere / self.params.catastrophic_threshold) **
             self.params.catastrophic_exponent
         )
-        return ne.evaluate('gross_output * (D / (1 + D ** 10))')
+        return ne.evaluate('gross_output * D / (1 + D ** 10)')
