@@ -126,6 +126,9 @@ def advanced():
 def standard():
     return render_template(
         'versions/standard.html',
+        dice_version=2013,
+        time_step=5,
+        start_year=2010,
     )
 
 
@@ -135,9 +138,9 @@ def graphs_standard():
     new_data = {
         'temp_co2_doubling': [1, 2, 3.2, 4, 5],
         'damages_exponent': [1, 1.4, 2.0, 2.8, 4.0],
-        'productivity_decline': [.015, .011, .009, .003, 0.0],
+        'productivity_decline': [.015, .010, .006, .003, 0.0],
         'backstop_ratio': [1, 1.4, 2.0, 2.8, 4.0],
-        'intensity_decline_rate': [.060, .02, .0065, .0006, 0.0],
+        'intensity_decline_rate': [.060, .01, .001, .0005, 0.0],
     }
     for field in new_data.keys():
         try:
@@ -154,7 +157,7 @@ def graphs_standard():
         except KeyError:
             pass
 
-    return run_loop(form, year=2010)
+    return run_loop(form, year=2013)
 
 
 @mod.route('/run/advanced', methods=['POST', 'GET'])
