@@ -802,6 +802,8 @@ var WebDICEGraph = function() {
         ]
       , as, bs, cs, ds
       , ys = []
+      , maxys = []
+      , minys = []
       , qy = function(ax, ay, bx, by, qx) {
         return ay + (qx - ax) * ((by - ay) / (bx - ax));
       }
@@ -809,17 +811,35 @@ var WebDICEGraph = function() {
     new_nest.forEach(function(d, i) {
       if (i > 0) {
         var k = _timex ? new Date(d.key) : +d.key;
-        if ((k >= domain[0]) && (!ax)) {
-          ax = previous[0];
-          as = previous[1].filter(function(d) { return hidden_runs.indexOf(+d.run_id) == -1; });
-          bx = k;
-          bs = d.values.filter(function(d) { return hidden_runs.indexOf(+d.run_id) == -1; });
-        }
-        if ((k >= domain[1]) && (!cx)) {
-          cx = previous[0];
-          cs = previous[1].filter(function(d) { return hidden_runs.indexOf(+d.run_id) == -1; });
-          dx = k;
-          ds = d.values.filter(function(d) { return hidden_runs.indexOf(+d.run_id) == -1; });
+        if (k >= domain[0]) {
+          if (k <= domain[1]) {
+            maxys.push(d3.max(d.values, function (dd) {
+              return dd.y;
+            }));
+            minys.push(d3.min(d.values, function (dd) {
+              return dd.y;
+            }));
+          }
+          if (!ax) {
+            ax = previous[0];
+            as = previous[1].filter(function (d) {
+              return hidden_runs.indexOf(+d.run_id) == -1;
+            });
+            bx = k;
+            bs = d.values.filter(function (d) {
+              return hidden_runs.indexOf(+d.run_id) == -1;
+            });
+          }
+          if ((k >= domain[1]) && (!cx)) {
+            cx = previous[0];
+            cs = previous[1].filter(function (d) {
+              return hidden_runs.indexOf(+d.run_id) == -1;
+            });
+            dx = k;
+            ds = d.values.filter(function (d) {
+              return hidden_runs.indexOf(+d.run_id) == -1;
+            });
+          }
         }
         previous = [k, d.values];
       }
@@ -828,6 +848,8 @@ var WebDICEGraph = function() {
       ys.push(qy(ax, as[i].y, bx, bs[i].y, domain[0]));
       ys.push(qy(cx, cs[i].y, dx, ds[i].y, domain[1]));
     }
+    ys.push(d3.max(maxys));
+    ys.push(d3.min(minys));
     _y.domain([
       d3.min(ys),
       d3.max(ys)
