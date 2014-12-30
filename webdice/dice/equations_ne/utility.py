@@ -51,7 +51,7 @@ class UtilityModel(object):
         if self.params.elasmu == 1:
             return ne.evaluate('log(consumption_pc)')
         d = 1.0 - self.params.elasmu
-        return ne.evaluate('(1 / d) * consumption_pc ** d - 1')
+        return ne.evaluate('consumption_pc ** d / d + 1')
 
     def utility_discounted(self, utility, utility_discount, l):
         """
