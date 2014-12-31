@@ -1,25 +1,10 @@
+# -*- coding: utf-8 -*-
 from __future__ import division
 import numpy as np
 import numexpr as ne
 
 
 class CarbonModel(object):
-    """
-    CarbonModel base class
-
-    Properties:
-        initial_carbon
-        carbon_matrix
-        forcing_ghg
-
-    Methods:
-        get_model_values()
-        mass_atmosphere()
-        mass_upper()
-        mass_lower()
-        forcing()
-
-    """
     def __init__(self, params):
         self.params = params
         self._carbon_matrix = params.carbon_matrix
@@ -27,8 +12,8 @@ class CarbonModel(object):
         self._mass_upper_init = params.mass_upper_init
         self._mass_lower_init = params.mass_lower_init
         self._mass_preindustrial = params.mass_preindustrial
-        self._temp_atmosphere_2005 = params.temp_atmosphere_init
-        self._temp_lower_2005 = params.temp_lower_init
+        self._temp_atmosphere_init = params.temp_atmosphere_init
+        self._temp_lower_init = params.temp_lower_init
         self._forcing_co2_doubling = params.forcing_co2_doubling
 
     @property
@@ -36,8 +21,8 @@ class CarbonModel(object):
         """Carbon mass at t=0
 
         Returns:
-            tuple: Carbon in atmosphere, upper and lower oceans in Gt
-
+            :return: [ M_{AT}(0), M_{UP}(0), M_{LO}(0) ]
+             :rtype: tuple
         """
         return (
             self._mass_atmosphere_init,
@@ -56,8 +41,8 @@ class CarbonModel(object):
         """Carbon transfer matrix
 
         Returns:
-            nd.array: 3 x 3 array of transfer coefficients
-
+            :return: 3 x 3 matrix for φ_{i,j}
+             :rtype: np.ndarray
         """
         return self._carbon_matrix
 
@@ -70,25 +55,25 @@ class CarbonModel(object):
         """Temperature at t=0
 
         Returns:
-            tuple: Temperature in atmosphere and oceans at t=0
-
+            :return: [ T_{AT}(0), T_{LO}(0) ]
+             :rtype: tuple
         """
-        return (self._temp_atmosphere_2005, self._temp_lower_2005)
+        return (self._temp_atmosphere_init, self._temp_lower_init)
 
     @initial_temps.setter
     def initial_temps(self, value):
-        self._temp_atmosphere_2005 = value[0]
-        self._temp_lower_2005 = value[1]
+        self._temp_atmosphere_init = value[0]
+        self._temp_lower_init = value[1]
 
     @property
     def forcing_ghg(self):
-        """Forcing equation
+        """F_EX, Exogenous forcing for other greenhouse gases
 
-        F_EX, Exogenous forcing for other greenhouse gases
+        Eq:
 
         Returns:
-            nd.array: Array of forcing values, n=params.tmax
-
+            :return: Array of non-CO2 GHG forcing values
+             :rtype: np.ndarray
         """
         return np.concatenate((
             self.params.forcing_ghg_init + .1 * (
@@ -98,13 +83,21 @@ class CarbonModel(object):
         ))
 
     def mass_atmosphere(self, emissions_total, mass_atmosphere, mass_upper):
-        """Equation for carbon mass in atmosphere
+        """M_{AT}, Carbon concentration in atmosphere, GtC
 
-        M_AT, Carbon concentration in atmosphere, GtC
+        Eq:
+
+        Args:
+            :param emissions_total: Total emissions
+             :type emissions_total: float
+            :param mass_atmosphere: Atmospheric carbon mass at (t - 1)
+             :type mass_atmosphere: float
+            :param mass_upper: Upper ocean carbon mass at (t - 1)
+             :type mass_upper: float
 
         Returns:
-            float: Mass in atmosphere in GtC
-
+            :return: M_{AT}(t)
+             :rtype: float
         """
         return (
             self.carbon_matrix[0][0] * mass_atmosphere +
@@ -113,13 +106,21 @@ class CarbonModel(object):
         )
 
     def mass_upper(self, mass_atmosphere, mass_upper, mass_lower):
-        """Equation for carbon mass in shallow oceans
+        """M_{UP}, Carbon concentration in upper ocean, GtC
 
-        M_UP, Carbon concentration in shallow oceans, GtC
+        Eq:
+
+        Args:
+            :param mass_atmosphere: Atmospheric carbon mass at (t - 1)
+             :type mass_atmosphere: float
+            :param mass_upper: Upper ocean carbon mass at (t - 1)
+             :type mass_upper: float
+            :param mass_lower: Lower ocean carbon mass at (t - 1)
+             :type mass_lower: float
 
         Returns:
-            float: Mass in shallow oceans in GtC
-
+            :return: M_{UP}(t)
+             :rtype: float
         """
         return (
             self.carbon_matrix[0][1] * mass_atmosphere +
@@ -128,13 +129,19 @@ class CarbonModel(object):
         )
 
     def mass_lower(self, mass_upper, mass_lower):
-        """Equation for carbon mass in deep oceans
+        """M_{LO}, Carbon concentration in lower ocean, GtC
 
-        M_LO, Carbon concentration in deep oceans, GtC
+        Eq:
+
+        Args:
+            :param mass_upper: Upper ocean carbon mass at (t - 1)
+             :type mass_upper: float
+            :param mass_lower: Lower ocean carbon mass at (t - 1)
+             :type mass_lower: float
 
         Returns:
-            float: Mass in deep oceans in GtC
-
+            :return: M_{LO}(t)
+             :rtype: float
         """
         return (
             self.carbon_matrix[1][2] * mass_upper +
@@ -158,17 +165,17 @@ class CarbonModel(object):
         )
 
     def get_model_values(self, i, df):
-        """Get results for t
-
-        Return values for M_AT, M_UP, M_LO
+        """Get values for model variables.
 
         Args:
-            i (int): time step
-            df (DiceDataMatrix): model variables
+            :param i: current time step
+             :type i: int
+            :param df: Matrix of variables
+             :type df: DiceDataMatrix
 
         Returns:
-            tuple: M_AT, M_UP, M_LO at t
-
+            :return: Model variables: M_{AT}, M_{UP}, M_{LO}
+             :rtype: tuple
         """
         if i == 0:
             return self.initial_carbon
@@ -206,17 +213,7 @@ class BeamCarbon(CarbonModel):
         ]).reshape((3, 3, 1))
 
     def get_model_values(self, i, df):
-        """Get results for t
-
-        Set BEAM transfer matrix, and return values for M_AT, M_UP, M_LO
-
-        Args:
-            i (int): time step
-            df (DiceDataMatrix): model variables
-
-        Returns:
-            tuple: M_AT, M_UP, M_LO at t
-
+        """
         -----------------------------------
         Background regarding BEAM equations
         -----------------------------------
@@ -229,9 +226,7 @@ class BeamCarbon(CarbonModel):
         AM = 1.77e20   mol
         OM = 7.8e22    mol
         Alk = 767.0
-
         _a = k_h * (AM / (OM * (delta + 1)))
-
         """
         _dims = self.params.tmax + 1 if df.ndim > 2 else 1
         if i == 0:
@@ -259,13 +254,6 @@ class BeamCarbon(CarbonModel):
 
 class LinearCarbon(CarbonModel):
     """CarbonModel for Linear Carbon / Temp
-
-    Methods:
-        get_model_values()
-            Return None for carbon
-        forcing()
-            Return None for forcing
-
     """
 
     def get_model_values(self, i, df):
@@ -278,22 +266,8 @@ class LinearCarbon(CarbonModel):
 
 
 class Dice2010(CarbonModel):
-    """CarbonModel for DICE2010
-
-    Methods:
-        forcing_ghg()
-            Override for DICE2007 equation
-
-    """
     pass
 
 
 class Dice2013(CarbonModel):
-    """CarbonModel for DICE2010
-
-    Methods:
-        forcing_ghg()
-            Override for DICE2007 equation
-
-    """
     pass

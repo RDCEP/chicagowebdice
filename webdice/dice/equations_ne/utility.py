@@ -3,32 +3,11 @@ import numexpr as ne
 
 
 class UtilityModel(object):
-    """
-    UtilityModel base class
-    ...
-    Properties
-    ----------
-    utility_discount : array
-        Average utility discount rate
-    ...
-    Methods
-    -------
-    get_model_values()
-    utility()
-    utility_discounted()
-    """
     def __init__(self, params):
         self.params = params
 
     @property
     def utility_discount(self):
-        """
-        R, Average utility discount rate
-        ...
-        Returns
-        -------
-        array
-        """
         return 1 / ((1 + self.params.prstp) ** (self.params.ts * self.params.t0))
 
     def get_model_values(self, i, df):
@@ -41,26 +20,12 @@ class UtilityModel(object):
         )
 
     def utility(self, consumption_pc):
-        """
-        U, Period utility function
-        ...
-        Returns
-        -------
-        float
-        """
         if self.params.elasmu == 1:
             return ne.evaluate('log(consumption_pc)')
         d = 1.0 - self.params.elasmu
         return ne.evaluate('consumption_pc ** d / d + 1')
 
     def utility_discounted(self, utility, utility_discount, l):
-        """
-        Utility discounted
-        ...
-        Returns
-        -------
-        float
-        """
         return ne.evaluate('utility_discount * l * utility')
 
 
@@ -74,13 +39,6 @@ class Dice2010(UtilityModel):
 
 class Dice2013(Dice2010):
     def utility(self, consumption_pc):
-        """
-        U, Period utility function
-        ...
-        Returns
-        -------
-        float
-        """
         if self.params.elasmu == 1:
             return ne.evaluate('log(consumption_pc)')
         d = 1.0 - self.params.elasmu

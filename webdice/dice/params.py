@@ -3,6 +3,11 @@ import numpy as np
 
 
 class DiceDataMatrix(np.ndarray):
+    """DiceDataMatrix
+
+    Subclasses nd.array to provide attribute-like access to model
+    variables within the numpy array.
+    """
     def __new__(cls, input_array):
         obj = np.asarray(input_array).view(cls)
         obj.abatement = input_array[0]
@@ -79,6 +84,11 @@ class DiceDataMatrix(np.ndarray):
 
 
 class DiceUserParams(object):
+    """User-defined parameters for the model.
+
+    This is a mixin for the parameter objects below which are used for
+    DICE2007, 2010, and 2013. Values in this mixin are for DICE2007.
+    """
     def __init__(self, model=2007):
         self.temp_co2_doubling = 3.
         self.damages_exponent = 2.
@@ -112,7 +122,8 @@ class DiceUserParams(object):
         self.c2150 = 0.
 
 
-class DiceParams(DiceUserParams):
+class Dice2007Params(DiceUserParams):
+    """Parameters for emulating DICE2007."""
     def __init__(self, model=2007):
         DiceUserParams.__init__(self, model=model)
         self.dice_version = str(model)
@@ -247,7 +258,8 @@ class DiceParams(DiceUserParams):
         self.scc = DiceDataMatrix(np.zeros((32, 60)))
 
 
-class Dice2010Params(DiceParams):
+class Dice2010Params(Dice2007Params):
+    """Parameters for emulating DICE2010."""
     def __init__(self, model=2010):
         super(Dice2010Params, self).__init__(model=model)
         self.dice_year = str(model)
@@ -304,7 +316,12 @@ class Dice2010Params(DiceParams):
         self.vars.mass_lower[0] = self.mass_lower_init
 
 
-class Dice2013Params(DiceParams):
+class Dice2013Params(Dice2007Params):
+    """Parameters for emulating DICE2013.
+
+    Note that DICE2013 runs on 5-year timesteps rather than 10-year.
+    As such, tmax is double that of DICE2007 and DICE2010 Params.
+    """
     def __init__(self, model=2013):
         super(Dice2013Params, self).__init__(model=model)
         self.dice_year = str(model)

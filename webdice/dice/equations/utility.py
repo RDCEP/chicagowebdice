@@ -4,19 +4,8 @@ import numpy as np
 
 
 class UtilityModel(object):
-    """
-    UtilityModel base class
-    ...
-    Properties
-    ----------
-    utility_discount : array
-        Average utility discount rate
-    ...
-    Methods
-    -------
-    get_model_values()
-    utility()
-    utility_discounted()
+    """UtilityModel base class
+
     """
     def __init__(self, params):
         self.params = params
@@ -25,30 +14,25 @@ class UtilityModel(object):
     def utility_discount(self):
         """R, Average utility discount rate
 
+        Eq: 1 / (1 + ρ) ^ t
+
         Returns:
-            :returns: 1 / (1 + ρ) ^ (t-1)
+            :returns: Array of discount rates for utility
             :rtype: np.ndarray
         """
         return 1 / ((1 + self.params.prstp) ** (self.params.ts * self.params.t0))
 
-    def get_model_values(self, index, data):
-        utility = self.utility(data.consumption_pc[index])
-        return (
-            utility,
-            self.utility_discounted(
-                utility, self.utility_discount[index], data.population[index]
-            )
-        )
-
     def utility(self, consumption_pc):
-        """U, Period utility function
+        """U, Period per capita utility function
+
+        Eq: c ^ (1 - η) / (1 - η) + 1
 
         Args:
             :param consumption_pc: per capita consumption
              :type consumption_pc: float
 
         Returns:
-            :returns: c ^ (1 - η) / (1 - η) + 1
+            :returns: Per capita utility at t
             :rtype: float
         """
         if self.params.elasmu == 1:
@@ -57,7 +41,9 @@ class UtilityModel(object):
         return (consumption_pc ** denom / denom) + 1
 
     def utility_discounted(self, utility, utility_discount, l):
-        """Utility discounted
+        """Total period utility
+
+        Eq: R * L * U
 
         Args:
             :param utility: U(t)
@@ -68,10 +54,31 @@ class UtilityModel(object):
              :type l: float
 
         Returns:
-            :returns: R * L * U
+            :returns: Total period utility at t
             :rtype: float
         """
         return utility_discount * l * utility
+
+    def get_model_values(self, index, data):
+        """Get values for model variables.
+
+        Args:
+            :param i: current time step
+            :type i: int
+            :param df: Matrix of variables
+            :type df: DiceDataMatrix
+
+        Returns:
+            :return: Model variables: U(t), RR(t)
+            :rtype: tuple
+        """
+        utility = self.utility(data.consumption_pc[index])
+        return (
+            utility,
+            self.utility_discounted(
+                utility, self.utility_discount[index], data.population[index]
+            )
+        )
 
 
 class Dice2007(UtilityModel):
@@ -86,12 +93,14 @@ class Dice2013(Dice2010):
     def utility(self, consumption_pc):
         """U, Period utility function
 
+        Eq: [c ^ (1 - η) - 1] / (1 - η) - 1
+
         Args:
             :param consumption_pc: per capita consumption
              :type consumption_pc: float
 
         Returns:
-            :returns: [c ^ (1 - η) - 1] / (1 - η) - 1
+            :returns: Per capita utility at t
             :rtype: float
         """
         if self.params.elasmu == 1:

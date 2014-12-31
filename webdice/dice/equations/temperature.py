@@ -5,13 +5,6 @@ from __future__ import division
 class TemperatureModel(object):
     """TemperatureModel base class
 
-    Properties:
-        initial_temps: Values for T_AT, T_OCEAN at t=0
-
-    Methods:
-        get_model_values(): Return values for T_AT, T_OCEAN
-        temp_atmosphere(): Calculate T_AT at t
-        temp_lower(): Calculate T_OCEAN at t
     """
     def __init__(self, params):
         self.params = params
@@ -21,6 +14,12 @@ class TemperatureModel(object):
 
     @property
     def initial_temps(self):
+        """Initial values for T_{AT} and T_{LO} at t=0
+
+        Returns:
+            :return: [ T_{AT}(0), T_{LO}(0) ]
+             :rtype: list
+        """
         return [self._temp_atmosphere_2005, self._temp_lower_2005]
 
     @initial_temps.setter
@@ -28,22 +27,12 @@ class TemperatureModel(object):
         self._temp_atmosphere_2005 = value[0]
         self._temp_lower_2005 = value[1]
 
-    def get_model_values(self, i, df):
-        if i == 0:
-            return self.initial_temps
-        i -= 1
-        return (
-            self.temp_atmosphere(df.temp_atmosphere[i],
-                                 df.temp_lower[i],
-                                 df.forcing[i + 1],),
-            self.temp_lower(df.temp_atmosphere[i],
-                            df.temp_lower[i],),
-        )
-
     def temp_atmosphere(self, temp_atmosphere, temp_lower, forcing):
-        """T_AT, increase in atmospheric temperature since 1750, degrees C
+        """T_{AT}, increase in atmospheric temperature since 1750, degrees C
 
-         Args:
+        Eq: $T_{AT}(t-1) + ξ_{1} * (F(t) - F_{2xCO2} / T_{2xCO2} * T_{AT}(t-1) - ξ_{3} * (T_{AT}(t-1) - T_{LO}(t-1)))$
+
+        Args:
             :param temp_atmosphere: Atmospheric temperature at t-1
              :type temp_atmosphere: float
             :param temp_lower: Lower ocean temperature at t-1
@@ -52,7 +41,7 @@ class TemperatureModel(object):
              :type forcing: float
 
         Returns:
-            :returns: T_AT(t-1) + ξ_1 * (F(t) - F2xCO2 / T2xCO2 * T_AT(t-1) - ξ_3 * (T_AT(t-1) - T_Ocean(t-1)))
+            :returns: Atmospheric temperature at t
               :rtype: float
         """
         return (
@@ -68,19 +57,45 @@ class TemperatureModel(object):
     def temp_lower(self, temp_atmosphere, temp_lower):
         """T_AT, increase in atmospheric temperature since 1750, degrees C
 
-         Args:
+        Eq: $T_{LO}(t-1) + ξ_{4} * (T_{AT}(t-1) - T_{LO}(t-1))
+
+        Args:
             :param i: current time step
              :type i: int
             :param df: Matrix of variable values
              :type df: DiceDataMatrix
 
         Returns:
-            :returns: T_Ocean(t-1) + ξ_4 * (T_AT(t-1) - T_Ocean(t-1))
-            :rtype: float
+            :return: Lower ocean temperature at t
+             :rtype: float
         """
         return (
             temp_lower + self.params.thermal_transfer[3] *
             (temp_atmosphere - temp_lower)
+        )
+
+    def get_model_values(self, i, df):
+        """Get values for model variables.
+
+        Args:
+            :param i: current time step
+            :type i: int
+            :param df: Matrix of variables
+            :type df: DiceDataMatrix
+
+        Returns:
+            :return: Model variables: T_{AT}, T_{LO}
+            :rtype: tuple
+        """
+        if i == 0:
+            return self.initial_temps
+        i -= 1
+        return (
+            self.temp_atmosphere(df.temp_atmosphere[i],
+                                 df.temp_lower[i],
+                                 df.forcing[i + 1],),
+            self.temp_lower(df.temp_atmosphere[i],
+                            df.temp_lower[i],),
         )
 
 

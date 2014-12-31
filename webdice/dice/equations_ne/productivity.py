@@ -5,38 +5,11 @@ import numexpr as ne
 
 
 class ProductivityModel(object):
-    """
-    ProductivityModel base class
-    ...
-    Properties
-    ----------
-    population_growth: array
-        Population growth factor
-    population : array
-        Labor or population
-    productivity_growth : array
-        Growth rate of productivity
-    intensity_decline : array
-        Rate of carbon decline
-    ...
-    Methods
-    -------
-    get_model_values()
-    capital()
-    gross_output()
-    """
     def __init__(self, params):
         self.params = params
 
     @property
     def backstop(self):
-        """
-        Cost of replacing clean energy
-        ...
-        Returns
-        -------
-        array
-        """
         return self.params.backstop_init * (
             (
                 self.params.backstop_ratio - 1 + np.exp(
@@ -53,25 +26,11 @@ class ProductivityModel(object):
 
     @property
     def productivity_growth(self):
-        """
-        A_g, Growth rate of total factor productivity.
-        ...
-        Returns
-        -------
-        array
-        """
         return self.params.productivity_growth_init * np.exp(
             -self.params.productivity_decline * self.params.ts * self.params.t0
         )
 
     def population(self, population_growth_rate, population_prev):
-        """
-        L, Population.
-        ...
-        Returns
-        -------
-        array
-        """
         p = self.params.population_init
         pa = self.params.popasym
         return ne.evaluate('p * (1 - population_growth_rate) + population_growth_rate * pa')
@@ -86,6 +45,14 @@ class ProductivityModel(object):
     def carbon_intensity(self, carbon_intensity_prev, intensity_decline,
                          intensity_decline_prev):
         return ne.evaluate('carbon_intensity_prev / (1 - intensity_decline)')
+
+    def capital(self, capital, depreciation, investment):
+        ts = self.params.ts
+        return ne.evaluate('capital * (1 - depreciation) ** ts + ts * investment')
+
+    def gross_output(self, productivity, capital, output_elasticity,
+                     population):
+        return ne.evaluate('productivity * capital ** output_elasticity * population ** (1 - output_elasticity)')
 
     def get_model_values(self, i, df):
         if i > 0:
@@ -131,28 +98,6 @@ class ProductivityModel(object):
             population,
         )
 
-    def capital(self, capital, depreciation, investment):
-        """
-        K(t), Capital, trillions $USD
-        ...
-        Returns
-        -------
-        Float
-        """
-        ts = self.params.ts
-        return ne.evaluate('capital * (1 - depreciation) ** ts + ts * investment')
-
-    def gross_output(self, productivity, capital, output_elasticity,
-                     population):
-        """
-        Gross output
-        ...
-        Returns
-        -------
-        float
-        """
-        return ne.evaluate('productivity * capital ** output_elasticity * population ** (1 - output_elasticity)')
-
 
 class Dice2007(ProductivityModel):
     pass
@@ -172,25 +117,11 @@ class Dice2010(ProductivityModel):
 
     @property
     def productivity_growth(self):
-        """
-        A_g, Growth rate of total factor productivity.
-        ...
-        Returns
-        -------
-        array
-        """
         return self.params.productivity_growth_init * np.exp(
             -self.params.productivity_decline * self.params.ts * self.params.t0 *
         np.exp(-.002 * self.params.ts * self.params.t0))
 
     def population(self, population_growth_rate, population_prev):
-        """
-        L, Population.
-        ...
-        Returns
-        -------
-        array
-        """
         p = self.params.population_init
         pa = self.params.popasym
         return ne.evaluate('population_prev * (pa / population_prev) ** population_growth_rate')
@@ -200,13 +131,6 @@ class DiceBackstop2013(Dice2010):
 
     @property
     def backstop(self):
-        """
-        Cost of replacing clean energy
-        ...
-        Returns
-        -------
-        array
-        """
         return self.params.backstop_init * (
             (1 - self.params.backstop_decline) ** self.params.t0
         ) * (12 / 44)
@@ -216,25 +140,12 @@ class Dice2013(Dice2010):
 
     @property
     def productivity_growth(self):
-        """A_g, Growth rate of total factor productivity.
-
-        Returns:
-            :returns: A_g(0) * exp(-Δ_a * (t-1))
-            :rtype: np.ndarray
-        """
         return self.params.productivity_growth_init * np.exp(
             -self.params.productivity_decline * self.params.ts * self.params.t0
         )
 
     @property
     def backstop(self):
-        """
-        Cost of replacing clean energy
-        ...
-        Returns
-        -------
-        array
-        """
         return self.params.backstop_init * (
             (1 - self.params.backstop_decline) ** self.params.t0
         )
@@ -246,11 +157,4 @@ class Dice2013(Dice2010):
 
     def gross_output(self, productivity, capital, output_elasticity,
                      population):
-        """
-        Gross output
-        ...
-        Returns
-        -------
-        float
-        """
         return ne.evaluate('productivity * capital ** output_elasticity * (population / 1000) ** (1 - output_elasticity)')

@@ -3,23 +3,6 @@ import numexpr as ne
 
 
 class TemperatureModel(object):
-    """
-    TemperatureModel base class
-    ...
-    Properties
-    ----------
-    initial_temps : array
-        Values for T_AT, T_OCEAN at t=0
-    ...
-    Methods
-    -------
-    get_model_values()
-        Return values for T_AT, T_OCEAN
-    temp_atmosphere()
-        Calculate T_AT at t
-    temp_lower()
-        Calculate T_OCEAN at t
-    """
     def __init__(self, params):
         self.params = params
         self._temp_atmosphere_2005 = params.temp_atmosphere_init
@@ -35,6 +18,16 @@ class TemperatureModel(object):
         self._temp_atmosphere_2005 = value[0]
         self._temp_lower_2005 = value[1]
 
+    def temp_atmosphere(self, ta, tl, f):
+        ff = (self.params.forcing_co2_doubling / self.params.temp_co2_doubling)
+        c1 = self.params.thermal_transfer[0]
+        c3 = self.params.thermal_transfer[2]
+        return ne.evaluate('ta + c1 * (f - ff * ta - c3 * (ta - tl))')
+
+    def temp_lower(self, ta, tl):
+        c4 = self.params.thermal_transfer[3]
+        return ne.evaluate('tl + c4 * (ta - tl)')
+
     def get_model_values(self, i, df):
         if i == 0:
             return self.initial_temps
@@ -46,30 +39,6 @@ class TemperatureModel(object):
             self.temp_lower(df.temp_atmosphere[i],
                             df.temp_lower[i],)
         )
-
-    def temp_atmosphere(self, ta, tl, f):
-        """
-        T_AT, Temperature of atmosphere, degrees C
-        ...
-        Returns
-        -------
-        float
-        """
-        ff = (self.params.forcing_co2_doubling / self.params.temp_co2_doubling)
-        c1 = self.params.thermal_transfer[0]
-        c3 = self.params.thermal_transfer[2]
-        return ne.evaluate('ta + c1 * (f - ff * ta - c3 * (ta - tl))')
-
-    def temp_lower(self, ta, tl):
-        """
-        T_LO, Temperature of lower oceans, degrees C
-        ...
-        Returns
-        -------
-        float
-        """
-        c4 = self.params.thermal_transfer[3]
-        return ne.evaluate('tl + c4 * (ta - tl)')
 
 
 class Dice2007(TemperatureModel):

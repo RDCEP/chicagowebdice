@@ -1,24 +1,16 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
 import numpy as np
-from params import DiceParams, Dice2010Params, DiceUserParams, DiceDataMatrix, \
+from params import Dice2007Params, Dice2010Params, DiceUserParams, DiceDataMatrix, \
     Dice2013Params
 from equations.loop import Loop
 from equations_ne.loop import LoopOpt
 
 
 class Dice(object):
-    """Dice object
-
-    Variables, parameters, loop/step, and optimization functions
-    for DICE objects.
-
-    Args:
-        None
-
-    """
+    """webDICE object"""
     def __init__(self):
-        self.params = DiceParams()
+        self.params = Dice2007Params()
         self.vars = self.params.vars
         self.scc = self.params.scc
         self.eq = Loop(self.params)
@@ -33,7 +25,7 @@ class Dice(object):
 
     @property
     def user_params(self):
-        """List of parameters
+        """Names of user-defined parameters
 
         List of model parameters to be included with output to graphs and CSV.
         This list purposely leaves out model parameters whose names begin with
@@ -43,15 +35,15 @@ class Dice(object):
             None
 
         Returns:
-            list: List of parameter names (strings)
-
+            :return: List of parameter names (strings)
+             :rtype: list
         """
         u_p = DiceUserParams()
         return [k for k in u_p.__dict__.keys() if k[0] != '_']
 
     @property
     def model_vars(self):
-        """Model variables
+        """Names of model variables
 
         List of model variables to be included with output to graphs and CSV.
         This list purposely leaves out model variables whose names begin with
@@ -61,8 +53,8 @@ class Dice(object):
             None
 
         Returns:
-            list: List of variable names as strings
-
+            :return: List of variable names as strings
+             :rtype: list
         """
         return [k for k, v in self.vars.__dict__.iteritems() if k[0] != '_']
 
@@ -87,18 +79,24 @@ class Dice(object):
         the loop() method.
 
         Args:
-            i (int): index of current step
-            df (DiceDataMatrix): numpy array of model variables
+            :param i: current time step
+             :type i: int
+            :param df: Matrix of variables
+             :type df: DiceDataMatrix
 
         Kwargs:
-            miu (nd.array): values for miu
-            deriv (bool): Whether or not to calculate a derivative
-            opt (bool): Whether or not to optimize the scenario
-            emissions_shock (float): Emissions shock for calculating SCC
+            :param miu: values for miu
+             :type miu: np.ndarray
+            :param deriv: Whether or not to calculate a derivative during optimization
+             :type deriv: bool
+            :param opt: Whether or not to optimize the scenario
+             :type opt: bool
+            :param emissions_shock: Emissions shock for calculating SCC
+             :type emissions_shock: float
 
         Returns:
-            DiceDataMatrix: numpy array of model variables
-
+            :return: Matrix of model variables
+             :rtype: DiceDataMatrix
         """
 
         (
@@ -138,19 +136,22 @@ class Dice(object):
     def loop(self, miu=None, deriv=False, scc=True, opt=False):
         """Main loop
 
-        Loop through step function for calculating endogenous variables. This
-        method is called by hand, but also during derivative calculations
-        when optimizing.
+        Loops through step function tmax times.
+
+        Args:
+            None
 
         Kwargs:
-            miu (nd.array): values for miu
-            deriv (bool): Whether or not to calculate a derivative
-            scc (bool): Whether or not to calculate SCC
-            opt (bool): Whether or not to optimize the scenario
+            :param miu: values for miu
+             :type miu: np.ndarray
+            :param deriv: Whether or not to calculate a derivative during optimization
+             :type deriv: bool
+            :param scc: Whether or not to calculate SCC
+             :type scc: bool
 
         Returns:
-            DiceDataMatrix: Array of model variables
-
+            :return: Matrix of model variables
+             :rtype: DiceDataMatrix
         """
         _miu = None
         if opt:
@@ -174,11 +175,12 @@ class Dice(object):
         next.
 
         Args:
-            df (DiceDataMatrix): Array of model variables
+            :param df: Matrix of model variables
+             :type df: DiceDataMatrix
 
         Returns:
-            None
-
+            :return: None
+             :rtype: None
         """
         gf = (
             df.utility_discounted[:, :int(self.params.tmax)].sum(axis=0) -
@@ -196,11 +198,12 @@ class Dice(object):
         Calls loop(). Stores and returns result.
 
         Args:
-            miu (nd.array): Array of values for miu, n = Dice().params.tmax
+            :param miu: Array of values for miu, n = tmax
+             :type miu: np.ndarray
 
         Returns:
-            float: value of objective (utility)
-
+            :return: Value of objective function (total utility)
+             :rtype: float
         """
         df = DiceDataMatrix(np.tile(self.vars, (self.params.tmax + 1, 1, 1)).transpose(1, 2, 0))
         for i in xrange(self.params.tmax):
@@ -217,11 +220,12 @@ class Dice(object):
         Is called by get_ipopt_miu(). Calls loop(). Stores and returns result.
 
         Args:
-            miu (nd.array): Array of values for miu, n = Dice().params.tmax
+            :param miu: Array of values for miu, n = tmax
+             :type miu: np.ndarray
 
         Returns:
-            nd.array: gradient of objective
-
+            :return: Gradients of objective
+             :rtype: np.ndarray
         """
         df = DiceDataMatrix(np.tile(self.vars, (self.params.tmax + 1, 1, 1)).transpose(1, 2, 0))
         for i in xrange(self.params.tmax):
@@ -237,10 +241,12 @@ class Dice(object):
         Calculate social cost of carbon. Called automatically from loop().
 
         Args:
-            miu (nd.array): Array of values for miu, n = Dice().params.tmax
+            :param miu: Array of values for miu, n = tmax
+             :type miu: np.ndarray
 
         Returns:
-            None
+            :return: None
+             :rtype: None
         """
         for i in xrange(int(self.params.tmax / 3)):
             th = self.params.scc_horizon
@@ -262,13 +268,13 @@ class Dice(object):
         """Optimized miu
 
         Calculate optimal miu. Called when opt=True is passed to loop().
-        ...
+
         Args:
             None
 
-        Returns
-            nd.array: Array of optimal miu, n = params.tmax
-
+        Returns:
+            :return: Array of optimal miu, n = tmax
+             :rtype: np.ndarray
         """
         try:
             import pyipopt
@@ -320,12 +326,9 @@ class Dice(object):
         nlp.int_option('max_iter', 30)
         nlp.num_option('max_cpu_time', 60)
         nlp.num_option('tol', self.opt_tol)
-        # nlp.num_option('acceptable_tol', 1e-4)
-        # nlp.int_option('acceptable_iter', 4)
         nlp.num_option('obj_scaling_factor', -1e+0)
         nlp.int_option('print_level', 0)
         nlp.str_option('linear_solver', 'ma57')
-        # nlp.str_option('derivative_test', 'first-order')
         x = nlp.solve(x0)[0]
         nlp.close()
         return x
@@ -339,8 +342,8 @@ class Dice(object):
             None
 
         Returns:
-            dict: Dictionary of model variables with lists of values
-
+            :return: Dictionary of model variables with lists of values
+             :rtype: dict
         """
         output = dict(parameters=None, data=None)
         output['parameters'] = {
@@ -353,29 +356,16 @@ class Dice(object):
         return output
 
 
-class Dice2010(Dice):
-    """Convenience object for DICE2010 scenarios.
-
-    Example:
-        d = Dice2010()
-        d.loop(opt=False)
-        print(d.vars)
-
-    """
-    def __init__(self):
-        super(Dice2010, self).__init__()
-        self.params = Dice2010Params()
-        self.vars = self.params.vars
-        self.dice_version = 2010
-        self.opt_tol = 1e-5
-
-
 class Dice2013(Dice):
     """Convenience object for DICE2013 scenarios.
 
     Example:
-        d = Dice2013()
-        d.loop(opt=False)
+        d.params.elasmu = 1.3
+        d.params.prstp = .01
+        d.params.carbon_model = 'beam_carbon'
+        d.params.damages_model = 'productivity_fraction'
+        d.params.prod_frac = .1
+        d.loop(opt=True)
         print(d.vars)
 
     """
@@ -389,20 +379,18 @@ class Dice2013(Dice):
         self.opt_x = np.ones(self.opt_vars)
 
 
+class Dice2010(Dice):
+    """Convenience object for DICE2010 scenarios."""
+    def __init__(self):
+        super(Dice2010, self).__init__()
+        self.params = Dice2010Params()
+        self.vars = self.params.vars
+        self.dice_version = 2010
+        self.opt_tol = 1e-5
+
+
 class Dice2007(Dice):
-    """Convenience object for DICE2007 scenarios.
-
-    Example:
-        d = Dice2007()
-        d.params.elasmu = 2
-        d.params.prstp = .01
-        d.params.carbon_model = 'beam_carbon'
-        d.params.damages_model = 'productivity_fraction'
-        d.params.prod_frac = .1
-        d.loop(opt=True)
-        print(d.vars)
-
-    """
+    """Convenience object for DICE2007 scenarios."""
     def __init__(self):
         super(Dice2007, self).__init__()
         self.dice_version = 2007

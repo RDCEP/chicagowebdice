@@ -26,11 +26,13 @@ class EmissionsModel(object):
 
     @property
     def emissions_deforest(self):
-        """E_land, Emissions from deforestation
+        """E_{land}, Emissions from deforestation
+
+        Eq: $E_{land}(0) * (1 - .2) ^ t$
 
         Returns
-            :returns: E_land(0) * (1 - .1) ^ (t - 1)
-            :rtype: np.ndarray
+            :return: Array of deforestation emissions values
+             :rtype: np.ndarray
         """
         return (
             self.params.emissions_deforest_init *
@@ -39,11 +41,11 @@ class EmissionsModel(object):
 
     @property
     def emissions_cap(self):
-        """E_cap, Emissions caps from treaty inputs
+        """E_{cap}, Emissions caps from treaty inputs
 
         Returns
-            :returns: Array of emissions caps
-            :rtype: np.ndarray
+            :return: Array of emissions caps
+             :rtype: np.ndarray
         """
         return np.concatenate((
             np.ones(5),
@@ -57,8 +59,8 @@ class EmissionsModel(object):
         """Optional user-defined carbon tax
 
         Returns
-            :returns: Array of tax rates
-            :rtype: np.ndarray
+            :return: Array of tax rates
+             :rtype: np.ndarray
         """
         c = [0, self.params.c2050, self.params.c2100,
              self.params.c2150, self.params.cmax]
@@ -68,52 +70,6 @@ class EmissionsModel(object):
             c[2] + ((c[3] - c[2]) / 5 * np.arange(5)),
             c[3] + ((c[3] - c[2]) / 5 * np.arange(self.params.tmax-15)),
         ))
-
-    def get_model_values(self, i, df, deriv=False, opt=False,
-                         miu=None, emissions_shock=0):
-        """Get values for model variables.
-
-        Args:
-            :param i: current time step
-            :type i: int
-            :param df: Matrix of variables
-            :type df: DiceDataMatrix
-
-        Kwargs:
-            :param deriv: Calculating derivative or not
-            :type deriv: bool
-            :param opt: Running optimized loop or not
-            :type opt: bool
-            :param miu: Emissions control array
-            :type miu: np.ndarray
-            :param emissions_shock: Amount to increase emissions for SCC
-            :type emissions_shock: float
-
-        Returns:
-            :return: Model variables: μ, E_ind, E, CCum, τ
-            :rtype: tuple
-        """
-        miu = self.get_miu(i, df, deriv=deriv, opt=opt, miu=miu)
-        emissions_ind = self.emissions_ind(
-            df.carbon_intensity[i], miu, df.gross_output[i]
-        )
-        emissions_total = self.emissions_total(
-            emissions_ind, self.emissions_deforest[i]
-        ) + emissions_shock
-        carbon_emitted = emissions_total * self.params.ts \
-            if i == 0 \
-            else self.carbon_emitted(emissions_total, df.carbon_emitted[i - 1])
-        if np.max(carbon_emitted) > self.params.fosslim:
-            emissions_total = 0.0
-            carbon_emitted = self.params.fosslim
-        tax_rate = self.tax_rate(miu, df.backstop[i])
-        return (
-            miu,
-            emissions_ind,
-            emissions_total,
-            carbon_emitted,
-            tax_rate,
-        )
 
     def emissions_ind(self, intensity, miu, gross_output):
         """E_ind, Industrial emissions, GtC
@@ -233,6 +189,52 @@ class EmissionsModel(object):
         return (
             backstop * miu ** (self.params.abatement_exponent - 1) * 1000
         ) * (12 / 44)
+
+    def get_model_values(self, i, df, deriv=False, opt=False,
+                         miu=None, emissions_shock=0):
+        """Get values for model variables.
+
+        Args:
+            :param i: current time step
+             :type i: int
+            :param df: Matrix of variables
+             :type df: DiceDataMatrix
+
+        Kwargs:
+            :param deriv: Calculating derivative or not
+             :type deriv: bool
+            :param opt: Running optimized loop or not
+             :type opt: bool
+            :param miu: Emissions control array
+             :type miu: np.ndarray
+            :param emissions_shock: Amount to increase emissions for SCC
+             :type emissions_shock: float
+
+        Returns:
+            :return: Model variables: μ, E_{ind}, E, CCum, τ
+             :rtype: tuple
+        """
+        miu = self.get_miu(i, df, deriv=deriv, opt=opt, miu=miu)
+        emissions_ind = self.emissions_ind(
+            df.carbon_intensity[i], miu, df.gross_output[i]
+        )
+        emissions_total = self.emissions_total(
+            emissions_ind, self.emissions_deforest[i]
+        ) + emissions_shock
+        carbon_emitted = emissions_total * self.params.ts \
+            if i == 0 \
+            else self.carbon_emitted(emissions_total, df.carbon_emitted[i - 1])
+        if np.max(carbon_emitted) > self.params.fosslim:
+            emissions_total = 0.0
+            carbon_emitted = self.params.fosslim
+        tax_rate = self.tax_rate(miu, df.backstop[i])
+        return (
+            miu,
+            emissions_ind,
+            emissions_total,
+            carbon_emitted,
+            tax_rate,
+        )
 
 
 class Dice2007(EmissionsModel):

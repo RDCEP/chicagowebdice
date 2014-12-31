@@ -29,12 +29,15 @@ class ProductivityModel(object):
 
     @property
     def backstop(self):
-        """Cost of replacing with clean energy
-        12/44 converts from $/C to $/CO2
+        """BC, Cost of replacing with clean energy
+
+        Note: 12/44 converts from $/C to $/CO2
+
+        Eq: $BC(0) * [ratio - 1 + exp(-BC_{g}(0) * t] / ratio)$
 
         Returns:
-            :returns: BC(0) * (ratio - 1 + exp(-BC_g(0) * (t-1)) / ratio)
-            :rtype: np.ndarray
+            :returns: Array of backstop prices
+             :rtype: np.ndarray
         """
         return self.params.backstop_init * (
             (
@@ -45,11 +48,13 @@ class ProductivityModel(object):
 
     @property
     def population_growth_rate(self):
-        """L_g, Growth rate of population.
+        """L_{g}, Growth rate of population.
+
+        Eq: $[exp(L_{g} * t] - 1] / exp(L_{g} * t)$
 
         Returns:
-            :returns: exp(L_g * (t-1) - 1) / exp(L_g * (t-1))
-            :rtype: np.ndarray
+            :return: Array of population growth rates
+             :rtype: np.ndarray
         """
         return (
             (np.exp(self.params.population_growth * self.params.t0) - 1) /
@@ -58,11 +63,13 @@ class ProductivityModel(object):
 
     @property
     def productivity_growth(self):
-        """A_g, Growth rate of total factor productivity.
+        """A_{g}, Growth rate of total factor productivity.
+
+        Eq: $A_{g}(0) * exp(-Δ_{a} * t)$
 
         Returns:
-            :returns: A_g(0) * exp(-Δ_a * (t-1))
-            :rtype: np.ndarray
+            :return: Array of productivity growth rates
+             :rtype: np.ndarray
         """
         return self.params.productivity_growth_init * np.exp(
             -self.params.productivity_decline * self.params.ts * self.params.t0
@@ -71,15 +78,17 @@ class ProductivityModel(object):
     def population(self, i, df):
         """L, Population.
 
+        Eq: $L(0) * [1 - L_{g}(t)] + L_{g}(t) * L_{max}
+
         Args:
             :param i: current time step
-            :type i: int
+             :type i: int
             :param df: DiceDataMatrix
-            :type df: obj
+             :type df: obj
 
         Returns:
-            :returns: L(0) * (1 - L_g(t)) + (L_g(t) * L_max
-            :rtype: float
+            :return: Array of population values
+             :rtype: float
         """
         return (
             self.params.population_init *
@@ -112,23 +121,78 @@ class ProductivityModel(object):
     def carbon_intensity(self, i, df):
         """σ, Carbon intensity.
 
+        Eq: $σ(t-1) / [1 - σ_g(t)]$
+
         Args:
             :param i: current time step
-            :type i: int
+             :type i: int
             :param df: DiceDataMatrix
-            :type df: obj
+             :type df: obj
 
         Returns:
-            :returns: σ(t-1) / (1 - σ_g(t))
-            :rtype: float
+            :return: Carbon intensity at t
+             :rtype: float
         """
         intensity_decline = self.intensity_decline(i, df)
-        # df.intensity_decline[i] = intensity_decline
         return df.carbon_intensity[i - 1] / (
             1 - intensity_decline
         ), intensity_decline
 
+    def capital(self, capital, depreciation, investment):
+        """K(t), Capital, trillions $USD
+
+        Eq: $K(t-1) * (1 - δ) + I$
+
+        Args:
+            :param capital: capital in prior time step
+             :type i: float
+            :param depreciation: depreciation rate
+             :type i: float
+            :param investment: investment in prior time step
+             :type i: float
+
+        Returns:
+            :return: Depreciated capital plus investment at t
+             :rtype: float
+        """
+        return capital * (1 - depreciation) ** self.params.ts + self.params.ts * investment
+
+    def gross_output(self, productivity, capital, output_elasticity,
+                     population):
+        """Gross output, trillions USD
+
+        Args:
+            :param productivity: productivity in current time step
+            :type i: float
+            :param capital: capital in current time step
+            :type i: float
+            :param output_elasticity: elasticity of output
+            :type i: float
+            :param population: population in current time step
+            :type i: float
+
+        Returns:
+            :returns: A(t) * K(t) ^ γ * L ^ (1 - γ)
+            :rtype: float
+        """
+        return (
+            productivity * capital ** output_elasticity *
+            population ** (1 - output_elasticity)
+        )
+
     def get_model_values(self, i, df):
+        """Get values for model variables.
+
+        Args:
+            :param i: current time step
+             :type i: int
+            :param df: Matrix of variables
+             :type df: DiceDataMatrix
+
+        Returns:
+            :return: Model variables: σ, A, K, BC_{g}, Y, σ_{g}, L
+             :rtype: tuple
+        """
         if i > 0:
             carbon_intensity, intensity_decline = self.carbon_intensity(i, df)
             productivity = df.productivity[i - 1] / (
@@ -166,46 +230,6 @@ class ProductivityModel(object):
             population,
         )
 
-    def capital(self, capital, depreciation, investment):
-        """K(t), Capital, trillions $USD
-
-        Args:
-            :param capital: capital in prior time step
-            :type i: float
-            :param depreciation: depreciation rate
-            :type i: float
-            :param investment: investment in prior time step
-            :type i: float
-
-        Returns:
-            :returns: K(t-1) * (1 - δ) + I
-            :rtype: float
-        """
-        return capital * (1 - depreciation) ** self.params.ts + self.params.ts * investment
-
-    def gross_output(self, productivity, capital, output_elasticity,
-                     population):
-        """Gross output, trillions USD
-
-        Args:
-            :param productivity: productivity in current time step
-            :type i: float
-            :param capital: capital in current time step
-            :type i: float
-            :param output_elasticity: elasticity of output
-            :type i: float
-            :param population: population in current time step
-            :type i: float
-
-        Returns:
-            :returns: A(t) * K(t) ^ γ * L ^ (1 - γ)
-            :rtype: float
-        """
-        return (
-            productivity * capital ** output_elasticity *
-            population ** (1 - output_elasticity)
-        )
-
 
 class Dice2007(ProductivityModel):
     pass
@@ -213,47 +237,17 @@ class Dice2007(ProductivityModel):
 
 class Dice2010(ProductivityModel):
     def intensity_decline(self, i, df):
-        """σ_g, Decline rate of decarbonization.
-
-        Args:
-            :param i: current time step
-            :type i: int
-            :param df: DiceDataMatrix
-            :type df: obj
-
-        Returns:
-            :returns: σ_g(t-1) * (1 - σ_d1)
-            :rtype: float
-        """
         return df.intensity_decline[i - 1] * (
             1 - self.params.intensity_decline_rate
         ) ** self.params.ts
 
     @property
     def productivity_growth(self):
-        """A_g, Growth rate of total factor productivity.
-
-        Returns:
-            :returns: A_g(0) * exp(-Δ_a * (t-1) * exp(-.002 * (t-1))
-            :rtype: np.ndarray
-        """
         return self.params.productivity_growth_init * np.exp(
             -self.params.productivity_decline * self.params.ts * self.params.t0 *
         np.exp(-.002 * self.params.ts * self.params.t0))
 
     def carbon_intensity(self, i, df):
-        """σ, Carbon intensity.
-
-        Args:
-            :param i: current time step
-            :type i: int
-            :param df: DiceDataMatrix
-            :type df: obj
-
-        Returns:
-            :returns: σ(t-1) * (1 - σ_g(t))
-            :rtype: float
-        """
         intensity_decline = self.intensity_decline(i, df)
         return (
             df.carbon_intensity[i - 1] *
@@ -261,18 +255,6 @@ class Dice2010(ProductivityModel):
         ), intensity_decline
 
     def population(self, i, df):
-        """L, Population.
-
-        Args:
-            :param i: current time step
-            :type i: int
-            :param df: DiceDataMatrix
-            :type df: obj
-
-        Returns:
-            :returns: L(t-1) * (L_max / L(t-1)) ** L_g
-            :rtype: float
-        """
         return (
             df.population[i - 1] * (
                 self.params.popasym / df.population[i - 1]
@@ -313,30 +295,11 @@ class Dice2013(Dice2010):
 
     @property
     def backstop(self):
-        """Cost of replacing with clean energy
-        12/44 converts from $/C to $/CO2
-
-        Returns:
-            :returns: TKTK
-            :rtype: np.ndarray
-        """
         return self.params.backstop_init * (
             (1 - self.params.backstop_decline) ** self.params.t0
         )
 
     def carbon_intensity(self, i, df):
-        """σ, Carbon intensity.
-
-        Args:
-            :param i: current time step
-            :type i: int
-            :param df: DiceDataMatrix
-            :type df: obj
-
-        Returns:
-            :returns: σ(t-1) * (1 - σ_g(t))
-            :rtype: float
-        """
         intensity_decline = self.intensity_decline(i, df)
         return (
             df.carbon_intensity[i - 1] *
@@ -345,22 +308,6 @@ class Dice2013(Dice2010):
 
     def gross_output(self, productivity, capital, output_elasticity,
                      population):
-        """Gross output, trillions USD
-
-        Args:
-            :param productivity: productivity in current time step
-            :type i: float
-            :param capital: capital in current time step
-            :type i: float
-            :param output_elasticity: elasticity of output
-            :type i: float
-            :param population: population in current time step
-            :type i: float
-
-        Returns:
-            :returns: A(t) * K(t) ^ γ * L ^ (1 - γ)
-            :rtype: float
-        """
         return (
             productivity * capital ** output_elasticity *
             (population * 1e-3) ** (1 - output_elasticity)

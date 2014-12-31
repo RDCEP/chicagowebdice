@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import division
 import numpy as np
 
@@ -18,12 +19,11 @@ class DamagesModel(object):
 
     @property
     def participation(self):
-        """
-        phi, Fraction of emissions in control regime
-        ...
+        """φ, Fraction of emissions in control regime
+
         Returns
-        -------
-        array
+            :return: Array of user-defined emissions reduction participation
+             :rtype: np.ndarray
         """
         if self.params.treaty:
             p = [self.params.p2050, self.params.p2050, self.params.p2100,
@@ -38,13 +38,11 @@ class DamagesModel(object):
 
     @property
     def damages_terms(self):
-        """
-        temp coefficient; pi_2, temp squared coefficient;
-        epsilon, damages exponent
-        ...
-        Returns
-        -------
-        array
+        """π_{2}, ε Damages coefficient and exponent
+
+        Returns:
+            :return: [ π_{2}, ε ]
+             :rtype: list
         """
         return np.array([
             self.params.a1,
@@ -53,26 +51,115 @@ class DamagesModel(object):
         ])
 
     def get_production_factor(self, temp_atmosphere):
-        """
-        Return default fraction of productivity
+        """f, Fraction of damages to TFP
+
+        Returns:
+            :return: f ∈ [ 0, 1 ]
+             :rtype: float
         """
         return 1.
 
-    def get_model_values(self, i, df):
+    def abatement(self, gross_output, miu, backstop_growth, participation):
+        """Λ, Abatement costs, trillions $USD
+
+        Eq: $Y(t) * φ(t) ** (1 - θ_{2}) * BC_{g} * μ ** θ_{2}$
+
+        Args:
+            :param gross_output: Gross output
+             :type gross_output: float
+            :param miu: Emissions control rate
+             :type miu: float
+            :param backstop_growth: Cost of backstop technology
+             :type backstop_growth: float
+            :param participation: Fraction of reductions participation
+             :type participation: float
+
+        Returns:
+            :return: Minimum of gross output and abatement at t (abatement can't exceed output)
+             :rtype: float
         """
-        Calculate and return damages, output, and consumption
-        ...
-        Arguments
-        ---------
-        gross_output : float
-        temp_atmosphere : float
-        damages_terms : array
-        abatement : float
-        savings : float
-        ...
-        Returns
-        -------
-        array
+        return np.minimum(
+            gross_output,
+            gross_output *
+            participation ** (1 - self.params.abatement_exponent) *
+            backstop_growth * miu ** self.params.abatement_exponent
+        )
+
+    def damages(self, gross_output, temp_atmosphere, abatement=None):
+        """Ω, Damage, trillions $USD
+
+        Eq:
+
+        Args:
+            :param gross_output: Gross output
+             :type gross_output: float
+            :param temp_atmosphere: Atmospheric temperature
+             :type temp_atmosphere: float
+            :param abatement: Abatement cost
+             :type abatement: float
+
+        Returns:
+            :return: Damages at t (in $)
+             :rtype: float
+        """
+        return gross_output * (1 - 1 / (
+            1 + self.damages_terms[0] * temp_atmosphere +
+            self.damages_terms[1] * temp_atmosphere ** self.damages_terms[2]
+        ))
+
+    def output(self, gross_output, damages, abatement,
+               a_temp_atmosphere=None):
+        """Q, Net output after abatement and damages, trillions $USD
+
+        Eq:
+
+        Args:
+            :param gross_output: Gross output
+             :type gross_output: float
+            :param damages: Economic damages
+             :type damages: float
+            :param abatement: Abatement cost
+             :type abatement: float
+            :param a_temp_atmosphere: This is a shim for te environmental damages function
+             :type a_temp_atmosphere: float
+
+        Returns:
+            :return: Net output at t
+             :rtype: float
+        """
+        return (
+            (gross_output - abatement) * (gross_output - damages)
+        ) / gross_output
+
+    def output_abate(self, abatement, gross_output):
+        """Λ / Y, Abatement as a percentage of output
+
+        Eq: Λ(t) / Y(t)
+
+        Args:
+            :param abatement: Abatement cost
+             :type abatement: float
+            :param gross_output: Gross output
+             :type gross_output: float
+
+        Returns:
+            :return: Abatement / output at t
+             :rtype: float
+        """
+        return abatement / gross_output * 100
+
+    def get_model_values(self, i, df):
+        """Get values for model variables.
+
+        Args:
+            :param i: current time step
+             :type i: int
+            :param df: Matrix of variables
+             :type df: DiceDataMatrix
+
+        Returns:
+            :return: Model variables: Λ, Ω, Q, Λ/Q
+             :rtype: tuple
         """
         if i == 0:
             df.participation = self.participation
@@ -86,69 +173,17 @@ class DamagesModel(object):
         output_abate = self.output_abate(abatement, df.gross_output[i])
         return [abatement, damages, output, output_abate]
 
-    def abatement(self, gross_output, miu, backstop_growth, participation):
-        """
-        Lambda, Abatement costs, trillions $USD
-        ...
-        Returns
-        -------
-        float
-        """
-        return np.minimum(
-            gross_output,
-            gross_output *
-            participation ** (1 - self.params.abatement_exponent) *
-            backstop_growth * miu ** self.params.abatement_exponent
-        )
-
-    def damages(self, gross_output, temp_atmosphere, abatement=None):
-        """
-        Omega, Damage, trillions $USD
-        ...
-        Returns
-        -------
-        float
-        """
-        return gross_output * (1 - 1 / (
-            1 + self.damages_terms[0] * temp_atmosphere +
-            self.damages_terms[1] * temp_atmosphere ** self.damages_terms[2]
-        ))
-
-    def output(self, gross_output, damages, abatement,
-               a_temp_atmosphere=None):
-        """
-        Net output after abatement and damages, trillions $USD
-        ...
-        Returns
-        -------
-        float
-        """
-        return (
-            (gross_output - abatement) * (gross_output - damages)
-        ) / gross_output
-
-    def output_abate(self, abatement, gross_output):
-        """
-        Abatement as a percentage of output
-        ...
-        Returns
-        -------
-        array
-        """
-        return abatement / gross_output * 100
-
 
 class Dice2007(DamagesModel):
-    """
-    Standard DICE2007 damages function
+    """DICE2007 damages function
     """
     pass
 
 
 class ExponentialMap(DamagesModel):
-    """
-    DICE2007 Damages with exponential mapping to output
-    NB: This is currently unused.
+    """DICE2007/10 Damages with exponential mapping to output
+
+    Note: This is currently unused.
     """
     def damages(self, gross_output, temp_atmosphere, abatement=None):
         return gross_output * (1 - np.exp(
@@ -158,8 +193,7 @@ class ExponentialMap(DamagesModel):
 
 
 class IncommensurableDamages(DamagesModel):
-    """
-    Weitzman additive damages function
+    """Incommensurable environmental goods damages function (additive)
     """
     def __init__(self, params):
         DamagesModel.__init__(self, params)
@@ -216,8 +250,7 @@ class IncommensurableDamages(DamagesModel):
 
 
 class TippingPoint(DamagesModel):
-    """
-    Weitzman tipping point damages
+    """Tipping point damages
     """
     def damages(self, gross_output, temp_atmosphere, a_abatement=None):
         return gross_output * (1 - 1 / (
@@ -227,8 +260,7 @@ class TippingPoint(DamagesModel):
 
 
 class ProductivityFraction(DamagesModel):
-    """
-    Wiesbach and Moyer damages as a fraction of productivity
+    """Damages as a fraction of TFP
     """
     def damages(self, gross_output, temp_atmosphere, a_abatement=None):
         fD = self.get_production_factor(temp_atmosphere)
@@ -259,11 +291,14 @@ class ProductivityFraction(DamagesModel):
 
 
 class Dice2010(DamagesModel):
+    """DICE2010 damages function
+    """
     pass
 
 
 class Dice2013(DamagesModel):
-
+    """DICE2013 damages function
+    """
     def damages(self, gross_output, temp_atmosphere, abatement=None):
         """
         Omega, Damage, trillions $USD

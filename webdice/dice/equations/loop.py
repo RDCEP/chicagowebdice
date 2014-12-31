@@ -99,19 +99,15 @@ class Loop(object):
         self._utility_model = value
 
     def set_models(self, params):
-        """
-        Set the models used for damages and oceanic carbon transfer
-        ...
-        Args
-        ----
-        eq: obj, the Dice2007 Loop()
-        damages_model: str, name of damages model from the front-end
-        carbon_model: str, name of carbon model from the front-end
-        prod_frac: float,
-        ...
-        Returns
-        -------
-        None
+        """Set the models used for damages and climate model
+
+        Args:
+            :param params: model parameters
+             :type params: DiceParams
+
+        Returns:
+            :return: None
+             :rtype: None
         """
         self.damages_model = getattr(
             damages, "".join(x.capitalize() for x in params.damages_model.split('_'))
@@ -119,10 +115,9 @@ class Loop(object):
         self.carbon_model = getattr(
             carbon, "".join(x.capitalize() for x in params.carbon_model.split('_'))
         )(params)
-        if params.carbon_model == 'linear_carbon':
-            params.temperature_model = 'linear_temperature'
-        else:
-            params.temperature_model = 'dice_%s' % params.dice_version
+        params.temperature_model = 'linear_temperature' \
+            if params.carbon_model == 'linear_carbon' \
+            else 'dice_%s' % params.dice_version
         self.temperature_model = getattr(
             temperature, "".join(x.capitalize() for x in params.temperature_model.split('_'))
         )(params)

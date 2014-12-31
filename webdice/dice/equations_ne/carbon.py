@@ -11,31 +11,6 @@ except AttributeError:
 
 
 class CarbonModel(object):
-    """
-    CarbonModel base class
-    ...
-    Properties
-    ----------
-    initial_carbon : tuple
-        Values for M_AT, M_UP, and M_LO at t=0
-    carbon_matrix : array
-        Carbon transfer coefficients
-    forcing_ghg : array
-        Forcing for GHGs
-    ...
-    Methods
-    -------
-    get_model_values()
-        Return values for M_AT, M_UP, M_LO
-    mass_atmosphere()
-        Calculate M_AT at t
-    mass_upper()
-        Calculate M_UP at t
-    mass_lower()
-        Calculate M_LO at t
-    forcing()
-        Calculate forcing at t
-    """
     def __init__(self, params):
         self.params = params
         self._carbon_matrix = params.carbon_matrix
@@ -80,13 +55,6 @@ class CarbonModel(object):
 
     @property
     def forcing_ghg(self):
-        """
-        F_EX, Exogenous forcing for other greenhouse gases
-        ...
-        Returns
-        -------
-        array
-        """
         return np.concatenate((
             self.params.forcing_ghg_init + .1 * (
                 self.params.forcing_ghg_future - self.params.forcing_ghg_init
@@ -95,51 +63,23 @@ class CarbonModel(object):
         ))
 
     def mass_atmosphere(self, emissions_total, mass_atmosphere, mass_upper):
-        """
-        M_AT, Carbon concentration in atmosphere, GtC
-        ...
-        Returns
-        -------
-        float
-        """
         b11 = self.carbon_matrix[0][0]
         b12 = self.carbon_matrix[1][0]
         ts = self.params.ts
         return ne.evaluate('b11 * mass_atmosphere + b12 * mass_upper + ts * emissions_total')
 
     def mass_upper(self, mass_atmosphere, mass_upper, mass_lower):
-        """
-        M_UP, Carbon concentration in shallow oceans, GtC
-        ...
-        Returns
-        -------
-        float
-        """
         b21 = self.carbon_matrix[0][1]
         b22 = self.carbon_matrix[1][1]
         b23 = self.carbon_matrix[2][1]
         return ne.evaluate('b21 * mass_atmosphere + b22 * mass_upper + b23 * mass_lower')
 
     def mass_lower(self, mass_upper, mass_lower):
-        """
-        M_LO, Carbon concentration in lower oceans, GtC
-        ...
-        Returns
-        -------
-        float
-        """
         b32 = self.carbon_matrix[1][2]
         b33 = self.carbon_matrix[2][2]
         return ne.evaluate('b32 * mass_upper + b33 * mass_lower')
 
     def forcing(self, i, df):
-        """
-        F, Forcing, W/m^2
-        ...
-        Returns
-        -------
-        float
-        """
         fco2 = self.params.forcing_co2_doubling
         ma = df.mass_atmosphere[i]
         mpi = self.params.mass_preindustrial
@@ -147,19 +87,6 @@ class CarbonModel(object):
         return ne.evaluate('fco2 * (log(ma / mpi) / log(2)) + fg')
 
     def get_model_values(self, i, df):
-        """
-        Return values for M_AT, M_UP, M_LO
-        ...
-        Args
-        ----
-        index : int
-        data : pd.DataFrame
-        ...
-        Returns
-        -------
-        tuple
-            M_AT, M_UP, M_LO at t
-        """
         if i == 0:
             return self.initial_carbon
         i -= 1
@@ -178,14 +105,6 @@ class Dice2007(CarbonModel):
 
 
 class BeamCarbon(CarbonModel):
-    """
-    CarbonModel for simplified BEAM
-    ...
-    Methods
-    -------
-    get_model_values()
-        Set BEAM transfer matrix, and return values for M_AT, M_UP, M_LO
-    """
     def __init__(self, params):
         CarbonModel.__init__(self, params)
         self.N = self.params.ts * 2
@@ -197,38 +116,6 @@ class BeamCarbon(CarbonModel):
         ]).reshape((3, 3, 1))
 
     def get_model_values(self, i, df):
-        """
-        Set BEAM transfer matrix, and return values for M_AT, M_UP, M_LO
-        ...
-        Args
-        ----
-        index : int
-        data : pd.DataFrame
-        ...
-        Returns
-        -------
-        tuple
-            M_AT, M_UP, M_LO at t
-        ...
-        -----------------------------------
-        Background regarding BEAM equations
-        -----------------------------------
-        k_a = .2       /yr
-        k_d = .05      /yr
-        delta = 50
-        k_h = 1.91e3
-        --k_1 = 1e-6     mol/kg--
-        --k_2 = 7.53e-10 mol/kg--
-        AM = 1.77e20   mol
-        OM = 7.8e22    mol
-        --Alk = 662.7    GtC--
-
-        k_1 = 8e-7
-        k_2 = 4.53e-10
-        Alk = 767.0
-
-        _a = k_h * (AM / (OM * (delta + 1)))
-        """
         _dims = self.params.tmax + 1 if df.ndim > 2 else 1
         if i == 0:
             return (
