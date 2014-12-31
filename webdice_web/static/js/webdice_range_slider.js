@@ -1,6 +1,11 @@
 (function() {
+  "use strict";
 
-
+  /*
+   * Graph object for drawing parameter preview graphs.
+   * Functions for updating range slider UI.
+   * Functions for radio buttons UI disabling/enabling.
+   */
 
   var WebDICEPreview = function() {
     "use strict";

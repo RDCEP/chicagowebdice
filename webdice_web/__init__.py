@@ -64,7 +64,7 @@ app.register_blueprint(work_module)
 
 
 assets = Environment(app)
-js = Bundle('js/stacked_chart.js',
+js = Bundle('js/webdice_chart.js',
             'js/webdice_zoom.js',
             'js/webdice_param_eq.js',
             'js/webdice_download_svg.js',

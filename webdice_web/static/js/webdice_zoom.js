@@ -1,5 +1,10 @@
 var WebDICEGraphZoom = function() {
   'use strict';
+
+  /*
+   * Graph object for the zooming UI on the large/custom graph.
+   */
+
   var width = 700,
     height = 345,
     zoom_height = 40,

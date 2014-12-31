@@ -1,5 +1,10 @@
 var WebDICEGraph = function() {
   'use strict';
+
+  /*
+   * Graph object for small graphs and large custom/twin graphs in UI.
+   */
+
   var Options = window.Options || {},
     width = 700,
     height = 345,

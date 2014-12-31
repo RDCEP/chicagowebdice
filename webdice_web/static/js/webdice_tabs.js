@@ -1,6 +1,10 @@
 (function() {
   "use strict";
 
+  /*
+   * Controls UI when the user switches tabs (graphs, parameters, runs).
+   */
+
   var hashes = window.location.hash.slice(1).split(',');
 
   for (var i = 0; i < hashes.length; ++i) {

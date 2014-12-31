@@ -51,9 +51,8 @@
 
   var get_dims = function() {
     /*
-     Get dimensions of current pane in interface
+     * Get dimensions of current pane in interface
      */
-
     var visible_graph_wrap = d3.select('.graph-pane.selected'),
       w = visible_graph_wrap.node().clientWidth,
       h = visible_graph_wrap.node().clientHeight;
@@ -61,7 +60,7 @@
   };
 
   var get_extents = function(data, index, val) {
-    /**
+    /*
      * Clips utility when consumption = twigs + beetles
      */
     var extents = d3.extent(data);
@@ -72,6 +71,9 @@
   };
 
   var flatten_runs = function(runs, axis) {
+    /*
+     * Flattens all run data for finding extents of all runs
+     */
 
     if (axis === undefined) {
       axis = 'y';
@@ -89,6 +91,10 @@
   };
 
   var build_data_object = function(_data, dice_variable, custom_x_domain) {
+    /*
+     * Build data object for a graph within a run. Stores graph titles and
+     * units, run name, data, variable name, visibility, axis title, etc.
+     */
 
     var graph_data = {
       data: [],
@@ -124,6 +130,9 @@
   };
 
   var initialize_graph = function(dice_variable, graph_wrap, dims) {
+    /*
+     * Called once per graph to initialize graph on page load.
+     */
 
     var h, w;
     if (graph_wrap.classed('small-graph')) {
@@ -174,6 +183,11 @@
   };
 
   var update_custom_graphs = function() {
+    /*
+     * Updates custom, twin, and zoom graphs. Called when the y-axis is
+     * changed; runs are added, renamed, or removed. Calls
+     * update_custom_graph() for each graph.
+     */
 
     var _graphs = [[0, 'custom'], [1, 'twin'], [2, 'zoom']];
     for (var i = 0; i < _graphs.length; ++i) {
@@ -188,6 +202,10 @@
   };
 
   var update_custom_graph = function(g, i) {
+    /*
+     * Update custom, twin, or zoom graph. Called from update_custom_graphs()
+     * when the y-axis is changed; runs are added, renamed, or removed.
+     */
 
     if (g == 'zoom') {
       graphs[g].graph
@@ -236,6 +254,10 @@
   };
 
   var update_graph = function(dice_variable) {
+    /*
+     * Updates small graph that represents dice_variable. Called when
+     * runs are added, renamed, or removed.
+     */
 
     if (graphs.hasOwnProperty(dice_variable)) {
 
@@ -260,6 +282,11 @@
   };
 
   var update_x_axis = function (dice_variable) {
+    /*
+     * Updates large graphs when user changes the variable on the x-axis.
+     * Called on change event of #select-x-axis. dice_variable is the new
+     * variable.
+     */
 
     var _graphs = ['custom', 'twin'];
     for (var i = 0; i < _graphs.length; ++i) {
@@ -321,6 +348,10 @@
   };
 
   var get_subtitle = function (index) {
+    /*
+     * Retrieves the subtitle (generally units) of a graph from the metadata
+     * file.
+     */
 
     if (typeof index == 'string') {
       return metadata[index].title_unit || metadata[index].title;
@@ -332,22 +363,28 @@
 
   };
 
-  var update_y_axis = function(graph, val) {
+  var update_y_axis = function(graph, dice_variable) {
+    /*
+     * Updates large graphs when user changes the variable on the y-axis.
+     * Called on change events of #select-y-axis. and #select-y2-axis.
+     * graph is either 'custom' or 'twin'. dice_variable is the newly selected
+     * variable. Zoom is emptied upon updating the y-axis.
+     */
 
     var index = graph == 'custom' ? 0 : 1,
       title = '';
 
-    custom_vars[index] = val;
-    custom_data[index][0].var = val;
+    custom_vars[index] = dice_variable;
+    custom_data[index][0].var = dice_variable;
 
-    if ((graph == 'twin') && (val == 'none')) {
+    if ((graph == 'twin') && (dice_variable == 'none')) {
       custom_vars[index] = false;
       show_twin = false;
       graphs[graph].graph
         .title('')
         .subtitle('');
     } else {
-      if ((graph == 'twin') && (val != 'none')) {
+      if ((graph == 'twin') && (dice_variable != 'none')) {
         show_twin = true;
       }
       title = metadata[custom_vars[index]].title + ' v. ';
@@ -382,6 +419,11 @@
   };
 
   var toggle_graph_hover = function(bool) {
+    /*
+     * Turns hovering on and off when the 'last' run is hidden or removed,
+     * or the 'first' run is shown.
+     */
+
     for (var dice_variable in graphs) {
       if (graphs.hasOwnProperty(dice_variable)) {
         graphs[dice_variable].graph.toggle_hover(bool);
@@ -391,7 +433,7 @@
 
   var add_run = function(_data, parameters) {
     /*
-     Add run to interface.
+     * Add run to interface. Called from load_run().
      */
 
     var dims = get_dims();
@@ -440,8 +482,6 @@
     initialized = true;
     graphs['zoom'].graph.empty_brush();
 
-    //resize_graphs(dims);
-
     ++total_runs;
     ++visible_runs;
 
@@ -454,7 +494,7 @@
 
   var add_run_to_list = function(index) {
     /*
-     Add item to list of runs
+     * Add newly added run to list of runs. Called from add_run().
      */
 
     var li = runs_list.append('li').attr('data-run-id', index);
@@ -483,7 +523,8 @@
 
   var start_run = function() {
     /*
-     Gather parameters and begin AJAX call to run model.
+     * Gather parameters from <form> and begin AJAX call to run model.
+     * Calls load_run() which calls add_run().
      */
 
     run_model.attr('disabled', true);
@@ -518,6 +559,12 @@
   };
 
   var unphysical = function(r) {
+    /*
+     * Checks for unphysical results in per capita consumption (ie, per
+     * capita consumption falls below subsistence ~$250/year. Called from
+     * load_run().
+     */
+
     var uphys = false;
     r.data['consumption_pc'].forEach(function(d) {
       if (d <= .25) { uphys = true; }
@@ -527,7 +574,8 @@
 
   var load_run = function(r) {
     /*
-     Upon successful run of model, add run and hide parameters pane
+     * Upon successful run of model, add run and hide parameters pane.
+     * Calls add_run() and unphysical().
      */
 
     r = JSON.parse(r.response);
@@ -547,6 +595,10 @@
   };
 
   var show_warning = function() {
+    /*
+     * Show modal warning if run is unphysical. Called from load_run().
+     */
+
     var modal_click = function() {
       d3.selectAll('.modal').classed('visuallyhidden', true);
     };
@@ -557,7 +609,8 @@
 
   var get_updated_params = function() {
     /*
-     Update list of non-default parameters (for run descriptions)
+     * Get list of non-default parameters for a run. Used to create
+     * description in the run list. Called from get_run_description().
      */
 
     adjusted_params = [];
@@ -596,7 +649,8 @@
 
   var reset_params = function() {
     /*
-     Reset all parameters back to default values
+     * Reset all parameters back to default values. Called on click event
+     * of #clear_model.
      */
 
     var change_event, click_event;
@@ -646,7 +700,8 @@
 
   var get_run_description = function() {
     /*
-     Build run description from list of non-default parameters
+     * Build run description from list of non-default parameters. Calls
+     * get_updated_params().
      */
 
     var run_name = '',
@@ -665,6 +720,11 @@
   };
 
   var rename_run = function() {
+    /*
+     * Change default run name to user-defined name. Calls
+     * update_graph() for every variable, and update_custom_graphs().
+     * Called on click event of .rename-run
+     */
     var t = d3.select(this),
       index = +t.attr('data-run-id'),
       h3 = d3.select('#runs li[data-run-id="' + index +'"] h3'),
@@ -697,11 +757,17 @@
           d3.select(this).remove();
           Options.runs[index].name = new_name;
         });
+
     input.node().select();
 
   };
 
   var show_run = function() {
+    /*
+     * Shows a previously hidden run.
+     * //TODO: Update y-axis
+     */
+
     var t = d3.select(this),
       index = +t.attr('data-run-id');
     d3.selectAll('#graphs_wrap [data-run-id="' + index + '"]')
@@ -732,6 +798,11 @@
   };
 
   var hide_run = function() {
+    /*
+     * Hides a previously visible run.
+     * //TODO: Update y-axis
+     */
+
     var t = d3.select(this),
       index = +t.attr('data-run-id');
     d3.selectAll('#graphs_wrap [data-run-id="' + index + '"]')
@@ -756,6 +827,11 @@
   };
 
   var remove_run = function(index) {
+    /*
+     * Removes a run from the graphs. Used when the user removes a single run
+     * or all runs.
+     */
+
     if (index === undefined) {
       index = +d3.select(this).attr('data-run-id');
     }
@@ -792,6 +868,10 @@
   };
 
   var resize_graphs = function(dims) {
+    /*
+     * Resize graphs based on dimensions of browser, when graphs are drawn or
+     * updated, and on the resize event of the window.
+     */
 
     if (dims === undefined) {
       dims = get_dims();
@@ -812,11 +892,6 @@
           //graph_svg.style('height', graph == 'zoom' ? '50px' : tall + 'px');
           graph_svg.style('height', tall + 'px');
           graphs[graph].graph.width(dims.w - 1).height(tall).redraw();
-          //if (graph == 'zoom') {
-          //  graphs[graph].graph.width(dims.w - 1).height(50).redraw();
-          //} else {
-          //  graphs[graph].graph.width(dims.w - 1).height(tall).redraw();
-          //}
         }
       }
     }
@@ -832,32 +907,23 @@
 
   };
 
-  var add_zoom = function() {
-
-    var svg = d3.select('custom_graph_zoom').append('svg')
-      .attr({ 'xmlns': 'http://www.w3.org/2000/svg',
-        'xmlns:xmlns:xlink': 'http://www.w3.org/1999/xlink',
-        'version': '1.1',
-        'width': width + padding.left + padding.right,
-        'height': height + padding.top + padding.bottom,
-        'id': pre_id('graph_svg') })
-
-  };
-
   /***************
    Event listeners
    ***************/
 
+  /* Run a scenario */
   run_model.on('click', function() {
     d3.event.preventDefault();
     start_run();
   });
 
+  /* Reset to default parameters */
   clear_model.on('click', function() {
     d3.event.preventDefault();
     reset_params();
   });
 
+  /* Clear all runs */
   clear_runs.on('click', function() {
     used_colors = [];
     runs_list.selectAll('li').each(function() {
@@ -866,6 +932,7 @@
     d3.select('#runs_wrap').classed('visuallyhidden', true);
   });
 
+  /* UI effects for the damages model */
   damages_model.on('click', function() {
     var pf = d3.select('#prod_frac'),
       active = d3.select('#productivity_fraction').property('checked');
@@ -878,6 +945,7 @@
     }
   });
 
+  /* Change the custom x-axis */
   select_x_axis.on('change', function() {
 
     update_x_axis(this.value);
@@ -888,12 +956,14 @@
     }
   });
 
+  /* Change the custom y-axis */
   select_y_axis.on('change', function() {
 
     update_y_axis('custom', this.value);
 
   });
 
+  /* Change the twin y-axis */
   select_y2_axis.on('change', function() {
 
     update_y_axis('twin', this.value);
@@ -905,6 +975,7 @@
 
   });
 
+  /* Toggle between linear and log axes */
   logarithmic_axes.on('click', function() {
     var t = d3.select(this),
       checked = this.checked,
@@ -932,6 +1003,7 @@
     resize_graphs();
   });
 
+  /* Resize graphs when the browser is resized */
   d3.select(window).on('resize', function() {
     resize_graphs();
   });
@@ -940,16 +1012,12 @@
    Trigger initial run and graph initialization
    ********************************************/
 
-  d3.json('/static/js/meta_data.json?4', function(error, _metadata) {
+  d3.json('/static/js/webdice_graph_metadata.json?4', function(error, _metadata) {
 
     metadata = _metadata;
     start_run();
 
 
   });
-
-  /*
-   END NEW CODE
-   */
 
 })();
