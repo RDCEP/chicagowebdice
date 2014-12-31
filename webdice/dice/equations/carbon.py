@@ -239,7 +239,7 @@ class BeamCarbon(CarbonModel):
         self.carbon_matrix = np.tile(self.carbon_matrix_skel, _dims)
         ma, mu, ml = (df.mass_atmosphere[i], df.mass_upper[i],
                          df.mass_lower[i])
-        for x in xrange(self.N):
+        for x in xrange(int(self.N)):
             h = ne.evaluate('5.21512e-10 * mu + 7.32749e-18 * sqrt(5.06546e15 * mu ** 2 - 7.75282e18 * mu + 2.97321e21) - 4e-7')
             b = ne.evaluate('142.349 / (1 + 8e-7 / h + 8e-7 * 4.53e-10 / h)')
 
