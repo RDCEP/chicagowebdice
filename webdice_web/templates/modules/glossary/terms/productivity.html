@@ -1,0 +1,15 @@
+<h3>Productivity</h3>
+<p>
+    Total Factor Productivity (TFP) describes how efficiently capital and labor produce economic output. The initial value of this parameter is set to produce 2005 output given observed capital and labor in that year. webDICE assumes that TFP will continue to increase in the future, but the rate at which it increases will slow down, like a hill that is steep at the bottom and gets shallower at the top.
+</p>
+<p>
+    The default rate at which TFP growth declines is 1%. You can adjust this parameter between 0.5% and 1.5%. Higher values means growth slows down more quickly. The following figure illustrates how changing the rate at which TFP growth declines affects the evolution of productivity (the parameter is labeled $\Delta_{A}$)
+</p>
+
+<figure>
+    <img src="{{ url_for('webdice.static', filename='images/glossary/tfp.png') }}" alt>
+    <figcaption>Figure 5: Pathway of TFP for user-choice of the rate at which productivity growth declines</figcaption>
+</figure>
+<a class=link-to-advanced-glossary
+   href={{ url_for('webdice.glossary_term', term='productivity') }}>more
+</a>

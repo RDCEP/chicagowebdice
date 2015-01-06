@@ -1,0 +1,18 @@
+<p>
+    The model implements the caps by solving for $\mu(t)$ to produce the specified level of emissions. Specifically, the model induces the controlled emissions rate $\mu(t)>0$ from the carbon caps set by users whenever emissions of a year exceeds the cap in the threshold years of 2050-2100, and 2150- $Tmax$. That is, given the equation for industrial emissions (see section 1.6) $E_{ind}(t)=\sigma(t)[1-\mu(t)]\cdot A(t)K(t)^{\gamma}L(t)^{1-\gamma}$, we set $\mu(t)$.
+</p>
+<p>
+    \[
+    \mu(t)=\left\{ \begin{array}{ccc}
+    0 & if & E_{ind}(t)<E_{ind}(2005)\times ecap_{(date)}\\
+    1-\frac{E_{ind}(2005)\times ecap_{(date)}}{\sigma(t)A(t)K(t)^{\gamma}L(t)^{1-\gamma}} & if & E_{ind}(t)>E_{ind}(2005)\times ecap_{(date)}
+    \end{array}\right.
+    \]
+</p>
+<p>
+    where the caps are denoted by $ecap_{2050}$, $ecap_{(2100)}$, $ecap_{(2150)}$, respectively. For instance, consider the year 2070. This year should obey the emissions cap of the year 2050. This
+    $\mu(2070)=1-\frac{E_{ind}(2005)\times ecap_{(2050)}}{\sigma(2070)A(2070)K(2070)^{\gamma}L(2070)^{1-\gamma}}$ if $E_{ind)}(2070)>E_{ind}(2005)\times e2050cap.$. If we have more emissions than the chosen amount for a given year, we would like to decrease it by controlling the reduction rate of $\mu(t)$.
+</p>
+<p>
+    One drawback is that the model uses step function setting caps in each threshold year and assuming that those caps apply for future years, until another threshold year comes. Abrupt reduction of emissions might be more costly to implement than smooth reduction. The step function, however, reflects common practice in treaties which specify target years.
+</p>

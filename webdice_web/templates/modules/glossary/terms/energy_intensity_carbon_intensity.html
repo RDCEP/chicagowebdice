@@ -1,0 +1,20 @@
+<h3>Energy intensity/carbon intensity</h3>
+<p>
+    Economic activity, such as heating, transportation and manufacturing, requires energy. The major source of energy in modern economics is from fossil fuels, coal, petroleum and natural gas. This means that economic activity produces emissions, called “industrial emissions” in webDICE. The richer we are, the greater the emissions, and conversely, the poorer we are, the lower the emissions.
+</p>
+<p>
+    Over time, the economy has gotten more efficient: we are able to produce the same amount using less energy. For example, gas mileage for vehicles has gone up over time, so that we are able to drive the same distance using less energy and producing fewer emissions. webDICE includes this effect by estimating the “energy intensity” of the economy: how much output we can produce with a given amount of energy. We can estimate our current energy intensity from data and we know that energy intensity has declined over time. webDICE assumes that this trend continues, resulting in a gradual reduction in emissions per unit of output (although if economic activity grows faster than energy intensity goes down, emissions can overall increase).
+</p>
+<p>
+    While webDICE assumes that energy intensity goes down over time, the rate of decline slows down. That is, efficiency improvements get harder over time. You can set to rate of decline of energy intensity (or equivalently, the rate of efficiency improvements in our use of energy). If you set the value at zero, our energy intensity does not go down over time. We never improve our efficiency. As you increase the value, we improve our efficiency more quickly and we become less energy intensive. The following figure illustrates how carbon intensity evolves for choice of this parameter:
+</p>
+<figure>
+    <img src="{{ url_for('webdice.static', filename='images/glossary/sig.png') }}" alt>
+    <figcaption>Figure 3: Pathway of carbon intensity for usser-choice of decarbonization rate</figcaption>
+</figure>
+<p>
+    Cumulative industrial emissions are limited by the total available amount of fossil fuels. This cap is currently set at 6,000 gigatons of carbon dioxide, but users can increase this amount.
+</p>
+<a class=link-to-advanced-glossary
+   href={{ url_for('webdice.glossary_term', term='energy_intensity_carbon_intensity') }}>more
+</a>

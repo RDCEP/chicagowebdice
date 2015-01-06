@@ -1,41 +1,43 @@
+<p>
+    Glotter et al. demononstrate that the default DICE carbon cycle representation fails to accurately model oceanic carbon uptake <sub>1</sub>. In the default DICE carbon cycle, the atmospheric concentration of carbon in each time period is determined by the concentration from the prior time period augmented by emissions and reduced by a constant fraction which is absorbed by the ocean. It is this constant fraction, which accounts for the unphysical linear absorption of carbon by the oceans in the default DICE model.
+</p>
+
+<p>
+    Actual carbon uptake by the ocean is highly non-linear, characterized by a rapid initial uptake period followed by a long-tail equilibrium stage. The following graph compares the pathway of carbon mass in the atmosphere as perscribed by DICE verses BEAM (the Bolin and Eriksson Adjusted Model - based on an established model first published in 1958)<sub>3</sub> given the same emission trajectory (IPCC Scenario A2+)<sub>4</sub>
+</p>
 
 
-<p>Glotter et al. demonstrate that the default DICE carbon cycle representation fails to accurately model
-  oceanic carbon uptake.1 In the default DICE carbon cycle, the atmospheric concentration of carbon in
-  each time period is determined by the concentration from the prior time period augmented by emissions
-  and reduced by a constant fraction which is absorbed by the ocean. It is this constant fraction, which
-  accounts for the unphysical linear absorption of carbon by the oceans in the default DICE model.
-  Actual carbon uptake by the ocean is highly non-linear, characterized by a rapid initial uptake period
-  followed by a long-tail equilibrium stage. The BEAM model does a much more complete job than DICE
-  at capturing the relevant physics of oceanic carbon uptake. webDICE uses the simplied version of
-  BEAM presented in Glotter et al. The authors demonstrate that their abbreviated version of the model,
-  which excludes temperature-dependent coecients, oers very similar results to the full BEAM model.
-  webDICE utilizes simplied BEAM for ease of computation</p>
-  BEAM will estimate that carbon stays in the atmosphere longer than with the default carbon cycle.
-As a result, damages from climate change will persist for a longer period of time and be higher overall.
-<p>Glotter et al. demonstrate that the default DICE carbon cycle representation fails to accurately
-model oceanic carbon uptake.2 In webDICE, the atmospheric temperature anomaly is a function of
-the concentration of carbon in the atmosphere. As was discussed in section 5.1, the atmospheric
-concentration of carbon in each time period in default DICE is determined by the concentration from
-the prior time period augmented by emissions and reduced by a constant fraction which is absorbed
-by the ocean. It is this constant fraction, ($(1-\phi_{1,1})$) or ($(\phi_{2,1})$) which accounts for the unphysical linear
-absorption of carbon by the oceans in the default DICE model.</p>
-<p>Actual carbon uptake by the ocean is highly non-linear, characterized by a rapid initial uptake period
-followed by a long-tail equilibrium stage. The following graph compares the pathway of carbon mass
-in the atmosphere as prescribed by DICE versus BEAM (the Bolin and Eriksson Adjusted Model—
-based on an established model first published in 1958)3 given the same emissions trajectory (IPCC
-Scenario A2+).4</p>
 
-1Glotter, Michael and Pierrehumbert, Raymond T. and Elliott, Joshua and Moyer, Elisabeth J., A Simple Carbon
+
+
+
+<p>
+    BEAM will estimate that carbon stays in the atmosphere longer than with the default carbon cycle. As a result, damages from climate change will persist for a longer period of time and be higher overall.
+</p>
+
+<p>
+    Glotter et al. demonstrate that the default DICE carbon cycle representation fails to accurately model
+  oceanic carbon uptake.<sub>2</sub> In webDICE, the atmospheric temperature anomaly is a function of the concentration of carbon in the atmosphere. As was discussed in section 5.1, the atmospheric concentration of carbon in each time period in default DICE is determined by the concentration from the preiof time period augmented by emissions and reduced by a constant fraction which is absorbed by the ocean.  In the default DICE carbon cycle, the atmospheric concentration of carbon in each time period is determined by the concentration from the prior time period augmented by emissions and reduced by a constant fraction which is absorbed by the ocean. It is this constant fraction $(1-\phi_{1,1})$, which accounts for the unphysical linear absorption of carbon by the oceans in the default DICE model.
+</p>
+
+<p>
+    Actual carbon uptake by the ocean is highly non-linear, characterized by a rapid initial uptake period
+    followed by a long-tail equilibrium stage. The following graph compares the pathway of carbon mass
+    in the atmosphere as prescribed by DICE versus BEAM (the Bolin and Eriksson Adjusted Model—
+    based on an established model first published in 1958)3 given the same emissions trajectory (IPCC
+    Scenario A2+).4</p>
+
+<p class=fn>1Glotter, Michael and Pierrehumbert, Raymond T. and Elliott, Joshua and Moyer, Elisabeth J., A Simple Carbon
 Cycle Representation for Economic and Policy Analyses (September 1, 2013). RDCEP Working Paper No. 13-04.
-Available at SSRN: http://ssrn.com/abstract=2331074 or http://dx.doi.org/10.2139/ssrn.2331074
+Available at SSRN: http://ssrn.com/abstract=2331074 or http://dx.doi.org/10.2139/ssrn.2331074</p>
+<p>
 2Glotter, Michael and Pierrehumbert, Raymond T. and Elliott, Joshua and Moyer, Elisabeth J., A Simple Carbon
 Cycle Representation for Economic and Policy Analyses (September 1, 2013). RDCEP Working Paper No. 13-04.
-Available at SSRN: http://ssrn.com/abstract=2331074 or http://dx.doi.org/10.2139/ssrn.2331074
-3Bolin, Bert and Erik Eriksson, 1958. Changes in the Carbon Dioxide Content of the Atmosphere and Sea due to
+Available at SSRN: http://ssrn.com/abstract=2331074 or http://dx.doi.org/10.2139/ssrn.2331074</p>
+<p>3Bolin, Bert and Erik Eriksson, 1958. Changes in the Carbon Dioxide Content of the Atmosphere and Sea due to
 Fossil Fuel Combustion. In The Atmosphere and the Sea in Motion: Scientic Contributions to the Rossby Memorial
-Volume. Bert Bolin, ed. New York, Rockefeller Institute Press, 130142.
-4Montenegro, A., V. Brovkin, M. Eby, D. Archer, and A. J. Weaver (2007), Long term fate of anthropogenic carbon,
+Volume. Bert Bolin, ed. New York, Rockefeller Institute Press, 130142</p>.
+<p>4Montenegro, A., V. Brovkin, M. Eby, D. Archer, and A. J. Weaver (2007), Long term fate of anthropogenic carbon.</p>
 2
 
 <h4>Figure 1: Comparison of DICE carbon cycle with BEAM and two other physical models</h4>
@@ -66,28 +68,11 @@ As a result, damages from climate change will persist for a longer period of tim
 <p><b>Additional technical details</b> According to Henry's Law the partial pressure of atmospheric CO2
 must balance the concentration of CO2 in the upper ocean: $A=\frac{AM}{OM/(\delta+1)}$, where $AM$ is the number
 of moles in the atmosphere, $OM/(\delta+1)$ is the number of moles in the upper ocean, $k_{H}$ represents the
-solubility of CO<sub>2</sub> in seawater.</p>
+solubility of $CO_{2}$ in seawater.</p>
 <p>$B=1/(1+\frac{k_{1}}{[H^{+}]}+\frac{k_{1}\cdot k_{2}}{[H^{+}]^{2}})$ where $[H^{+}]$ can be solved for by solving the following:</p>
 <p>$\left\{ 1+\frac{k_{1}}{[H^{+}]}+\frac{k_{1}\cdot k_{2}}{[H^{+}]^{2}}\right\} /\left\{ \frac{k_{1}}{[H^{+}]}+\frac{2k_{1}\cdot k_{2}}{[H^{+}\}^{2}}\right\} =\frac{M_{UP}}{Alk}$
 where $Alk=662.7\: Gt\: C$ the alkilinity.</p>
 <p>$\frac{dE(t)}{dt}=E(t)/10$ in webDICE to adjust for dierent timescales.</p>
 
-
-<p>Reducing emissions will cost money. These costs are called abatement costs.
-  If you run the model under the default, business as usual mode, these are
-  zero as emissions are allowed to go uncontrolled. If instead you impose
-  a climate policy, either by setting a tax or a treaty or by allowing the
-  computer to optimize, these costs will be positive.</p>
-<p>The model specifies abatement costs as a fraction of the total output:
-  this is the portion of GDP that we spend replacing fossil fuel energy
-  with clean energy. The amount is determined by the cost of clean energy
-  (called the backstop technology link), the extent of emissions reduction
-  (link to emisiosn control rate) and how many countries or industries
-  participate (link to the partication rate).In general, abatement costs
-  increase with the extent of the reductions, go down the more countries
-  and industries that participate in reductions, and go down as the costs
-  of clean energy go down. You cannot change abatement costs directly.
-  Instead, you can change each of these three components that make up
-  abatement costs.
 
 </p>
