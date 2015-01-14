@@ -1,0 +1,35 @@
+<h3>Optimization mode</h3>
+<p>
+    In optimization mode, the computer finds the path of emissions reductions that maximizes the objective function. It then translates this into a carbon tax that achieves those reductions. The optimal tax is determined by the assumptions you choose in the model. It is also affected by two parameters that do not otherwise affect model output: the pure rate of time preference (link) and the elasticity of marginal utiltiy of consumption (link). These parameters combine to determine the discount rate used by the optimizer to determine how to value future consumption (link).
+</p>
+<h4>Installation</h4>
+<p>
+    Optimization in webDICE depends on the IPOPT library which interfaces with our python codebase through the pyipopt package. IPOPT is capable of using several linear solvers—webDICE uses the MA57 solver from HSL. IPOPT also depends on the LAPACK and BLAS libraries. This of course means that the user will have to install several libraries in order for the optimization to run successfully. General steps for installation on a Linux or Macintosh system are as follows (we have unfortunately not yet tested these steps in a Windows environment).
+</p>
+<p>
+    If you're able to obtain a license for the HSL libraries, download the source code. If you're unable to obtain an academic license for the solvers, there is a basic set publicly available that includes the MA27 solver, which should work fine. In either case, you'll need to accept a license before you can download the code. A basic configure,make, make install should suffice to install these libraries.
+</p>
+<p>
+    Download the source code for IPOPT, and uncompress it. Change into the ThirdParty/Metis directory, and execute the get.Metis file. This will download the source code for Metis, which will be installed during the IPOPT installation.
+</p>
+<p>
+    LAPACK and BLAS libraries are already installed in OS X, in the VecLib Framework, so you don't need to install these. On a linux box, you should change into the ThirdParty/Lapack and ThirdParty/Blas directories, and execute the get.Lapack and get.Blas files. As with Metis, source code will be downloaded which will install during the installation of IPOPT.
+</p>
+<p>
+    IPOPT installation, like HSL, should be a straight-forward configure, make, make install.
+</p>
+<p>
+    An updated pyipopt is not available through pip or easy_install.
+You should download the source code, or clone the repo from footnote [^2],  move into the directory, and python setup.py install. However, for installation to complete successfully, it will likely be necessary to modify the setup.py file.
+ Adjust the IPOPT_DIR variable based on the values you used in configuring IPOPT (e.g./usr/local). Eg, we pass --prefix=/usr/local to our configure scripts, and so leave this as is. Depending on the solver you're using and other environmental settings, one may need to adjust the extra_link_args, library_dirs, and libraries lists. If you have followed the steps above, you should only need to comment out 'coinmumps', and uncomment 'coinhsl' in the libraries list.
+</p>
+<p>
+    It is possible to install and run webDICE without installing any of the optimization libraries. Executing an optimized loop is of course not possible under such a scenario, and will result in a runtime exception. However running other portions of webDICE should succeed without trouble.
+</p>
+<h4>Execution</h4>
+<p>
+    Efforts have been made to create an optimization routine that balances accuracy with the the swiftness that is required for a web-based application. However, calculating an optimized policy naturally takes longer than other policy choices. Currently, a user can expect this to take between 10 and 20 seconds.
+</p>
+<p>
+    Some features of webDICE increase the solve time of the optimization routine. For the time being, the added computation of the BEAM carbon model increases the necessary solve time to a point which is infeasible for web delivery. As such, optimizing a scenario that includes the BEAM model has been disabled.
+</p>

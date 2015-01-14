@@ -702,6 +702,12 @@ g.visuallyhidden {
     letter-spacing: 0.05em;
     position: relative;
     bottom: 2px; }
+#glossary .fn {
+  font-size: 0.7em; }
+#glossary img {
+  display: block;
+  width: 75%;
+  margin: 0 auto; }
 
 #sidebar {
   display: none; }
