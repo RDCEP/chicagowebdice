@@ -1,10 +1,20 @@
 <h3>Damages from climate change</h3>
-<p>
-    The results in webDICE, with the exception of the social costs of carbon (link) do not depend on the discount rate. Instead, webDICE calculates the change in consumption in each period, translates that to a change in utility via the utility function (link) and sums up the changes in utility.
+<p>The results in webDICE, with the exception of the
+  <a href="{{ url_for('webdice.glossary_term', term='social_cost_of_carbon') }}">
+  social costs of carbon</a> do not depend on the discount rate. Instead,
+  webDICE calculates the change in consumption in each period, translates
+  that to a change in utility via the <a href="{{ url_for('webdice.glossary_term', term='utility') }}">
+  utility function</a> and sums up the changes in utility.</p>
+<p>The ‘pure rate of time preference’ is subtly different than the
+  discount rate. The discount rate applies to money or, in webDICE,
+  things money can buy like consumption. It is like the interest rate
+  you get when you put money in the bank or that you pay when you
+  borrow money. The pure rate of time preference is part of the process
+  of adding up the utility of people to determine how well society is
+  doing. It applies directly to utility, not to money. It is a way of
+  computing the present value of the utility of people who live in the
+  future.
+  <a class=link-to-advanced-glossary
+     href={{ url_for('webdice.glossary_term', term='damages_from_climate_change') }}>more
+  </a>
 </p>
-<p>
-    The "pure rate of time preference" is subtly different than the discount rate. The discount rate applies to money or, in webDICE, things money can buy like consumption. It is like the interest rate you get when you put money in the bank or that you pay when you borrow money. The pure rate of time preference is part of the process of adding up the utility of people to determine how well society is doing. It applies directly to utility, not to money. It is a way of computing the present value of the utility of people who live in the future.
-</p>
-<a class=link-to-advanced-glossary
-   href={{ url_for('webdice.glossary_term', term='damages_from_climate_change') }}>more
-</a>
