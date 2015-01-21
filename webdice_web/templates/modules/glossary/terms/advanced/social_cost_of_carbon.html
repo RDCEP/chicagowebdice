@@ -7,12 +7,12 @@
   This value is multiplied by $12/44$ to covert from dollars per ton
   of carbon to dollars per ton of carbon dioxide:
   \[
-    SCC_{\tau}=\sum_{t=\tau}^{60}\frac{\left(C_{b}-C_{b+1}\right)_{t}}{\left(1+r\right)^{t}}
+    SCC_{\tau}=\sum_{t=\tau}^{Tmax}\frac{\left(C_{b}-C_{b+1}\right)_{t}}{\left(1+r\right)^{t}}
   \]
 </p>
 <p>This process is repeated for each of the twenty time periods displayed
   in webDICE (although it calculates the SCC using the differences in
-  damages over all $60-\tau$ relevant time steps).</p>
+  damages over all $Tmax-\tau$ relevant time steps).</p>
 <p>webDICE’s estimates of the SCC will not match those used by the
   federal government for cost-benefit analysis. Although those estimates
   were in done in part using DICE, the government modified DICE to have

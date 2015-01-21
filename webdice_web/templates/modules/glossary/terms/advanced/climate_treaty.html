@@ -6,13 +6,13 @@
   industrial emissions (see section 1.6)
   <!-- TODO: section 1.6? -->
   \[
-  $E_{ind}(t)=\sigma(t)[1-\mu(t)]\cdot A(t)K(t)^{\gamma}L(t)^{1-\gamma}$,
+    E_{ind}(t)=\sigma(t)[1-\mu(t)]\cdot A(t)K(t)^{\gamma}L(t)^{1-\gamma},
   \]
-  we set $\mu(t)$.
+  we set $\mu(t)$
   \[
     \mu(t)=\left\{ \begin{array}{ccc}
-    0 & if & E_{ind}(t)<E_{ind}(2005)\times ecap_{(date)}\\
-    1-\frac{E_{ind}(2005)\times ecap_{(date)}}{\sigma(t)A(t)K(t)^{\gamma}L(t)^{1-\gamma}} & if & E_{ind}(t)>E_{ind}(2005)\times ecap_{(date)}
+      0 & if & E_{ind}(t) < E_{ind}(2005)\times ecap_{(date)}\\
+      1-\frac{E_{ind}(2005)\times ecap_{(date)}}{\sigma(t)A(t)K(t)^{\gamma}L(t)^{1-\gamma}} & if & E_{ind}(t)>E_{ind}(2005)\times ecap_{(date)}
     \end{array}\right.
   \]
   where the caps are denoted by $ecap_{2050}$, $ecap_{(2100)}$,
@@ -20,9 +20,9 @@
 <p>For instance, consider the year 2070. This year should obey the
   emissions cap of the year 2050. Thus
   \[
-    $\mu(2070)=1-\frac{E_{ind}(2005)\times ecap_{(2050)}}{\sigma(2070)A(2070)K(2070)^{\gamma}L(2070)^{1-\gamma}}$
+    \mu(2070)=1-\frac{E_{ind}(2005)\times ecap_{(2050)}}{\sigma(2070)A(2070)K(2070)^{\gamma}L(2070)^{1-\gamma}}
   \]
-  if $E_{ind)}(2070)>E_{ind}(2005)\times e2050cap.$. If we have more emissions
+  if $E_{ind)}(2070)>E_{ind}(2005)\times e2050cap$. If we have more emissions
   than the chosen amount for a given year, we would like to decrease it
   by controlling the reduction rate of $\mu(t)$.</p>
 <p>One drawback is that the model uses step function setting caps in

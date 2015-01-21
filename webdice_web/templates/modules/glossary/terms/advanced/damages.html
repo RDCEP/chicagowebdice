@@ -43,7 +43,7 @@
   damage function will have on the output of the model. Each of the
   following pathways uses the default webDICE parameter choices:</p>
 <figure>
-  <img src="{{ url_for('webdice.static', filename='images/glossary/dmg2.png') }}" alt>
+  <img src="/static/images/glossary/dmg2.png" alt>
   <figcaption>Figure 2:Comparison of gross output for user-choice of
     damage function</figcaption>
 </figure>
@@ -57,7 +57,6 @@
   alternative damage function. In the default setting of DICE damages,
   the model is calibrated so that 1.7% of GDP is lost when temperature
   increases by 2.5°C.</p>
-<hr>
 <p><em>webDICE supports four different damages functions</em></p>
 
 <h4>Default</h4>
@@ -92,7 +91,7 @@
   to allow some goods to have limited substitutability. As the price of
   those goods rise a growing portion of GDP will be devoted to that good.</p>
 <p>This damage function is based on a model by Sterner and Persson (2008)
-  <sup>6</sup> as modified by Weitzman.
+  <a id=ref6 href=#fn6>[6]</a> as modified by Weitzman.
   Sterner and Persson include relative price effects in a modified version
   of DICE by setting utility to be a CES function of the consumption of
   material goods and of an unspecified environmental good:
@@ -176,8 +175,8 @@
 </p>
 
 <h4>Fraction of productivity</h4>
-<p>This ‘damanges to productivity growth’ specification of the damage
-  function, derived from Moyer et al.,<a href="#7"><sup>7</sup></a>
+<p>This ‘damages to productivity growth’ specification of the damage
+  function, derived from Moyer et al. <a id=ref7 href=#7>[7]</a>,
   directs a portion of damages from climate change to the growth of
   total factor productivity (TFP). This implies that climate change may
   not only affect what we produce but how we produce it.</p>
@@ -212,9 +211,14 @@
   term growth because productivity is reduce by climate change.
 </p>
 
-<p class="fn">
-    <sup>6</sup> Thomas Sterner and U. Martin Persson, "An Even Sterner Review," Review of Environmental Economics and Policy 2 (2008): 61-76, doi: 10.1093/reep/rem024
+<p class=fn id=fn6><a href=#ref6>[6]</a>
+  Thomas Sterner and U. Martin Persson, ‘An Even Sterner Review’, Review of
+  Environmental Economics and Policy 2 (2008): 61-76, doi: 10.1093/reep/rem024
 </p>
-<p class="fn" id="7">
-    <sup>7</sup> Moyer, Elisabeth J. and Woolley, Mark D. and Glotter, Michael and Weisbach, David A., Climate Impacts on Economic Growth as Drivers of Uncertainty in the Social Cost of Carbon (July 31,2013). RDCEP Working Paper No. 13-02. Available at SSRN: <a href="http://ssrn.com/abstract=2312770 or http://dx.doi.org/10.2139/ssrn.2312770">http://ssrn.com/abstract=2312770 or http://dx.doi.org/10.2139/ssrn.2312770</a>
+<p class="fn" id="fn7"><a href=#ref7">[7]</a>
+  Moyer, Elisabeth J. and Woolley, Mark D. and Glotter, Michael and Weisbach,
+  David A., Climate Impacts on Economic Growth as Drivers of Uncertainty in
+  the Social Cost of Carbon (July 31,2013). RDCEP Working Paper No. 13-02.
+  Available at SSRN: <a href="http://ssrn.com/abstract=2312770 or http://dx.doi.org/10.2139/ssrn.2312770">
+    http://ssrn.com/abstract=2312770 or http://dx.doi.org/10.2139/ssrn.2312770</a>
 </p>
