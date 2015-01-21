@@ -32,7 +32,7 @@ table {
   border-spacing: 0; }
 
 html, button, input, select, textarea {
-  color: #222; }
+  color: #222222; }
 
 body {
   font-size: 1em;
@@ -50,7 +50,7 @@ hr {
   display: block;
   height: 1px;
   border: 0;
-  border-top: 1px solid #ccc;
+  border-top: 1px solid #cccccc;
   margin: 1em 0;
   padding: 0; }
 
@@ -67,8 +67,8 @@ textarea {
 
 .chromeframe {
   margin: 0.2em 0;
-  background: #ccc;
-  color: #000;
+  background: #cccccc;
+  color: black;
   padding: 0.2em 0; }
 
 sub {
@@ -89,7 +89,7 @@ em, i {
   right: 0;
   bottom: 0;
   overflow: auto;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #dddddd;
   padding-bottom: 2em; }
 
 #parameters.has-tabs {
@@ -114,7 +114,7 @@ em, i {
 #submission .label {
   width: 6em;
   text-align: right;
-  color: #666;
+  color: #666666;
   position: absolute;
   right: 0;
   bottom: 0; }
@@ -142,7 +142,7 @@ em, i {
 
 #controls {
   padding-top: 0.4em;
-  border-bottom: 1px solid #999; }
+  border-bottom: 1px solid #999999; }
 
 #controls input {
   margin-right: 0.4em; }
@@ -160,7 +160,7 @@ em, i {
 
 #content .initial {
   position: absolute;
-  background-color: #eee;
+  background-color: #eeeeee;
   font: 1em/1.5em Helvetica, sans-serif; }
 
 #content .initial {
@@ -199,11 +199,11 @@ em, i {
   display: none !important; }
 
 #content .tabs {
-  background-color: #eee;
+  background-color: #eeeeee;
   margin-left: 1px; }
 
 #content .tabs .selected {
-  background-color: #fff; }
+  background-color: white; }
 
 #content > div > div > div {
   display: none !important; }
@@ -218,8 +218,8 @@ em, i {
 
 #download-data input {
   display: block;
-  background-color: #eee;
-  border: 1px solid #ccc; }
+  background-color: #eeeeee;
+  border: 1px solid #cccccc; }
 
 #download-data input {
   font: 0.7em Helvetica, sans-serif;
@@ -245,7 +245,7 @@ em, i {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #000; }
+  background-color: black; }
 
 #overlay .slug {
   opacity: 0.5;
@@ -263,11 +263,11 @@ em, i {
   left: 0;
   right: 0;
   bottom: 0;
-  border-left: 1px solid #999;
-  border-right: 1px solid #999; }
+  border-left: 1px solid #999999;
+  border-right: 1px solid #999999; }
 
 #overlay .article {
-  background-color: #fff;
+  background-color: white;
   font: 0.9em/1.7em Helvetica, sans-serif;
   z-index: 2000; }
 
@@ -280,31 +280,31 @@ em, i {
 
 #overlay .article h3 {
   font: bold 1em/2.5em Helvetica, sans-serif;
-  color: #333; }
+  color: #333333; }
 
 #overlay .article h4 {
   font: bold 0.9em/2.5em Helvetica, sans-serif;
-  color: #333; }
+  color: #333333; }
 
 #overlay .article h5 {
   font: bold 0.8em/2.5em Helvetica, sans-serif;
-  color: #333; }
+  color: #333333; }
 
 #overlay .article p {
   margin-bottom: 1em; }
 
 #overlay .tabs {
-  background-color: #eee;
+  background-color: #eeeeee;
   margin-left: 1px; }
 
 #overlay .tabs .selected {
-  background-color: #fff; }
+  background-color: white; }
 
 #hide-help {
   position: absolute;
   top: 0.5em;
   right: 1.5em;
-  color: #222;
+  color: #222222;
   font: 0.9em Helvetica, sans-serif; }
 
 #MathJax_Message {
@@ -318,7 +318,7 @@ em, i {
 .tick {
   position: relative;
   top: -0.5em;
-  color: #f00;
+  color: red;
   font: 1em Helvetica, sans-serif;
   text-align: center;
   display: block;
@@ -337,8 +337,8 @@ em, i {
   right: -4.5em;
   top: 1em;
   padding: 0.5em 1.75em 0.5em 0.5em;
-  background-color: #fff;
-  color: #999;
+  background-color: white;
+  color: #999999;
   cursor: pointer;
   font-weight: bold;
   font-size: 0.9em;
@@ -350,8 +350,8 @@ em, i {
 
 .help-text {
   padding: 0.5em 1em;
-  background-color: #fff;
-  border: 1px solid #ccc;
+  background-color: white;
+  border: 1px solid #cccccc;
   font-family: Helvetica, sans-serif;
   font-size: 0.9em;
   width: 25em;
@@ -373,8 +373,8 @@ em, i {
   padding: 3em; }
 
 #input-select li {
-  background-color: #fff;
-  color: #666;
+  background-color: white;
+  color: #666666;
   font-weight: bold;
   font-family: Helveltica, Arial, Calibri, sans-serif;
   padding: 0.1em 0.5em;
@@ -382,11 +382,11 @@ em, i {
   font-size: 1.5em; }
 
 #input-select li a {
-  color: #666;
+  color: #666666;
   text-decoration: none; }
 
 #input-select li a:hover {
-  color: #000; }
+  color: black; }
 
 .tab h2 {
   position: relative; }
@@ -407,7 +407,7 @@ a {
   text-decoration: none;
   color: #666666; }
   a:hover {
-    color: #ccc !important; }
+    color: #cccccc !important; }
 
 input:focus {
   outline: none; }
@@ -447,7 +447,7 @@ g.visuallyhidden {
 #title_legend_wrap {
   position: absolute;
   top: 2.3em;
-  background-color: #ffffff;
+  background-color: white;
   border-bottom: 8px solid #eeeeee;
   height: 2em;
   z-index: 800; }
@@ -462,7 +462,7 @@ g.visuallyhidden {
       margin-right: -15px; }
       #title_legend_wrap #title_legend .tabs li {
         text-decoration: none;
-        color: #000;
+        color: black;
         display: block;
         float: left;
         padding: 0.9em 15px 0.7em;
@@ -471,7 +471,7 @@ g.visuallyhidden {
         cursor: pointer;
         line-height: 1em; }
         #title_legend_wrap #title_legend .tabs li.selected {
-          background-color: #eee;
+          background-color: #eeeeee;
           position: relative;
           font-weight: bold; }
       #title_legend_wrap #title_legend .tabs.notselected {
@@ -572,7 +572,7 @@ g.visuallyhidden {
   position: absolute; }
 
 #parameters_bkgd, #graphs_bkgd, #runs_bkgd, #text_bkgd {
-  background-color: #ffffff;
+  background-color: white;
   opacity: 0.95;
   height: 100%;
   width: 100%;
@@ -649,8 +649,8 @@ g.visuallyhidden {
   left: 0px;
   right: 0;
   height: 6.5em;
-  background-color: #eee;
-  border-top: 1px solid #ccc;
+  background-color: #eeeeee;
+  border-top: 1px solid #cccccc;
   font: 0.8em Helvetica, sans-serif; }
   #graph-controls .logarithmic-axis {
     display: inline; }
@@ -661,7 +661,7 @@ g.visuallyhidden {
   #graph-controls div {
     float: left;
     width: 15em;
-    border-right: 1px solid #ccc;
+    border-right: 1px solid #cccccc;
     padding: 1em 2em;
     height: 5em; }
   #graph-controls h2 {
@@ -679,35 +679,6 @@ g.visuallyhidden {
     width: 7.5em; }
   #graph-controls .short input, #graph-controls .short select {
     width: 7.5em; }
-
-#menu_glossary {
-  margin-left: 2em !important; }
-
-#glossary .glossary-term {
-  position: relative; }
-  #glossary .glossary-term h3 {
-    position: absolute;
-    text-align: right;
-    left: -290px;
-    right: 100%;
-    display: block;
-    padding-right: 30px; }
-  #glossary .glossary-term .link-to-advanced-glossary {
-    color: white;
-    background-color: #999;
-    text-transform: uppercase;
-    font-size: 0.6em;
-    font-weight: bold;
-    padding: 2px 5px;
-    letter-spacing: 0.05em;
-    position: relative;
-    bottom: 2px; }
-#glossary .fn {
-  font-size: 0.7em; }
-#glossary img {
-  display: block;
-  width: 75%;
-  margin: 0 auto; }
 
 #sidebar {
   display: none; }
@@ -804,7 +775,7 @@ g.visuallyhidden {
   .brush .background {
     pointer-events: all !important; }
   .brush .extent {
-    stroke: #fff;
+    stroke: white;
     fill: #56b4e9;
     fill-opacity: 0.5;
     shape-rendering: crispEdges; }
@@ -834,7 +805,7 @@ g.visuallyhidden {
     #text_wrap p + h3 {
       margin-top: 2em; }
   #text_wrap a.block {
-    color: #ffffff;
+    color: white;
     font-weight: bold;
     background-color: #56b4e9;
     padding: 2px 5px;
@@ -853,7 +824,7 @@ g.visuallyhidden {
     #text_wrap a.block.purple {
       background-color: #cc79a7; }
     #text_wrap a.block:hover {
-      color: #ffffff !important;
+      color: white !important;
       background-color: black; }
 
 #parameters {
@@ -925,7 +896,7 @@ g.visuallyhidden {
         padding: 2px 4px;
         font-weight: bold;
         color: white;
-        background-color: #ccc; }
+        background-color: #cccccc; }
       #parameters #parameter_form .parameter-pane .max-range-val {
         left: 102%; }
       #parameters #parameter_form .parameter-pane .min-range-val {
@@ -968,7 +939,7 @@ g.visuallyhidden {
   #run_clear #run_model, #run_clear #clear_model {
     border: none;
     padding: 0.25em 15px;
-    color: #ffffff;
+    color: white;
     font-weight: bold;
     font-size: 1em;
     font-family: Helveltica, Arial, sans-serif;
@@ -1001,7 +972,7 @@ g.visuallyhidden {
   .disabled .parameter-preview {
     border: 1px solid #dddddd; }
   .disabled .current-range-val {
-    background-color: #eee !important; }
+    background-color: #eeeeee !important; }
 
 #runs_wrap {
   width: 300px;
@@ -1026,13 +997,13 @@ g.visuallyhidden {
       #runs li h3 span {
         height: 200%;
         padding: 0 0.5em 0 0;
-        background-color: #ffffff; }
+        background-color: white; }
     #runs li p {
       font-size: 0.85em;
       margin-top: 0.5em; }
     #runs li .delete-run, #runs li .rename-run, #runs li .hide-run {
       background-color: #999999;
-      color: #ffffff;
+      color: white;
       padding: 2px 3px;
       font-weight: normal;
       letter-spacing: 0.02em;
@@ -1050,7 +1021,7 @@ g.visuallyhidden {
 #clear_runs {
   border: none;
   padding: 0.25em 15px;
-  color: #ffffff;
+  color: white;
   font-weight: bold;
   font-size: 1em;
   font-family: Helveltica, Arial, sans-serif;
@@ -1065,7 +1036,7 @@ g.visuallyhidden {
 
 #footer_wrap {
   width: 100%;
-  background-color: #ffffff; }
+  background-color: white; }
   #footer_wrap #main_footer {
     width: 900px;
     margin: 30px auto 0;
@@ -1137,7 +1108,7 @@ g.visuallyhidden {
 @media print {
   * {
     background: transparent !important;
-    color: #000 !important;
+    color: black !important;
     box-shadow: none !important;
     text-shadow: none !important; }
 
@@ -1150,12 +1121,12 @@ g.visuallyhidden {
   abbr[title]:after {
     content: " (" attr(title) ")"; }
 
-  /** Don't show links for images,or javascript/internal links */
+  /*Don't show links for images,or javascript/internal links */
   .ir a:after, a[href^="javascript: "]:after, a[href^="#"]:after {
     content: ""; }
 
   pre, blockquote {
-    border: 1px solid #999;
+    border: 1px solid #999999;
     page-break-inside: avoid; }
 
   thead {
@@ -1193,7 +1164,7 @@ g.visuallyhidden {
   z-index: 999; }
 
 #modal_dialogue {
-  background-color: #ffffff;
+  background-color: white;
   width: 600px;
   margin: 0 auto;
   padding: 30px; }
@@ -1207,6 +1178,37 @@ g.visuallyhidden {
   color: #333333; }
   .modal p + p {
     margin-top: 0.5em; }
+
+#menu_glossary {
+  margin-left: 2em !important; }
+
+#glossary .glossary-term {
+  position: relative; }
+  #glossary .glossary-term h3 {
+    position: absolute;
+    text-align: right;
+    left: -290px;
+    right: 100%;
+    display: block;
+    padding-right: 30px; }
+  #glossary .glossary-term .link-to-advanced-glossary {
+    color: white;
+    background-color: #999999;
+    text-transform: uppercase;
+    font-size: 0.6em;
+    font-weight: bold;
+    padding: 2px 5px;
+    letter-spacing: 0.05em;
+    position: relative;
+    bottom: 2px; }
+#glossary .fn {
+  font-size: 0.7em; }
+#glossary img {
+  display: block;
+  width: 75%;
+  margin: 0 auto; }
+#glossary h4 {
+  font-weight: bold; }
 
 @media only screen and (min-width: 1300px) {
   #title_legend_wrap #title_legend {
@@ -1270,5 +1272,3 @@ g.visuallyhidden {
   #footer_wrap {
     position: absolute;
     bottom: 0; } }
-
-/*# sourceMappingURL=main.css.map */
