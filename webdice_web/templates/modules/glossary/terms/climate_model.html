@@ -1,0 +1,22 @@
+<h3>Climate model</h3>
+<p>webDICE includes a model of how emissions of CO<sub>2</sub> affect
+  temperatures. The model has two components. The first is how carbon
+  moves around the earth, between the oceans and the atmosphere. This
+  component determines long emissions of CO<sub>2</sub> stay in the
+  atmosphere. The second is how the emissions that stay in the atmosphere
+  increase temperatures. This latter component is called
+  <a href="#glossary__radiative_forcing">radiative forcing</a>.</p>
+<p>The model of how emission move around the earth assumes that emissions
+  from economic activity are released into the atmosphere. Some of these
+  emissions are absorbed by the upper layers of the ocean and from there
+  into the lower ocean. The rate of absorption into the upper and lower
+  ocean determines how long emissions stay in the atmosphere. There are no
+  parameters choices for the climate model, but in Advanced Move, you can
+  choose the default model, which is used in Nordhaus’s DICE models, or
+  the <a href="#glossary__beam_carbon">‘BEAM, simplified‘ model</a>,
+  which is a more accurate but slightly slower running model.
+  (Optimization using BEAM may be particularly slow and possibly time out.)
+  <a class=link-to-advanced-glossary
+     href={{ url_for('webdice.glossary_term', term='climate_model') }}>more
+  </a>
+</p>

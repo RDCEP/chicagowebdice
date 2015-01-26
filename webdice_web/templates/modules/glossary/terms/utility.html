@@ -1,0 +1,28 @@
+<h3>Utility</h3>
+<p>Utility is a measure of our well-being, of how well off we are.
+  Although well-being depends on many things, webDICE treats utility as
+  a function of consumption. It assumes that as we get richer we are
+  better off. It assumes, however, that the benefits of getting richer
+  still are smaller. This is sometimes called the ‘declining marginal
+  utility of income’. It means that going from, say, poor to middle
+  class produces great benefits, from middle class to wealthy also
+  makes you better off but the gains are smaller. Going from wealthy
+  to incredibly rich produces smaller gains still. The intuition is
+  simply that a dollar matters less to Mark Zuckerberg thanks to
+  a poor person.</p>
+<p>You can choose the rate at which the gains from getting richer goes
+  down by choosing the variable called ‘eta’ or $\eta$. If you change
+  eta, the model runs and almost all of the output will unaffected
+  because utility does not enter into most of the calculations. The
+  one place where changing eta will change the results is in
+  optimization. If you increase eta so that the gains from getting richer
+  are smaller, the optimizer will put less weight on the wealthy and
+  more on the poor. The reason is that the optimization focuses on
+  utility. As eta gets larger, giving another dollar to a wealthy
+  person produces a smaller increase in their utility.</p>
+<p>One important but technical problem with changing eta is that the
+  graphs of utility with different etas are not comparable.
+  <a class=link-to-advanced-glossary
+     href={{ url_for('webdice.glossary_term', term='utility') }}>more
+  </a>
+</p>
