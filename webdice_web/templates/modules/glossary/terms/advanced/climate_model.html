@@ -1,7 +1,10 @@
-<p>
-    The default climate model in DICE simulates the carbon cycle using a linear there-reservoir model where the three reservoirs are the deep oceans, the upper ocean and the atmosphere. Each of these reservoirs is well-mixed in the short run. A transition matrix governs the transfer of carbon among the reservoirs. If $M_{i}(t)$, is he mass of carbon (gigaton) in reservoir $i$, then:
-</p>
-<p>\[
+<p>The default climate model in DICE simulates the carbon cycle using
+  a linear there-reservoir model where the three reservoirs are the
+  deep oceans, the upper ocean and the atmosphere. Each of these reservoirs
+  is well-mixed in the short run. A transition matrix governs the transfer
+  of carbon among the reservoirs. If $M_{i}(t)$, is he mass of carbon
+  (gigatons) in reservoir $i$, then:
+  \[
     \left[\begin{array}{c}
     M_{AT}(t)\\
     M_{UP}(t)\\
@@ -20,7 +23,11 @@
     0
     \end{array}\right],
     \]
-</p>
-<p>
-    where the parameters $\phi_{i,j}$ represent the transfer rate from reservoir i to reservoir j (per time period), and $E(t)$ is emissions at time t. The model only includes CO$_{2}$ in its emissions factor and atmospheric carbon concentration. Other greenhouse gases are assumed to be exogenous and enter the forcing equation seperately (see below).
+  where the parameters $\phi_{i,j}$ represent the transfer rate from
+  reservoir $i$ to reservoir $j$ (per time period), and $E(t)$ is
+  emissions at time $t$. The model only includes CO<sub>2</sub> in its
+  emissions factor and atmospheric carbon concentration. Other greenhouse
+  gases are assumed to be exogenous and enter the forcing equation
+  separately (see below).
+  <!--TODO: what is 'below'? -->
 </p>

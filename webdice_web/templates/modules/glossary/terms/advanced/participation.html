@@ -1,57 +1,59 @@
-<p>
-    The participation fraction, $\varphi(t)\in[0,1]$ is the fraction of global emissions that are subject to the user-selected climate treaty. If less than all countries participate in an emissions control regime or some industries are exempt, $\varphi(t)<1$.  This does not affect the emissions control level specified by the user, but rather affects the cost of reducing emissions to the selected level.
-</p>
-<p>
-    Suppose the emissions control level of the participating countries/sectors is called $\mu^{P}(t).$. This can be derived by inflating the global emission control rate, $\mu(t),$  by the participation fraction, $\varphi(t):$.
-</p>
-<p>
-    \[
+<p>The participation fraction, $\varphi(t)\in[0,1]$ is the fraction of
+  global emissions that are subject to the user-selected climate treaty.
+  If less than all countries participate in an emissions control regime
+  or some industries are exempt, $\varphi(t)<1$. This does not affect the
+  emissions control level specified by the user, but rather affects the
+  cost of reducing emissions to the selected level.</p>
+<p>Suppose the emissions control level of the participating countries/sectors
+  is called $\mu^{P}(t)$. This can be derived by inflating the global
+  emission control rate, $\mu(t)$, by the participation fraction, $\varphi(t)$:
+  \[
     \mu^{P}(t)=\frac{\mu(t)}{\varphi(t)},
-    \]
-</p>
-<p>
-    and determing the fraction of output that affected by the emissions control regime. If users wish to approach the climate treaty from a negotiator's perspective they could multiply the emissions control rate of the among the participants by the participation fraction to get the global control rate set in webDICE.
-</p>
-<p>
-    \[
+  \]
+  and determining the fraction of output that affected by the emissions
+  control regime. If users wish to approach the climate treaty from a
+  negotiator’s perspective they could multiply the emissions control rate
+  of the among the participants by the participation fraction to get
+  the global control rate set in webDICE.
+  \[
     Q^{P}(t)=Q(t)\varphi(t).
-    \]
+  \]
 </p>
-<p>
-    If $\psi^{P}(t)$ is the aggregate amount spent on abatement by the participating countries
-    (which is equal to the total spent on abatement by all countries, $\psi(t)$ one can substitute in the above equalities:
-</p>
-<p>
-    \[
+<p>If $\psi^{P}(t)$ is the aggregate amount spent on abatement by the
+  participating countries (which is equal to the total spent on abatement
+  by all countries, $\psi(t)$ one can substitute in the above equalities:
+  \[
     \psi(t)=\psi^{P}(t)=Q^{P}(t)\cdot\theta_{1}(t)\cdot\mu^{P}(t)^{\theta_{2}}
-    \]
-</p>
-<p>
-    \[
+  \]
+  \[
     =[Q(t)\varphi(t)]\theta_{1}(t)[\mu(t)/\varphi(t)]^{\theta_{2}}
-    \]
-</p>
-<p>
-    \begin_inset Formula
-    \[
+  \]
+  \[
     =Q(t)\theta_{2}(t)\mu(t)^{\theta_{2}}\varphi(t)^{1-\theta_{2}}
-    \]
-</p>
-<p>
-    where $\varphi(t)^{(1-\theta_{2})}$ represents the increasing marginal costs of controlling emissions when participation is less than full (which, after adjusting for the sign, is the same marginal costs as the emissions control rate). We can think of $\varphi(t)^{1-\theta_{2}}$ as the participation markup in abatement costs.
-</p>
-<p>
-    Users specify the participation fractions for the years 2050, 2100, and 2150. The model interpolates an increasing fraction of participation for the years between these periods according to:
-</p>
-<p>
-    \[
+  \]
+  where $\varphi(t)^{(1-\theta_{2})}$ represents the increasing marginal
+  costs of controlling emissions when participation is less than full
+  (which, after adjusting for the sign, is the same marginal costs as
+  the emissions control rate). We can think of $\varphi(t)^{1-\theta_{2}}$
+  as the participation markup in abatement costs.</p>
+<p>Users specify the participation fractions for the years 2050, 2100,
+  and 2150. The model interpolates an increasing fraction of participation
+  for the years between these periods according to:
+  \[
     \varphi(t)=\left\{ \begin{array}{cccc}
     \varphi(2050)+[\varphi(2010)-\varphi(2050)]\times exp(-0.25\cdot t) &  & if & t=2005,...,2045\\
     \varphi(2100)+[\varphi(2050)-\varphi(2100)]\times exp(-0.25\cdot t) &  & if & t=2055,..,2095\\
     \varphi(2150)+[\varphi(2100)-\varphi(2150)]\times exp(-0.25\cdot t) &  & if & t=2105,...
     \end{array}\right.
-    \]
+  \]
 </p>
-<p>
-    If users choose a participation fraction less than 1, the model still forces total emissions to comply with the chosen treaty. This implies that the base-line economic and emissions trajectory will not change significantly, if it changes at all. By decreasing the participation fraction, users are essentially increasing the abatement costs by increasing the cost of complying with the user-mandated climate treaty. For example, under the default settings, when participation is full, $\pi(t)=1$. When only half of global emissions fall under the emissions control regime, $\pi(t)=(0.5)^{-1.8}\approx3.5.$. This means that abatement will be about 3.5 times as costly with only 50% participation.
-</p>
+<p>If users choose a participation fraction less than 1, the model still
+  forces total emissions to comply with the chosen treaty. This implies
+  that the base-line economic and emissions trajectory will not change
+  significantly, if it changes at all. By decreasing the participation
+  fraction, users are essentially increasing the abatement costs by
+  increasing the cost of complying with the user-mandated climate treaty.
+  For example, under the default settings, when participation is full,
+  $\pi(t)=1$. When only half of global emissions fall under the emissions
+  control regime, $\pi(t)=(0.5)^{-1.8}\approx3.5$. This means that
+  abatement will be about 3.5 times as costly with only 50% participation.</p>
