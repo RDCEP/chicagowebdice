@@ -18,22 +18,26 @@
         <a href=mailto:info-rdcep@ci.uchicago.edu>info-rdcep@ci.uchicago.edu</a>.
 
       <h3><a href=http://github.com/RDCEP/chicagowebdice class="block orange">Source code</a></h3>
-      <p>All of the source code for webDICE is available through github.com.
+      <p>All of the source code for webDICE is available through
+        <a href=http://github.com/RDCEP/chicagowebdice>github.com</a>.
         The repo contains both the web frontend, and the python that drives
         the backend.</p>
 
     </div>
     <div class="pane half">
 
-      <h3><a href="{{ url_for('webdice.glossary') }}" class="block blue">Glossary</a></h3>
-      <p>Our online glossary provides background information about
-        the technical terms and jargon necessary throughout the site.</p>
+      <h3><a href="{{ url_for('webdice.glossary') }}" class="block blue">
+        Glossary</a></h3>
+      <p>Our <a href="{{ url_for('webdice.glossary') }}">online glossary</a>
+        provides background and technical information
+        about terms and jargon necessary used the site.</p>
 
-      <h3><a href class="block vermilion">Details of the model</a></h3>
-      <p>TKTK</p>
-
-      <h3><a href class="block sky-blue">Equations &amp; parameters</a></h3>
-      <p>TKTK</p>
+      <h3><a href="{{ url_for('webdice.static', filename='docs/Equations_141227.pdf') }}"
+             class="block sky-blue">Equations &amp; parameters</a></h3>
+      <p>Information about the equations and parameters that underlie
+        the model can be found by clicking the link above, or by navigating
+        here: <a href="{{ url_for('webdice.static', filename='docs/Equations_141227.pdf') }}">
+        {{ url_for('webdice.static', filename='docs/Equations_141227.pdf') }}</a>.</p>
 
     </div>
   </div>
