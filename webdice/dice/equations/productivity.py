@@ -100,12 +100,9 @@ class ProductivityModel(object):
             :returns: σ_g(0) * exp(σ_d1 * t)
             :rtype: float
         """
-        #TODO: quadratic is set to 0. Delete second half of equation.
         return (
             self.params.intensity_growth * np.exp(
-                -self.params.intensity_decline_rate * 10 *
-                i - self.params.intensity_quadratic * 10 *
-                (i ** 2)
+                -self.params.intensity_decline_rate * 10 * i
             )
         )
 
@@ -301,7 +298,6 @@ class DiceBackstop2013(Dice2010):
             df.backstop[i] = df.backstop[i - 1] * (1 - self.params.backstop_decline)
 
         else:
-            #TODO: Convert to $/tC ?
             df.backstop[i] = self.params.backstop_2005 * (12 / 44)
             carbon_intensity = self.params.intensity_2005
             productivity = self.params.productivity
@@ -309,7 +305,6 @@ class DiceBackstop2013(Dice2010):
             gross_output = self.params.output_2005
             intensity_decline = self.params.intensity_growth
             population = self.params.population_2005
-        #TODO: Convert to $/tC ?
         backstop_growth = (
             df.backstop[i] * carbon_intensity /
             self.params.abatement_exponent
