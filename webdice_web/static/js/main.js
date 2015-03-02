@@ -261,10 +261,10 @@
 
   var update_x_axis = function (dice_variable) {
 
-    var _graphs = [[0, 'custom'], [1, 'twin']];
+    var _graphs = ['custom', 'twin'];
     for (var i = 0; i < _graphs.length; ++i) {
-      var index = _graphs[i][0],
-        graph = _graphs[i][1];
+      var index = i,
+        graph = _graphs[i];
 
       custom_data[index].forEach(function(r, i) {
         r.x_title = metadata[dice_variable].title;
@@ -289,7 +289,6 @@
                                       index,
                                       dice_variable);
         x_custom_domain_var = dice_variable;
-
       }
 
       var title = metadata[custom_vars[index]].title + ' v. ';
@@ -317,7 +316,7 @@
     update_custom_graph('zoom', 2);
     graphs['zoom'].graph.change_x();
 
-    //resize_graphs();
+    resize_graphs();
 
   };
 
@@ -722,6 +721,8 @@
       }
     }
 
+    graphs['zoom'].graph.force_brush();
+
     ++visible_runs;
 
     if (visible_runs == 1) {
@@ -743,6 +744,8 @@
         graphs[dice_variable].graph.hide_run(index);
       }
     }
+
+    graphs['zoom'].graph.force_brush();
 
     --visible_runs;
 

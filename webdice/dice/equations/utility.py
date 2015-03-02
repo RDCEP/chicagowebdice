@@ -48,13 +48,13 @@ class UtilityModel(object):
              :type consumption_pc: float
 
         Returns:
-            :returns: 1 / (1 - η) * (c ^ (1 - η) - 1)
+            :returns: c ^ (1 - η) / (1 - η) + 1
             :rtype: float
         """
         if self.params.elasmu == 1:
             return np.log(consumption_pc)
         denom = 1.0 - self.params.elasmu
-        return (1 / denom) * (consumption_pc ** denom - 1)
+        return (consumption_pc ** denom / denom) + 1
 
     def utility_discounted(self, utility, utility_discount, l):
         """Utility discounted

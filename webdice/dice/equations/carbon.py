@@ -285,20 +285,4 @@ class Dice2010(CarbonModel):
             Override for DICE2007 equation
 
     """
-
-    @property
-    def forcing_ghg(self):
-        """Forcing equation
-
-        F_EX, Exogenous forcing for other greenhouse gases
-
-        Returns:
-            nd.array: Array of forcing values, n=params.tmax
-
-        """
-        return np.concatenate((
-            self.params.forcing_ghg_2000 + .1 * (
-                self.params.forcing_ghg_2100 - self.params.forcing_ghg_2000
-            ) * np.arange(11),
-            self.params.forcing_ghg_2000 * (np.ones(49) * .36),
-        ))
+    pass

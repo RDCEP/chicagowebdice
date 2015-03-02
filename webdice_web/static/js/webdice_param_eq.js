@@ -24,7 +24,7 @@
       output: function (v) {
         var output = [];
         for (var i = 0; i < 10; ++i) {
-          var y = 1 - 1 / (1 + 0.0028388 * Math.pow(i, v))
+          var y = 1 - 1 / (1 + 0.0028388 * Math.pow(i, v));
           output.push({
             y: y,
             x: i + 1
@@ -150,7 +150,7 @@
         v = [1, 1.4, 2.0, 2.8, 4.0][v - 1];
         var output = [];
         for (var i = 0; i < 10; ++i) {
-          var y = 1 - 1 / (1 + 0.0028388 * Math.pow(i, v))
+          var y = 1 - 1 / (1 + 0.0028388 * Math.pow(i, v));
           output.push({
             y: y,
             x: i + 1
@@ -179,16 +179,16 @@
         return output;
       }
     },
-    backstop_ratio: {
+    backstop_decline: {
       width: 230,
-      max: 'max',
+      max: 'min',
       scale: 'linear',
       legend: 'Clean Energy Cost v. Time',
       output: function (v) {
-        v = [1, 1.4, 2.0, 2.8, 4.0][v - 1];
-        var o = [];
-        for (var i = 0; i < 10; ++i) {
-          var y = 1.17 * (v - 1 + Math.exp(-5/100 * i)) / v * 12 / 44;
+        v = [0.2, 0.1, 0.05, 0.025, 0.0][v - 1];
+        var o = [{y: 0.344, x: 1}];
+        for (var i = 1; i < 10; ++i) {
+          var y = o[i - 1].y * (1 - v);
           o.push({
             y: y,
             x: i + 1
