@@ -1202,6 +1202,37 @@ g.visuallyhidden {
   .modal p + p {
     margin-top: 0.5em; }
 
+#menu_glossary {
+  margin-left: 2em !important; }
+
+#glossary .glossary-term {
+  position: relative; }
+  #glossary .glossary-term h3 {
+    position: absolute;
+    text-align: right;
+    left: -290px;
+    right: 100%;
+    display: block;
+    padding-right: 30px; }
+  #glossary .glossary-term .link-to-advanced-glossary {
+    color: white;
+    background-color: #999999;
+    text-transform: uppercase;
+    font-size: 0.6em;
+    font-weight: bold;
+    padding: 2px 5px;
+    letter-spacing: 0.05em;
+    position: relative;
+    bottom: 2px; }
+#glossary .fn {
+  font-size: 0.7em; }
+#glossary img {
+  display: block;
+  width: 75%;
+  margin: 0 auto; }
+#glossary h4 {
+  font-weight: bold; }
+
 @media only screen and (min-width: 1300px) {
   #title_legend_wrap #title_legend {
     width: 1200px; }

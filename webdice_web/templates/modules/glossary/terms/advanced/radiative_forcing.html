@@ -1,0 +1,46 @@
+<p>Radiative forcing quantifies the change in the earth’s energy balance
+  from the addition of greenhouse gasses and other climate forcers to
+  the atmosphere. DICE links the amount of carbon dioxide added to the
+  atmosphere since 1750 to radiative forcing. Radiative forcing is then
+  related to temperature change. This relationship is governed by climate
+  sensitivity. This parameter is a way of representing the equilibrium
+  temperature from doubling the concentration of CO<sub>2</sub>. The default
+  setting of the model specifies a 3.2°C rise in temperature for a
+  doubling of CO<sub>2</sub>. The user can set this between 1°C and 5°C.</p>
+<p>The relationship between greenhouse gases and radiative forcing $F(t)$
+  is given by
+  \[
+    F(t)=\eta\frac{\ln\left(M_{AT}(t)\right)-\ln\left(M_{AT}^{1750}\right)}{\ln(2)}+F_{EX}(t)
+  \]
+  where $F_{EX}(t)$ represents forcing from gases other than CO<sub>2</sub>
+  in time period $t$ and $\eta$ represents the increase in forcing from
+  the doubling of CO<sub>2</sub> in the atmosphere. These other forcings are
+  estimated in a given period by a linear function of the difference
+  between forcings from non-CO<sub>2</sub> today and an estimate of those
+  forcings in the year 2100:
+  \[
+    F_{EX}(t)=F_{EX}(0)+0.1\left(F_{EX}(2100)-F_{EX}(0)\right)\cdot t.
+  \]
+</p>
+<p>Radiative forcing leads the warming in the atmosphere, which then
+  warms the upper ocean, gradually warming the deep ocean. The model is:
+  \begin{align*}
+    T(t) & =T(t-1)+\xi_{1}\left[F(t)-\lambda T(t-1)-\xi_{2}\left(T(t-1)-T_{LO}(t-1)\right)\right]\\
+    T_{LO}(t) & =T_{LO}(t-1)+\xi_{3}\left(T(t-1)-T_{LO}(t-1)\right)
+  \end{align*}
+  where the $\xi_{i}$ are the transfer coefficients reflecting the rates
+  of flow and thermal capacities of the sinks. In particular,
+  $1/\xi_{1}$ is the thermal capacity of the atmosphere and the upper
+  oceans, $1/\xi_{3}$ is the transfer rate from the upper ocean to
+  the deep ocean, and $\xi_{2}$ is the ratio of the thermal capacity of
+  the deep oceans to the transfer rate from the shallow to deep ocean.</p>
+<p>The key parameter is $\lambda$, or climate sensitivity, is a way
+  of representing the equilibrium temperature from doubling the
+  concentration of CO<sub>2</sub>. If we solve the temperature equation
+  for a constant temperature (i.e. equilibrium), we get
+  $\Delta T/\Delta F=1/\lambda$. If $T_{2xCO_{2}}$ is the equilibrium
+  impact of a doubling of CO<sub>2</sub> concentrations, we get
+  $T_{2xCO_{2}}=\Delta F_{2xCO_{2}}/\lambda$ where
+  $\Delta F_{2xCO_{2}}$ is the change in radiative forcing from a
+  doubling of CO<sub>2</sub>. Therefore, setting $\lambda$ allows us to
+  set the climate sensitivity.</p>

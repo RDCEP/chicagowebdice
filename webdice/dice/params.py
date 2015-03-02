@@ -264,8 +264,8 @@ class Dice2010Params(Dice2007Params):
         super(Dice2010Params, self).__init__(model=model)
         self.dice_year = str(model)
         self.temp_co2_doubling = 3.2
-        self.damages_exponent = 2.  # TODO: see equations
-        self.productivity_decline = .009  # TODO: Add second parameter?
+        self.damages_exponent = 2.
+        self.productivity_decline = .009
         self.intensity_decline_rate = .00646
         self.popasym = 8700.
         self.elasmu = 1.5

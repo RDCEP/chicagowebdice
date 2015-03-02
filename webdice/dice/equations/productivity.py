@@ -109,7 +109,6 @@ class ProductivityModel(object):
             :returns: σ_g(0) * exp(σ_d1 * t)
             :rtype: float
         """
-        #TODO: quadratic is set to 0. Delete second half of equation.
         return (
             self.params.intensity_growth * np.exp(
                 -self.params.intensity_decline_rate * self.params.ts *

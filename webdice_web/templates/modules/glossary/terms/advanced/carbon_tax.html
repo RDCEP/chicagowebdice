@@ -1,0 +1,15 @@
+<p>If webDICE is run in optimization mode or with an imposed treaty,
+  it computes the emissions control rate $\mu$ that gives the appropriate
+  level of emissions reductions. To display the carbon tax it uses the
+  tax that is implied by the emissions control rate via the equation:
+  \[
+  \tau(t)=BC(t)\mu(t)^{\theta_{2}-1},
+  \]
+  where $BC(t)$ cost of the backstop technology.
+</p>
+<p>If the user sets the carbon tax explicitly, the model finds the
+  implied emissions control rate, solving the above equation for $\mu$:
+  \[
+  \mu(t)=\left(\frac{\tau(t)}{BC(t)}\right)^{1/\left(\theta-1\right)}.
+  \]
+</p>
