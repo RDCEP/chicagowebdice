@@ -48,14 +48,14 @@ def glossary_terms():
     return dict(
         glossary_terms=[list(g) for k, g in groupby(map(
             lambda x: ''.join(x.split('/')[-1].split('.')[:-1]),
-            glob.glob(os.path.join(
+            sorted(glob.glob(os.path.join(
                 BASE_DIR, 'templates', 'modules', 'glossary', 'terms',
-                '*.html'))), key=lambda x: x[0])],
+                '*.html')))), key=lambda x: x[0])],
         advanced_glossary_terms=map(
             lambda x: ''.join(x.split('/')[-1].split('.')[:-1]),
-            glob.glob(os.path.join(
+            sorted(glob.glob(os.path.join(
                 BASE_DIR, 'templates', 'modules', 'glossary', 'terms',
-                'advanced', '*.html'))),
+                'advanced', '*.html')))),
     )
 
 
