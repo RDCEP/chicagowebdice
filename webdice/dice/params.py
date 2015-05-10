@@ -170,7 +170,7 @@ class DiceParams(DiceUserParams):
         self.damages_coefficient = 0.0028388
 
         ## Abatement cost
-        self.backstop_2005 = 1.17
+        self.backstop_2005 = 1.17 * 12 / 44
         self.miu_2005 = .005
 
         ## Participation
@@ -296,7 +296,7 @@ class Dice2010Params(DiceParams):
         # self.damages_coefficient = .00204625800317896
 
         ## Abatement cost
-        self.backstop_2005 = 1.26
+        self.backstop_2005 = 1.26 * 12 / 44
 
         self.vars.intensity_decline[0] = .158
         self.vars.population[0] = self.population_2005

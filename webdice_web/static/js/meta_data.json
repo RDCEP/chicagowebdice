@@ -48,7 +48,7 @@
     "unit": "GtC"
   },
   "consumption_pc": {
-    "title_unit": "thousands $USD / person / year",
+    "title_unit": "thousands USD / person / year",
     "title": "Consumption per capita",
     "unit": "thousand USD"
   },
@@ -59,7 +59,7 @@
   "carbon_intensity": {
     "title_unit": "tons of CO2 / 1000 USD",
     "title": "Carbon intensity",
-    "unit": "tC / 1000 USD"
+    "unit": "tCO2 / 1000 USD"
   },
   "damages": {
     "title_unit": "trillions USD year",
@@ -67,9 +67,9 @@
     "unit": "trillion USD"
   },
   "tax_rate": {
-    "title_unit": "USD / ton of carbon",
+    "title_unit": "USD / ton of CO2",
     "title": "Tax rate",
-    "unit": "USD / tC"
+    "unit": "USD / tCO2"
   },
   "abatement": {
     "title_unit": "trillions USD / year",
@@ -92,18 +92,18 @@
     "unit": null
   },
   "backstop": {
-    "title_unit": "thousands USD / ton of carbon",
+    "title_unit": "thousands USD / ton of CO2",
     "title": "Clean energy costs",
-    "unit": "1000 USD / tC"
+    "unit": "1000 USD / tCO2"
   },
   "population": {
-    "title_unit": "millions",
+    "title_unit": "billions",
     "title": "Population",
-    "unit": "millions"
+    "unit": "billions"
   },
   "consumption": {
     "title_unit": "trillions USD / year",
-    "title": "Total Consumption",
+    "title": "Total consumption",
     "unit": "trillion USD"
   },
   "emissions_ind": {
