@@ -197,7 +197,7 @@ class EmissionsModel(object):
         float
         """
         ae = self.params.abatement_exponent
-        return ne.evaluate('backstop * miu ** (ae - 1) * 1000 * 12 / 44')
+        return ne.evaluate('backstop * miu ** (ae - 1) * 1000')
 
 
 class Dice2007(EmissionsModel):

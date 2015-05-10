@@ -41,7 +41,7 @@ class ProductivityModel(object):
                 self.params.backstop_ratio - 1 + np.exp(
                     -self.params.backstop_decline * self.params.t0
                 )) / self.params.backstop_ratio
-        ) * (12 / 44)
+        )
 
     @property
     def population_growth_rate(self):
@@ -117,7 +117,7 @@ class ProductivityModel(object):
 
         bs = self.backstop[i]
         ae = self.params.abatement_exponent
-        backstop_growth = ne.evaluate('(bs * carbon_intensity / ae) * (44 / 12)')
+        backstop_growth = ne.evaluate('(bs * carbon_intensity / ae)')
 
         return (
             carbon_intensity,
@@ -245,7 +245,7 @@ class DiceBackstop2013(Dice2010):
 
         bs = self.backstop[i]
         ae = self.params.abatement_exponent
-        backstop_growth = ne.evaluate('(bs * carbon_intensity / ae) * (44 / 12)')
+        backstop_growth = ne.evaluate('(bs * carbon_intensity / ae)')
 
         return (
             carbon_intensity,
