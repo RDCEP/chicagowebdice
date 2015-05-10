@@ -84,7 +84,7 @@ class ConsumptionModel(object):
         -------
         float
         """
-        return 1000 * consumption / population
+        return consumption / population
 
     def consumption_discount(self, c0, c1, i, discount_type='ramsey'):
     # def consumption_discount(self, c0, c1, i, discount_type='constant'):

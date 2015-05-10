@@ -77,20 +77,20 @@
   <div class="parameter-pane fourths">
 
     <div class=range-wrap>
-      <label><span class="parameter-name">Max. population</span> (MM)<br>
-        <span class=current-range-val>8700</span>
-        <input name=popasym type=range min=8000 max=12000 value=8700 step=100
-               data-prec=0 data-default=8700>
+      <label><span class="parameter-name">Max. population</span> (BB)<br>
+        <span class=current-range-val>8.7</span>
+        <input name=popasym type=range min=8.0 max=12.0 value=8.7 step=0.1
+               data-prec=1 data-default=8.7>
       </label>
 
-      <span class=min-range-val>8000</span>
-      <span class=max-range-val>12000</span>
+      <span class=min-range-val>8.0</span>
+      <span class=max-range-val>12.0</span>
       <div class=tick-wrap>
         <span class=tick style=left:{{ (8700.0 - 8000.0) / (12000.0 - 8000.0) * 100 - 50 }}%>&bullet;</span>
       </div>
     </div>
     <div class=parameter-help>
-      <p>Maximum level of the global population, in millions.</p>
+      <p>Maximum level of the global population, in billions.</p>
     </div>
 
   </div>

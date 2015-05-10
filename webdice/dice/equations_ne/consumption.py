@@ -63,7 +63,7 @@ class ConsumptionModel(object):
         -------
         float
         """
-        return ne.evaluate('1000 * consumption / population')
+        return ne.evaluate('consumption / population')
 
     def consumption_discount(self, c0, c1, i, discount_type='ramsey'):
     # def consumption_discount(self, c0, c1, i, discount_type='constant'):

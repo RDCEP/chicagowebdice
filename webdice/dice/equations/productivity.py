@@ -200,7 +200,7 @@ class ProductivityModel(object):
         """
         return (
             productivity * capital ** output_elasticity *
-            population ** (1 - output_elasticity)
+            (population * 1000) ** (1 - output_elasticity)
         )
 
 

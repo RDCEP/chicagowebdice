@@ -58,7 +58,7 @@
       output: function (v) {
         var o = [];
         for (var i = 0; i < 10; ++i) {
-          var y = 6514 * (1 - (Math.exp(.35 * i) - 1) / Math.exp(.35 * i)) + (Math.exp(.35 * i) - 1) / Math.exp(.35 * i) * v;
+          var y = 6.514 * (1 - (Math.exp(.35 * i) - 1) / Math.exp(.35 * i)) + (Math.exp(.35 * i) - 1) / Math.exp(.35 * i) * v;
           o.push({
             y: y,
             x: i + 1

@@ -122,7 +122,7 @@ class DiceParams(DiceUserParams):
         self.cmax = 500.
 
         ## Population and technology
-        self.population_2005 = 6514.
+        self.population_2005 = 6.514
         self.population_growth = .35
         self.productivity = .02722
         self.productivity_growth = .092
@@ -263,7 +263,7 @@ class Dice2010Params(DiceParams):
         self.elasmu = 1.5
 
         ## Population and technology
-        self.population_2005 = 6411.
+        self.population_2005 = 6.411
         self.population_growth = .5  # This is called Population adjustment in Dice2010
         self.productivity = .0303220
         self.productivity_growth = .16
