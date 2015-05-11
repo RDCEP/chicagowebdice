@@ -138,9 +138,14 @@
   },
 
   "consumption_discount": {
-    "title_unit": false,
-    "title": "Consumption discount rate",
-    "unit": null
+    "title_unit": "% from t0 to t",
+    "title": "Consumption discount rate (cumulative)",
+    "unit": "%"
+  },
+  "consumption_periodic_discount": {
+    "title_unit": "% from t-1 to t",
+    "title": "Consumption discount rate (periodic)",
+    "unit": "%"
   },
   "forcing": {
     "title_unit": false,
