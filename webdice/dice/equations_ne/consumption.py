@@ -25,7 +25,7 @@ class ConsumptionModel(object):
     @property
     def initial_values(self):
         return (
-            1, None, None,
+            1, 0, 0,
             self.params.output_2005 * self.params.savings,
         )
 
@@ -44,8 +44,8 @@ class ConsumptionModel(object):
             consumption,
             consumption_pc,
             discount_factor,
-            discount_rate,
-            self.discount_forward(df.discount_rate[i-1], discount_rate, i),
+            discount_rate * 100,
+            self.discount_forward(df.discount_rate[i-1], discount_rate, i) * 100,
             self.investment(self.params.savings, df.output[i]),
         )
 
@@ -84,9 +84,7 @@ class ConsumptionModel(object):
         return ne.evaluate('1 / factor ** (1 / (i * 10)) - 1')
 
     def discount_forward(self, r0, r1, i):
-        return ne.evaluate('((1 + r1) ** (i * 10) / (1 + r0) ** ((i - 1) * 10)) ** .1 - 1')
-
-
+        return ne.evaluate('((1 + r1) ** i / (1 + r0) ** (i - 1)) - 1')
 
     def investment(self, savings, output):
         """
