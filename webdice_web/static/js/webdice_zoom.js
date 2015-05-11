@@ -91,11 +91,11 @@ var WebDICEGraphZoom = function() {
         height: zoom_height + 'px'});
       svg_wrap.style({
         width: (width + padding.left) + 'px',
-        height: (height + padding.top + padding.bottom) + 'px'});
+        height: (zoom_height + padding.top + padding.bottom) + 'px'});
       svg_defs.select('rect').attr({
         width: width,
         height: zoom_height});
-      svg.attr('transform', 'translate(' + padding.left + ',' + (height - 30) + ')');
+      svg.attr('transform', 'translate(' + padding.left + ',' + (zoom_height - 30) + ')');
       _x.range([1, width - 1]);
       _y.range([zoom_height - 1, 1]);
       _y2.range([zoom_height - 1, 1]);
@@ -109,9 +109,11 @@ var WebDICEGraphZoom = function() {
             return _line2(d.data);
           });
       }
-      axes_layer.select('.x.axis')
+      axes_layer.select('.x.axis.bottom')
         .attr('transform', 'translate(0,' + zoom_height + ')')
-        .call(x_axis)
+        .call(x_axis);
+      axes_layer.select('.x.axis.top')
+        .attr('transform', 'translate(0,' + 0 + ')')
         .call(x_axis2);
     },
     draw_axes = function() {
@@ -119,11 +121,11 @@ var WebDICEGraphZoom = function() {
        Draw x and y axes, ticks, etc.
        */
       axes_layer. append('g')
-        .attr('class', 'x axis zoom')
+        .attr('class', 'x axis bottom zoom')
         .attr('transform', 'translate(0,' + (zoom_height + 5) + ')')
         .call(x_axis);
       axes_layer. append('g')
-        .attr('class', 'x axis zoom')
+        .attr('class', 'x axis top zoom')
         .attr('transform', 'translate(0,' + 0 + ')')
         .call(x_axis2);
     },
@@ -197,7 +199,7 @@ var WebDICEGraphZoom = function() {
         'xmlns:xmlns:xlink': 'http://www.w3.org/1999/xlink',
         'version': '1.1',
         'width': width + padding.left + padding.right,
-        'height': height + padding.top + padding.bottom,
+        'height': zoom_height + padding.top + padding.bottom,
         'id': pre_id('graph_svg') })
       .classed('twin', _twin);
     svg_defs = svg_root.append('defs');
