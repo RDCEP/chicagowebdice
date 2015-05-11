@@ -107,6 +107,9 @@
       /*
        Only show periods in first 200 years
        */
+      if ((dice_variable == 'discount_rate' || dice_variable == 'discount_forward') && d == -999) {
+        d = null;
+      }
       if (i < graph_periods) {
 
         graph_data.data.push({

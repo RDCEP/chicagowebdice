@@ -12,9 +12,11 @@ class DiceDataMatrix(np.ndarray):
         obj.carbon_emitted = input_array[4]
         obj.carbon_intensity = input_array[5]
         obj.consumption = input_array[6]
-        obj.consumption_discount = input_array[7]
         obj.consumption_pc = input_array[8]
         obj.damages = input_array[9]
+        obj.discount_factor = input_array[7]
+        obj.discount_forward = input_array[32]
+        obj.discount_rate = input_array[33]
         obj.emissions_ind = input_array[10]
         obj.emissions_total = input_array[11]
         obj.forcing = input_array[12]
@@ -48,7 +50,7 @@ class DiceDataMatrix(np.ndarray):
         self.carbon_emitted = getattr(obj, 'carbon_emitted', None)
         self.carbon_intensity = getattr(obj, 'carbon_intensity', None)
         self.consumption = getattr(obj, 'consumption', None)
-        self.consumption_discount = getattr(obj, 'consumption_discount', None)
+        self.discount_factor = getattr(obj, 'discount_factor', None)
         self.consumption_pc = getattr(obj, 'consumption_pc', None)
         self.damages = getattr(obj, 'damages', None)
         self.emissions_ind = getattr(obj, 'emissions_ind', None)
@@ -73,6 +75,8 @@ class DiceDataMatrix(np.ndarray):
         self.temp_lower = getattr(obj, 'temp_lower', None)
         self.utility = getattr(obj, 'utility', None)
         self.utility_discounted = getattr(obj, 'utility_discounted', None)
+        self.discount_rate = getattr(obj, 'discount_rate', None)
+        self.discount_forward = getattr(obj, 'discount_forward', None)
 
     def __array_wrap__(self, out_arr, context=None):
         return np.ndarray.__array_wrap__(self, out_arr, context)
@@ -221,7 +225,7 @@ class DiceParams(DiceUserParams):
             np.zeros(self.tmax),                # carbon_emitted
             carbon_intensity,                   # carbon_intensity
             np.zeros(self.tmax),                # consumption
-            np.ones(self.tmax),                 # consumption_discount
+            np.ones(self.tmax),                 # discount_factor
             np.zeros(self.tmax),                # consumption_pc
             np.zeros(self.tmax),                # damages
             np.zeros(self.tmax),                # emissions_ind
@@ -246,9 +250,11 @@ class DiceParams(DiceUserParams):
             temp_lower,                         # temp_lower
             np.zeros(self.tmax),                # utility
             np.zeros(self.tmax),                # utility_discounted
+            np.zeros(self.tmax),                # discount_rate
+            np.zeros(self.tmax),                # discount_forward
         ]))
 
-        self.scc = DiceDataMatrix(np.zeros((32, 60)))
+        self.scc = DiceDataMatrix(np.zeros((34, 60)))
 
 
 class Dice2010Params(DiceParams):
