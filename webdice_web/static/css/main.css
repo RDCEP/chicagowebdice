@@ -32,7 +32,7 @@ table {
   border-spacing: 0; }
 
 html, button, input, select, textarea {
-  color: #222222; }
+  color: #222; }
 
 body {
   font-size: 1em;
@@ -50,7 +50,7 @@ hr {
   display: block;
   height: 1px;
   border: 0;
-  border-top: 1px solid #cccccc;
+  border-top: 1px solid #ccc;
   margin: 1em 0;
   padding: 0; }
 
@@ -67,8 +67,8 @@ textarea {
 
 .chromeframe {
   margin: 0.2em 0;
-  background: #cccccc;
-  color: black;
+  background: #ccc;
+  color: #000;
   padding: 0.2em 0; }
 
 sub {
@@ -89,7 +89,7 @@ em, i {
   right: 0;
   bottom: 0;
   overflow: auto;
-  border-bottom: 1px solid #dddddd;
+  border-bottom: 1px solid #ddd;
   padding-bottom: 2em; }
 
 #parameters.has-tabs {
@@ -114,7 +114,7 @@ em, i {
 #submission .label {
   width: 6em;
   text-align: right;
-  color: #666666;
+  color: #666;
   position: absolute;
   right: 0;
   bottom: 0; }
@@ -142,7 +142,7 @@ em, i {
 
 #controls {
   padding-top: 0.4em;
-  border-bottom: 1px solid #999999; }
+  border-bottom: 1px solid #999; }
 
 #controls input {
   margin-right: 0.4em; }
@@ -160,7 +160,7 @@ em, i {
 
 #content .initial {
   position: absolute;
-  background-color: #eeeeee;
+  background-color: #eee;
   font: 1em/1.5em Helvetica, sans-serif; }
 
 #content .initial {
@@ -199,11 +199,11 @@ em, i {
   display: none !important; }
 
 #content .tabs {
-  background-color: #eeeeee;
+  background-color: #eee;
   margin-left: 1px; }
 
 #content .tabs .selected {
-  background-color: white; }
+  background-color: #fff; }
 
 #content > div > div > div {
   display: none !important; }
@@ -218,8 +218,8 @@ em, i {
 
 #download-data input {
   display: block;
-  background-color: #eeeeee;
-  border: 1px solid #cccccc; }
+  background-color: #eee;
+  border: 1px solid #ccc; }
 
 #download-data input {
   font: 0.7em Helvetica, sans-serif;
@@ -245,7 +245,7 @@ em, i {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: black; }
+  background-color: #000; }
 
 #overlay .slug {
   opacity: 0.5;
@@ -680,35 +680,6 @@ g.visuallyhidden {
   #graph-controls .short input, #graph-controls .short select {
     width: 7.5em; }
 
-#menu_glossary {
-  margin-left: 2em !important; }
-
-#glossary .glossary-term {
-  position: relative; }
-  #glossary .glossary-term h3 {
-    position: absolute;
-    text-align: right;
-    left: -290px;
-    right: 100%;
-    display: block;
-    padding-right: 30px; }
-  #glossary .glossary-term .link-to-advanced-glossary {
-    color: white;
-    background-color: #999;
-    text-transform: uppercase;
-    font-size: 0.6em;
-    font-weight: bold;
-    padding: 2px 5px;
-    letter-spacing: 0.05em;
-    position: relative;
-    bottom: 2px; }
-#glossary .fn {
-  font-size: 0.7em; }
-#glossary img {
-  display: block;
-  width: 75%;
-  margin: 0 auto; }
-
 #sidebar {
   display: none; }
 
@@ -753,6 +724,8 @@ g.visuallyhidden {
 .axis .domain {
   stroke: #222222;
   stroke-width: 0.5; }
+.axis.zoom .domain {
+  stroke: #999999; }
 .axis text {
   font-size: 0.66em;
   font-weight: normal;
@@ -795,7 +768,7 @@ g.visuallyhidden {
 
 #zoom_graph {
   position: absolute;
-  bottom: 5.5em;
+  bottom: 6.5em;
   height: 0;
   width: 100%; }
 
@@ -1207,6 +1180,37 @@ g.visuallyhidden {
   color: #333333; }
   .modal p + p {
     margin-top: 0.5em; }
+
+#menu_glossary {
+  margin-left: 2em !important; }
+
+#glossary .glossary-term {
+  position: relative; }
+  #glossary .glossary-term h3 {
+    position: absolute;
+    text-align: right;
+    left: -290px;
+    right: 100%;
+    display: block;
+    padding-right: 30px; }
+  #glossary .glossary-term .link-to-advanced-glossary {
+    color: white;
+    background-color: #999;
+    text-transform: uppercase;
+    font-size: 0.6em;
+    font-weight: bold;
+    padding: 2px 5px;
+    letter-spacing: 0.05em;
+    position: relative;
+    bottom: 2px; }
+#glossary .fn {
+  font-size: 0.7em; }
+#glossary img {
+  display: block;
+  width: 75%;
+  margin: 0 auto; }
+#glossary h4 {
+  font-weight: bold; }
 
 @media only screen and (min-width: 1300px) {
   #title_legend_wrap #title_legend {
