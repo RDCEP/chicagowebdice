@@ -127,8 +127,9 @@ class Dice(object):
         df.abatement[i], df.damages[i], df.output[i], df.output_abate[i] = (
             self.eq.damages_model.get_model_values(i, df)
         )
-        (df.consumption[i], df.consumption_pc[i], df.consumption_discount[i],
-         df.investment[i]) = self.eq.consumption_model.get_model_values(i, df)
+        (df.consumption[i], df.consumption_pc[i], df.discount_factor[i],
+         df.discount_rate[i], df.discount_forward[i], df.investment[i]) = (
+            self.eq.consumption_model.get_model_values(i, df))
         df.utility[i], df.utility_discounted[i] = (
             self.eq.utility_model.get_model_values(i, df)
         )
@@ -252,7 +253,7 @@ class Dice(object):
             diff = (
                 self.vars.consumption_pc[i:th] -
                 self.scc.consumption_pc[i:th]
-            ).clip(0) * self.scc.consumption_discount[:future]
+            ).clip(0) * self.scc.discount_factor[:future]
             self.vars.scc[i] = np.sum(diff) * 1000 * 10 * (12 / 44)
 
     def get_ipopt_miu(self):
