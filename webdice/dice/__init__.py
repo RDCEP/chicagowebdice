@@ -242,8 +242,7 @@ class Dice(object):
             None
         """
         for i in xrange(20):
-            th = self.params.scc_horizon
-            future = th - i
+            th = i + self.params.scc_horizon
             self.scc[:] = self.vars[:]
             for j in range(i, th + 1):
                 shock = 0
@@ -253,7 +252,7 @@ class Dice(object):
             diff = (
                 self.vars.consumption_pc[i:th] -
                 self.scc.consumption_pc[i:th]
-            ).clip(0) * self.scc.discount_factor[:future]
+            ).clip(0) * self.scc.discount_factor[:self.params.scc_horizon]
             self.vars.scc[i] = np.sum(diff) * 1000 * 10 * (12 / 44)
 
     def get_ipopt_miu(self):
