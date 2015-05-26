@@ -244,6 +244,8 @@ class Dice(object):
         for i in xrange(20):
             th = self.params.scc_horizon
             future = th - i
+            # th = i + 40
+            # future = 40
             self.scc[:] = self.vars[:]
             for j in range(i, th + 1):
                 shock = 0
