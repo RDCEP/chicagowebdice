@@ -242,10 +242,7 @@ class Dice(object):
             None
         """
         for i in xrange(20):
-            th = self.params.scc_horizon
-            future = th - i
-            # th = i + 40
-            # future = 40
+            th = i + self.params.scc_horizon
             self.scc[:] = self.vars[:]
             for j in range(i, th + 1):
                 shock = 0
@@ -255,7 +252,7 @@ class Dice(object):
             diff = (
                 self.vars.consumption_pc[i:th] -
                 self.scc.consumption_pc[i:th]
-            ).clip(0) * self.scc.discount_factor[:future]
+            ).clip(0) * self.scc.discount_factor[:self.params.scc_horizon]
             self.vars.scc[i] = np.sum(diff) * 1000 * 10 * (12 / 44)
 
     def get_ipopt_miu(self):
@@ -270,6 +267,7 @@ class Dice(object):
             nd.array: Array of optimal miu, n = params.tmax
 
         """
+
         try:
             import pyipopt
         except ImportError:
@@ -277,6 +275,7 @@ class Dice(object):
             print('OPTIMIZATION ERROR: It appears that you do not have '
                   'pyipopt installed. Please install it before running '
                   'optimization.')
+
         x0 = np.concatenate(
             (np.linspace(0, 1, 40) ** (1 - np.linspace(0, 1, 40)), np.ones(20))
         )
@@ -290,25 +289,30 @@ class Dice(object):
         xl[-20:] = 1
         gl = np.zeros(M)
         gu = np.ones(M) * 4.0
+
         def eval_f(_x0):
             if (_x0 == self.opt_x).all() and self.opt_obj is not None:
                 return self.opt_obj
             else:
                 self.opt_x = _x0.copy()
                 return self.obj_loop(_x0)
+
         def eval_grad_f(_x0):
             if (_x0 == self.opt_x).all() and self.opt_grad_f is not None:
                 return self.opt_grad_f
             else:
                 self.opt_x = _x0.copy()
                 return self.grad_loop(_x0)
+
         def eval_g(x):
             return np.zeros(M)
+
         def eval_jac_g(x, flag):
             if flag:
                 return [], []
             else:
                 return np.empty(M)
+
         pyipopt.set_loglevel(1)
         nlp = pyipopt.create(
             self.opt_vars, xl, xu, M, gl, gu, nnzj, nnzh, eval_f,
@@ -318,12 +322,9 @@ class Dice(object):
         nlp.int_option('max_iter', 30)
         nlp.num_option('max_cpu_time', 60)
         nlp.num_option('tol', self.opt_tol)
-        # nlp.num_option('acceptable_tol', 1e-4)
-        # nlp.int_option('acceptable_iter', 4)
-        nlp.num_option('obj_scaling_factor', -1e+0)
+        nlp.num_option('obj_scaling_factor', -1e+3)
         nlp.int_option('print_level', 0)
         nlp.str_option('linear_solver', 'ma57')
-        # nlp.str_option('derivative_test', 'first-order')
         x = nlp.solve(x0)[0]
         nlp.close()
         return x

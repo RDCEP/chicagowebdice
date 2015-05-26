@@ -65,8 +65,6 @@ def run_loop(form):
     out['data'] = {
         k: [l if l > -inf else -999 for l in v] for k, v in out['data'].iteritems()
     }
-    # out['data']['discount_rate'] = [l * 100 for l in out['data']['discount_rate']]
-    # out['data']['discount_forward'] = [l * 100 for l in out['data']['discount_forward']]
     out['data']['discount_rate'][0] = None
     out['data']['discount_forward'][0] = None
     return jsonify(**out)

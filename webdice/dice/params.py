@@ -186,7 +186,7 @@ class DiceParams(DiceUserParams):
         self.tmax = 60
         self.t0 = np.arange(self.tmax)
         self.t1 = self.t0 + 1
-        self.scc_horizon = self.tmax - 1
+        self.scc_horizon = 40
 
         # Variables for initiating DiceDataMatrix
         backstop_growth = np.zeros(self.tmax)
