@@ -265,7 +265,7 @@ class Dice2010Params(DiceParams):
         self.damages_exponent = 2.
         self.productivity_decline = .009
         self.intensity_decline_rate = .00646
-        self.popasym = 8700.
+        self.popasym = 8.700
         self.elasmu = 1.5
 
         ## Population and technology
